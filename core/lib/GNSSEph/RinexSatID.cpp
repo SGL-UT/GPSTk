@@ -202,23 +202,27 @@ namespace gpstk
       oss.fill(fillchar);
       int rinexID = id;
          // do the kludging that RINEX does for PRNs > 99
-      switch (system)
+         // id of -1 is a special case we use to represent "none"
+      if (id != -1)
       {
-         case SatID::systemGeosync:
-            rinexID -= 100;
-            break;
-         case SatID::systemQZSS:
-            if (rinexID >= 193)
-            {
-                  // PRN codes in the range of 193-197
-               rinexID -= 192;
-            }
-            else
-            {
-                  // PRN codes in the range of 183-187
+         switch (system)
+         {
+            case SatID::systemGeosync:
                rinexID -= 100;
-            }
-            break;
+               break;
+            case SatID::systemQZSS:
+               if (rinexID >= 193)
+               {
+                     // PRN codes in the range of 193-197
+                  rinexID -= 192;
+               }
+               else
+               {
+                     // PRN codes in the range of 183-187
+                  rinexID -= 100;
+               }
+               break;
+         }
       }
       oss << systemChar() << std::setw(2) << rinexID;
       return oss.str();

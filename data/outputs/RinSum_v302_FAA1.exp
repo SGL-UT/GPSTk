@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2019/09/10 06:40:46
-+++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2020/05/19 17:46:39
++++++++++++++ RinSum summary of Rinex obs file /sgl/ceph/work/johnk/rinex304/gpstk/data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  3.02,  File type OBSERVATION DATA,  System MIXED.
 Prgm: sbf2rin-9.3.3,  Run: 20160618 013404 LCL,  By: 
@@ -10,14 +10,14 @@ Antenna # : 725235,  Type : LEIAR25.R4      NONE
 Position      (XYZ,m) : (-5246415.0000, -3077260.0000, -1913842.0000).
 Antenna Delta (HEN,m) : (0.1262, 0.0000, 0.0000).
 BeiDou Observation types (8):
- Type #01 (C2I) B1 BDSIB1 pseudorange
- Type #02 (L2I) B1 BDSIB1 phase
- Type #03 (D2I) B1 BDSIB1 doppler
- Type #04 (S2I) B1 BDSIB1 snr
- Type #05 (C7I) E5b BDSIB3 pseudorange
- Type #06 (L7I) E5b BDSIB3 phase
- Type #07 (D7I) E5b BDSIB3 doppler
- Type #08 (S7I) E5b BDSIB3 snr
+ Type #01 (C1I) B1 BDSIB1 pseudorange
+ Type #02 (L1I) B1 BDSIB1 phase
+ Type #03 (D1I) B1 BDSIB1 doppler
+ Type #04 (S1I) B1 BDSIB1 snr
+ Type #05 (C7I) B2 BDSIB2 pseudorange
+ Type #06 (L7I) B2 BDSIB2 phase
+ Type #07 (D7I) B2 BDSIB2 doppler
+ Type #08 (S7I) B2 BDSIB2 snr
 Galileo Observation types (16):
  Type #01 (C1C) L1 GALC pseudorange
  Type #02 (L1C) L1 GALC phase
@@ -93,8 +93,8 @@ Marker number : 92201M012
 Signal Strength Unit = DBHZ
 Interval =   1.000
 Time of Last Obs 2016/06/18 01:14:59.000 GPS
+Phase shift correction for system C:  0.00000 cycles applied to obs type L1I BeiDou
 Phase shift correction for system C:  0.00000 cycles applied to obs type L7I BeiDou
-Phase shift correction for system C:  0.00000 cycles applied to obs type L2I BeiDou
 Phase shift correction for system E:  0.00000 cycles applied to obs type L1C Galileo
 Phase shift correction for system E:  0.00000 cycles applied to obs type L5Q Galileo
 Phase shift correction for system E:  0.00000 cycles applied to obs type L7Q Galileo
@@ -127,7 +127,7 @@ There were 5 epochs (100.00% of 5 possible epochs in this timespan) and 0 inline
 
       Summary of data available in this file: (Spans are based on times and interval)
 System C = BeiDou:
- Sat\OT: C2I    L2I    D2I    S2I    C7I    L7I    D7I    S7I   Span             Begin time - End time
+ Sat\OT: C1I    L1I    D1I    S1I    C7I    L7I    D7I    S7I   Span             Begin time - End time
  C01       5      5      5      5      5      5      5      5      5  2016/06/18 01:00:00 - 2016/06/18 01:00:04
  C04       5      5      5      5      5      5      5      5      5  2016/06/18 01:00:00 - 2016/06/18 01:00:04
  C08       5      5      5      5      5      5      5      5      5  2016/06/18 01:00:00 - 2016/06/18 01:00:04
@@ -188,4 +188,4 @@ System S = Geosync:
 TOTAL     25     25     25     25
 
  Warning - Computed last time does not agree with header
-RinSum timing: processing 0.226 sec, wallclock: 0 sec.
+RinSum timing: processing 0.051 sec, wallclock: 0 sec.

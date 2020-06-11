@@ -140,8 +140,14 @@ namespace gpstk
        * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
        *
        * RINEX 2 is also supported.
+       *
+       * @warning This class makes no attempt to apply or remove any
+       * of the phase shifts when converting between RINEX and other
+       * observation types.  This can lead to invalid RINEX OBS data.
+       * Either use RINEX 3.00 which does not require the
+       * SYS / PHASE SHIFT header field, or apply the corrections
+       * appropriately when performing conversions.
        */
-
    class Rinex3ObsHeader : public Rinex3ObsBase
    {
    public:
@@ -259,7 +265,7 @@ namespace gpstk
       typedef std::vector<std::string> StringVec;
          /// Simple vector of ints
       typedef std::vector<int> IntVec;
-         /// @todo document me
+         /// Type used to count the number of observations for each observable.
       typedef std::map<RinexSatID, IntVec> PRNNumObsMap;
          /** Scale Factor corrections for observations
           * map <ObsType, ScaleFactor> */
@@ -485,11 +491,22 @@ namespace gpstk
       virtual bool isHeader() const
       { return true; }
 
-         /// This is a simple Debug output function.
-         /// It simply outputs the version, name and antenna number of this
-         /// RINEX header.
-      virtual void dump(std::ostream& s) const;
-
+         /** This is a debug output function which provides a lot of
+          * detail about the header contents, based on the value of \a
+          * version (RINEX format version).
+          */
+      virtual void dump(std::ostream& s) const
+      { dump(s, version); }
+         
+         /** This is a debug output function which provides a lot of
+          * detail about the header contents for a specified RINEX
+          * format version.
+          * @param[in] dumpVersion The RINEX format version to use
+          *   when dumping the contents of this header.  Potentially
+          *   affects the representation of obs IDs, as well as which
+          *   header fields are printed.
+          */
+      void dump(std::ostream& s, double dumpVersion) const;
 
          /** This method returns the numerical index of a given observation
           *
@@ -587,6 +604,14 @@ namespace gpstk
       std::vector<RinexObsID> mapR2ObsToR3Obs_R();
       std::vector<RinexObsID> mapR2ObsToR3Obs_E();
       std::vector<RinexObsID> mapR2ObsToR3Obs_S();
+
+         /** Because of how pseudo-observables are handled, we need
+          * this function to remap the contents of mapObsTypes such
+          * that ionospheric delay and channel pseudo-observables get
+          * the treatment they need. */
+      void remapObsTypes(RinexObsMap& remapped,
+                         std::map<std::string,unsigned>& obsCount)
+         const;
 
       friend class Rinex3ObsData;
 

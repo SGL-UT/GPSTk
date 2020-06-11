@@ -3,6 +3,7 @@
 # Input file(s) data/arlm200a.15o
 # Satellites G23
 # Data C1C
+# RINEX version: file 2.11 / output 2.11
 # RinDump output for file data/arlm200a.15o
 # Header ObsIDs GPS (10): L1C L2W C1C C2X C1W C2W D1C D2W S1C S2W
 # wk secs-of-wk sat      C1C     

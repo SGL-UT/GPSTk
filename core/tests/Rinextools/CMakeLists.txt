@@ -23,7 +23,7 @@ add_test(NAME RinDump_Default_C1C
          -DTESTBASE=RinDump_sat_default_C1C
          -DTESTNAME=RinDump_sat_default_C1C
          -DARGS=${ARGS1}
-         -DDIFF_ARGS=-l6\ -z2
+         -DDIFF_ARGS=-l7\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST RinDump_Default_C1C PROPERTY LABELS Rinex3)
 
@@ -38,7 +38,7 @@ add_test(NAME RinDump_Single_C1C
          -DTESTBASE=RinDump_sat_single_C1C
          -DTESTNAME=RinDump_sat_single_C1C
          -DARGS=${ARGS2}
-         -DDIFF_ARGS=-l6\ -z2
+         -DDIFF_ARGS=-l7\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST RinDump_Single_C1C PROPERTY LABELS Rinex3)
 
@@ -53,7 +53,7 @@ add_test(NAME RinDump_Rinex2Input
          -DTESTBASE=RinDump_Rinex2Input
          -DTESTNAME=RinDump_Rinex2Input
          -DARGS=${ARGS2}
-         -DDIFF_ARGS=-l6\ -z2
+         -DDIFF_ARGS=-l7\ -z2
          -P ${CMAKE_CURRENT_SOURCE_DIR}/../testsuccexp.cmake)
 set_property(TEST RinDump_Rinex2Input PROPERTY LABELS Rinex2)
 
@@ -62,7 +62,7 @@ test_app_with_stdout(
     RinDump
     Rinex2
     ${GPSTK_TEST_DATA_DIR}/inputs/igs/faa1170b00.16o\ GC1C\ RC1C\ EC1B\ SC5X
-    "-l6 -z1")
+    "-l7 -z1")
 
 
 ###############################################################################

@@ -51,7 +51,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "TimeString.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 
 // DDBase
 #include "DDBase.hpp"
@@ -99,7 +99,7 @@ try {
    StochasticModel = string("cos2");      // cos, cos2, SNR
       // for pseudorange solution
    {
-      PRSolution dummy;
+      PRSolution2 dummy;
       PRSrmsLimit = dummy.RMSLimit; // 6.5;
       PRSnIter = dummy.MaxNIterations; // 10;
       PRSconverge = dummy.ConvergenceLimit; // 1.e-9;

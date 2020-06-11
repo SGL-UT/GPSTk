@@ -69,7 +69,9 @@ namespace gpstk {
       ObsID::cbDesc[ObsID::cbL1]        = "L1";            //Rinex 1
       ObsID::cbDesc[ObsID::cbL2]        = "L2";            //Rinex 2
       ObsID::cbDesc[ObsID::cbL5]        = "L5";            //Rinex 5
+      ObsID::cbDesc[ObsID::cbG1a]       = "G1a";
       ObsID::cbDesc[ObsID::cbG1]        = "G1";            //Rinex 1
+      ObsID::cbDesc[ObsID::cbG2a]       = "G2a";
       ObsID::cbDesc[ObsID::cbG2]        = "G2";            //Rinex 2
       ObsID::cbDesc[ObsID::cbG3]        = "G3";            //Rinex 3
       ObsID::cbDesc[ObsID::cbE5b]       = "E5b";           //Rinex 7
@@ -106,6 +108,12 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcIR3]       = "GLOIR5";        //Rinex I    // GLO L3 I code
       ObsID::tcDesc[ObsID::tcQR3]       = "GLOQR5";        //Rinex Q    // GLO L3 Q code
       ObsID::tcDesc[ObsID::tcIQR3]      = "GLOI+QR5";      //Rinex X    // GLO L3 I+Q code
+      ObsID::tcDesc[ObsID::tcL1OC]      = "GLOL1OC";
+      ObsID::tcDesc[ObsID::tcL1OCD]     = "GLOL1OCD";
+      ObsID::tcDesc[ObsID::tcL1OCP]     = "GLOL1OCP";
+      ObsID::tcDesc[ObsID::tcL2CSI]     = "GLOL2CSI";
+      ObsID::tcDesc[ObsID::tcL2CSIOCp]  = "GLOL2CSI+OCp";
+      ObsID::tcDesc[ObsID::tcL2OCP]     = "GLOL2OCP";
 
       ObsID::tcDesc[ObsID::tcA]         = "GALA";          //Rinex A    // GAL
       ObsID::tcDesc[ObsID::tcB]         = "GALB";          //Rinex B    // GAL
@@ -121,6 +129,11 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcIE5b]      = "GALI5b";        //Rinex I    // GAL
       ObsID::tcDesc[ObsID::tcQE5b]      = "GALQ5b";        //Rinex Q    // GAL
       ObsID::tcDesc[ObsID::tcIQE5b]     = "GALI+Q5b";      //Rinex X    // GAL
+      ObsID::tcDesc[ObsID::tcA6]        = "GALA6";
+      ObsID::tcDesc[ObsID::tcABC6]      = "GALA+B+C6";
+      ObsID::tcDesc[ObsID::tcB6]        = "GALB6";
+      ObsID::tcDesc[ObsID::tcBC6]       = "GALB+C6";
+      ObsID::tcDesc[ObsID::tcC6]        = "GALC6";
 
       ObsID::tcDesc[ObsID::tcSCA]       = "SBASC/A";       //Rinex C    // SBAS civil code
       ObsID::tcDesc[ObsID::tcSI5]       = "SBASI5";        //Rinex I    // SBAS L5 I code
@@ -141,6 +154,12 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcJI6]       = "QZSSL6I";       //Rinex S    // QZSS LEX(6) I code
       ObsID::tcDesc[ObsID::tcJQ6]       = "QZSSL6Q";       //Rinex L    // QZSS LEX(6) Q code
       ObsID::tcDesc[ObsID::tcJIQ6]      = "QZSSL6I+Q";     //Rinex X    // QZSS LEX(6) I+Q code
+      ObsID::tcDesc[ObsID::tcJI5S]      = "QZSSL5SI";
+      ObsID::tcDesc[ObsID::tcJIQ5S]     = "QZSSL5SI+Q";
+      ObsID::tcDesc[ObsID::tcJQ5S]      = "QZSSL5SQ";
+      ObsID::tcDesc[ObsID::tcJD6]       = "QZSSL6D";
+      ObsID::tcDesc[ObsID::tcJDE6]      = "QZSSL6D+E";
+      ObsID::tcDesc[ObsID::tcJE6]       = "QZSSL6E";
 
       ObsID::tcDesc[ObsID::tcCI1]       = "BDSIB1";        //Rinex I    // BeiDou L1 I code
       ObsID::tcDesc[ObsID::tcCQ1]       = "BDSQB1";        //Rinex Q    // BeiDou L1 Q code
@@ -151,6 +170,21 @@ namespace gpstk {
       ObsID::tcDesc[ObsID::tcCI6]       = "BDSIB3";        //Rinex I    // BeiDou B3 I code
       ObsID::tcDesc[ObsID::tcCQ6]       = "BDSQB3";        //Rinex Q    // BeiDou B3 Q code
       ObsID::tcDesc[ObsID::tcCIQ6]      = "BDSI+QB3";      //Rinex X    // BeiDou B3 I+Q code
+      ObsID::tcDesc[ObsID::tcCA1]       = "BDS1A";
+      ObsID::tcDesc[ObsID::tcCCD1]      = "BDS1CD";
+      ObsID::tcDesc[ObsID::tcCCDP1]     = "BDS1CDP";
+      ObsID::tcDesc[ObsID::tcCCP1]      = "BDS1CP";
+      ObsID::tcDesc[ObsID::tcCodelessC] = "BDSCodeless";
+      ObsID::tcDesc[ObsID::tcCI2a]      = "BDSIB2a";
+      ObsID::tcDesc[ObsID::tcCI2ab]     = "BDSIB2ab";
+      ObsID::tcDesc[ObsID::tcCI2b]      = "BDSIB2b";
+      ObsID::tcDesc[ObsID::tcCIQ3A]     = "BDSI+Q3A";
+      ObsID::tcDesc[ObsID::tcCIQ2a]     = "BDSI+QB2a";
+      ObsID::tcDesc[ObsID::tcCIQ2ab]    = "BDSI+QB2ab";
+      ObsID::tcDesc[ObsID::tcCIQ2b]     = "BDSI+QB2b";
+      ObsID::tcDesc[ObsID::tcCQ2a]      = "BDSQB2a";
+      ObsID::tcDesc[ObsID::tcCQ2ab]     = "BDSQB2ab";
+      ObsID::tcDesc[ObsID::tcCQ2b]      = "BDSQB2b";
 
       ObsID::tcDesc[ObsID::tcIA5]       = "IRNSSL5A";      //Rinex A    // IRNSS L5 SPS
       ObsID::tcDesc[ObsID::tcIB5]       = "IRNSSL5B";      //Rinex B    // IRNSS L5 RS(D)
@@ -179,7 +213,9 @@ namespace gpstk {
       ObsID::char2ot['C'] = ObsID::otRange;
       ObsID::char2ot['L'] = ObsID::otPhase;
       ObsID::char2ot['D'] = ObsID::otDoppler;
+      ObsID::char2ot['I'] = ObsID::otIono;
       ObsID::char2ot['S'] = ObsID::otSNR;
+      ObsID::char2ot['X'] = ObsID::otChannel;
       ObsID::char2ot['-'] = ObsID::otUndefined;
 
       ObsID::char2cb[' '] = ObsID::cbUnknown;
@@ -187,6 +223,7 @@ namespace gpstk {
       ObsID::char2cb['1'] = ObsID::cbL1;
       ObsID::char2cb['2'] = ObsID::cbL2;
       ObsID::char2cb['3'] = ObsID::cbG3;
+      ObsID::char2cb['4'] = ObsID::cbG1a;
       ObsID::char2cb['5'] = ObsID::cbL5;
       ObsID::char2cb['6'] = ObsID::cbE6;
       ObsID::char2cb['7'] = ObsID::cbE5b;
@@ -211,6 +248,7 @@ namespace gpstk {
       ObsID::char2tc['A'] = ObsID::tcA;
       ObsID::char2tc['B'] = ObsID::tcB;
       ObsID::char2tc['Z'] = ObsID::tcABC;
+      ObsID::char2tc['E'] = ObsID::tcJE6;
       ObsID::char2tc['-'] = ObsID::tcUndefined;
 
       // Since some of the items in the enums don't have corresponding RINEX
@@ -236,67 +274,130 @@ namespace gpstk {
          ObsID::tc2char[i->second] = i->first;
 
       // And add the couple 'special' cases
-      ObsID::cb2char[ObsID::cbG1] = '1';
-      ObsID::cb2char[ObsID::cbG2] = '2';
-      ObsID::cb2char[ObsID::cbB1] = '2';
-      ObsID::cb2char[ObsID::cbB2] = '7';
-      ObsID::cb2char[ObsID::cbB3] = '6';
+      ObsID::cb2char[ObsID::cbL1]        = '1';
+      ObsID::cb2char[ObsID::cbL2]        = '2';
+      ObsID::cb2char[ObsID::cbL5]        = '5';
+      ObsID::cb2char[ObsID::cbG1]        = '1';
+      ObsID::cb2char[ObsID::cbG1a]       = '4';
+      ObsID::cb2char[ObsID::cbG2a]       = '6';
+      ObsID::cb2char[ObsID::cbG2]        = '2';
+      ObsID::cb2char[ObsID::cbG3]        = '3';
+      ObsID::cb2char[ObsID::cbE6]        = '6';
+      ObsID::cb2char[ObsID::cbE5b]       = '7';
+      ObsID::cb2char[ObsID::cbE5ab]      = '8';
+      ObsID::cb2char[ObsID::cbB1]        = '2';
+      ObsID::cb2char[ObsID::cbB3]        = '6';
+      ObsID::cb2char[ObsID::cbB2]        = '7';
+      ObsID::cb2char[ObsID::cbI9]        = '9';
+      ObsID::cb2char[ObsID::cbUnknown]   = ' ';
+      ObsID::cb2char[ObsID::cbAny]       = '*';
+      ObsID::cb2char[ObsID::cbUndefined] = '-';
 
-      ObsID::tc2char[ObsID::tcG1D]  = 'S';
-      ObsID::tc2char[ObsID::tcG1P]  = 'L';
-      ObsID::tc2char[ObsID::tcG1X]  = 'X';
-      ObsID::tc2char[ObsID::tcC]    = 'C';
-      ObsID::tc2char[ObsID::tcGCA]  = 'C';
-      ObsID::tc2char[ObsID::tcGP]   = 'P';
-      ObsID::tc2char[ObsID::tcIR3]  = 'I';
-      ObsID::tc2char[ObsID::tcQR3]  = 'Q';
-      ObsID::tc2char[ObsID::tcIQR3] = 'X';
-      ObsID::tc2char[ObsID::tcIE5]  = 'I';
-      ObsID::tc2char[ObsID::tcQE5]  = 'Q';
-      ObsID::tc2char[ObsID::tcIQE5] = 'X';
-      ObsID::tc2char[ObsID::tcIE5a]  = 'I';
-      ObsID::tc2char[ObsID::tcQE5a]  = 'Q';
-      ObsID::tc2char[ObsID::tcIQE5a] = 'X';
-      ObsID::tc2char[ObsID::tcIE5b]  = 'I';
-      ObsID::tc2char[ObsID::tcQE5b]  = 'Q';
-      ObsID::tc2char[ObsID::tcIQE5b] = 'X';
-      ObsID::tc2char[ObsID::tcIQ5]  = 'X';
-      ObsID::tc2char[ObsID::tcBC]   = 'X';
-      ObsID::tc2char[ObsID::tcSCA]  = 'C';
-      ObsID::tc2char[ObsID::tcSI5]  = 'I';
-      ObsID::tc2char[ObsID::tcSQ5]  = 'Q';
-      ObsID::tc2char[ObsID::tcSIQ5] = 'X';
-      ObsID::tc2char[ObsID::tcCI1]  = 'I';
-      ObsID::tc2char[ObsID::tcCQ1]  = 'Q';
-      ObsID::tc2char[ObsID::tcCIQ1] = 'X';
-      ObsID::tc2char[ObsID::tcCI7]  = 'I';
-      ObsID::tc2char[ObsID::tcCQ7]  = 'Q';
-      ObsID::tc2char[ObsID::tcCIQ7] = 'X';
-      ObsID::tc2char[ObsID::tcCI6]  = 'I';
-      ObsID::tc2char[ObsID::tcCQ6]  = 'Q';
-      ObsID::tc2char[ObsID::tcCIQ6] = 'X';
-      ObsID::tc2char[ObsID::tcJCA]  = 'C';
-      ObsID::tc2char[ObsID::tcJD1]  = 'S';
-      ObsID::tc2char[ObsID::tcJP1]  = 'L';
-      ObsID::tc2char[ObsID::tcJX1]  = 'X';
-      ObsID::tc2char[ObsID::tcJZ1]  = 'Z';
-      ObsID::tc2char[ObsID::tcJM2]  = 'S';
-      ObsID::tc2char[ObsID::tcJL2]  = 'L';
-      ObsID::tc2char[ObsID::tcJX2]  = 'X';
-      ObsID::tc2char[ObsID::tcJI5]  = 'I';
-      ObsID::tc2char[ObsID::tcJQ5]  = 'Q';
-      ObsID::tc2char[ObsID::tcJIQ5] = 'X';
-      ObsID::tc2char[ObsID::tcJI6]  = 'S';
-      ObsID::tc2char[ObsID::tcJQ6]  = 'L';
-      ObsID::tc2char[ObsID::tcJIQ6] = 'X';
-      ObsID::tc2char[ObsID::tcIA5]  = 'A';
-      ObsID::tc2char[ObsID::tcIB5]  = 'B';
-      ObsID::tc2char[ObsID::tcIB5]  = 'C';
-      ObsID::tc2char[ObsID::tcIX5]  = 'X';
-      ObsID::tc2char[ObsID::tcIA9]  = 'A';
-      ObsID::tc2char[ObsID::tcIB9]  = 'B';
-      ObsID::tc2char[ObsID::tcIB9]  = 'C';
-      ObsID::tc2char[ObsID::tcIX9]  = 'X';
+      ObsID::tc2char[ObsID::tcCA]         = 'C';
+      ObsID::tc2char[ObsID::tcN]          = 'N';
+      ObsID::tc2char[ObsID::tcI5]         = 'I';
+      ObsID::tc2char[ObsID::tcG1D]        = 'S';
+      ObsID::tc2char[ObsID::tcG1X]        = 'X';
+      ObsID::tc2char[ObsID::tcG1P]        = 'L';
+      ObsID::tc2char[ObsID::tcC2LM]       = 'X';
+      ObsID::tc2char[ObsID::tcC2L]        = 'L';
+      ObsID::tc2char[ObsID::tcC2M]        = 'S';
+      ObsID::tc2char[ObsID::tcIQ5]        = 'X';
+      ObsID::tc2char[ObsID::tcM]          = 'M';
+      ObsID::tc2char[ObsID::tcP]          = 'P';
+      ObsID::tc2char[ObsID::tcQ5]         = 'Q';
+      ObsID::tc2char[ObsID::tcD]          = 'D';
+      ObsID::tc2char[ObsID::tcY]          = 'Y';
+      ObsID::tc2char[ObsID::tcW]          = 'W';
+      ObsID::tc2char[ObsID::tcL1OCD]      = 'A';
+      ObsID::tc2char[ObsID::tcL1OCP]      = 'B';
+      ObsID::tc2char[ObsID::tcL1OC]       = 'X';
+      ObsID::tc2char[ObsID::tcL2CSIOCp]   = 'X';
+      ObsID::tc2char[ObsID::tcL2CSI]      = 'A';
+      ObsID::tc2char[ObsID::tcL2OCP]      = 'B';
+      ObsID::tc2char[ObsID::tcIR3]        = 'I';
+      ObsID::tc2char[ObsID::tcIQR3]       = 'X';
+      ObsID::tc2char[ObsID::tcQR3]        = 'Q';
+      ObsID::tc2char[ObsID::tcGP]         = 'P';
+      ObsID::tc2char[ObsID::tcGCA]        = 'C';
+      ObsID::tc2char[ObsID::tcA]          = 'A';
+      ObsID::tc2char[ObsID::tcABC]        = 'Z';
+      ObsID::tc2char[ObsID::tcB]          = 'B';
+      ObsID::tc2char[ObsID::tcBC]         = 'X';
+      ObsID::tc2char[ObsID::tcC]          = 'C';
+      ObsID::tc2char[ObsID::tcIE5]        = 'I';
+      ObsID::tc2char[ObsID::tcIQE5]       = 'X';
+      ObsID::tc2char[ObsID::tcQE5]        = 'Q';
+      ObsID::tc2char[ObsID::tcIE5a]       = 'I';
+      ObsID::tc2char[ObsID::tcIQE5a]      = 'X';
+      ObsID::tc2char[ObsID::tcQE5a]       = 'Q';
+      ObsID::tc2char[ObsID::tcIE5b]       = 'I';
+      ObsID::tc2char[ObsID::tcIQE5b]      = 'X';
+      ObsID::tc2char[ObsID::tcQE5b]       = 'Q';
+      ObsID::tc2char[ObsID::tcA6]         = 'A';
+      ObsID::tc2char[ObsID::tcABC6]       = 'Z';
+      ObsID::tc2char[ObsID::tcB6]         = 'B';
+      ObsID::tc2char[ObsID::tcBC6]        = 'X';
+      ObsID::tc2char[ObsID::tcC6]         = 'C';
+      ObsID::tc2char[ObsID::tcSCA]        = 'C';
+      ObsID::tc2char[ObsID::tcSI5]        = 'I';
+      ObsID::tc2char[ObsID::tcSIQ5]       = 'X';
+      ObsID::tc2char[ObsID::tcSQ5]        = 'Q';
+      ObsID::tc2char[ObsID::tcJCA]        = 'C';
+      ObsID::tc2char[ObsID::tcJD1]        = 'S';
+      ObsID::tc2char[ObsID::tcJX1]        = 'X';
+      ObsID::tc2char[ObsID::tcJP1]        = 'L';
+      ObsID::tc2char[ObsID::tcJZ1]        = 'Z';
+      ObsID::tc2char[ObsID::tcJL2]        = 'L';
+      ObsID::tc2char[ObsID::tcJM2]        = 'S';
+      ObsID::tc2char[ObsID::tcJX2]        = 'X';
+      ObsID::tc2char[ObsID::tcJI5]        = 'I';
+      ObsID::tc2char[ObsID::tcJIQ5]       = 'X';
+      ObsID::tc2char[ObsID::tcJQ5]        = 'Q';
+      ObsID::tc2char[ObsID::tcJI5S]       = 'D';
+      ObsID::tc2char[ObsID::tcJIQ5S]      = 'Z';
+      ObsID::tc2char[ObsID::tcJQ5S]       = 'P';
+      ObsID::tc2char[ObsID::tcJI6]        = 'S';
+      ObsID::tc2char[ObsID::tcJIQ6]       = 'X';
+      ObsID::tc2char[ObsID::tcJQ6]        = 'L';
+      ObsID::tc2char[ObsID::tcJDE6]       = 'Z';
+      ObsID::tc2char[ObsID::tcJD6]        = 'S';
+      ObsID::tc2char[ObsID::tcJE6]        = 'E';
+      ObsID::tc2char[ObsID::tcCIQ1]       = 'X';
+      ObsID::tc2char[ObsID::tcCA1]        = 'A';
+      ObsID::tc2char[ObsID::tcCCD1]       = 'D';
+      ObsID::tc2char[ObsID::tcCCDP1]      = 'X';
+      ObsID::tc2char[ObsID::tcCCP1]       = 'P';
+      ObsID::tc2char[ObsID::tcCI1]        = 'I';
+      ObsID::tc2char[ObsID::tcCQ1]        = 'Q';
+      ObsID::tc2char[ObsID::tcCI2ab]      = 'D';
+      ObsID::tc2char[ObsID::tcCIQ2ab]     = 'X';
+      ObsID::tc2char[ObsID::tcCQ2ab]      = 'P';
+      ObsID::tc2char[ObsID::tcCIQ7]       = 'X';
+      ObsID::tc2char[ObsID::tcCI2a]       = 'D';
+      ObsID::tc2char[ObsID::tcCIQ2a]      = 'X';
+      ObsID::tc2char[ObsID::tcCQ2a]       = 'P';
+      ObsID::tc2char[ObsID::tcCI2b]       = 'D';
+      ObsID::tc2char[ObsID::tcCIQ2b]      = 'Z';
+      ObsID::tc2char[ObsID::tcCQ2b]       = 'P';
+      ObsID::tc2char[ObsID::tcCI7]        = 'I';
+      ObsID::tc2char[ObsID::tcCQ7]        = 'Q';
+      ObsID::tc2char[ObsID::tcCIQ6]       = 'X';
+      ObsID::tc2char[ObsID::tcCI6]        = 'I';
+      ObsID::tc2char[ObsID::tcCQ6]        = 'Q';
+      ObsID::tc2char[ObsID::tcCodelessC]  = 'N';
+      ObsID::tc2char[ObsID::tcCIQ3A]      = 'A';
+      ObsID::tc2char[ObsID::tcIB5]        = 'B';
+      ObsID::tc2char[ObsID::tcIX5]        = 'X';
+      ObsID::tc2char[ObsID::tcIC5]        = 'C';
+      ObsID::tc2char[ObsID::tcIB9]        = 'B';
+      ObsID::tc2char[ObsID::tcIX9]        = 'X';
+      ObsID::tc2char[ObsID::tcIC9]        = 'C';
+      ObsID::tc2char[ObsID::tcIA5]        = 'A';
+      ObsID::tc2char[ObsID::tcIA9]        = 'A';
+      ObsID::tc2char[ObsID::tcUnknown]    = ' ';
+      ObsID::tc2char[ObsID::tcAny]        = '*';
+      ObsID::tc2char[ObsID::tcUndefined]  = '-';
 
       ObsID::validRinexSystems = "GRESCJI";
 
@@ -316,40 +417,49 @@ namespace gpstk {
       ObsID::map3to1sys["QZS"] = "J";
       ObsID::map3to1sys["IRN"] = "I";
 
-      ObsID::validRinexFrequencies = "12356789";
+      ObsID::validRinexFrequencies = "123456789";
 
       // this defines the valid obs types
       // NB these tc characters are ORDERED ~best to worst
-      ObsID::validRinexTrackingCodes['G']['1'] = "PYWLMIQSXCN* ";   // except no C1N
-      ObsID::validRinexTrackingCodes['G']['2'] = "PYWLMIQSXCDN* ";  // except no C2N
+         // except no C1N
+      ObsID::validRinexTrackingCodes['G']['1'] = "PYWLMCSXN* ";
+         // except no C2N
+      ObsID::validRinexTrackingCodes['G']['2'] = "PYWLMCSXDN* ";
       ObsID::validRinexTrackingCodes['G']['5'] = "IQX* ";
 
       ObsID::validRinexTrackingCodes['R']['1'] = "PC* ";
       ObsID::validRinexTrackingCodes['R']['2'] = "PC* ";
       ObsID::validRinexTrackingCodes['R']['3'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['R']['4'] = "ABX* ";
+      ObsID::validRinexTrackingCodes['R']['6'] = "ABX* ";
 
-      ObsID::validRinexTrackingCodes['E']['1'] = "ABCIQXZ* ";
+      ObsID::validRinexTrackingCodes['E']['1'] = "ABCXZ* ";
       ObsID::validRinexTrackingCodes['E']['5'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['E']['6'] = "ABCIQXZ* ";
+      ObsID::validRinexTrackingCodes['E']['6'] = "ABCXZ* ";
       ObsID::validRinexTrackingCodes['E']['7'] = "IQX* ";
       ObsID::validRinexTrackingCodes['E']['8'] = "IQX* ";
 
       ObsID::validRinexTrackingCodes['S']['1'] = "C* ";
       ObsID::validRinexTrackingCodes['S']['5'] = "IQX* ";
 
-      //NB 24Jun2013 MGEX data uses 2!  RINEX 3.03: 1 for 3.02, 2 for 3.0[013]
-      ObsID::validRinexTrackingCodes['C']['1'] = "IQX* ";
+         /** @note 3.02 uses carrier "1" for "B1-2", every other RINEX
+          * version uses carrier "2", so we have to leave IQ in C1 */
+      ObsID::validRinexTrackingCodes['C']['1'] = "PAIQXDN* ";
       ObsID::validRinexTrackingCodes['C']['2'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['C']['6'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['C']['7'] = "IQX* ";
+      ObsID::validRinexTrackingCodes['C']['5'] = "PXD* ";
+      ObsID::validRinexTrackingCodes['C']['6'] = "AIQX* ";
+      ObsID::validRinexTrackingCodes['C']['7'] = "ZPIQXD* ";
+      ObsID::validRinexTrackingCodes['C']['8'] = "PXD* ";
 
       ObsID::validRinexTrackingCodes['J']['1'] = "CSLXZ* ";
       ObsID::validRinexTrackingCodes['J']['2'] = "SLX* ";
-      ObsID::validRinexTrackingCodes['J']['5'] = "IQX* ";
-      ObsID::validRinexTrackingCodes['J']['6'] = "SLX* ";
+      ObsID::validRinexTrackingCodes['J']['5'] = "IQDPXZ* ";
+      ObsID::validRinexTrackingCodes['J']['6'] = "ESLXZ* ";
 
-      ObsID::validRinexTrackingCodes['I']['5'] = "ABCX* " ;
-      ObsID::validRinexTrackingCodes['I']['9'] = "ABCX* " ;
+         // I1 is *only* for channel number
+      ObsID::validRinexTrackingCodes['I']['1'] = "* ";
+      ObsID::validRinexTrackingCodes['I']['5'] = "ABCX* ";
+      ObsID::validRinexTrackingCodes['I']['9'] = "ABCX* ";
    }
 
 

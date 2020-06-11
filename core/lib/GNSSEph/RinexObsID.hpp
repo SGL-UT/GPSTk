@@ -107,9 +107,42 @@ namespace gpstk
             : ObsID(ot, cb, tc) {};
       
          /** Construct this object from the string specifier.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
           * @throw InvalidParameter
           */
-      RinexObsID(const std::string& strID);
+      explicit RinexObsID(const std::string& strID, double version);
+
+         /** Construct this object from the C-style string specifier.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
+          * @throw InvalidParameter
+          */
+      explicit RinexObsID(const char* id, double version)
+            : RinexObsID(std::string(id), version)
+      {}
 
          /** Constructor from ObsID.
           * @throw InvalidParameter
@@ -136,8 +169,33 @@ namespace gpstk
           * observation codes described in section 5.1 of the Rinex 3
           * specification. Note that this always returns a three
           * character identifier so some information is lost because
-          * some codes are shared between satellite systems. */
-      std::string asString() const;
+          * some codes are shared between satellite systems.
+          * @note This method defaults to using the obs ID
+          *   representation defined in the RINEX version set in
+          *   rinexVersion.
+          * @see asString(double)
+          * @see ObsID::rinexVersion */
+      std::string asString() const
+      { return asString(rinexVersion); }
+
+         /** This returns a representation of this object using the
+          * observation codes described in section 5.1 of the Rinex 3
+          * specification. Note that this always returns a three
+          * character identifier so some information is lost because
+          * some codes are shared between satellite systems.
+          * @param[in] version The RINEX format version to use when
+          *   generating the string (e.g. 3.02 has different codes for
+          *   BDS than other versions). */
+      std::string asString(double version) const;
+
+         /** This is used by Rinex3ObsHeader::getObsIndex to determine
+          * a pseudo-equality that takes into account handling of
+          * pseudo-observables like ionospheric delay and channel
+          * numbers.
+          * @return true if this and right are the same, ignoring
+          *   tracking codes for ionospheric delay, and tracking codes
+          *   and band for channel numbers. */
+      bool equalIndex(const RinexObsID& right) const;
 
          // see ObsID for definition of validRinexTrackingCodes and
          // validRinexSystems.

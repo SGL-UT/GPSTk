@@ -54,6 +54,7 @@
 #include "Exception.hpp"
 #include "SatID.hpp"
 #include "ObsIDInitializer.hpp"
+#include "Rinex3ObsBase.hpp"
 
 namespace gpstk
 {
@@ -99,25 +100,27 @@ namespace gpstk
          /// The frequency band this obs was collected from.
       enum CarrierBand
       {
-         cbUnknown,
-         cbAny,  ///< Used to match any carrier band
-         cbZero, ///< Used with the channel observation type (see RINEx3 section 5.13)
-         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1, QZSS L1
-         cbL2,   ///< GPS L2, QZSS L2
-         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5, INRSS L5
-         cbG1,   ///< Glonass G1
-         cbG2,   ///< Glonass G2
-         cbG3,   ///< Glonass G3
-         cbE5b,  ///< Galileo E5b, BeiDou L7
-         cbE5ab, ///< Galileo E5a+b
-         cbE6,   ///< Galileo E6, QZSS LEX
-         cbB1,   ///< BeiDou L1
-         cbB2,   ///< BeiDou L7
-         cbB3,   ///< BeiDou L6
-         cbI9,   ///< IRNSS S-band (RINEX '9')
-         cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
-         cbUndefined,
-         cbLast  ///< Used to verify that all items are described at compile time
+         cbUnknown,   ///< Uninitialized value
+         cbAny,       ///< Used to match any carrier band
+         cbZero,      ///< Used with the channel observation type (see RINEx3 section 5.13)
+         cbL1,        ///< GPS L1, Galileo E1, SBAS L1, QZSS L1, BeiDou L1
+         cbL2,        ///< GPS L2, QZSS L2
+         cbL5,        ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5, BeiDou B2a, NavIC L5
+         cbG1,        ///< GLONASS G1
+         cbG1a,       ///< GLONASS G1a
+         cbG2a,       ///< GLONASS G2a
+         cbG2,        ///< GLONASS G2
+         cbG3,        ///< GLONASS G3
+         cbE5b,       ///< Galileo E5b
+         cbE5ab,      ///< Galileo E5, BeiDou B2
+         cbE6,        ///< Galileo E6, QZSS L6
+         cbB1,        ///< BeiDou B1
+         cbB2,        ///< BeiDou B2b
+         cbB3,        ///< BeiDou B3
+         cbI9,        ///< NavIC S
+         cbL1L2,      ///< GPS L1+L2
+         cbUndefined, ///< Code is known to be undefined (as opposed to unknown)
+         cbLast,      ///< Used to verify that all items are described at compile time
       };
 
 
@@ -133,97 +136,132 @@ namespace gpstk
           * identifiers need to be allocated */
       enum TrackingCode
       {
-         tcUnknown,
-         tcAny,     ///< Used to match any tracking code
-         tcCA,      ///< Legacy GPS civil code
-         tcP,       ///< Legacy GPS precise code
-         tcY,       ///< Encrypted legacy GPS precise code
-         tcW,       ///< Encrypted legacy GPS precise code, codeless Z tracking
-         tcN,       ///< Encrypted legacy GPS precise code, squaring codeless tracking
-         tcD,       ///< Encrypted legacy GPS precise code, other codeless tracking
-         tcM,       ///< Modernized GPS military unique code
-         tcC2M,     ///< Modernized GPS L2 civil M code
-         tcC2L,     ///< Modernized GPS L2 civil L code
-         tcC2LM,    ///< Modernized GPS L2 civil M+L combined tracking (such as Trimble NetRS, Septrentrio, and ITT)
-         tcI5,      ///< Modernized GPS L5 civil in-phase
-         tcQ5,      ///< Modernized GPS L5 civil quadrature
-         tcIQ5,     ///< Modernized GPS L5 civil I+Q combined tracking
-         tcG1P,     ///< Modernized GPS L1C civil code tracking (pilot)
-         tcG1D,     ///< Modernized GPS L1C civil code tracking (data)
-         tcG1X,     ///< Modernized GPS L1C civil code tracking (pilot + data)
+         tcUnknown,   ///< Uninitialized value
+         tcAny,       ///< Used to match any tracking code
+         tcCA,        ///< Legacy GPS civil code
+         tcP,         ///< Legacy GPS precise code
+         tcY,         ///< Encrypted legacy GPS precise code
+         tcW,         ///< Encrypted legacy GPS precise code, codeless Z tracking
+         tcN,         ///< Encrypted legacy GPS precise code, squaring codeless tracking
+         tcD,         ///< Encrypted legacy GPS precise code, other codeless tracking
+         tcM,         ///< Modernized GPS military unique code
+         tcC2M,       ///< Modernized GPS L2 civil M code
+         tcC2L,       ///< Modernized GPS L2 civil L code
+         tcC2LM,      ///< Modernized GPS L2 civil M+L combined tracking (such as Trimble NetRS, Septrentrio, and ITT)
+         tcI5,        ///< Modernized GPS L5 civil in-phase
+         tcQ5,        ///< Modernized GPS L5 civil quadrature
+         tcIQ5,       ///< Modernized GPS L5 civil I+Q combined tracking
+         tcG1P,       ///< Modernized GPS L1C civil code tracking (pilot)
+         tcG1D,       ///< Modernized GPS L1C civil code tracking (data)
+         tcG1X,       ///< Modernized GPS L1C civil code tracking (pilot + data)
 
-         tcGCA,     ///< Legacy Glonass civil signal
-         tcGP,      ///< Legacy Glonass precise signal
-         tcIR3,     ///< Glonass L3 I code
-         tcQR3,     ///< Glonass L3 Q code
-         tcIQR3,    ///< Glonass L3 I+Q combined tracking
+         tcGCA,       ///< Legacy Glonass civil signal
+         tcGP,        ///< Legacy Glonass precise signal
+         tcIR3,       ///< Glonass L3 I code
+         tcQR3,       ///< Glonass L3 Q code
+         tcIQR3,      ///< Glonass L3 I+Q combined tracking
+         tcL1OCD,     ///< GLONASS L1 OCd code
+         tcL1OCP,     ///< GLONASS L1 OCp code
+         tcL1OC,      ///< GLONASS L1 OCd+OCp combined tracking
+         tcL2CSIOCp,  ///< GLONASS L2 CSI+OCp combined tracking
+         tcL2CSI,     ///< GLONASS L2 CSI code
+         tcL2OCP,     ///< GLONASS L2 OCp code
 
-         tcA,       ///< Galileo L1 PRS code
-         tcB,       ///< Galileo OS/CS/SoL code
-         tcC,       ///< Galileo Dataless code
-         tcBC,      ///< Galileo B+C combined tracking
-         tcABC,     ///< Galileo A+B+C combined tracking
-         tcIE5,     ///< Galileo E5 I code
-         tcQE5,     ///< Galileo E5 Q code
-         tcIQE5,    ///< Galileo E5 I+Q combined tracking
-         tcIE5a,    ///< Galileo E5a I code
-         tcQE5a,    ///< Galileo E5a Q code
-         tcIQE5a,   ///< Galileo E5a I+Q combined tracking
-         tcIE5b,    ///< Galileo E5b I code
-         tcQE5b,    ///< Galileo E5b Q code
-         tcIQE5b,   ///< Galileo E5b I+Q combined tracking
+         tcA,         ///< Galileo L1 PRS code
+         tcB,         ///< Galileo E1-B signal, supporting OS/HAS/SoL
+         tcC,         ///< Galileo E1 Dataless code
+         tcBC,        ///< Galileo E1 B+C combined tracking
+         tcABC,       ///< Galileo E1 A+B+C combined tracking
+         tcIE5,       ///< Galileo E5 I code
+         tcQE5,       ///< Galileo E5 Q code
+         tcIQE5,      ///< Galileo E5 I+Q combined tracking
+         tcIE5a,      ///< Galileo E5a I code
+         tcQE5a,      ///< Galileo E5a Q code
+         tcIQE5a,     ///< Galileo E5a I+Q combined tracking
+         tcIE5b,      ///< Galileo E5b I code
+         tcQE5b,      ///< Galileo E5b Q code
+         tcIQE5b,     ///< Galileo E5b I+Q combined tracking
+         tcA6,        ///< Galileo E6 PRS code
+         tcB6,        ///< Galileo E6-b signal
+         tcC6,        ///< Galileo E6 Dataless code
+         tcBC6,       ///< Galileo E6 B+C combined tracking
+         tcABC6,      ///< Galileo E6 A+B+C combined tracking
 
-         tcSCA,     ///< SBAS civil code
-         tcSI5,     ///< SBAS L5 I code
-         tcSQ5,     ///< SBAS L5 Q code
-         tcSIQ5,    ///< SBAS L5 I+Q code
+         tcSCA,       ///< SBAS civil code
+         tcSI5,       ///< SBAS L5 I code
+         tcSQ5,       ///< SBAS L5 Q code
+         tcSIQ5,      ///< SBAS L5 I+Q code
 
-         tcJCA,     ///< QZSS civil code
-         tcJD1,     ///< QZSS L1C(D)
-         tcJP1,     ///< QZSS L1C(P)
-         tcJX1,     ///< QZSS L1C(D+P)
-         tcJZ1,     ///< QZSS L1-SAIF
-         tcJM2,     ///< QZSS L2C(M)
-         tcJL2,     ///< QZSS L2C(L)
-         tcJX2,     ///< QZSS L2C(M+L)
-         tcJI5,     ///< QZSS L5 in-phase
-         tcJQ5,     ///< QZSS L5 quadrature
-         tcJIQ5,    ///< QZSS L5 I+Q combined tracking
-         tcJI6,     ///< QZSS LEX(6) in-phase
-         tcJQ6,     ///< QZSS LEX(6) quadrature
-         tcJIQ6,    ///< QZSS LEX(6) I+Q combined tracking
+         tcJCA,       ///< QZSS civil code
+         tcJD1,       ///< QZSS L1C(D)
+         tcJP1,       ///< QZSS L1C(P)
+         tcJX1,       ///< QZSS L1C(D+P)
+         tcJZ1,       ///< QZSS L1-SAIF
+         tcJM2,       ///< QZSS L2C(M)
+         tcJL2,       ///< QZSS L2C(L)
+         tcJX2,       ///< QZSS L2C(M+L)
+         tcJI5,       ///< QZSS L5 in-phase
+         tcJQ5,       ///< QZSS L5 quadrature
+         tcJIQ5,      ///< QZSS L5 I+Q combined tracking
+         tcJI5S,      ///< QZSS L5S in-phase
+         tcJQ5S,      ///< QZSS L5S I+Q combined tracking
+         tcJIQ5S,     ///< QZSS L5S quadrature
+         tcJI6,       ///< QZSS LEX(6) short
+         tcJQ6,       ///< QZSS LEX(6) long
+         tcJIQ6,      ///< QZSS LEX(6) combined tracking
+         tcJD6,       ///< QZSS L6 Block II D code
+         tcJE6,       ///< QZSS L6 Block II E code
+         tcJDE6,      ///< QZSS L6 Block II D+E combined tracking
 
-         tcCI1,     ///< BeiDou B1 I code
-         tcCQ1,     ///< BeiDou B1 Q code
-         tcCIQ1,    ///< BeiDou B1 I code
-         tcCI7,     ///< BeiDou B2 I+Q code
-         tcCQ7,     ///< BeiDou B2 Q code
-         tcCIQ7,    ///< BeiDou B2 I+Q code
-         tcCI6,     ///< BeiDou B3 I code
-         tcCQ6,     ///< BeiDou B3 Q code
-         tcCIQ6,    ///< BeiDou B3 I+Q code
+         tcCI1,       ///< BeiDou B1 I code
+         tcCQ1,       ///< BeiDou B1 Q code
+         tcCIQ1,      ///< BeiDou B1 I+Q code
+         tcCI7,       ///< BeiDou B2 I code
+         tcCQ7,       ///< BeiDou B2 Q code
+         tcCIQ7,      ///< BeiDou B2 I+Q code
+         tcCI6,       ///< BeiDou B3 I code
+         tcCQ6,       ///< BeiDou B3 Q code
+         tcCIQ6,      ///< BeiDou B3 I+Q code
+         tcCA1,       ///< BeiDou B1A code
+         tcCCD1,      ///< BeiDou B1C D code
+         tcCCDP1,     ///< BeiDou B1C D+P code
+         tcCCP1,      ///< BeiDou B1C P code
+         tcCI2ab,     ///< BeiDou B2a+b I code
+         tcCIQ2ab,    ///< BeiDou B2a+B I+Q code
+         tcCQ2ab,     ///< BeiDou B2a+B Q code
+         tcCI2a,      ///< BeiDou B2a I code
+         tcCIQ2a,     ///< BeiDou B2a I+Q code
+         tcCQ2a,      ///< BeiDou B2a Q code
+         tcCI2b,      ///< BeiDou B2b I code
+         tcCIQ2b,     ///< BeiDou B2b I+Q code
+         tcCQ2b,      ///< BeiDou B2b Q code
+         tcCodelessC, ///< BeiDou codeless tracking
+         tcCIQ3A,     ///< BeiDou B3A I+Q code
 
-                    ///  Nomenclature follows RiNEX 3.03 Table 10
-         tcIA5,     ///< IRNSS L5 SPS
-         tcIB5,     ///< IRNSS L5 RS(D)
-         tcIC5,     ///< IRNSS L5 RS(P)
-         tcIX5,     ///< IRNSS L5 B+C
-         tcIA9,     ///< IRNSS S-band SPS
-         tcIB9,     ///< IRNSS S=band RS(D)
-         tcIC9,     ///< INRSS S-band RS(P)
-         tcIX9,     ///< IRNSS S-band B+C
+         tcIA5,       ///< IRNSS L5 SPS
+         tcIB5,       ///< IRNSS L5 RS(D)
+         tcIC5,       ///< IRNSS L5 RS(P)
+         tcIX5,       ///< IRNSS L5 B+C
+         tcIA9,       ///< IRNSS S-band SPS
+         tcIB9,       ///< IRNSS S-band RS(D)
+         tcIC9,       ///< INRSS S-band RS(P)
+         tcIX9,       ///< IRNSS S-band B+C
 
-         tcUndefined,
-         tcLast     ///< Used to verify that all items are described at compile time
+         tcUndefined, ///< Code is known to be undefined (as opposed to unknown)
+         tcLast,      ///< Used to verify that all items are described at compile time
       };
 
          /// empty constructor, creates a wildcard object.
       ObsID()
-            : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
+            : type(otUnknown), band(cbUnknown), code(tcUnknown),
+              rinexVersion(Rinex3ObsBase::currentVersion)
+      {}
 
          /// Explicit constructor
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
-            : type(ot), band(cb), code(tc) {};
+            : type(ot), band(cb), code(tc),
+              rinexVersion(Rinex3ObsBase::currentVersion)
+      {}
 
          /// This string contains the system characters for all RINEX systems.
       static std::string validRinexSystems;
@@ -255,15 +293,41 @@ namespace gpstk
           * isn't currently defined, a new one is silently
           * automatically created with a blank description for the new
           * characters.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
           * @throw InvalidParameter
           */
-      explicit ObsID(const std::string& id);
+      explicit ObsID(const std::string& id, double version);
 
          /** Constructor from c-style string; see c'tor from a string.
+          * @param[in] strID The RINEX observation identifier to
+          *   decode.  This must be a RINEX 3 ID, three or four
+          *   characters in length.  Three character obs codes are
+          *   assumed to be from GPS.  Four character obs codes use
+          *   the first character for the system.
+          * @param[in] version The RINEX version of the obs ID in
+          *   strID.  This is used for oddball special cases like CC1*
+          *   in RINEX 3.02, to make sure that the codes are properly
+          *   interpreted.  When reading the obs ID from a RINEX
+          *   header, one should use the header version here.  When
+          *   interpreting command-line options or other contexts
+          *   where a RINEX version is not specified, use
+          *   Rinex3ObsBase::currentVersion.
           * @throw InvalidParameter
           */
-      explicit ObsID(const char* id)
-      { *this=ObsID(std::string(id));}
+      explicit ObsID(const char* id, double version)
+      { *this=ObsID(std::string(id), version);}
 
          /// Equality requires all fields to be the same
       virtual bool operator==(const ObsID& right) const;
@@ -328,6 +392,40 @@ namespace gpstk
       ObservationType  type;
       CarrierBand      band;
       TrackingCode     code;
+
+         /** Kludge for Rinex 3.02.
+          * This defaults to Rinex3ObsBase::currentVersion.
+          * When constructed from a RINEX 3 obs ID string, the version
+          * is specified in that constructor and retained here so that
+          * when returning this object to a string, it returns to its
+          * original form by default.
+          * This can be overridden in a multitude of ways:
+          *   \li Change the value of rinexVersion.  This is a little
+          *       tedious as it would need to be done for each object
+          *       being rendered (rinexVersion is not and should not
+          *       be a static data member).
+          *   \li RinexObsID::asString(double) overrides the value of
+          *       rinexVersion, allowing you to render the RINEX obs
+          *       ID as a specific version without changing the object
+          *       being rendered.
+          *   \li Rinex3ObsHeader::dump() and
+          *       Rinex3ObsHeader::operator<<() will automatically use
+          *       RinexObsID::asString(double) with the RINEX version
+          *       defined in the Rinex3ObsHeader object.  This means
+          *       when using Rinex3ObsHeader to output obs IDs, it
+          *       will automatically use the appropriate version for
+          *       the header.  The upshot of this is that if you read
+          *       a 3.02 header, you can simply change
+          *       Rinex3ObsHeader::version to 3.04 and when you output
+          *       the object, it will correctly use 3.04 obs IDs.
+          *   \li Rinex3ObsHeader::dump(double) allows you to dump the
+          *       header contents using a specific RINEX version
+          *       format (including header fields) without changing
+          *       the header object itself.
+          * @todo move this into RinexObsID along with all the other
+          *   RINEX-specific code at some point.
+          */
+      double rinexVersion;
 
          /// These strings are for forming a somewhat verbose description
       static std::map< TrackingCode,    std::string > tcDesc;

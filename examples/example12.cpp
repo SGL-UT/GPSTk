@@ -49,6 +49,7 @@
 #include "ObsID.hpp"
 #include "RinexObsID.hpp"
 #include "Exception.hpp"
+#include "Rinex3ObsHeader.hpp"
 
 
 int main(int argc, char *argv[])
@@ -58,32 +59,34 @@ int main(int argc, char *argv[])
 
    map< ObsID, string> i2s;
 
-   i2s[ObsID("C1C")] = "C1C";
-   i2s[ObsID("L1C")] = "L1C";
-   i2s[ObsID("D1C")] = "D1C";
-   i2s[ObsID("S1C")] = "S1C";
-   i2s[ObsID("L1W")] = "L1W";
-   i2s[ObsID("D2Z")] = "D2Z";
-   i2s[ObsID("S1X")] = "S1X";
-   i2s[ObsID("L5Q")] = "L5Q";
-   i2s[ObsID("EL5Q")] = "EL5Q";
-   i2s[ObsID("EC1C")] = "EC1C";
-   i2s[ObsID("C4x")] = "C4x";  // Note that you can just start using custom id's
-   i2s[ObsID("C4y")] = "C4y";
+      // abbreviate.
+   double cv = gpstk::Rinex3ObsBase::currentVersion;
+   i2s[ObsID("C1C", cv)] = "C1C";
+   i2s[ObsID("L1C", cv)] = "L1C";
+   i2s[ObsID("D1C", cv)] = "D1C";
+   i2s[ObsID("S1C", cv)] = "S1C";
+   i2s[ObsID("L1W", cv)] = "L1W";
+   i2s[ObsID("D2Z", cv)] = "D2Z";
+   i2s[ObsID("S1X", cv)] = "S1X";
+   i2s[ObsID("L5Q", cv)] = "L5Q";
+   i2s[ObsID("EL5Q", cv)] = "EL5Q";
+   i2s[ObsID("EC1C", cv)] = "EC1C";
+   i2s[ObsID("C4x", cv)] = "C4x";  // Note that you can just start using custom id's
+   i2s[ObsID("C4y", cv)] = "C4y";
 
    // You can also explicitly create one so it can have a good description
    ObsID dfif = ObsID::newID("C3 ", "Ionosphere-free pseudorange");
    i2s[dfif] = "C3 ";
 
    // You can also fix up the descriptions manually
-   ObsID C4y("C4y");
+   ObsID C4y("C4y", cv);
    ObsID::tcDesc[C4y.code] = "y";
    ObsID::cbDesc[C4y.band] = "L4";
 
    ObsID l1lc(ObsID::otTrackLen, ObsID::cbL1, ObsID::tcY);
    i2s[l1lc] = "cust";
 
-   i2s[ObsID("C1 ")] = "C1 ";
+   i2s[ObsID("C1 ", cv)] = "C1 ";
 
    try
    {

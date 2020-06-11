@@ -268,7 +268,29 @@ namespace gpstk
       size_t index = hdr.getObsIndex(string(1,svID.systemChar()), obsID);
       if (obs[svID].size() <= index)
          obs[svID].resize(index+1);
-      obs[svID][index] = data;
+      if (obsID.type == ObsID::otChannel)
+      {
+            /** @todo If the existing channel data is greater than or
+             * equal to this number, we have stuffed the maximum
+             * number of channels into the field.  I don't really know
+             * what to do in the event that we exceed this limit. */
+            // also checking for channel being < 1, which is not allowed
+            // per RINEX 3.04
+         if ((obs[svID][index].data < 0100000000) &&
+             (data.data >= 1))
+         {
+            obs[svID][index].data *= 100;
+               // We assume the channel number is in the supplied
+               // RinexDatum, but we need to keep it under 100
+               // according to RINEX 3.04.  This is a kludge.
+            obs[svID][index].data += fmod(data.data, 100);
+            obs[svID][index].lliBlank = obs[svID][index].ssiBlank = true;
+         }
+      }
+      else
+      {
+         obs[svID][index] = data;
+      }
    }
 
    
@@ -688,6 +710,10 @@ namespace gpstk
                GPSTK_RETHROW(e);
             }
             catch(StringException& e)
+            {
+               GPSTK_RETHROW(e);
+            }
+            catch (Exception& e)
             {
                GPSTK_RETHROW(e);
             }

@@ -237,11 +237,24 @@ namespace gpstk
    namespace StringUtils
    {
          /// @ingroup StringUtils
+         //@{
+
+         /// SatID as a string
       inline std::string asString(const SatID& p)
       {
          std::ostringstream oss;
          p.dump(oss);
          return oss.str();
+      }
+
+
+         /// SatelliteSystem as a string
+      inline std::string asString(const SatID::SatelliteSystem& s)
+      {
+         SatID sat(-1,s);
+         std::string str(asString(sat));
+         std::string::size_type pos = str.find(' ',0);
+         return (std::string(str,0,pos));
       }
    }
 

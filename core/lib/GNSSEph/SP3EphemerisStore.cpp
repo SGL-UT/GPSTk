@@ -749,9 +749,12 @@ namespace gpstk
                   data.time.setTimeSystem(head.timeSystem);
                      // add this data
                   ClockRecord rec;
-                  rec.bias = data.bias; rec.sig_bias = data.sig_bias,
-                                           rec.drift = data.drift; rec.sig_drift = data.sig_drift,
-                                                                      rec.accel = data.accel; rec.sig_accel = data.sig_accel;
+                  rec.bias = data.bias;
+                  rec.sig_bias = data.sig_bias;
+                  rec.drift = data.drift;
+                  rec.sig_drift = data.sig_drift;
+                  rec.accel = data.accel;
+                  rec.sig_accel = data.sig_accel;
                   clkStore.addClockRecord(data.sat, data.time, rec);
                }
             }

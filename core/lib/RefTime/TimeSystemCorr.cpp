@@ -97,7 +97,7 @@ namespace gpstk
          frTS = TimeSystem::GLO;
          toTS = TimeSystem::UTC;
       }
-      else if(STR == std::string("GPGA"))
+      else if(STR == std::string("GPGA") || STR == std::string("GAGP")) // R3.04 A5
       { 
          type = GPGA;
          frTS = TimeSystem::GPS;

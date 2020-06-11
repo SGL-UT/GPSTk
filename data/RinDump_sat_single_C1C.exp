@@ -3,6 +3,7 @@
 # Input file(s) /home/bparsons/git/gpstk/data/test_input_rinex3_obs_RinexObsFile.15o
 # Satellites G05
 # Data C1C
+# RINEX version: file 3.02 / output 3.02
 # RinDump output for file /home/bparsons/git/gpstk/data/test_input_rinex3_obs_RinexObsFile.15o
 # Header ObsIDs GPS (8): C1C C2W C2X C5X L1C L2W L2X L5X
 # wk secs-of-wk sat      C1C     

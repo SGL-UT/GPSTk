@@ -43,7 +43,6 @@
 #include "GPSEllipsoid.hpp"
 #include "Combinations.hpp"
 #include "TimeString.hpp"
-#include "stl_helpers.hpp"
 #include "logstream.hpp"
 
 using namespace std;
@@ -63,11 +62,9 @@ namespace gpstk
    // corrected pseudoranges and satellite system.
    int PRSolution::PreparePRSolution(const CommonTime& Tr,
                                      vector<SatID>& Sats,
-                                     vector<SatID::SatelliteSystem>& Syss,
                                      const vector<double>& Pseudorange,
                                      const XvtStore<SatID> *pEph,
                                      Matrix<double>& SVP) const
-      throw()
    {
       LOG(DEBUG) << "PreparePRSolution at time " << printTime(Tr,timfmt);
 
@@ -76,19 +73,16 @@ namespace gpstk
       CommonTime tx;
       Xvt PVT;
 
-      // if necessary, define the SystemIDs vector (but NOT the member data one)
-      if(Syss.size() == 0) {
-         for(i=0; i<Sats.size(); i++) {
-            SatID::SatelliteSystem sys=Sats[i].system;
-            if(vectorindex(Syss, sys) == -1)     // not found
-               Syss.push_back(sys);              // add it
-         }
+      // catch undefined allowedGNSS
+      if(allowedGNSS.size() == 0) {
+         Exception e("Must define systems vector allowedGNSS before processing");
+         GPSTK_THROW(e);
       }
 
-      // must ignore and mark satellites if system is not found in Syss
+      // must ignore and mark satellites if system is not found in allowedGNSS
       for(N=0,i=0; i<Sats.size(); i++) {
          if(Sats[i].id <= 0) continue;                // already marked
-         if(vectorindex(Syss, Sats[i].system) == -1) {
+         if(vectorindex(allowedGNSS, Sats[i].system) == -1) {
             LOG(DEBUG) << " PRSolution ignores satellite (system) "
                << RinexSatID(Sats[i]) << " at time " << printTime(Tr,timfmt);
             Sats[i].id = -Sats[i].id;                 // don't have system - mark it
@@ -171,7 +165,7 @@ namespace gpstk
 
       return NSVS;
   
-   } // end PreparePRPRSolution
+   } // end PreparePRSolution
 
 
    // -------------------------------------------------------------------------
@@ -184,7 +178,6 @@ namespace gpstk
                                     TropModel *pTropModel,
                                     const int& niterLimit,
                                     const double& convLimit,
-                                    const vector<SatID::SatelliteSystem>& Syss,
                                     Vector<double>& Resids,
                                     Vector<double>& Slopes)
    {
@@ -200,8 +193,8 @@ namespace gpstk
          Exception e("Invalid dimensions");
          GPSTK_THROW(e);
       }
-      if(Syss.size() == 0) {
-         Exception e("Allowed satellite systems input (Syss) is empty!");
+      if(allowedGNSS.size() == 0) {
+         Exception e("Must define systems vector allowedGNSS before processing");
          GPSTK_THROW(e);
       }
 
@@ -210,37 +203,36 @@ namespace gpstk
       double rho,wt,svxyz[3];
       GPSEllipsoid ellip;
 
-      Valid = Mixed = false;
+      Valid = false;
 
       try {
          // -----------------------------------------------------------
          // counts, systems and dimensions
-         vector<SatID::SatelliteSystem> mySyss;
+         vector<SatID::SatelliteSystem> currGNSS;
          {
-            // define the Syss (system IDs) vector, and count good satellites
-            vector<SatID::SatelliteSystem> tempSyss;
+            // define the current systems vector, and count good satellites
+            vector<SatID::SatelliteSystem> tempGNSS;
             for(Nsvs=0,i=0; i<Sats.size(); i++) {
                if(Sats[i].id <= 0)                          // reject marked sats
                   continue;
 
                SatID::SatelliteSystem sys(Sats[i].system);  // get this system
-               if(vectorindex(Syss, sys) == -1)             // reject disallowed sys
+               if(vectorindex(allowedGNSS, sys) == -1)      // reject disallowed sys
                   continue;
 
                Nsvs++;                                      // count it
-               if(vectorindex(tempSyss, sys) == -1)         // add unique system
-                  tempSyss.push_back(sys);
+               if(vectorindex(tempGNSS, sys) == -1)         // add unique system
+                  tempGNSS.push_back(sys);
             }
 
-            // must sort as in Syss
-            for(i=0; i<Syss.size(); i++)
-               if(vectorindex(tempSyss, Syss[i]) != -1)
-                  mySyss.push_back(Syss[i]);
+            // must sort as in allowedGNSS
+            for(i=0; i<allowedGNSS.size(); i++)
+               if(vectorindex(tempGNSS, allowedGNSS[i]) != -1)
+                  currGNSS.push_back(allowedGNSS[i]);
          }
 
          // dimension of the solution vector (3 pos + 1 clk/sys)
-         const size_t dim(3 + mySyss.size());
-         if(dim > 4) Mixed = true;
+         const size_t dim(3 + currGNSS.size());
 
          // require number of good satellites to be >= number unknowns (no RAIM here)
          if(Nsvs < dim) return -3;
@@ -281,17 +273,21 @@ namespace gpstk
          int n_iterate(0), niter_limit(niterLimit < 2 ? 2 : niterLimit);
          double converge(0.0);
 
-         // start with solution = apriori
-         Vector<double> APSolution;
+         // start with solution = apriori, cut down to match current dimension
+         Vector<double> localAPSol(dim,0.0);
          if(hasMemory) {
-            APSolution = Solution = memory.getAprioriSolution(mySyss);
-            LOG(DEBUG) << " apriori solution (" << Solution.size() << ") is [ "
-               << fixed << setprecision(3) << Solution << " ]";
+            for(i=0; i<3; i++) localAPSol[i] = APSolution[i];
+            for(i=0; i<currGNSS.size(); i++) {
+               k = vectorindex(allowedGNSS,currGNSS[i]);
+               localAPSol[3+i] = (k == -1 ? 0.0 : APSolution[3+k]);
+            }
+            //LOG(INFO) << " apriori solution (" << APSolution.size() << ") is [ "
+            //   << fixed << setprecision(3) << APSolution << " ]";
          }
          else {
-            Solution = Vector<double>(dim,0.0);
             LOG(DEBUG) << " no memory - no apriori solution";
          }
+         Solution = localAPSol;
 
          // -----------------------------------------------------------
          // iteration loop
@@ -359,7 +355,7 @@ namespace gpstk
                }  // end if n_iterate > 0
 
                // get the index, for this clock, in the solution vector
-               j = 3 + vectorindex(mySyss, Sats[i].system); // Solution ~ X,Y,Z,clks
+               j = 3 + vectorindex(currGNSS, Sats[i].system); // Solution ~ X,Y,Z,clks
 
                // find the clock for the sat's system
                const double clk(Solution(j));
@@ -461,23 +457,17 @@ namespace gpstk
 
          // compute pre-fit residuals
          if(hasMemory)
-            PreFitResidual = P*(Solution-APSolution) - Resids;
+            PreFitResidual = P*(Solution-localAPSol) - Resids;
          LOG(DEBUG) << "Computed pre-fit residuals";
 
          // Compute RMS residual (member)
          RMSResidual = RMS(Resids);
          LOG(DEBUG) << "Computed RMS residual";
 
-         // Find the maximum slope (member)
-         //MaxSlope = 0.0;
-         //for(i=0; i<Slopes.size(); i++)
-         //   if(Slopes(i) > MaxSlope)
-         //      MaxSlope = Slopes[i];
-
          // save to member data
          currTime = T;
          SatelliteIDs = Sats;
-         SystemIDs = mySyss;
+         dataGNSS = currGNSS;
          invMeasCov = iMC;
          Partials = P;
          NIterations = n_iterate;
@@ -492,47 +482,35 @@ namespace gpstk
 
 
    // -------------------------------------------------------------------------
-   // Simple interface to RAIMCompute.
-   // Builds vector<SatID::SatelliteSystem> and Matrix<double> for you.
-   // ** TEMPORARY ** -- to be deprecated when the above two data types
-   // are exposed in swig.
-   int PRSolution::RAIMComputeSimple(const CommonTime& Tr,
-                                     vector<SatID>& Sats,
-                                     const vector<double>& Pseudorange,
-                                     const XvtStore<SatID> *pEph,
-                                     TropModel *pTropModel)
+   // Compute a RAIM solution with no measurement covariance matrix (no weighting)
+   int PRSolution::RAIMComputeUnweighted(const CommonTime& Tr,
+                                         vector<SatID>& Sats,
+                                         const vector<double>& Pseudorange,
+                                         const XvtStore<SatID> *pEph,
+                                         TropModel *pTropModel)
    {
       try {
-         // Declare the non-swig'ed variables needed by RAIMCompute;
-         // it will do the actual filling.
-         vector<SatID::SatelliteSystem> Syss; // needed if not in routine's signature
-         Matrix<double> invMC;                // needed if not in routine's signature
-
-         int iret;
-
-         // Call RAIMCompute.
-         iret = RAIMCompute(Tr, Sats, Syss, Pseudorange, invMC, pEph, pTropModel);
-
-         return iret;
+         Matrix<double> invMC;         // measurement covariance is empty
+         return (RAIMCompute(Tr, Sats, Pseudorange, invMC, pEph, pTropModel));
       }
       catch(Exception& e) {
          GPSTK_RETHROW(e);
       }
-   }  // end PRSolution::RAIMComputeSimple()
+   }  // end PRSolution::RAIMComputeUnweighted()
 
 
    // -------------------------------------------------------------------------
    // Compute a solution using RAIM.
    int PRSolution::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Sats,
-                               vector<SatID::SatelliteSystem>& Syss,
                                const vector<double>& Pseudorange,
                                const Matrix<double>& invMC,
                                const XvtStore<SatID> *pEph,
                                TropModel *pTropModel)
    {
       try {
-         //LOGlevel = ConfigureLOG::Level("DEBUG"); // uncomment to turn on DEBUG output to stdout
+         // uncomment to turn on DEBUG output to stdout
+         //LOGlevel = ConfigureLOG::Level("DEBUG");
 
          LOG(DEBUG) << "RAIMCompute at time " << printTime(Tr,gpsfmt);
 
@@ -547,7 +525,7 @@ namespace gpstk
          Vector<double> BestSol(3,0.0),BestPFR;
          vector<SatID> BestSats,SaveSats;
          Matrix<double> SVP,BestCov,BestInvMCov,BestPartials;
-         vector<SatID::SatelliteSystem> BestSyss;
+         vector<SatID::SatelliteSystem> BestGNSS;
 
          // initialize
          Valid = false;
@@ -556,10 +534,9 @@ namespace gpstk
 
          // ----------------------------------------------------------------
          // fill the SVP matrix, and use it for every solution
-         // NB this routine will: define Syss if it is empty,
-         //    reject sat systems not found in Syss, and
-         //    reject sats without ephemeris.
-         N = PreparePRSolution(Tr, Sats, Syss, Pseudorange, pEph, SVP);
+         // NB this routine will reject sat systems not found in allowedGNSS, and
+         //    sats without ephemeris.
+         N = PreparePRSolution(Tr, Sats, Pseudorange, pEph, SVP);
 
          if(LOGlevel >= ConfigureLOG::Level("DEBUG")) {
             LOG(DEBUG) << "Prepare returns " << N;
@@ -645,7 +622,7 @@ namespace gpstk
                //       -3  not enough good data
                //       -4  no ephemeris
                iret = SimplePRSolution(Tr, Sats, SVP, invMC, pTropModel,
-                       MaxNIterations, ConvergenceLimit, Syss, Resids, Slopes);
+                       MaxNIterations, ConvergenceLimit, Resids, Slopes);
 
                LOG(DEBUG) << " RAIM: SimplePRS returns " << iret;
                if(iret <= 0 && iret > BestIret) BestIret = iret;
@@ -686,7 +663,7 @@ namespace gpstk
                   BestRMS = RMSResidual;
                   BestSol = Solution;
                   BestSats = SatelliteIDs;
-                  BestSyss = SystemIDs;
+                  BestGNSS = dataGNSS;
                   BestSL = MaxSlope;
                   BestConv = Convergence;
                   BestNIter = NIterations;
@@ -732,10 +709,10 @@ namespace gpstk
          } while(1);    // end loop over stages
 
          // ----------------------------------------------------------------
-         // copy out the best solution and return
+         // copy out the best solution
          if(iret >= 0) {
             Sats = SatelliteIDs = BestSats;
-            SystemIDs = BestSyss;
+            dataGNSS = BestGNSS;
             Solution = BestSol;
             Covariance = BestCov;
             invMeasCov = BestInvMCov;
@@ -748,23 +725,17 @@ namespace gpstk
             TropFlag = BestTropFlag;
             iret = BestIret;
 
-            if(iret==0) {
-               DOPCompute();        // compute DOPs
-               if(hasMemory)        // update memory
-                  memory.add(Solution,Covariance,PreFitResidual,Partials,invMeasCov);
-            }
-
             // must add zeros to state, covariance and partials if these don't match
-            if(Syss.size() != BestSyss.size()) {
-               N = 3+Syss.size();
+            if(dataGNSS.size() != BestGNSS.size()) {
+               N = 3+dataGNSS.size();
                Solution = Vector<double>(N,0.0);
                Covariance = Matrix<double>(N,N,0.0);
                Partials = Matrix<double>(BestPartials.rows(),N,0.0);
 
                // build a little map of indexes; note systems are sorted alike
                vector<int> indexes;
-               for(j=0,i=0; i<Syss.size(); i++) {
-                  indexes.push_back(Syss[i] == BestSyss[j] ? j++ : -1);
+               for(j=0,i=0; i<dataGNSS.size(); i++) {
+                  indexes.push_back(dataGNSS[i] == BestGNSS[j] ? j++ : -1);
                }
 
                // copy over position and position,clk parts
@@ -796,8 +767,19 @@ namespace gpstk
             for(Nsvs=0,i=0; i<SatelliteIDs.size(); i++)
                if(SatelliteIDs[i].id > 0)
                   Nsvs++;
+
+            if(iret==0)
+               DOPCompute();           // compute DOPs
+            if(hasMemory && iret==0) {
+               // update memory solution
+               addToMemory(Solution,Covariance,PreFitResidual,Partials,invMeasCov);
+               // update apriori solution
+               updateAPSolution(Solution);
+            }
+
          }
 
+         // ----------------------------------------------------------------
          if(iret==0) {
             if(BestSL > SlopeLimit) { iret = 1; SlopeFlag = true; }
             if(BestSL > SlopeLimit/2.0 && Nsvs == 5) { iret = 1; SlopeFlag = true; }
@@ -836,7 +818,7 @@ namespace gpstk
 
    // -------------------------------------------------------------------------
    // conveniences for printing the solutions
-   string PRSolution::outputValidString(int iret) throw()
+   string PRSolution::outputValidString(int iret)
    {
       ostringstream oss;
       if(iret != -99) {
@@ -853,7 +835,6 @@ namespace gpstk
    }  // end PRSolution::outputValidString
 
    string PRSolution::outputNAVString(string tag, int iret, const Vector<double>& Vec)
-      throw()
    {
       ostringstream oss;
 
@@ -863,10 +844,10 @@ namespace gpstk
          int len = oss.str().size();
          oss.str("");
          oss << "#" << tag << " NAV " << setw(len) << "time"
-            << " " << setw(16) << "Sol-X(m)"
-            << " " << setw(16) << "Sol-Y(m)"
-            << " " << setw(16) << "Sol-Z(m)"
-            << " sys " << setw(11) << "clock" << " ...";
+            << " " << setw(18) << "Sol/Resid:X(m)"
+            << " " << setw(18) << "Sol/Resid:Y(m)"
+            << " " << setw(18) << "Sol/Resid:Z(m)"
+            << " " << setw(18) << "sys clock" << " [sys clock ...]   Valid/Not";
          return oss.str();
       }
 
@@ -877,8 +858,8 @@ namespace gpstk
          << " " << setw(16) << (&Vec==&PRSNullVector ? Solution(1) : Vec(1))
          << " " << setw(16) << (&Vec==&PRSNullVector ? Solution(2) : Vec(2))
          << fixed << setprecision(3);
-      for(size_t i=0; i<SystemIDs.size(); i++) {
-         RinexSatID sat(1,SystemIDs[i]);
+      for(size_t i=0; i<dataGNSS.size(); i++) {
+         RinexSatID sat(1,dataGNSS[i]);
          oss << " " << sat.systemString3() << " " << setw(11) << Solution(3+i);
       }
       oss << outputValidString(iret);
@@ -887,7 +868,6 @@ namespace gpstk
    }  // end PRSolution::outputNAVString
 
    string PRSolution::outputPOSString(string tag, int iret, const Vector<double>& Vec)
-      throw()
    {
       ostringstream oss;
 
@@ -916,7 +896,7 @@ namespace gpstk
       return oss.str();
    }  // end PRSolution::outputPOSString
 
-   string PRSolution::outputCLKString(string tag, int iret) throw()
+   string PRSolution::outputCLKString(string tag, int iret)
    {
       ostringstream oss;
 
@@ -934,8 +914,10 @@ namespace gpstk
       // tag CLK timetag SYS clk [SYS clk SYS clk ...] endtag
       oss << tag << " CLK " << printTime(currTime,gpsfmt)
          << fixed << setprecision(3);
-      for(size_t i=0; i<SystemIDs.size(); i++) {
-         RinexSatID sat(1,SystemIDs[i]);
+      //for(size_t i=0; i<SystemIDs.size(); i++) {
+      //   RinexSatID sat(1,SystemIDs[i]);
+      for(size_t i=0; i<dataGNSS.size(); i++) {
+         RinexSatID sat(1,dataGNSS[i]);
          oss << " " << sat.systemString3() << " " << setw(11) << Solution(3+i);
       }
       oss << outputValidString(iret);
@@ -944,7 +926,7 @@ namespace gpstk
    }  // end PRSolution::outputCLKString
 
    // NB must call DOPCompute() if SimplePRSol() only was called.
-   string PRSolution::outputRMSString(string tag, int iret) throw()
+   string PRSolution::outputRMSString(string tag, int iret)
    {
       ostringstream oss;
 
@@ -1009,16 +991,16 @@ namespace gpstk
    }  // end PRSolution::outputRMSString
 
    string PRSolution::outputString(string tag, int iret, const Vector<double>& Vec)
-      throw()
    {
       ostringstream oss;
+      //oss << outputPOSString(tag,iret) << endl;  // repeated in NAV
       oss << outputNAVString(tag,iret,Vec) << endl;
       oss << outputRMSString(tag,iret);
 
       return oss.str();
    }  // end PRSolution::outputString
 
-   string PRSolution::errorCodeString(int iret) throw()
+   string PRSolution::errorCodeString(int iret)
    {
       string str("unknown");
       if(iret == 1) str = string("ok but perhaps degraded");
@@ -1030,12 +1012,10 @@ namespace gpstk
       return str;
    }
 
-   string PRSolution::configString(string tag) throw()
+   string PRSolution::configString(string tag)
    {
       ostringstream oss;
-      oss << tag << " " << printTime(currTime,timfmt)
-         << (Valid ? "":" not") << " valid,"
-         << (Mixed ? "":" not") << " mixed"
+      oss << tag
          << "\n   iterations " << MaxNIterations
          << "\n   convergence " << scientific << setprecision(2) << ConvergenceLimit
          << "\n   RMS residual limit " << fixed << RMSLimit
@@ -1044,7 +1024,7 @@ namespace gpstk
          << "\n   Memory information IS " << (hasMemory ? "":"NOT ") << "stored"
          ;
 
-      // TD output memory information
+      // output memory information
       //if(APrioriSol.size() >= 4) oss
       //   << "\n   APriori is " << fixed << setprecision(3) << APrioriSol(0)
       //      << " " << APrioriSol(1) << " " << APrioriSol(2) << " " << APrioriSol(3);

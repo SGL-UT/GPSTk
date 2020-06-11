@@ -135,7 +135,8 @@ namespace gpstk
                {
                   const int maxObsPerLine = 13;
                   for (int i=0; i < maxObsPerLine && sysObsTypes[satSys].size() < numObs; i++)
-                     sysObsTypes[satSys].push_back(RinexObsID(satSys+line.substr(4 * i + 7, 3)));
+                     sysObsTypes[satSys].push_back(
+                        RinexObsID(satSys+line.substr(4 * i + 7, 3), version));
                }
                catch(InvalidParameter& ip)
                {
@@ -153,20 +154,38 @@ namespace gpstk
                leapSeconds = asInt(line.substr(0,6));
                valid |= leapSecondsValid;
             }
-            else if(label == sysDCBString) {
-               if(line[0] == 'G' || line[0] == 'R')
-                  dcbsMap[line.substr(0,1)] = stringPair(strip(line.substr(1,17)),strip(line.substr(20,40)));
-               else {
-                  FFStreamError e("Invalid dcbs system : " + line.substr(0,1));
+            else if(label == sysDCBString)
+            {
+               string satstr(line.substr(0,1));
+               try
+               {
+                  RinexSatID sat(satstr);
+                  dcbsMap[satstr] =
+                     stringPair(strip(line.substr(1,17)),
+                                strip(line.substr(20,40)));
+               }
+               catch (Exception& exc)
+               {
+                  FFStreamError e(exc);
+                  e.addText("Invalid dcbs system : " + line.substr(0,1));
                   GPSTK_THROW(e);
                }
                valid |= sysDCBValid;
             }
-            else if(label == sysPCVString) {
-               if(line[0] == 'G' || line[0] == 'R')
-                  pcvsMap[line.substr(0,1)] = stringPair(strip(line.substr(1,17)),strip(line.substr(20,40)));
-               else {
-                  FFStreamError e("Invalid pcvs system : " + line.substr(0,1));
+            else if(label == sysPCVString)
+            {
+               string satstr(line.substr(0,1));
+               try
+               {
+                  RinexSatID sat(satstr);
+                  pcvsMap[satstr] =
+                     stringPair(strip(line.substr(1,17)),
+                                strip(line.substr(20,40)));
+               }
+               catch (Exception& exc)
+               {
+                  FFStreamError e(exc);
+                  e.addText("Invalid pcvs system : " + line.substr(0,1));
                   GPSTK_THROW(e);
                }
                valid |= sysPCVValid;
@@ -218,18 +237,21 @@ namespace gpstk
                string label;
                for(i=0; i<15; ++i) {
                   label = line.substr(4*i,3);
-                  if(label == string("   ")) break;
-                  prn = asInt(line.substr(4*i+1,2));
-                  if(line[4*i] == 'G')
-                     satList.push_back(RinexSatID(prn,RinexSatID::systemGPS));
-                  else if(line[4*i] == 'R')
-                     satList.push_back(RinexSatID(prn,RinexSatID::systemGlonass));
-                  else {
-                     FFStreamError e("Invalid sat (PRN LIST): /" + label + "/");
+                  if(label == string("   "))
+                     break;
+                  try
+                  {
+                     RinexSatID sat(label);
+                     satList.push_back(sat);
+                  }
+                  catch (Exception& exc)
+                  {
+                     FFStreamError e(exc);
+                     e.addText("Invalid sat (PRN LIST): /" + label + "/");
                      GPSTK_THROW(e);
                   }
                }
-                  // @TODO how to check numSolnSatsValid == satList.size() ?
+                  /// @todo how to check numSolnSatsValid == satList.size() ?
                valid |= prnListValid;
             }
             else if(label == endOfHeaderString) {

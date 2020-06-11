@@ -40,6 +40,7 @@
 #include "Rinex3ClockStream.hpp"
 #include "Rinex3ClockHeader.hpp"
 #include "Rinex3ClockData.hpp"
+#include "RinexSatID.hpp"
 #include "StringUtils.hpp"
 #include "TimeString.hpp"
 #include "CivilTime.hpp"
@@ -132,13 +133,17 @@ namespace gpstk
       //cout << "Data Line: /" << line << "/" << endl;
       datatype = line.substr(0,2);
       site = line.substr(3,4);
-      if(datatype == string("AS")) {
+      if(datatype == string("AS"))
+      {
          strip(site);
-         int prn(asInt(site.substr(1,2)));
-         if(site[0] == 'G') sat = RinexSatID(prn,RinexSatID::systemGPS);
-         else if(site[0] == 'R') sat = RinexSatID(prn,RinexSatID::systemGlonass);
-         else {
-            FFStreamError e("Invalid sat : /" + site + "/");
+         try
+         {
+            sat.fromString(site);
+         }
+         catch (Exception& exc)
+         {
+            FFStreamError e(exc);
+            e.addText("Invalid sat : /" + site + "/");
             GPSTK_THROW(e);
          }
          site = string();

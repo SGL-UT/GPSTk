@@ -110,7 +110,7 @@ using namespace gpstk;
 using namespace gpstk::StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("5.2 10/13/15"));
+string Version(string("5.3 1/27/20"));
 
 // forward declarations
 class SolutionObject;
@@ -383,8 +383,7 @@ public:
          int na(asInt(frs.substr(0,1)));
          int nb(asInt(frs.substr(1,1)));
          RinexSatID sat(sys1);
-         sat.fromString(sys1);
-         double alpha = getAlpha(sat,na,nb);
+         double alpha = getAlpha(sat.system,na,nb);
          if(alpha == 0.0) return false;
          consts[1] = -1.0/alpha;
          consts[0] = 1.0 - consts[1];
@@ -448,7 +447,7 @@ public:
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-// Object to encapsulate everything for one solution (system:freq:code)
+// Object to encapsulate everything for one solution (system:freq:code[+s:f:c])
 class SolutionObject {
 public:
 // member functions
@@ -473,6 +472,7 @@ public:
 
       // parse desc into systems, freqs, codes, etc
       Descriptor = desc;
+      // this also specifies systems in PRSolution::allowedGNSS
       ParseDescriptor();
 
       nepochs = 0;
@@ -487,24 +487,14 @@ public:
       prs.MaxNIterations = C.nIter;
       prs.ConvergenceLimit = C.convLimit;
 
-      // specify systems in PRSolution
-      // sysChars ~ vec<1-char string> ~ G,R,E,C,S; must have at least one member
-      RinexSatID sat;
-      for(size_t i=0; i<sysChars.size(); i++) {
-         sat.fromString(sysChars[i]);               // 1-char string
-         prs.SystemIDs.push_back(sat.system);
-         LOG(DEBUG) << " Add sys " << sysChars[i] << " = " << sat
-            << " to PRS::SystemIDs";
-      }
-
       // initialize apriori solution
       if(C.knownPos.getCoordinateSystem() != Position::Unknown)
-         prs.memory.fixAPSolution(C.knownPos.X(),C.knownPos.Y(),C.knownPos.Z());
+         prs.fixAPSolution(C.knownPos.X(),C.knownPos.Y(),C.knownPos.Z());
 
       return;
    }
 
-   // parse descriptor into member data and 'sysChars'
+   // parse descriptor into member data and 'sysChars', define PRSolution::allowedGNSS
    void ParseDescriptor(void) throw();
 
    // Given a RINEX header, verify that the necessary ObsIDs are present, and
@@ -559,9 +549,6 @@ public:
 
    // vector of 1-char strings containing systems needed in this solution: G,R,E,C,S,J
    vector<string> sysChars;
-
-   // vector of SatID::SatelliteSystem satellite systems parallel to sysChars
-   vector<SatID::SatelliteSystem> satSyss;
 
    // data for PR solution algorithm
    bool hasData;                             // true if enough data for solution
@@ -855,7 +842,7 @@ try {
 
       // dump a list of satellites, with counts, times and GLO channel
       C.msg = "";
-      LOG(INFO) << "\nDump ephemeris sat list with count, times and GLO channel.";
+      LOG(VERBOSE) << "\nDump ephemeris sat list with count, times and GLO channel.";
       for(i=0; i<sats.size(); i++) {                           // loop over sats
          // check for some GLO channel - can't compute b/c we don't have data yet
          if(sats[i].system == SatID::systemGlonass) {
@@ -871,7 +858,7 @@ try {
             C.msg = string(" frch ") + rightJustify(asString(it->second),2);
          }
 
-         LOG(INFO) << " Sat: " << RinexSatID(sats[i])
+         LOG(VERBOSE) << " Sat: " << RinexSatID(sats[i])
             << " Neph: " << setw(3) << C.SP3EphStore.ndata(sats[i])
             << " Beg: " << printTime(C.SP3EphStore.getInitialTime(sats[i]),C.longfmt)
             << " End: " << printTime(C.SP3EphStore.getFinalTime(sats[i]),C.longfmt)
@@ -1135,7 +1122,7 @@ try {
       C.pTrop->setDayOfYear(100);
 
    // Choose transforms to be used; dump the available Helmert Tranformations
-   LOG(INFO) << "\nAvailable Helmert Tranformations:";
+   LOG(VERBOSE) << "\nAvailable Helmert Tranformations:";
    for(i=0; i<(size_t)HelmertTransform::stdCount; i++) {
       const HelmertTransform& ht(HelmertTransform::stdTransforms[i]);
       // pick the ones to use
@@ -1155,47 +1142,54 @@ try {
          }
       }
 
-      LOG(INFO) << i << " " << ht.asString() << C.msg;
+      LOG(VERBOSE) << i << " " << ht.asString() << C.msg;
    }
-   LOG(INFO) << "End of Available Helmert Tranformations.\n";
+   LOG(VERBOSE) << "End of Available Helmert Tranformations.\n";
 
    // ----- build SolutionObjects from solution descriptors inSolDesc -----
    // these may be invalid, or there may not be data for them -> invalid
    for(j=0,i=0; i<C.inSolDesc.size(); i++) {
       string msg;
-      LOG(DEBUG) << "Build solution object from descriptor " << C.inSolDesc[i];
       if(!SolutionObject::ValidateDescriptor(C.inSolDesc[i],msg)) {
          LOG(WARNING) << "Warning : --sol " << msg;
          continue;
       }
 
       // create a solution object
-      SolutionObject SO(C.inSolDesc[i]);
-      if(!SO.isValid) {
+      SolutionObject SObj(C.inSolDesc[i]);
+      if(!SObj.isValid) {
          LOG(WARNING) << "Warning : solution descriptor " << C.inSolDesc[i]
             << " could not be created - ignore";
          continue;
       }
 
+      if(i==0) LOG(INFO) << SObj.prs.configString("PRS configuration:");
+      LOG(INFO) << "\nValidate solution descriptor " << C.inSolDesc[i];
+
       // is there ephemeris for each system?
       bool ok=true;
-      for(size_t k=0; k<SO.sysChars.size(); k++) {
+      for(size_t k=0; k<SObj.sysChars.size(); k++) {
          RinexSatID sat;
-         sat.fromString(SO.sysChars[k]);
-         LOG(INFO) << " Found system " << SO.sysChars[k]
-            << " with " << C.RinEphStore.size(sat.system) << " ephemerides.";
-         if((C.pEph == &C.RinEphStore && C.RinEphStore.size(sat.system) == 0) ||
-            (C.pEph == &C.SP3EphStore && C.SP3EphStore.ndata(sat.system) == 0)) {
+         sat.fromString(SObj.sysChars[k]);
+         int n;
+         if(C.pEph == &C.RinEphStore) n = C.RinEphStore.size(sat.system);
+         if(C.pEph == &C.SP3EphStore) n = C.SP3EphStore.ndata(sat.system);
+         if(n == 0) {
             LOG(WARNING) << "Warning - no ephemeris found for system "
-               << ObsID::map1to3sys[SO.sysChars[k]] << ", in solution descriptor "
+               << ObsID::map1to3sys[SObj.sysChars[k]] << ", in solution descriptor "
                << C.inSolDesc[i] << " => invalidate.";
             ok = false;
          }
+         else {
+            LOG(INFO) << " Found system " << ObsID::map1to3sys[SObj.sysChars[k]]
+                        << " with " << n << " ephemeris data.";
+         }
       }
       if(!ok) continue;
+      LOG(INFO) << " ...valid.";
 
       // save the SolutionObject
-      C.SolObjs.push_back(SO);
+      C.SolObjs.push_back(SObj);
       LOG(DEBUG) << "Initial solution #" << ++j << " " << C.inSolDesc[i];
    }  // end loop over input solution descriptors
 
@@ -1345,18 +1339,19 @@ try {
             }
          }
 
-         firstepoch = false;
+         //see below in loop firstepoch = false;
       }
 
       // Dump the solution descriptors and needed conversions ---------
-      LOG(INFO) << "\nSolutions to be computed for this file:";
+      LOG(VERBOSE) << "\nSolutions to be computed for this file:";
       for(i=0; i<C.SolObjs.size(); ++i) {
          bool ok(C.SolObjs[i].ChooseObsIDs(Rhead.mapObsTypes));
 
-         LOG(INFO) << (ok ? " OK ":" NO ") << i+1 << " " << C.SolObjs[i].dump(0);
-         LOG(INFO) << C.SolObjs[i].dump(0);
+         LOG(VERBOSE) << (ok ? " OK ":" NO ") << i+1 << " " << C.SolObjs[i].dump(0);
+         LOG(VERBOSE) << C.SolObjs[i].dump(0);
          if(C.verbose) for(j=0; j<C.SolObjs[i].sysChars.size(); j++) {
             TimeSystem ts;
+            // TD nice if this mapping were in the library somwhere...
             if(C.SolObjs[i].sysChars[j] == "G") ts = TimeSystem::GPS;
             if(C.SolObjs[i].sysChars[j] == "R") ts = TimeSystem::GLO;
             if(C.SolObjs[i].sysChars[j] == "E") ts = TimeSystem::GAL;
@@ -1513,9 +1508,17 @@ try {
             if(!C.SolObjs[i].isValid) continue;
 
             // dump the "DAT" record
+            if(firstepoch)
+               LOG(VERBOSE) << C.SolObjs[i].dump(-1, "RPF", "DAT");
             LOG(INFO) << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);
 
             // compute the solution
+            if(firstepoch) LOG(VERBOSE) << C.SolObjs[i].prs.outputString(
+                        string("RPF ")+C.SolObjs[i].Descriptor,-999);
+            if(firstepoch) LOG(VERBOSE) << C.SolObjs[i].prs.outputPOSString(
+                        string("RPR ")+C.SolObjs[i].Descriptor,-999);
+            if(firstepoch) LOG(VERBOSE) << C.SolObjs[i].prs.outputPOSString(
+                        string("RNE ")+C.SolObjs[i].Descriptor,-999);
             j = C.SolObjs[i].ComputeSolution(Rdata.time);
 
             // write ORDs, even if solution is not good
@@ -1547,8 +1550,8 @@ try {
                oss.str("");
                oss << "CLK" << fixed << setprecision(3);
 
-               for(j=0; j<C.SolObjs[i].prs.SystemIDs.size(); j++) {
-                  RinexSatID sat(1,C.SolObjs[i].prs.SystemIDs[j]);
+               for(j=0; j<C.SolObjs[i].prs.dataGNSS.size(); j++) {
+                  RinexSatID sat(1,C.SolObjs[i].prs.dataGNSS[j]);
                   oss << " " << sat.systemString3()
                      << " " << setw(11) << C.SolObjs[i].prs.Solution(3+j);
                }
@@ -1571,6 +1574,8 @@ try {
 
             ostrm << Rdata;
          }
+
+         firstepoch = false;
 
       }  // end while loop over epochs
 
@@ -1698,12 +1703,12 @@ void Configuration::SolDescHelp(void)
       << "   will be computed and output in one run of the program.\n\n"
       << " Solution descriptors are of the form S:F:C where\n"
       << "   S is a system, one of:";
-   for(i=0; i<systs.size(); i++) os <<" "<< ObsID::map1to3sys[string(1,systs[i])];
-   //os << " or";
-   //for(i=0; i<systs.size(); i++) os <<" "<< systs[i];
+   for(i=0; i<systs.size(); i++)
+      os << " " << ObsID::map1to3sys[string(1,systs[i])];
    os << endl;
    os << "   F is a frequency, one or two of:";
-   for(i=0; i<freqs.size(); i++) os << " " << freqs[i];
+   for(i=0; i<freqs.size(); i++)
+      os << " " << freqs[i];
    os << endl;
    os << "   C is an ordered set of one or more tracking codes, for example WPC\n"
       << "   These must be consistent - not all F and C apply to all systems.\n\n";
@@ -1756,17 +1761,10 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(opts.hasHelp()) {
       LOG(INFO) << Title;
       LOG(INFO) << cmdlineUsage;
-      //// temp TEMP
-      //{
-      //   LOG(INFO) << "Valid RINEX observation IDs:";
-      //   RinexObsID::dumpCheck(LOGstrm);
-      //}
       return 1;
    }
 
    // extra parsing (perhaps add to cmdlineErrors, cmdlineExtras)
-   //TD clau failure: cmdlineErrors, cmdlineExtras);
-   //iret = ExtraProcessing();
    iret = ExtraProcessing(cmdlineErrors, cmdlineExtras);
    if(iret == -4) return iret;      // log file could not be opened
 
@@ -1792,7 +1790,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    oss << "------ Summary of " << PrgmName << " command line configuration ------\n";
    opts.DumpConfiguration(oss);
    if(!cmdlineExtras.empty()) oss << "# Extra Processing:\n" << cmdlineExtras;
-   oss << "------ End configuration summary ------";
+   oss << "------ End configuration summary ------\n";
    LOG(INFO) << oss.str();
 
    return 0;
@@ -2199,7 +2197,7 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    // Now we can assumes descriptor is single system and does NOT contain +
    fields = split(desc,':');
 
-   // is system valid?
+   // test system
    string sys(fields[0]);
    string sys1(ObsID::map3to1sys[sys]);
    if(!sys1.size() || ObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
@@ -2208,37 +2206,24 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    }
    char csys(sys1[0]);
 
-   // are there too many frequencies?
-   const unsigned int nfreq(fields[1].size());
-   if(nfreq > 2) {
+   // test freq(s) and code(s)
+   if(fields[1].size() > 2) {
       msg = desc + " : only 1 or 2 frequencies allowed";
       return false;
    }
 
-   // are these frequencies valid in this system?
-   for(i=0; i<nfreq; i++) {
+   for(i=0; i<fields[1].size(); i++) {
       if(ObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
          ObsID::validRinexTrackingCodes[csys].end())
       {
          msg = desc + string(" : invalid frequency /") + fields[1][i] + string("/");
          return false;
       }
-   }
-
-   // are these codes valid in this system and freq? (codes1 is blank if single freq)
-   string codes1, codes0 = ObsID::validRinexTrackingCodes[csys][fields[1][0]];
-   if(nfreq > 1)  codes1 = ObsID::validRinexTrackingCodes[csys][fields[1][1]];
-
-   // GPS C1N and C2N are not allowed
-   if(csys == 'G') {
-      if(fields[1][0] == '1' || fields[1][0] == '2') strip(codes0,'N');
-      if(nfreq > 1 && (fields[1][1] == '1' || fields[1][1] == '2')) strip(codes1,'N');
-   }
-
-   // are codes valid for sys, either freq?
-   for(j=0; j<fields[2].size(); j++) {
-      if(codes0.find_first_of(fields[2][j]) == string::npos) {
-         if(codes1.empty() || codes1.find_first_of(fields[2][j]) == string::npos) {
+      string codes = ObsID::validRinexTrackingCodes[csys][fields[1][i]];
+      // GPS C1N and C2N are not allowed
+      if(csys == 'G' && (fields[1][i] == '1'||fields[1][i] == '2')) strip(codes,'N');
+      for(j=0; j<fields[2].size(); j++) {
+         if(codes.find_first_of(fields[2][j]) == string::npos) {
             msg = desc + string(" : invalid code /") + fields[2][j] + string("/");
             return false;
          }
@@ -2256,9 +2241,7 @@ void SolutionObject::ParseDescriptor(void) throw()
 {
    size_t i;
    vector<string> fields;
-
-   sysChars.clear();          // sysChars ~ vec<string> ~ G,R,E,C,S
-   satSyss.clear();           // satSyss ~ vec<SatID::sys> parallel sysChars
+   sysChars.clear();          // sysChars ~ vec<string> ~ G,R,E,C,S,etc
 
    // split into components on '+'
    vector<string> descs(split(Descriptor,"+"));
@@ -2267,15 +2250,15 @@ void SolutionObject::ParseDescriptor(void) throw()
       // create a SolutionData object for each component, of form SYS:F:Codes
       // vector<SolutionData> vecSolData;
       SolutionData sd(descs[i]);
-      LOG(INFO) << "Parser(" << i << "): " << sd.asString();
+      LOG(DEBUG) << "Parser(" << i << "): " << sd.asString();
 
       string sys1(sd.getSys()), sys3(ObsID::map3to1sys[sys1]), frs(sd.getFreq());
 
-      // system
+      // systems allowed in the PRSolution estimation
       if(find(sysChars.begin(),sysChars.end(),sys1) == sysChars.end()) {
          sysChars.push_back(sys1);           // add to sysChars
          RinexSatID sat(sys1);
-         satSyss.push_back(sat.system);      // and add to satSyss
+         prs.allowedGNSS.push_back(sat.system);
       }
 
       vecSolData.push_back(sd);
@@ -2320,14 +2303,19 @@ string SolutionObject::dump(int level, string msg1, string msg2) throw()
 
    Configuration& C(Configuration::Instance());
 
-   oss << msg1 << " " << Descriptor << (msg2.empty() ? "" : " "+msg2);
+   if(level == -1) {       // header
+      oss << "#" << msg1 << " " << Descriptor;
+      oss << " DAT    time      Nsat Nobs sat:freq1obs1freq2obs2 ...";
+   }
 
-   if(level == 0) {
+   else if(level == 0) {
+      oss << msg1 << " " << Descriptor << (msg2.empty() ? "" : " "+msg2);
       for(i=0; i<vecSolData.size(); i++)
          oss << " [" << i << "]" << vecSolData[i].asString();
    }
 
    else if(level >= 1) {
+      oss << msg1 << " " << Descriptor << (msg2.empty() ? "" : " "+msg2);
       // Descriptor ndata [-]sat:ot,ot[:PR] ...  (-: no data, PR: data in level 2)
       oss << " " << setw(2) << Satellites.size()
           << " " << setw(2) << UsedObsIDs.size();
@@ -2338,6 +2326,7 @@ string SolutionObject::dump(int level, string msg1, string msg2) throw()
          // is the sat (it->first) found in Satellites (i.e. does it have data)?
          vector<SatID>::const_iterator jt;
          jt = find(Satellites.begin(),Satellites.end(),it->first);
+
          // and all code(s) found ?
          bool good(jt != Satellites.end() && it->second.find('-') == string::npos);
 
@@ -2411,7 +2400,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag)
       }
 
       // compute the inverse measurement covariance
-      Matrix<double> invMCov;       // default is empty
+      Matrix<double> invMCov;       // default is empty - no weighting
       if(C.weight) {
          n = Elevations.size();
          invMCov = Matrix<double>(n,n);
@@ -2430,16 +2419,13 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag)
       // get the straight solution --------------------------------------
       if(C.SPSout) {
          Matrix<double> SVP;
-         iret=prs.PreparePRSolution(ttag, Satellites, satSyss, PRanges, C.pEph, SVP);
+         iret=prs.PreparePRSolution(ttag, Satellites, PRanges, C.pEph, SVP);
 
          if(iret > -3) {
-            //Vector<double> APSol(5,0.0),Resid,Slopes;
             Vector<double> Resid,Slopes;
-            //if(prs.hasMemory) APSol = prs.memory.getAprioriSolution(satSyss);
-            iret = prs.SimplePRSolution(ttag, Satellites, SVP,
-                                        invMCov, C.pTrop,
+            iret = prs.SimplePRSolution(ttag, Satellites, SVP, invMCov, C.pTrop,
                                         prs.MaxNIterations, prs.ConvergenceLimit,
-                                        satSyss, Resid, Slopes);
+                                        Resid, Slopes);
          }
 
          if(iret < 0) { LOG(VERBOSE) << "SimplePRS failed "
@@ -2492,8 +2478,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag)
       }  // end if SPSout
 
       // get the RAIM solution ------------------------------------------
-      iret = prs.RAIMCompute(ttag, Satellites, satSyss, PRanges, invMCov, C.pEph,
-                             C.pTrop);
+      iret = prs.RAIMCompute(ttag, Satellites, PRanges, invMCov, C.pEph, C.pTrop);
 
       if(iret < 0) {
          LOG(VERBOSE) << "RAIMCompute failed "
@@ -2524,7 +2509,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag)
          LOG(VERBOSE) << "RPF " << Descriptor << " PFR"
             << " " << printTime(ttag,C.gpsfmt)              // time
             << fixed << setprecision(3)
-            << " " << ::sqrt(prs.memory.getAPV())           // sig(APV)
+            << " " << ::sqrt(prs.getAPV())                  // sig(APV)
             << " " << setw(2) << prs.PreFitResidual.size()  // n resids
             << " " << prs.PreFitResidual;                   // pre-fit residuals
 
@@ -2568,9 +2553,6 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag)
          C.TropTime = true;
       }
 
-      // update apriori solution
-      if(prs.hasMemory) prs.memory.updateAPSolution(prs.Solution);
-
       return iret;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -2590,9 +2572,9 @@ int SolutionObject::WriteORDs(const CommonTime& time, const int iret)
 
          // get the system, then clock solution for this system
          vector<SatID::SatelliteSystem>::const_iterator jt;
-         jt = find(prs.SystemIDs.begin(),prs.SystemIDs.end(),Satellites[i].system);
-         if(jt == prs.SystemIDs.end()) continue;      // should never happen
-         j = jt - prs.SystemIDs.begin();              // index
+         jt = find(prs.dataGNSS.begin(),prs.dataGNSS.end(),Satellites[i].system);
+         if(jt == prs.dataGNSS.end()) continue;      // should never happen
+         j = jt - prs.dataGNSS.begin();              // index
          clk = prs.Solution(3+j);
 
          C.ordstrm << "ORD " << RinexSatID(Satellites[i]).toString()
@@ -2621,13 +2603,13 @@ void SolutionObject::FinalOutput(void)
    try {
       Configuration& C(Configuration::Instance());
 
-      if(prs.memory.getN() <= 0) {
+      if(prs.was.getN() <= 0) {
          LOG(INFO) << " No data!";
          return;
       }
 
-      prs.memory.dump(LOGstrm,Descriptor+" RAIM solution");
-      LOG(INFO) << "\n";
+      prs.dumpSolution(LOGstrm,Descriptor+" RAIM solution");
+      LOG(INFO) << " ";
 
       if(C.knownPos.getCoordinateSystem() != Position::Unknown) {
          // output stats on XYZ residuals
@@ -2640,7 +2622,7 @@ void SolutionObject::FinalOutput(void)
          LOG(INFO) << statsNEUresid;
 
          // output the covariance for NEU
-         double apv(::sqrt(prs.memory.getAPV()));        // APV from XYZ stats
+         double apv(::sqrt(prs.getAPV()));               // APV from XYZ stats
          if(apv > 0.0) {
             Matrix<double> Cov(statsNEUresid.getCov());  // cov from NEU stats
 

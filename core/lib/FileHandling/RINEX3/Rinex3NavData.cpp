@@ -852,6 +852,7 @@ namespace gpstk
       week = static_cast<QZSWeekSecond>(qzse.ctToe).getWeek();
       qzse.transmitTime = QZSWeekSecond(week, static_cast<double>(xmitTime),
                                           TimeSystem::QZS);
+      qzse.beginValid = qzse.transmitTime;
 
       qzse.codeflags = codeflgs;
       qzse.L2Pdata = L2Pdata;

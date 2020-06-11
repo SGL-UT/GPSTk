@@ -34,43 +34,9 @@
 //
 //==============================================================================
 
-/**
- * @file Rinex3ObsBase.hpp
- * Base class for RINEX observation file data
- */
-
-#ifndef GPSTK_RINEX3OBSBASE_HPP
-#define GPSTK_RINEX3OBSBASE_HPP
-
-#include "FFData.hpp"
+#include "Rinex3ObsBase.hpp"
 
 namespace gpstk
 {
-      /// @ingroup FileHandling
-      //@{
-
-      /** This level isn't serving any purpose other than to make
-       * the class diagram look nice...
-       */
-
-   class Rinex3ObsBase : public FFData
-   {
-   public:
-
-         /// Destructor
-      virtual ~Rinex3ObsBase() {}
-
-         /** Current gpstk supported version.  Typically used to
-          * define a default RINEX version when a version is not
-          * otherwise available.
-          * @note this is declared here and not in header to avoid
-          *   issues with cross-dependent code, e.g. ObsID depending
-          *   on Rinex3ObsHeader and vice-versa. */
-      static const double currentVersion;
-   };
-
-      //@}
-
-}  // namespace
-
-#endif
+   const double Rinex3ObsBase::currentVersion = 3.04;
+}

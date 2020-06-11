@@ -244,10 +244,10 @@ int gdc::DiscontinuityCorrector(
       }
 
       // NB wl1,alpha,beta are used only in this routine...
-      wl1 = getWavelength(sat,1,GLOchan);    // GLOchan ignored by GPS
-      wl2 = getWavelength(sat,2,GLOchan);
-      alpha = getAlpha(sat,1,2);
-      beta = getBeta(sat,1,2);
+      wl1 = getWavelength(sat.system,1,GLOchan);    // GLOchan ignored by GPS
+      wl2 = getWavelength(sat.system,2,GLOchan);
+      alpha = getAlpha(sat.system,1,2);
+      beta = getBeta(sat.system,1,2);
       wlWL = wl2*(beta+1.0)/alpha;  // wl(WL) = 86cm GPS, depends on GLOchan
       wlGF = wl2 - wl1;             // wl(GF) = wl1-wl2 = 5.376cm GPS, or f(GLOchan)
                                     // wl(NL) = 10.7cm GPS, used for IF

@@ -58,9 +58,17 @@ namespace gpstk
       /// @ingroup FileHandling
       //@{
 
-      /// This class models a RINEX Observation Data Record.
-      /// @sa gpstk::Rinex3ObsStream and gpstk::Rinex3ObsHeader.
-      /// @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
+      /** This class models a RINEX Observation Data Record.
+       * @sa gpstk::Rinex3ObsStream and gpstk::Rinex3ObsHeader.
+       * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
+       *
+       * @warning This class makes no attempt to apply or remove any
+       * of the phase shifts when converting between RINEX and other
+       * observation types.  This can lead to invalid RINEX OBS data.
+       * Either use RINEX 3.00 which does not require the
+       * SYS / PHASE SHIFT header field, or apply the corrections
+       * appropriately when performing conversions.
+       */
    class Rinex3ObsData : public Rinex3ObsBase
    {
    public:

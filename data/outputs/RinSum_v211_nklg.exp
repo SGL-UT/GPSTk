@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2019/09/10 06:40:46
-+++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/nklg170b00.16o +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2020/05/19 16:16:44
++++++++++++++ RinSum summary of Rinex obs file /sgl/ceph/work/johnk/rinex304/gpstk/data/inputs/igs/nklg170b00.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: BNC 2.12.1,  Run: 18-Jun-16 00:59,  By: rtproc
@@ -10,9 +10,9 @@ Antenna # : 4811A48439,  Type : TRM59800.00     SCIS
 Position      (XYZ,m) : (6287385.7333, 1071574.6758, 39133.0395).
 Antenna Delta (HEN,m) : (3.0430, -0.0025, -0.0015).
 Galileo Observation types (16):
- Type #01 (C6X) E6 GALB+C pseudorange
- Type #02 (L6X) E6 GALB+C phase
- Type #03 (S6X) E6 GALB+C snr
+ Type #01 (C6X) E6 GALB+C6 pseudorange
+ Type #02 (L6X) E6 GALB+C6 phase
+ Type #03 (S6X) E6 GALB+C6 snr
  Type #04 (C7X) E5b GALI+Q5b pseudorange
  Type #05 (L7X) E5b GALI+Q5b phase
  Type #06 (S7X) E5b GALI+Q5b snr
@@ -123,4 +123,4 @@ TOTAL      0      0      0      0     40     40      0     40     35      0
  Warning - Obs type RG2 GLOC/A snr (GLONASS G2 GLOC/A snr, S2 in ver.2) should be removed from header
  Warning - Obs type RG1 GLOC/A doppler (GLONASS G1 GLOC/A doppler, D1 in ver.2) should be removed from header
  Warning - Obs type RG1 GLOP pseudorange (GLONASS G1 GLOP pseudorange, P1 in ver.2) should be removed from header
-RinSum timing: processing 0.136 sec, wallclock: 0 sec.
+RinSum timing: processing 0.031 sec, wallclock: 0 sec.

@@ -123,7 +123,9 @@ namespace gpstk
    {
       try {
          OrbitEph::adjustValidity();   // for dataLoaded check
-         beginValid = ctToe - fitDuration*1800.0;     // hours*3600/2
+         // Can't guarantee this rounding for QZSS.
+         // Can only guarantee valid as of the transmit time. 
+         //beginValid = ctToe - fitDuration*1800.0;   
          endValid = ctToe + fitDuration*1800.0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }

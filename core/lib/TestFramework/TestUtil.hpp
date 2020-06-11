@@ -177,6 +177,23 @@
       TUFAIL("Exception");                      \
    }
 
+// Macro for executing a statement inside a try/catch block with PASS/FAIL.
+// e.g. TUTHROW(object.methodShouldDefinitelyThrow());
+#define TUTHROW(STATEMENT)                      \
+   try                                          \
+   {                                            \
+      STATEMENT;                                \
+      TUFAIL("Did not throw Exception");        \
+   }                                            \
+   catch (gpstk::Exception &exc)                \
+   {                                            \
+      TUPASS(#STATEMENT);                       \
+   }                                            \
+   catch (...)                                  \
+   {                                            \
+      TUPASS(#STATEMENT);                       \
+   }
+
 
 // Fail the test with a message.
 #define TUFAIL(MSG) testFramework.assert(false, MSG, __LINE__)

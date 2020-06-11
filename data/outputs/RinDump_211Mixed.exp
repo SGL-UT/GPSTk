@@ -3,6 +3,7 @@
 # Input file(s) /home/littlej/git/gpstk/data/inputs/igs/faa1170b00.16o
 # Satellites All
 # Data SC5X EC1B RC1C GC1C
+# RINEX version: file 2.11 / output 2.11
 # RinDump output for file /home/littlej/git/gpstk/data/inputs/igs/faa1170b00.16o
 # wk secs-of-wk sat      SC5X          EC1B          RC1C          GC1C    
 1901 522000.000 G05         0.000         0.000         0.000  24386338.634

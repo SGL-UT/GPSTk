@@ -114,6 +114,8 @@ private:
          = dogaps = doms = ycode = quiet = false;
       debug = -1;
       dt = -1.0;
+      doCurrRversion = false;
+      Rversion = 0.0;
       vres = 0;
    }  // end Configuration::SetDefaults()
 
@@ -129,6 +131,8 @@ public:
       vistab, ycode, quiet;
    int debug, vres;
    double dt;
+   double Rversion;              // RINEX version of output (default=header.version)
+   bool doCurrRversion;          // set Rversion to Rinex3ObsBase::currentVersion
    string cfgfile, userfmt;
 
    vector<string> InputObsFiles; // RINEX obs file names
@@ -342,6 +346,10 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(iret == -3)
       return iret;      // invalid command line
 
+      // define verbose and debug
+   verbose = (LOGlevel >= VERBOSE);
+   debug = (LOGlevel - DEBUG);
+
       // help: print syntax page and quit
    if(opts.hasHelp())
    {
@@ -435,7 +443,9 @@ string Configuration::BuildCommandLine(void) throw()
 {
       // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName + " reads one or more RINEX (v.2+) "
-      + "observation files and prints a summary of content.\n Options:";
+      + "observation files and prints a summary of content."
+      + "\n  Note verbose dumps all auxiliary headers."
+      + "\n Options:";
    opts.DefineUsageString("RinSum <file> [options]");
 
       // options to appear on the syntax page, and to be accepted on command line
@@ -465,6 +475,14 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "onlySat", "sat", true, false, &onlySats, "",
             "Include ONLY satellites (or systems) <sat> e.g. G,R");
 
+   
+   string rvstr("# Rinex version (current, latest version is "
+                  + asString(Rinex3ObsBase::currentVersion,2) + "):");
+   opts.Add(0, "currentRinex", "", false, false, &doCurrRversion, rvstr,
+            "Output in current, not header, RINEX version");
+   opts.Add(0, "RinexVer", "V", false, false, &Rversion, "",
+            "Output in RINEX version V (default is header.version)");
+
    opts.Add(0, "timefmt", "fmt", false, false, &userfmt, "# Output:",
             "Format for time tags (see GPSTK::Epoch::printf) in output");
    opts.Add('b', "brief", "", false, false, &brief, "",
@@ -486,17 +504,19 @@ string Configuration::BuildCommandLine(void) throw()
 
    opts.Add(0, "ycode", "", false, false, &ycode, "# Other:",
             "Assume v2.11 P mean Y");
-   opts.Add(0, "verbose", "", false, false, &verbose, "",
-            "Print extra output information");
-   opts.Add(0, "debug", "", false, false, &debug, "",
-            "Print debug output at level 0 [debug<n> for level n=1-7]");
-   opts.Add(0, "help", "", false, false, &help, "",
-            "Print this syntax page, and quit");
    opts.Add('q', "quiet", "", false, false, &quiet, "",
             "Make output a little quieter");
 
-      // deprecated (old,new)
-      //opts.Add_deprecated("--SP3","--eph");
+   // CommandLine adds automatically
+   //opts.Add(0, "verbose", "", false, false, &verbose, "# Help:",
+   //         "Print extra output information");
+   //opts.Add(0, "debug", "", false, false, &debug, "",
+   //         "Print debug output at level 0 [debug<n> for level n=1-7]");
+   //opts.Add(0, "help", "", false, false, &help, "",
+   //         "Print this syntax page, and quit");
+
+   // deprecated (old,new) e.g.
+   //opts.Add_deprecated("--SP3","--eph");
 
    return PrgmDesc;
 
@@ -668,6 +688,11 @@ int ProcessFiles()
       RinexSatID sat;
       Rinex3ObsStream ostrm;
       ostringstream oss;
+
+      // output in header.version, unless user requests otherwise
+      double outputVersion(C.Rversion);
+      if(C.doCurrRversion) outputVersion = Rinex3ObsBase::currentVersion;
+
          // estimate time step
       const size_t ndtmax=15;
       double dt, bestdt[ndtmax];
@@ -768,7 +793,12 @@ int ProcessFiles()
          else if(!C.nohead)
          {
             LOG(DEBUG) << "RINEX header:";
-            Rhead.dump(LOGstrm);
+            if(outputVersion == 0.0)
+               outputVersion = Rhead.version;
+            else
+               LOG(INFO) << " (Header has version " << Rhead.version
+                        << "; output as version " << outputVersion << ")";
+            Rhead.dump(LOGstrm,outputVersion);
          }
 
          if(!Rhead.isValid())
@@ -790,7 +820,7 @@ int ProcessFiles()
          }
 
             // initialize counting -------------------------------------------
-         int nepochs(0), ncommentblocks(0), nmaxobs(0);
+         int nepochs(0), nauxheads(0), nmaxobs(0);
          vector<TableData> table;            // table of counts per sat,obs
          map<char, vector<int> > totals;     // totals per system,obs
 
@@ -841,7 +871,7 @@ int ProcessFiles()
                      if(tag[0] == 'L')
                      {
                         ii = asInt(string(1,tag[1]));
-                        waves.push_back(getWavelength(sid, ii));
+                        waves.push_back(getWavelength(sid.system, ii));
                      }
                      else 
                         waves.push_back(0.0);
@@ -906,31 +936,36 @@ int ProcessFiles()
                break;
             }
 
-               // fix time systems
-            if(nepochs == 0 &&
-               Rdata.time.getTimeSystem() != Rhead.lastObs.getTimeSystem())
-            {
-               Rhead.lastObs.setTimeSystem(Rdata.time.getTimeSystem());
-               Rhead.firstObs.setTimeSystem(Rdata.time.getTimeSystem());
+               // fix time systems - only for data, not aux headers
+            if(Rdata.epochFlag == 0) {
+               if(nepochs == 0 &&
+                  Rdata.time.getTimeSystem() != Rhead.lastObs.getTimeSystem())
+               {
+                  Rhead.lastObs.setTimeSystem(Rdata.time.getTimeSystem());
+                  Rhead.firstObs.setTimeSystem(Rdata.time.getTimeSystem());
+               }
+               lastObsTime = Rdata.time;
+               lastObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
+               firstObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
+               prevObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
+               if(firstObsTime == CommonTime::BEGINNING_OF_TIME)
+                  firstObsTime = lastObsTime;
             }
-            lastObsTime = Rdata.time;
-            lastObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
-            firstObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
-            prevObsTime.setTimeSystem(Rhead.lastObs.getTimeSystem());
-            if(firstObsTime == CommonTime::BEGINNING_OF_TIME)
-               firstObsTime = lastObsTime;
 
-               //LOG(INFO) << "";
             LOG(DEBUG) << " Read RINEX data: flag " << Rdata.epochFlag
                        << ", timetag " << printTime(Rdata.time,C.longfmt);
 
                // if aux header data, either output or skip
             if(Rdata.epochFlag > 1)
             {
-               if(C.debug > -1)
-                  for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
-                     LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
-               ncommentblocks++;
+               //if(C.debug > -1)
+               //   for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
+               //      LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
+               if(C.verbose) {
+                  LOG(INFO) << "\nDump auxiliary header information:";
+                  Rdata.auxHeader.dump(LOGstrm);
+               }
+               nauxheads++;
                continue;
             }
 
@@ -1190,7 +1225,7 @@ int ProcessFiles()
          LOG(INFO) << "There were " << nepochs << " epochs ("
                    << fixed << setprecision(2) << double(nepochs*100)/i
                    << "% of " << i << " possible epochs in this timespan) and "
-                   << ncommentblocks << " inline header blocks.";
+                   << nauxheads << " inline header blocks.";
 
             // Sort table
          if(C.sorttime)
@@ -1231,9 +1266,10 @@ int ProcessFiles()
                oss << " Sat\\OT:";
 
                   // print line of RINEX 3 codes
-               for(k=0; k < (sit->second).size(); k++)
-                     //oss << setw(k==0?4:7) << asString((sit->second)[k]);
-                  oss << setw(k==0?4:7) << (sit->second)[k].asString();
+               for(k=0; k < (sit->second).size(); k++) {
+                  RinexObsID rot((sit->second)[k]);
+                  oss << setw(k==0?4:7) << rot.asString(outputVersion);
+               }
                LOG(INFO) << oss.str() << "   Span             Begin time - End time";
 
                   // print the table
@@ -1286,7 +1322,7 @@ int ProcessFiles()
             for( ; sit != Rhead.mapObsTypes.end(); ++sit)
             {
                string sysCode = (sit->first);
-               vector<RinexObsID>& vec = Rhead.mapObsTypes[sysCode];
+               const vector<RinexObsID>& vec(sit->second);
 
                   // is this system found in the list of sats?
                map<char, vector<int> >::const_iterator totalsIter;
@@ -1300,7 +1336,10 @@ int ProcessFiles()
                oss << "System " << RinexSatID(sysCode).systemString3()
                    << " Obs types(" << vec.size() << "): ";
 
-               for(i=0; i<vec.size(); i++) oss << " " << vec[i].asString();
+               for(i=0; i<vec.size(); i++) {
+                  RinexObsID rot(vec[i]);
+                  oss << " " << rot.asString(outputVersion);
+               }
 
                   // if RINEX ver. 2, then add ver 2 obstypes in parentheses
                   //map<string, map<string, RinexObsID> > Rinex3ObsHeader::mapSysR2toR3ObsID

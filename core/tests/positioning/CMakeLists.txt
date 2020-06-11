@@ -6,7 +6,7 @@ set( TD ${GPSTK_TEST_OUTPUT_DIR} )
 ###############################################################################
 
 # test with minimum required inputs - RINEX obs, SP3 Ephemeris, Solution Descriptor
-set( ARGS1 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_ephemerisData.sp3\ --sol\ GPS:12:WC\ --log\ ${TD}/PRSolve_Required.out )
+set( ARGS1 --obs\ ${GPSTK_TEST_DATA_DIR}/arlm200b.15o\ --eph\ ${GPSTK_TEST_DATA_DIR}/test_input_sp3_nav_2015_200.sp3\ --sol\ GPS:12:WC\ --log\ ${TD}/PRSolve_Required.out )
 add_test(NAME PRSolve_Required
     COMMAND ${CMAKE_COMMAND}
     -DTEST_PROG=$<TARGET_FILE:PRSolve>

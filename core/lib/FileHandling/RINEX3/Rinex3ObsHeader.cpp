@@ -175,7 +175,7 @@ namespace gpstk
    {
       R2ObsTypes.clear();
       mapSysR2toR3ObsID.clear();
-      version = 3.03;
+      version = currentVersion;
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
       preserveVerType = false; // let the write methods chose the above
@@ -596,9 +596,19 @@ namespace gpstk
          static const int maxObsPerLine = 13;
 
          map<string,vector<RinexObsID> >::const_iterator mapIter;
+
+            // because of the way pseudo-observables are mapped from
+            // ObsID/RinexObsID to the RINEX file, we have to manually
+            // count the observables first.
+         map<string,unsigned> obsCount;
+         RinexObsMap dummy;
+         remapObsTypes(dummy, obsCount);
+            // now do the actual writing
          for(mapIter = mapObsTypes.begin(); mapIter != mapObsTypes.end();
              mapIter++)
          {
+            bool addedChannel = false;
+            std::set<ObsID::CarrierBand> addedIono;
             int obsWritten = 0;
             line = ""; // make sure the line contents are reset
 
@@ -606,12 +616,24 @@ namespace gpstk
 
             for(size_t i = 0; i < ObsTypeList.size(); i++)
             {
+               if (ObsTypeList[i].type == ObsID::otIono)
+               {
+                  if (addedIono.count(ObsTypeList[i].band) > 0)
+                     continue; // only write this pseudo-obs once
+                  addedIono.insert(ObsTypeList[i].band);
+               }
+               else if (ObsTypeList[i].type == ObsID::otChannel)
+               {
+                  if (addedChannel)
+                     continue; // only write this pseudo-obs once
+                  addedChannel = true;
+               }
                   // the first line needs to have the GNSS type and # of obs
                if(obsWritten == 0)
                {
                   line  =  leftJustify(mapIter->first, 1);
                   line += string(2, ' ');
-                  line += rightJustify(asString(ObsTypeList.size()), 3);
+                  line += rightJustify(asString(obsCount[mapIter->first]), 3);
                }
                   // if you hit 13, write out the line and start a new one
                else if((obsWritten % maxObsPerLine) == 0)
@@ -623,7 +645,7 @@ namespace gpstk
                   line  = string(6, ' ');
                }
                line += string(1, ' ');
-               line += rightJustify(ObsTypeList[i].asString(), 3);
+               line += rightJustify(ObsTypeList[i].asString(version), 3);
                obsWritten++;
             }
             line += string(60 - line.size(), ' ');
@@ -781,7 +803,7 @@ namespace gpstk
                   if(iter->second == factors[i] )
                   {
                      count++;
-                     obsTypes.push_back(iter->first.asString());
+                     obsTypes.push_back(iter->first.asString(version));
                   }
                }
 
@@ -835,11 +857,15 @@ namespace gpstk
             {
                for( ; jt!=it->second.end(); ++jt)
                {
-                  RinexObsID obsid(jt->first);
                   RinexSatID sat(jt->second.begin()->first);
                   double corr(jt->second.begin()->second);
+                  if (jt->first.type != ObsID::otPhase)
+                  {
+                        // Phase shift only makes sense for phase measurements.
+                     continue;
+                  }
                   line = sys + " ";
-                  line += leftJustify(obsid.asString(),3) + " ";
+                  line += leftJustify(jt->first.asString(version),3) + " ";
                   line += rightJustify(asString(corr,5),8);
                   if(sat.id == -1)
                   {
@@ -915,7 +941,7 @@ namespace gpstk
             GLOCodPhsBias::const_iterator it;
             const string labs[4] = {"C1C", "C1P", "C2C", "C2P"};
             for (int i = 0; i < 4; i++) {
-               RinexObsID obsid(RinexObsID("R" + labs[i]));
+               RinexObsID obsid(RinexObsID("R" + labs[i], version));
                it = glonassCodPhsBias.find(obsid);
                double bias = 0.0;
                if (it != glonassCodPhsBias.end())
@@ -975,7 +1001,7 @@ namespace gpstk
                for(i=0,j=0; i<R2ObsTypes.size(); i++)
                {
                   kt = mapVec.find(R2ObsTypes[i]);
-                  string obsid(kt->second.asString());
+                  string obsid(kt->second.asString(version));
                   if(obsid == string("   ")) vec.push_back(0.0);
                   else                       vec.push_back(numObs[j++]);
                }
@@ -1200,8 +1226,13 @@ namespace gpstk
          try
          {
             const int maxObsPerLine = 13;
-            for (int i=0; i < maxObsPerLine && mapObsTypes[satSys].size() < numObs; i++)
-               mapObsTypes[satSys].push_back(RinexObsID(satSys+line.substr(4 * i + 7, 3)));
+            for (int i=0;
+                 i < maxObsPerLine && mapObsTypes[satSys].size() < numObs; i++)
+            {
+               string obstype(line.substr(4 * i + 7, 3));
+               mapObsTypes[satSys].push_back(
+                  RinexObsID(satSys+obstype,version));
+            }
          }
          catch(InvalidParameter& ip)
          {
@@ -1325,7 +1356,8 @@ namespace gpstk
              (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
          {
             int position = 4*(i % maxObsPerLine) + 10 + 1;
-            RinexObsID tempType(satSysTemp+strip(line.substr(position,3)));
+            RinexObsID tempType(satSysTemp+strip(line.substr(position,3)),
+                                version);
             tempSfacMap.insert(make_pair(tempType,factor));
          }
          sysSfacMap[satSysTemp] = tempSfacMap;
@@ -1388,7 +1420,7 @@ namespace gpstk
                // obsid and correction may be blank <=> unknown: ignore this
             if(!str.empty())
             {
-               RinexObsID obsid(satSysTemp+str);
+               RinexObsID obsid(satSysTemp+str, version);
                double cor(asDouble(strip(line.substr(6,8))));
                int nsat(asInt(strip(line.substr(16,2))));
                if(nsat > 0)
@@ -1446,7 +1478,7 @@ namespace gpstk
          {
             string str(strip(line.substr(i*13+1,3)));
             if(str.empty()) continue;
-            RinexObsID obsid("R"+str);
+            RinexObsID obsid("R"+str, version);
             double bias(asDouble(strip(line.substr(i*13+5,8))));
             glonassCodPhsBias[obsid] = bias;
          }
@@ -1465,6 +1497,15 @@ namespace gpstk
       else if(label == hsPrnObs)
       {
             // this assumes 'PRN / # OF OBS' comes after '# / TYPES OF OBSERV' or 'SYS / # / OBS TYPES'
+            // NOT a good assumption for auxiliary header... ignore in that case
+         if(version >= 3.0 && mapObsTypes.size() == 0)
+         {
+            commentList.push_back(
+               string("Warning - can't read PRN/OBS in auxHeader: no"
+                      " mapObsTypes"));
+            return;
+         }
+
          static const int maxObsPerLine = 9;
 
          int j,otmax;
@@ -1658,7 +1699,7 @@ namespace gpstk
             vector<int> vec;
             for(size_t i=0; i<R2ObsTypes.size(); i++)
             {
-               if(mapSysR2toR3ObsID[sys][R2ObsTypes[i]].asString() == string("   "))
+               if(mapSysR2toR3ObsID[sys][R2ObsTypes[i]].asString(version) == string("   "))
                   ;
                else
                   vec.push_back(it->second[i]);
@@ -1864,7 +1905,7 @@ namespace gpstk
                
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -1918,7 +1959,7 @@ namespace gpstk
          
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -1984,7 +2025,7 @@ namespace gpstk
          
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -2028,7 +2069,7 @@ namespace gpstk
          
          try
          {
-            RinexObsID OT(obsid);
+            RinexObsID OT(obsid, version);
             obsids.push_back(OT);
             mapSysR2toR3ObsID[syss][ot] = OT; //map<string, map<string, RinexObsID> >
          }
@@ -2079,7 +2120,8 @@ namespace gpstk
       return line;
    } // end writeTime
 
-      // Compute map of obs types for use in writing version 2 header and data, call before writing
+      // Compute map of obs types for use in writing version 2 header
+      // and data, call before writing
    void Rinex3ObsHeader::prepareVer2Write(void)
    {
       if(version > 3)
@@ -2093,19 +2135,29 @@ namespace gpstk
          valid.clear(Rinex3ObsHeader::validSystemNumObs);
          valid.set(Rinex3ObsHeader::validNumObs);
       }
-         // TD unset R3-specific header members?
+         /// @todo unset R3-specific header members?
       
-         // make a list of R2 obstype strings, and a map R3ObsIDs <= R2 obstypes for each system
+         // make a list of R2 obstype strings, and a map R3ObsIDs <=
+         // R2 obstypes for each system
       R2ObsTypes.clear();
       map<string,vector<RinexObsID> >::const_iterator mit;
       for (mit = mapObsTypes.begin(); mit != mapObsTypes.end(); mit++)
       {
          string sysString = mit->first;
-         if(sysString!="G" && sysString!="R" && sysString!="E" &&
-            sysString!="S" && sysString!="T" && sysString!="J" &&
-            sysString!="C" && sysString!="G")
+            // Compass/BeiDou and QZSS and IRNSS are unsupported by RINEX 2.11.
+            // Transit was deprecated in 2.11.
+            // Skip them.
+         if ((sysString == "I") || (sysString == "J") || (sysString == "C") ||
+             (sysString == "T"))
          {
-            FFStreamError er("Invalid system char string in header.mapObsTypes: "+sysString);
+            continue;
+         }
+            // 2.11 supports only GPS, GLONASS, Geo/SBAS and Galileo
+         if(sysString!="G" && sysString!="R" && sysString!="E" &&
+            sysString!="S")
+         {
+            FFStreamError er(
+               "Invalid system char string in header.mapObsTypes: "+sysString);
             GPSTK_THROW(er);
          }
             // mit->first is system char as a 1-char string
@@ -2115,9 +2167,10 @@ namespace gpstk
             // loop over all ObsIDs for this system
          for(size_t i=0; i<mit->second.size(); i++)
          {
-            string R2ot, lab(mit->second[i].asString());
+            string R2ot, lab(mit->second[i].asString(version));
                // the list of all tracking code characters for this sys, freq
-            string allCodes(ObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
+            string allCodes(
+               ObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
 
             if (lab == string("C1C"))
                R2ot = string("C1");
@@ -2146,23 +2199,33 @@ namespace gpstk
                   // its already there - in list of R2 ots
                if (mapR2toR3ObsID.find(R2ot) == mapR2toR3ObsID.end())
                {
-                  mapR2toR3ObsID[R2ot] = mit->second[i];// must also add to sys map
+                     // must also add to sys map
+                  mapR2toR3ObsID[R2ot] = mit->second[i];
                }
                else
                {
                      // its already in sys map ...
                      // .. but is the new tc 'better'?
                   string::size_type posold,posnew;
-                  posold = allCodes.find((mapR2toR3ObsID[R2ot].asString())[2]);
+                  posold = allCodes.find((mapR2toR3ObsID[R2ot].asString(version))[2]);
                   posnew = allCodes.find(lab[2]);
-                  if(posnew < posold)           // replace the R3ObsID in the map
+                  if(posnew < posold)
                   {
+                        // replace the R3ObsID in the map
                      mapR2toR3ObsID[R2ot] = mit->second[i];
                   }
-                  if(R2DisambiguityMap.find(sysString + R2ot) == R2DisambiguityMap.end())
-                     R2DisambiguityMap.insert(std::pair<string,string>(sysString + R2ot,mapR2toR3ObsID[R2ot].asString()));
+                  if (R2DisambiguityMap.find(sysString + R2ot) ==
+                      R2DisambiguityMap.end())
+                  {
+                     R2DisambiguityMap.insert(
+                        std::pair<string,string>(
+                           sysString + R2ot,
+                           mapR2toR3ObsID[R2ot].asString(version)));
+                  }
                   else
+                  {
                      R2DisambiguityMap[sysString + R2ot] = lab;
+                  }
                }
             }
          }
@@ -2171,7 +2234,7 @@ namespace gpstk
       }
    }  // end prepareVer2Write()
 
-   void Rinex3ObsHeader::dump(ostream& s) const
+   void Rinex3ObsHeader::dump(ostream& s, double dumpVersion) const
    {
       using gpstk::StringUtils::asString;
       size_t i;
@@ -2188,7 +2251,7 @@ namespace gpstk
 
       s << "---------------------------------- REQUIRED "
         << "----------------------------------" << endl;
-      s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
+      s << "Rinex Version " << fixed << setw(5) << setprecision(2) << dumpVersion
         << ",  File type " << fileType << ",  System " << str << "." << endl;
       s << "Prgm: " << fileProgram << ",  Run: " << date
         << ",  By: " << fileAgency << endl;
@@ -2209,10 +2272,12 @@ namespace gpstk
          rsid.fromString(iter->first);
          s << rsid.systemString() << " Observation types ("
            << iter->second.size() << "):" << endl;
-         for(i = 0; i < iter->second.size(); i++) 
+         for(i = 0; i < iter->second.size(); i++)
+         {
             s << " Type #" << setw(2) << setfill('0') << i+1 << setfill(' ')
-              << " (" << iter->second[i].asString() << ") "
+              << " (" << iter->second[i].asString(dumpVersion) << ") "
               << asString(static_cast<ObsID>(iter->second[i])) << endl;
+         }
       }
 
       s << "R2ObsTypes: ";
@@ -2223,7 +2288,7 @@ namespace gpstk
       {
          s << "mapSysR2toR3ObsID[" << i->first << "] ";
          for (ObsIDMap::const_iterator j = i->second.begin(); j != i->second.end(); j++)
-            s << j->first << ":" << j->second.asString() << " ";
+            s << j->first << ":" << j->second.asString(dumpVersion) << " ";
          s << endl;
       }
       
@@ -2231,14 +2296,14 @@ namespace gpstk
         << printTime(firstObs,"%04Y/%02m/%02d %02H:%02M:%06.3f %P") << endl;
 
       s << "(This header is ";
-      if (Fields::isValid(version, valid))
+      if (Fields::isValid(dumpVersion, valid))
          s << "VALID)" << endl;
       else
       {
          s << "NOT VALID";
-         s << " RINEX " << setprecision(2) << version << ")" << endl;
+         s << " RINEX " << setprecision(2) << dumpVersion << ")" << endl;
          s << "valid    = " << valid << endl;
-         Fields required = Fields::getRequired(version);
+         Fields required = Fields::getRequired(dumpVersion);
          s << "allValid = " << required << endl;
 
          s << "Invalid or missing header records:" << endl;
@@ -2289,7 +2354,7 @@ namespace gpstk
       if(valid & validReceiverOffset   )
          s << "Clock offset record is present and offsets "
            << (receiverOffset ? "ARE" : "are NOT") << " applied." << endl;
-      if(version < 3 && (valid & validWaveFact)) // TD extraWaveFactList
+      if(dumpVersion < 3 && (valid & validWaveFact)) // TD extraWaveFactList
          s << "Wavelength factor L1: " << wavelengthFactor[0]
            << " L2: " << wavelengthFactor[1] << endl;
       if(valid & validSystemDCBSapplied)
@@ -2326,7 +2391,7 @@ namespace gpstk
             map<RinexObsID,int>::const_iterator iter;
                // loop over scale factor map
             for(iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++)
-               s << "   " << iter->first.asString() << " " << iter->second << endl;
+               s << "   " << iter->first.asString(dumpVersion) << " " << iter->second << endl;
          }
       }
       if(valid & validSystemPhaseShift )
@@ -2346,7 +2411,7 @@ namespace gpstk
                   s << "Phase shift correction for system " << sys << ": "
                     << fixed << setprecision(5)
                     << setw(8) << kt->second << " cycles applied to obs type "
-                    << jt->first.asString() << " "
+                    << jt->first.asString(dumpVersion) << " "
                     << RinexSatID(sys).systemString() << endl;
             }
          }
@@ -2368,7 +2433,7 @@ namespace gpstk
          map<RinexObsID,double>::const_iterator it;
          s << "GLONASS Code-phase biases:\n" << fixed << setprecision(3);
          for(it=glonassCodPhsBias.begin(); it!=glonassCodPhsBias.end(); ++it)
-            s << " " << it->first.asString() << " " << setw(8) << it->second;
+            s << " " << it->first.asString(dumpVersion) << " " << setw(8) << it->second;
          s << endl;
       }
       if(valid & validLeapSeconds)
@@ -2390,7 +2455,7 @@ namespace gpstk
                iter = mapObsTypes.find(string(1,sat.systemChar()));
                const vector<RinexObsID>& vec(iter->second);
                for(i=0; i<vec.size(); i++)
-                  s << setw(7) << vec[i].asString();
+                  s << setw(7) << vec[i].asString(dumpVersion);
                s << endl;
                sys = sat;
             }
@@ -2457,7 +2522,7 @@ namespace gpstk
 
          // Extract the GNSS from the newType
       string sys( newType, 0, 1 );
-      return getObsIndex(sys, RinexObsID(newType));
+      return getObsIndex(sys, RinexObsID(newType, version));
    }
 
    
@@ -2469,9 +2534,12 @@ namespace gpstk
          /// RinexObsMap mapObsTypes;         ///< SYS / # / OBS TYPES
 
          // find the GNSS in the map
-      RinexObsMap::const_iterator it = mapObsTypes.find(sys);
+      RinexObsMap remapped;
+      std::map<std::string,unsigned> obsCount;
+      remapObsTypes(remapped, obsCount);
+      RinexObsMap::const_iterator it = remapped.find(sys);
 
-      if (it == mapObsTypes.end())
+      if (it == remapped.end())
       {
          InvalidRequest ir("GNSS system " + sys + " not stored.");
          GPSTK_THROW(ir);
@@ -2480,11 +2548,11 @@ namespace gpstk
       const RinexObsVec& rov = it->second;
       for (size_t i=0; i<rov.size(); i++)
       {
-         if (rov[i] == obsID)
+         if (rov[i].equalIndex(obsID))
             return i;
       }
       
-      InvalidRequest ir(obsID.asString() + " is not stored in system " + sys + ".");
+      InvalidRequest ir(obsID.asString(version) + " is not stored in system " + sys + ".");
       GPSTK_THROW(ir);
       return 0;
    }
@@ -2766,6 +2834,38 @@ namespace gpstk
          s << *i;
       }
       return s;
+   }
+
+
+   void Rinex3ObsHeader ::
+   remapObsTypes(RinexObsMap& remapped, map<string,unsigned>& obsCount)
+      const
+   {
+      for (const auto& mapIter : mapObsTypes)
+      {
+            // I and X pseudo-observables are special cases, and can
+            // only be listed once (or once per band in the case of
+            // the ionospheric delay) in any sane manner.
+         bool addedChannel = false;
+         std::set<ObsID::CarrierBand> addedIono;
+         for(size_t i = 0; i < mapIter.second.size(); i++)
+         {
+            if (mapIter.second[i].type == ObsID::otIono)
+            {
+               if (addedIono.count(mapIter.second[i].band) > 0)
+                  continue; // only write this pseudo-obs once
+               addedIono.insert(mapIter.second[i].band);
+            }
+            else if (mapIter.second[i].type == ObsID::otChannel)
+            {
+               if (addedChannel)
+                  continue; // only write this pseudo-obs once
+               addedChannel = true;
+            }
+            remapped[mapIter.first].push_back(mapIter.second[i]);
+            obsCount[mapIter.first]++;
+         }
+      }
    }
 
 } // namespace gpstk

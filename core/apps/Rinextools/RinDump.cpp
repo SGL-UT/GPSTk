@@ -129,24 +129,22 @@ public:
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
-   LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
+   LinCom() : value(0), limit0(false), label(string("Undef")) { }
 
    /// parse input string
-   bool ParseAndSave(const string& str, bool save=true) throw();
+   bool ParseAndSave(const string& str, bool save=true);
 
    /// compute the linear combination, given the satellite and RINEX data
-   /**
-    * @throw Exception */
    double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
                   const vector<RinexDatum>& vrdata);
 
    /// remove a bias if jump larger than limit occurs
-   bool removeBias(const RinexSatID& sat) throw();
+   bool removeBias(const RinexSatID& sat);
 
 }; // end class LinCom
 
 /// dump the object to an output stream
-ostream& operator<<(ostream& os, LinCom& lc) throw();
+ostream& operator<<(ostream& os, LinCom& lc);
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -155,22 +153,22 @@ class Configuration : public Singleton<Configuration> {
 public:
 
    // Default and only constructor
-   Configuration() throw() { SetDefaults(); }
+   Configuration() { SetDefaults(); }
 
    // Create, parse and process command line options and user input
-   int ProcessUserInput(int argc, char **argv) throw();
+   int ProcessUserInput(int argc, char **argv);
 
    // Design the command line
-   string BuildCommandLine(void) throw();
+   string BuildCommandLine(void);
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   int ExtraProcessing(string& errors, string& extras) throw();
+   int ExtraProcessing(string& errors, string& extras);
 
 private:
 
    // Define default values
-   void SetDefaults(void) throw();
+   void SetDefaults(void);
 
 public:
 
@@ -217,7 +215,14 @@ public:
    double IonoHt;             // ionospheric height
    double elevlimit;          // limit on elevation angle (degrees) requires ELE input
 
+   double Rversion;           // RINEX version of output (default=header.version)
+   double currentVersion;     // current RINEX version from Rinex3ObsBase
+   bool doCurrRversion;       // set Rversion to Rinex3ObsBase::currentVersion
+
    // end of command line input
+
+   // RINEX version to use
+   double useVersion;
 
    // list of all non-RinexObsID tags
    vector<string> NonObsTags; // satellite-dependent
@@ -272,18 +277,10 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // prototypes
-/**
- * @throw Exception */
 int Initialize(string& errors);
-/**
- * @throw Exception */
 int ProcessFiles(void);
-/**
- * @throw Exception */
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
                   const vector<RinexDatum>& vrdata);
-/**
- * @throw Exception */
 double getNonObsData(string tag, RinexSatID sat, const CommonTime& time);
 
 //------------------------------------------------------------------------------------
@@ -776,7 +773,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void Configuration::SetDefaults(void) throw()
+void Configuration::SetDefaults(void)
 {
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
@@ -793,6 +790,10 @@ void Configuration::SetDefaults(void) throw()
       + asString(defaultPress,1) + string(",") + asString(defaultHumid,1);
    IonoHt = 400.0;
    elevlimit = 0.0;
+
+   doCurrRversion = false;
+   Rversion = 0.0;
+   currentVersion = Rinex3ObsBase::currentVersion;
 
    userfmt = gpsfmt;
    help = verbose = noHeader = dumpHeader = doTECU = false;
@@ -837,13 +838,14 @@ void Configuration::SetDefaults(void) throw()
    //map<string,string> mapSysCodes;   // map of system, default codes e.g. GLO,PC
    // don't use ObsID::validRinexTrackingCodes b/c order is important
    mapSysCodes.insert(make_pair(string("GPS"),string("PYWLMIQSXCN")));
-   mapSysCodes.insert(make_pair(string("GLO"),string("PC")));
+   mapSysCodes.insert(make_pair(string("GLO"),string("PCIQXAB")));
    mapSysCodes.insert(make_pair(string("GAL"),string("ABCIQXZ")));
    mapSysCodes.insert(make_pair(string("GEO"),string("CIQX")));
-   mapSysCodes.insert(make_pair(string("BDS"),string("IQX")));
-   mapSysCodes.insert(make_pair(string("QZS"),string("CSLXZ")));
+   mapSysCodes.insert(make_pair(string("BDS"),string("DPIQXZAN")));
+   mapSysCodes.insert(make_pair(string("QZS"),string("CSLXZIQXDE")));
    mapSysCodes.insert(make_pair(string("IRN"),string("ABCX")));
 
+      /// @todo use ObsID versions of these maps
    map1to3Sys["G"] = "GPS";   map3to1Sys["GPS"] = "G";
    map1to3Sys["R"] = "GLO";   map3to1Sys["GLO"] = "R";
    map1to3Sys["E"] = "GAL";   map3to1Sys["GAL"] = "E";
@@ -866,7 +868,7 @@ void Configuration::SetDefaults(void) throw()
 }  // end Configuration::SetDefaults()
 
 //------------------------------------------------------------------------------------
-int Configuration::ProcessUserInput(int argc, char **argv) throw()
+int Configuration::ProcessUserInput(int argc, char **argv)
 {
    string PrgmDesc,cmdlineUsage, cmdlineErrors, cmdlineExtras;
    vector<string> cmdlineUnrecognized;
@@ -931,74 +933,173 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    }  // end combohelp
 
    // print all valid RinexObsIDs
-   if(typehelp) {
+   if(typehelp)
+   {
       vector<string> goodtags;
       string syss(ObsID::validRinexSystems);
       // build a table
       map<string, map<string, map<string, map<char,string> > > > table;
       for(size_t s=0; s<syss.size(); s++)
-         for(int j=ObsID::cbAny; j<ObsID::cbUndefined; ++j)
-            for(int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
-               for(int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
-                  try {
-                     string tag(string(1,syss[s]) +
-                                string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
-                                string(1,ObsID::cb2char[ObsID::CarrierBand(j)]) +
-                                string(1,ObsID::tc2char[ObsID::TrackingCode(k)]));
-                     ObsID obs(tag);
+      {
+         for(int j=0; j<ObsID::cbLast; ++j)
+         {
+            ObsID::CarrierBand carrierBand = (ObsID::CarrierBand)j;
+            switch (carrierBand)
+            {
+               case ObsID::cbUnknown:
+               case ObsID::cbAny:
+               case ObsID::cbUndefined:
+               case ObsID::cbLast:
+               case ObsID::cbZero:
+                     // skip the above tracking codes
+                  continue;
+            }
+            for(int k=0; k<ObsID::tcLast; ++k)
+            {
+               ObsID::TrackingCode trackCode = (ObsID::TrackingCode)k;
+               switch (trackCode)
+               {
+                  case ObsID::tcUnknown:
+                  case ObsID::tcAny:
+                  case ObsID::tcUndefined:
+                  case ObsID::tcLast:
+                        // skip the above tracking codes
+                     continue;
+               }
+               for(int i=0; i<ObsID::otLast; ++i)
+               {
+                  ObsID::ObservationType obsType = (ObsID::ObservationType)i;
+                  switch (obsType)
+                  {
+                     case ObsID::otUnknown:
+                     case ObsID::otAny:
+                     case ObsID::otUndefined:
+                     case ObsID::otLast:
+                           // skip the above obs types
+                        continue;
+                  }
+                  try
+                  {
+                     string tag(
+                        string(1,syss[s]) +
+                        string(1,ObsID::ot2char[obsType]) +
+                        string(1,ObsID::cb2char[carrierBand]) +
+                        string(1,ObsID::tc2char[trackCode]));
+                     ObsID obs(tag, useVersion);
                      string name(asString(obs));
-                     if(name.find("Unknown") != string::npos ||
-                        name.find("undefined") != string::npos ||
-                        name.find("Any") != string::npos ||
-                        !isValidRinexObsID(tag)) continue;
+                     if (name.find("Unknown") != string::npos ||
+                         name.find("undefined") != string::npos ||
+                         name.find("Any") != string::npos ||
+                         !isValidRinexObsID(tag))
+                     {
+                        continue;
+                     }
 
-                     if(find(goodtags.begin(),goodtags.end(),tag) == goodtags.end()) {
+                     if (find(goodtags.begin(), goodtags.end(), tag) ==
+                         goodtags.end())
+                     {
                         goodtags.push_back(tag);
-                        string sys(RinexSatID(string(1,tag[0])).systemString3());
+                        string sys(
+                           RinexSatID(string(1,tag[0])).systemString3());
                         char type(ObsID::ot2char[ObsID::ObservationType(i)]);
-                        string id(tag); // TD keep sys char ? id(tag.substr(1));
-                        string desc(asString(ObsID(tag)));
+                           /// @todo keep sys char ? id(tag.substr(1));
+                        string id(tag);
+                        string desc(asString(ObsID(tag, useVersion)));
                         vector<string> fld(split(desc,' '));
-                        string codedesc(fld[1].substr(syss[s]=='S'?4:3));
+                        string codedesc = fld[1];
+                        if ((codedesc.find("GPS") == 0) ||
+                            (codedesc.find("GLO") == 0) ||
+                            (codedesc.find("GAL") == 0) ||
+                            (codedesc.find("BDS") == 0))
+                        {
+                           codedesc.erase(0,3);
+                        }
+                        else if ((codedesc.find("SBAS") == 0) ||
+                                 (codedesc.find("QZSS") == 0))
+                        {
+                           codedesc.erase(0,4);
+                        }
+                        else if (codedesc.find("IRNSS") == 0)
+                        {
+                           codedesc.erase(0,5);
+                        }
                         string band(fld[0]);
                         table[sys][band][codedesc][type] = id;
                      }
                   }
-                  catch(InvalidParameter& ir) { continue; }
+                  catch(InvalidParameter& ir)
+                  {
+                     continue;
+                  }
+               }
+            }
+         }
+      }
 
       map<string, map<string, map<string, map<char,string> > > >::iterator it;
       map<string, map<string, map<char,string> > >::iterator jt;
       map<string, map<char,string> >::iterator kt;
       // find field lengths
-      size_t len2(4),len3(5),len4(6);  // 3-char len4(7);        // 4-char
+      size_t len2(4),len3(5),len4(8);  // 3-char len4(7);        // 4-char
       for(it=table.begin(); it!=table.end(); ++it)
+      {
          for(jt=it->second.begin(); jt!=it->second.end(); ++jt)
-            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt) {
-               if(jt->first.length() > len2) len2 = jt->first.length();
-               if(kt->first.length() > len3) len3 = kt->first.length();
+         {
+            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt)
+            {
+               if(jt->first.length() > len2)
+                  len2 = jt->first.length();
+               if(kt->first.length() > len3)
+                  len3 = kt->first.length();
             }
+         }
+      }
       LOG(INFO) << "\n# All valid RINEX observation codes";
                                     // (as sys+code = 1+3 char):";
       LOG(INFO) << " Sys " << leftJustify("Freq",len2)
                 << " " << center("Track",len3)
-                << " Pseudo- Carrier Doppler  Signal";
+                << " " << center("Pseudo-",len4)
+                << " " << center("Carrier",len4)
+                << " " << center("Doppler",len4)
+                << " " << center("Signal",len4)
+                << " " << center("Ionosph.",len4)
+                << " " << center("Channel",len4);
       LOG(INFO) << "     " << leftJustify("    ",len2)
                 << " " << center("     ",len3)
-                << "  range   phase          Strength";
-      for(size_t i=0; i<syss.size(); ++i) {
+                << " " << center("range",len4)
+                << " " << center("phase",len4)
+                << " " << center("   ",len4)
+                << " " << center("Strength",len4)
+                << " " << center("Delay",len4)
+                << " " << center("Number",len4);
+         // We don't copy this from the library because this
+         // application assumes a very specific order of observation
+         // types.
+      static const std::string obsTypes("CLDSIX");
+      for(size_t i=0; i<syss.size(); ++i)
+      {
          it = table.find(RinexSatID(string(1,syss[i])).systemString3());
-         if(it == table.end()) continue;
-         if(i > 0) LOG(INFO) << "";
+         if(it == table.end())
+            continue;
+         if(i > 0)
+            LOG(INFO) << "";
          for(jt=it->second.begin(); jt!=it->second.end(); ++jt)
-            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt) {
-               LOG(INFO) << " " << it->first // GPS
-                         << " " << leftJustify(jt->first,len2) // L1
-                         << " " << center(kt->first,len3) // C/A
-                << " " << center((kt->second['C']==""?"----":kt->second['C']),len4)
-                << " " << center((kt->second['L']==""?"----":kt->second['L']),len4)
-                << " " << center((kt->second['D']==""?"----":kt->second['D']),len4)
-                << " " << center((kt->second['S']==""?"----":kt->second['S']),len4);
+         {
+            for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt)
+            {
+               LOGstrm << " " << it->first // GPS
+                       << " " << leftJustify(jt->first,len2) // L1
+                       << " " << center(kt->first,len3); // C/A
+               for (unsigned j = 0; j < obsTypes.size(); j++)
+               {
+                  char ot(obsTypes[j]);
+                  LOGstrm << " " << center((kt->second[ot]==""
+                                            ? "----"
+                                            : kt->second[ot]),len4);
+               }
+               LOGstrm << endl;
             }
+         }
       }
       //return 1;
    }  // end if typehelp
@@ -1127,7 +1228,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 }  // end Configuration::CommandLine()
 
 //------------------------------------------------------------------------------------
-string Configuration::BuildCommandLine(void) throw()
+string Configuration::BuildCommandLine(void)
 {
    // Program description will appear at the top of the syntax page
    string PrgmDesc = " Program " + PrgmName +
@@ -1226,6 +1327,13 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "elevlim", "lim", false, false, &elevlimit, "",
             "Limit output to data with elevation angle > lim degrees [ELE req'd]");
 
+   string rvstr("# Rinex version (current, latest version is "
+                              + asString(currentVersion,2) + "):");
+   opts.Add(0, "currentRinex", "", false, false, &doCurrRversion, rvstr,
+            "Process in current, not header, RINEX version");
+   opts.Add(0, "RinexVer", "V", false, false, &Rversion, "",
+            "Process in RINEX version V (default is header.version)");
+
    opts.Add(0, "ref", "p[:f]", false, false, &refPosStr, "# Other input",
             "Known position, default fmt f '%x,%y,%z', for resids, elev and ORDs");
    opts.Add(0,"GLOfreq", "sat:n", true, false, &GLOfreqStrs, "",
@@ -1262,7 +1370,7 @@ string Configuration::BuildCommandLine(void) throw()
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int Configuration::ExtraProcessing(string& errors, string& extras) throw()
+int Configuration::ExtraProcessing(string& errors, string& extras)
 {
    int n;
    size_t i;
@@ -1451,15 +1559,9 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       debLimit0[typeLimit0[i]] = !debLimit0[typeLimit0[i]];
    }
 
-   // open the log file (so warnings, configuration summary, etc can go there) -----
-   //logstrm.open(LogFile.c_str(), ios::out);
-   //if(!logstrm.is_open()) {
-      //LOG(ERROR) << "Error : Failed to open log file " << LogFile;
-      //return -4;
-   //}
-   //LOG(INFO) << "Output redirected to log file " << LogFile;
-   //pLOGstrm = &logstrm;
-   //LOG(INFO) << Title;
+   // RINEX version
+   useVersion = Rversion;
+   if(doCurrRversion) useVersion = currentVersion;
 
    // add new errors to the list
    msg = oss.str();
@@ -1469,7 +1571,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    return 0;
 
-} // end Configuration::ExtraProcessing(string& errors) throw()
+} // end Configuration::ExtraProcessing(string& errors)
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, >0 number of files successfully read, <0 fatal error
@@ -1515,9 +1617,16 @@ try {
          iret = 2;
          continue;
       }
+
+      if(C.useVersion == 0.0) C.useVersion = Rhead.version;
+      LOG(INFO) << "# RINEX version: file " << fixed << setprecision(2)
+         << Rhead.version << " / output " << C.useVersion;
+
       if(C.debug > -1) {
-         LOG(DEBUG) << "Input header for RINEX file " << filename;
-         Rhead.dump(LOGstrm);
+         LOG(DEBUG) << "Input header (ver "
+               << fixed << setprecision(2) << C.useVersion
+               << ") for RINEX file " << filename;
+         Rhead.dump(LOGstrm,C.useVersion);
       }
 
       if(!C.noHeader) {
@@ -1525,8 +1634,10 @@ try {
 
          // dump the header first
          if(C.dumpHeader) {
-            LOG(INFO) << "# Header dump follows";
-            Rhead.dump(LOGstrm);
+            LOG(INFO) << "# Header dump follows, RINEX ver. (file: "
+                     << fixed << setprecision(2) << Rhead.version
+                     << "; output: " << C.useVersion << ")";
+            Rhead.dump(LOGstrm,C.useVersion);
          }
 
          // dump the obs types
@@ -1819,6 +1930,7 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
                    const vector<RinexDatum>& vrdata)
 {
    try {
+      Configuration& C(Configuration::Instance());
       double data(0);
       string sys(1,sat.systemChar());              // system of this sat
 
@@ -1830,7 +1942,7 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
             return 0;                              // system+tag is not valid
       }
 
-      RinexObsID obsid(tag);                       // ObsID for this tag
+      RinexObsID obsid(tag, C.useVersion);         // ObsID for this tag
 
       // find it in the header
       vector<RinexObsID>::const_iterator jt(
@@ -1914,7 +2026,7 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
 //------------------------------------------------------------------------------------
 // TD codes ....
 // Parse combo given by lab, and if valid save in C.Combos
-bool LinCom::ParseAndSave(const string& lab, bool save) throw()
+bool LinCom::ParseAndSave(const string& lab, bool save)
 {
    size_t i,j;
    string sys,obsid;
@@ -2006,7 +2118,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
       for(i=0; i<C.InputSyss.size(); i++) {
          sys = C.map3to1Sys[C.InputSyss[i]];
          sat = RinexSatID(C.InputSyss[i]);
-         double alpha(getAlpha(sat,n1,n2));
+         double alpha(getAlpha(sat.system,n1,n2));
 
          obsid = sys+"C"+f1+"*";                         // Ci*
          LOG(DEBUG2) << "Parse obsid >" << obsid << "<";
@@ -2087,7 +2199,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
          // TD VI LAT LON not implemented
          if(tag == string("SI") || tag == string("VI")) {         // iono delay
-            double alpha(getAlpha(sat,n1,n2));
+            double alpha(getAlpha(sat.system,n1,n2));
             // convert to TECU
             double TECUperM(1.0);
             if(C.doTECU) {
@@ -2108,7 +2220,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
             sysConsts[sys].push_back(-TECUperM/alpha);
          }
          else if(tag == string("IF")) {                           // iono-free
-            double alpha(getAlpha(sat,n1,n2));
+            double alpha(getAlpha(sat.system,n1,n2));
             //LOG(DEBUG2) << "Parse alpha is " << fixed << setprecision(4) << alpha;
             sysConsts[sys].push_back((alpha+1.0)/alpha);
             sysConsts[sys].push_back(-1.0/alpha);
@@ -2118,13 +2230,13 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
             sysConsts[sys].push_back(-1.0);
          }
          else if(tag == string("WL")) {                           // widelane
-            double beta(getBeta(sat,n1,n2));
+            double beta(getBeta(sat.system,n1,n2));
             //LOG(DEBUG2) << "Parse beta is " << fixed << setprecision(4) << beta;
             sysConsts[sys].push_back(beta/(beta-1.0));
             sysConsts[sys].push_back(-1.0/(beta-1.0));
          }
          else if(tag == string("NL")) {                           // narrowlane
-            double beta(getBeta(sat,n1,n2));
+            double beta(getBeta(sat.system,n1,n2));
             //LOG(DEBUG2) << "Parse beta is " << fixed << setprecision(4) << beta;
             sysConsts[sys].push_back(beta/(beta+1.0));
             sysConsts[sys].push_back(1.0/(beta+1.0));
@@ -2291,20 +2403,20 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
          return 0.0;
       }
 
-      if(obsid.size() == 3) obsid = sys1 + obsid;        // add system char to obsid
-      if(!isValidRinexObsID(obsid)) {                    // TD do this earlier?
+      if(obsid.size() == 3) obsid = sys1 + obsid;  // add system char to obsid
+      if(!isValidRinexObsID(obsid)) {              // TD do this earlier?
          LOG(DEBUG2) << msg << " obsid " << obsid << " not valid";
-         return 0.0;                                     // obsid is not valid
+         return 0.0;                               // obsid is not valid
       }
-      RinexObsID Obsid(obsid);                           // RinexObsID for this term
+      RinexObsID Obsid(obsid, C.useVersion);       // RinexObsID for this term
 
       // find which code to use
       vector<RinexObsID> allObsIDs;
-      if(obsid[3] == '*') {                              // try every possibility
+      if(obsid[3] == '*') {                        // try every possibility
          for(size_t j=0; j<C.mapSysCodes[sys3].size(); j++) {
             string oi(obsid.substr(0,3)+string(1,C.mapSysCodes[sys3][j]));
             if(isValidRinexObsID(oi))
-               allObsIDs.push_back(RinexObsID(oi));
+               allObsIDs.push_back(RinexObsID(oi, C.useVersion));
          }
       }
       else
@@ -2351,7 +2463,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
                return 0.0;
             }
          }
-         data *= getWavelength(sat, asInt(string(1,obsid[2])), N);
+         data *= getWavelength(sat.system, asInt(string(1,obsid[2])), N);
       }
 
       LOG(DEBUG2) << msg << msg2 << " ok, sum: " << fixed << setprecision(4)
@@ -2366,7 +2478,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
 // Reset bias when jump in value exceeds limit.
 // Set initial bias to 0 if initial value is < limit, otherwise to value.
 // Save previous value and debias value.
-bool LinCom::removeBias(const RinexSatID& sat) throw()
+bool LinCom::removeBias(const RinexSatID& sat)
 {
    bool reset(false);
    if(!limit0 && limit == 0.0) return reset;
@@ -2392,7 +2504,7 @@ bool LinCom::removeBias(const RinexSatID& sat) throw()
 }
 
 //------------------------------------------------------------------------------------
-ostream& operator<<(ostream& os, LinCom& lc) throw()
+ostream& operator<<(ostream& os, LinCom& lc)
 {
    ostringstream oss;
    oss << "Dump LC " << lc.label << " freq " << lc.f1 << "," << lc.f2

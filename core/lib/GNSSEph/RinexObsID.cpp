@@ -42,21 +42,18 @@
 #include "RinexObsID.hpp"
 #include "RinexSatID.hpp"
 #include "StringUtils.hpp"
+#include "Rinex3ObsHeader.hpp"
 
 namespace gpstk
 {
    /// Construct this object from the string specifier
-   RinexObsID::RinexObsID(const std::string& strID)
+   RinexObsID::RinexObsID(const std::string& strID, double version)
+         : ObsID(strID, version)
    {
       if(!isValidRinexObsID(strID)) {
          InvalidParameter ip(strID + " is not a valid RinexObsID");
          GPSTK_THROW(ip);
       }
-      try {
-         ObsID obsid(strID);
-         *this = RinexObsID(obsid.type, obsid.band, obsid.code);
-      }
-      catch(InvalidParameter& ip) { GPSTK_RETHROW(ip); }
    }
 
    RinexObsID::RinexObsID(const RinexObsType& rot) : ObsID()
@@ -78,13 +75,29 @@ namespace gpstk
    }
 
    // Represent this object using the Rinex3 notation
-   std::string RinexObsID::asString() const
+   std::string RinexObsID::asString(double version) const
    {
       char buff[4];
 
       buff[0] = ot2char[type];
       buff[1] = cb2char[band];
       buff[2] = tc2char[code];
+      if ((fabs(version - 3.02) < 0.005) && (band == cbB1) &&
+          ((code == tcCI1) || (code == tcCQ1) || (code == tcCIQ1)))
+      {
+            // kludge for RINEX 3.02 BDS codes
+         buff[1] = '1';
+      }
+         // special cases.
+      if (type == ObsID::otIono)
+      {
+         buff[2] = ' ';
+      }
+      else if (type == ObsID::otChannel)
+      {
+         buff[1] = '1';
+         buff[2] = ' ';
+      }
       buff[3] = 0;
       return std::string(buff);
    }
@@ -165,11 +178,38 @@ namespace gpstk
       char tc(strID[2]);
       std::string codes(ObsID::validRinexTrackingCodes[sys][cb]);
       if(ot == ' ' || ot == '-')
+      {
          return false;
+      }
+      if (ObsID::char2ot.find(ot) == ObsID::char2ot.end())
+      {
+         return false;
+      }
       if(codes.find(std::string(1,tc)) == std::string::npos)
+      {
          return false;
+      }
+         // special cases for iono and channel num
+      if (ot == 'I' && ((tc != ' ') || (cb < '1') || (cb > '9')))
+      {
+         return false;
+      }
+      if (ot == 'X' && ((tc != ' ') || (cb != '1')))
+      {
+         return false;
+      }
+      if (((codes == "* ") || (codes == " *")) && (ot == 'I'))
+      {
+            // channel num must always be "band" 1, but if the system
+            // doesn't have any actual data on "1" band, we don't want
+            // to accidentally say that we can get iono delay data for
+            // a band that isn't valid for the system.
+         return false;
+      }
       if(sys == 'G' && ot == 'C' && tc == 'N')           // the one exception
+      {
          return false;
+      }
 
       return true;
    }
@@ -206,8 +246,10 @@ namespace gpstk
                      std::ostringstream oss;
                      if(!isValidRinexObsID(str,csys))
                         oss << str << " " << "-INVALID-";
-                     else {
-                        RinexObsID robsid(sys+str);
+                     else
+                     {
+                        RinexObsID robsid(sys+str,
+                                          Rinex3ObsBase::currentVersion);
                         oss << str << " " << robsid;
                      }
                      oss1 << " " << StringUtils::leftJustify(oss.str(),34);
@@ -223,6 +265,26 @@ namespace gpstk
       }
 
       return s;
+   }
+
+   bool RinexObsID ::
+   equalIndex(const RinexObsID& right)
+      const
+   {
+      if (type != right.type)
+         return false;
+      if (type == otIono)
+      {
+            // only check band for ionospheric delay.
+         return band == right.band;
+      }
+      if (type == otChannel)
+      {
+            // There's only one channel type pseudo-observable
+         return true;
+      }
+         // use the default for everything else
+      return operator==(right);
    }
 
 }  // end namespace
