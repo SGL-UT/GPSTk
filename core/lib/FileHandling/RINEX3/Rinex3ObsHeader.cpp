@@ -2302,29 +2302,20 @@ namespace gpstk
       {
          s << "NOT VALID";
          s << " RINEX " << setprecision(2) << dumpVersion << ")" << endl;
-         s << "valid    = " << hex << setw(8) << valid << endl;
-         s << "allValid = " << hex << setw(8) << Fields::getRequired(dumpVersion)
-           << endl;
+         s << "valid    = " << valid << endl;
+         Fields required = Fields::getRequired(dumpVersion);
+         s << "allValid = " << required << endl;
 
-         s << "Invalid header records:" << endl;
-         if(!(valid & validVersion)) s << " Version / Type\n";
-         if(!(valid & validRunBy)) s << " Pgm / Run By / Date\n";
-         if(!(valid & validMarkerName)) s << " Marker Name\n";
-            //if(version >= 3 && !(valid & validMarkerType)) s << "Marker Type\n";
-            // Not defined in R2 and not required in > 3, see Table A2 in R3 doc: 
-            // "Record required except for GEODETIC and NON_GEODETIC marker types"
-         if(!(valid & validObserver)) s << " Observer / Agency\n";
-         if(!(valid & validReceiver)) s << " Receiver # / Type\n";
-         if(!(valid & validAntennaType)) s << " Antenna Type\n";
-         if(!(valid & validAntennaPosition)) s << " Antenna Position\n";
-         if(!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN\n";
-         if(dumpVersion < 3 && !(valid & validNumObs)) s << " # / TYPES OF OBSERV\n";
-         if(dumpVersion >= 3 && !(valid & validSystemNumObs  )) s << " Sys / # / Obs Type\n";
-         if(!(valid & validFirstTime)) s << " Time of First Obs\n";
-         if(dumpVersion >= 3.01 && !(valid & validSystemPhaseShift)) s << " SYS / PHASE SHIFT\n";
-         if(dumpVersion >= 3.01 && !(valid & validGlonassSlotFreqNo)) s << " GLONASS SLOT / FRQ #\n";
-         if(dumpVersion >= 3.02 && !(valid & validGlonassCodPhsBias)) s << " GLONASS COD/PHS/BIS\n";
-         if(!(validEoH)) s << " END OF HEADER\n";
+         s << "Invalid or missing header records:" << endl;
+            // print all header fields in required not in valid
+         for (const auto& reqi : required.fieldsSet)
+         {
+            if (valid.isSet(reqi) == 0)
+            {
+               s << "  " << setw(2) << reqi << " "
+                 << Rinex3ObsHeader::asString(reqi) << endl;
+            }
+         }
          s << "END Invalid header records." << endl;
       }
 

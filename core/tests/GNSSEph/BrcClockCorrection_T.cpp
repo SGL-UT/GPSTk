@@ -38,6 +38,7 @@
 #include "TestUtil.hpp"
 #include "GPSWeekZcount.hpp"
 
+using namespace std;
 using namespace gpstk;
 
 #ifdef _MSC_VER
@@ -51,8 +52,10 @@ class BrcClockCorrection_T
 public:
       /// set the fields to some non-default values
    void fill(BrcClockCorrection& orbit);
+   void fill2(BrcClockCorrection& orbit);
    unsigned initializationTest();
    unsigned equalityTest();
+   unsigned svClockBiasTest();
 };
 
 
@@ -69,6 +72,27 @@ fill(BrcClockCorrection& orbit)
 }
 
 
+void BrcClockCorrection_T ::
+fill2(BrcClockCorrection& orbit)
+{
+      // By rules of Clock Correction, this must be week of Toc
+   short weeknum   = 1638;
+   short uraoc     = 5;
+   short uraoc1    = 7;
+   short uraoc2    = 7;
+   double toc      = 388800.0;
+   double top      = 302400.0;
+   double af0      = 7.23189674E-04;
+   double af1      = 5.11590770E-12;
+   double af2      = 0.00000000E+00;
+   CommonTime tocCT = GPSWeekSecond(weeknum, toc, TimeSystem::GPS);
+   CommonTime topCT = GPSWeekSecond(weeknum, top, TimeSystem::GPS);
+   ObsID oi(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcY);
+   orbit.loadData("GPS", oi, 31, tocCT, topCT, uraoc, uraoc1, uraoc2, true,
+                  af0, af1, af2);
+}
+
+
 unsigned BrcClockCorrection_T ::
 initializationTest()
 {
@@ -82,7 +106,7 @@ initializationTest()
    TUASSERTE(short, 0, empty.PRNID);
    TUASSERTE(CommonTime, emptyTime, empty.Toc);
    TUASSERTE(CommonTime, emptyTime, empty.Top);
-   TUASSERTE(short, 0, empty.URAoc);
+   TUASSERTE(short, -16, empty.URAoc);
    TUASSERTE(short, 0, empty.URAoc1);
    TUASSERTE(short, 0, empty.URAoc2);
    TUASSERTE(bool, false, empty.healthy);
@@ -185,13 +209,34 @@ equalityTest()
 }
 
 
+unsigned BrcClockCorrection_T ::
+svClockBiasTest()
+{
+   TUDEF("BrcClockCorrection", "svClockBias");
+   BrcClockCorrection co1;
+   CommonTime t = CivilTime(2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS);
+   fill2(co1);
+   cout << setprecision(20)
+        << co1.svClockDrift(t)
+        << endl;
+   TUASSERTFE(7.2319419646240680997e-4, co1.svClockBias(t));
+   TUCSM("svClockBiasM");
+   TUASSERTFE(216808.16576879983768, co1.svClockBiasM(t));
+   TUCSM("svClockDrift");
+   TUASSERTFE(5.1159076999999996399e-12, co1.svClockDrift(t));
+   TURETURN();
+}
+
+
 int main() //Main function to initialize and run all tests above
 {
    using namespace std;
    BrcClockCorrection_T testClass;
    unsigned errorTotal = 0;
 
+   errorTotal += testClass.initializationTest();
    errorTotal += testClass.equalityTest();
+   errorTotal += testClass.svClockBiasTest();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 

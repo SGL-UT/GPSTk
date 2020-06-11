@@ -35,7 +35,7 @@ using namespace gpstk;
 %ignore *::operator--;
 
 %include "ValidType.hpp"
-%include "typemaps.i"
+%include "gpstk_typemaps.i"
 %include "STLTemplates.i"
 %include "STLHelpers.i"
 

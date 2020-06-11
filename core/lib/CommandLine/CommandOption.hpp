@@ -52,6 +52,7 @@ namespace gpstk
       /** @defgroup CommandLine Command-Line Option Processing
        * Provides classes for parsing application command-line options.
        * @sa AppFrame module
+       * For additional details, see \ref appbuilding.
        */
 
       /// @ingroup CommandLine
@@ -94,7 +95,7 @@ namespace gpstk
        * if you change anything here, make sure you don't side affect 
        * the other.
        *
-       * @sa getopttest.cpp in the test directory for some examples.
+       * For additional details, see \ref appbuilding.
        *
        * @warning DO NOT USE THE DEFAULT CONSTRUCTOR FOR THIS CLASS.
        * That's for the STL use requirements only.
@@ -187,7 +188,7 @@ namespace gpstk
           * Returns the arguments this option had passed in from the
           * command line.
           */
-      std::vector<std::string> getValue() const { return value; }
+      const std::vector<std::string>& getValue() const { return value; }
 
          /** Returns the order which this command option was seen on
           * the command line, with 1 being the first option.  If it
