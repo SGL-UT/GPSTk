@@ -1,3 +1,82 @@
+gpstk (5.0.0-1) stable; urgency=low
+
+  * Updated to version 5.0.0
+  * Add tests for computeXvt and getSVHealth with unhealthy satellites
+  * Update SWIG files so that gpstk::Exception is treated as a Python
+    Exception
+  * Add ObsID Add methods to convert between enumeration and string and
+    test them.
+  * Add NavID Add methods to convert between enumeration and string and
+    test them.
+  * Update OrbitEphStore to have more information when a potentially
+    corrupt ephemeris is added.
+  * Fix decimation bug Rinex3ObsLoader corrected decimation logic
+  * Update CI to retain, as CI artifacts, output from failed tests.
+  * Update MJD/JD timeconvert tests to be able to pass under windows.
+  * Deprecate SVNumXRef in favor of SatMetaDataStore
+  * Add FileSpecFind as an eventual replacement for FileHunter
+  * Fix RinexSatID/SP3SatID to properly handle QZSS and GEO satellite
+    IDs over 100
+  * Update CommandOptionParser to remove the .exe file extension when
+    printing help under Windows.
+  * Update FileSpec to use WIN32 precompiler macro instead of _WIN32 to
+    get the correct file separator.
+  * Remove FileHunter_T failing test from Windows build in preparation
+    for future deprecation of the FileHunter class.
+  * Update rstats testing to use portable ctest mechanisms instead of
+    the python script, and split the truth data accordingly.
+  * Update Yuma_T test to use the most modern cmake test script and
+    df_diff to account for minor differences in floating point least
+    significant digits.
+  * Modify installation script to create site-packages if it doesn't
+    exist.
+  * Update Rinex3ObsHeader to use a nested class called "Flags" for
+    header field management, replacing the bit field.
+  * Fix RINEX reference data for tests containing the "Signal Strenth"
+    typo, or remove it for RINEX 2 tests.
+  * Add SWIG bindings to support the nested classes within
+    Rinex3ObsHeader.
+  * Fix Rinex3ObsHeader::Fields SWIG bindings.
+  * Fix Rinex3ObsHeader::Fields SWIG bindings.
+  * Update Position::transformTo,asGeodetic,asECEF to return a
+    reference.
+  * Update CommandOption classes to return a const reference instead of
+    a copy of a vector.
+  * Add BasicFramework documentation.
+  * Update RinSum to have better diagnostics when there is an invalid
+    Rinex header
+  * Fix SWIG bindings to use Python-list to C-array typemaps in
+    gpstk_typemaps.i
+  * Move a collection of tests and code from ext to core.
+  * Add FileUtils/FileUtils_T comments explaining debian 7 test
+    failures.
+  * Update RinDump to support all current (as of RINEX 3.04) codes
+  * Update RinSum to improve support aux headers over simple comment
+    support.
+  * Update PRSolve to input multiple GNSS options, and for multi-GNSS
+    solution, including one Rx clock per system.
+  * Fix Rinex3ClockData/Rinex3ClockHeader to decode systems using
+    existing classes.
+  * Fix Rinex3NavData to use a sane begin time for QZSS nav.
+  * Fix QZSEphemeris to use a sane begin time for QZSS nav.
+  * Update Rinex3ObsData to support channel number and ionospheric delay
+    data.
+  * Remove frequency/wavelength constants from GNSSconstants.hpp and put
+    them in DeprecatedConsts.hpp
+  * Add FreqConsts.hpp to replace the deprecated constants with new
+    names based on ICD naming instead of RINEX.
+  * Add ObsID support for numerous previously unsupported codes.
+  * Add RinexObsID support for decoding channel number and ionospheric
+    delay pseudo-observables.
+  * Update OrbitEph::adjustValidity to subtract two hours only for GPS.
+  * Update PRSolution for multi-GNSS solution, including one Rx clock
+    per system.
+  * Update PreciseRange to input frequencies as well as GNSS.
+  * Note: Rinex 3.04 support is not fully in compliance with "9.1 Phase
+    Cycle Shifts", although that does not affect any of our use cases.
+
+ -- Andrew Kuck <kuck@arlut.utexas.edu>  Fri, 12 Jun 2020 14:59:16 -0500
+
 gpstk (4.0.0-1) stable; urgency=low
 
   * Updated to version 4.0.0
