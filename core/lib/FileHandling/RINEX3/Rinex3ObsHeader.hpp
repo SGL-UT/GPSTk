@@ -259,6 +259,23 @@ namespace gpstk
          std::vector<SatID> satList;
             /// vector of wavelength factor values
          short wavelengthFactor[2];
+            /// Setter method for convenience of python bindings
+         ExtraWaveFact& setWavelengthFactor(short wf1, short wf2)
+         {
+            wavelengthFactor[0] = wf1;
+            wavelengthFactor[1] = wf2;
+            return *this;
+         }
+            /** Getter method for convenience of python bindings.
+             * @note I decided to implement two methods instead of a
+             *   single method that took a parameter that required
+             *   sanity check so as to avoid having to do the sanity
+             *   check and exception handling. */
+         short getWavelengthFactor1()
+         { return wavelengthFactor[0]; }
+            /// @copydoc getWavelengthFactor1
+         short getWavelengthFactor2()
+         { return wavelengthFactor[1]; }
       };
 
          /// Commonly used vector of strings
@@ -571,6 +588,20 @@ namespace gpstk
       static std::string asString(Field b);
          /// Convert a RINEX header field label string into its matching enum.
       static Field asField(const std::string& s);
+
+         /// Setter method for convenience of python bindings
+      Rinex3ObsHeader& setWavelengthFactor(short wf1, short wf2)
+      {
+         wavelengthFactor[0] = wf1;
+         wavelengthFactor[1] = wf2;
+         return *this;
+      }
+         /// @copydoc ExtraWaveFact::getWavelengthFactor1()
+      short getWavelengthFactor1()
+      { return wavelengthFactor[0]; }
+         /// @copydoc ExtraWaveFact::getWavelengthFactor1()
+      short getWavelengthFactor2()
+      { return wavelengthFactor[1]; }
 
    protected:
 
