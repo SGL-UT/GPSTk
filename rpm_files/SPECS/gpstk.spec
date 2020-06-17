@@ -1,5 +1,5 @@
 %define name gpstk
-%define version 5.0.0
+%define version 5.0.1
 %define release 1
 
 Summary:        GPS Toolkit
@@ -54,6 +54,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jun 17 2020 Andrew Kuck <kuck@arlut.utexas.edu>
+- Updated for v5.0.1 release
+- Fix Swig wrapper of PRSolution to allow passing list of GNSS system.
 * Fri Jun 12 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Updated for v5.0.0 release
 - Note: Rinex 3.04 support is not fully in compliance with "9.1 Phase Cycle Shifts", although that does not affect any of our use cases.

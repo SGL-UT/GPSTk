@@ -1,5 +1,5 @@
 %define name python3-gpstk
-%define version 5.0.0
+%define version 5.0.1
 %define release 1
 
 Summary:        GPS Toolkit
@@ -60,6 +60,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jun 17 2020 Andrew Kuck <kuck@arlut.utexas.edu>
+- Updated for v5.0.1 release
 * Fri Jun 12 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Updated for v5.0.0 release
 * Mon Mar 30 2020 Andrew Kuck <kuck@arlut.utexas.edu>
