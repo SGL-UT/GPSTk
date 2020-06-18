@@ -44,6 +44,10 @@
 
 #include "AshtechData.hpp"
 
+#ifdef SWIG
+%immutable gpstk::AshtechPBEN::myId;
+#endif
+
 namespace gpstk
 {
    class AshtechPBEN : public AshtechData
@@ -75,7 +79,7 @@ namespace gpstk
 
       virtual std::string getName() const {return "pben";}
       
-      bool checkId(std::string hdrId) const {return hdrId==myId;}
+      bool checkId(const std::string& hdrId) const {return hdrId==myId;}
 
       void dump(std::ostream& out) const throw();
 
