@@ -35,12 +35,14 @@ using namespace std;
  */
 static bool winMatchRE(const std::string& pattern, const std::string& test)
 {
+   cerr << "  winMatchRE pattern = " << pattern << "  test = " << test << endl; 
       // change wildcards to regular expressions, making sure to match
       // the whole string.
    std::string patternRE = "^" + gpstk::StringUtils::change(pattern,".","\\.") +
       "$";
    patternRE = gpstk::StringUtils::change(patternRE,"*",".*");
    patternRE = gpstk::StringUtils::change(patternRE,"?",".");
+   cerr << "  winMatchRE patternRE = " << patternRE << endl;
    std::regex re(patternRE, std::regex::basic);
    std::smatch m;
    std::regex_search(test, m, re);
@@ -75,6 +77,8 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
       pathSearch = gpstk::StringUtils::change(pathSearch, "[0-9]", "?");
       std::string matchPattern = patternStr.substr(pos,pos2-pos);
       hFindFile = FindFirstFile(pathSearch.c_str(), &findFileData);
+      cerr << "  winGlob pathSearch = " << pathSearch << endl
+           << "  winGlob hFindFile  = " << hFindFile << endl;
       if(hFindFile != INVALID_HANDLE_VALUE) 
       { 
          do 
@@ -503,6 +507,7 @@ namespace gpstk
       glob_t globbuf;
       int g = glob(pattern.c_str(), GLOB_ERR|GLOB_NOSORT|GLOB_TILDE, nullptr,
                    &globbuf);
+      cerr << "  FSF glob returned " << globbuf.gl_pathc << " matches" << endl;
       for (size_t i = 0; i < globbuf.gl_pathc; i++)
       {
          bool timeMatched = true;
