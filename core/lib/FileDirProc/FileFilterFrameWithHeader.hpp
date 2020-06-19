@@ -436,9 +436,11 @@ namespace gpstk
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader> :: 
    init(const FileSpecFind::Filter& filter)
    {
+      cerr << "FFFWH fs = " << this->fs.getSpecString() << endl;
          // find the files
       std::list<std::string> listOfFiles = 
          FileSpecFind::find(this->fs, this->startTime, this->endTime, filter);
+      cerr << "FFFWH matched " << listOfFiles.size() << " files" << endl;
 
          // for each file, just read the header
       for (const auto& i : listOfFiles)

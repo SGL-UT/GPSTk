@@ -424,6 +424,9 @@ namespace gpstk
             string::size_type pos)
    {
       list<string> rv;
+      cerr << "FSF::findGlob" << endl
+           << "  FSF spec    = " << spec << endl
+           << "  FSF matched = " << matched << endl;
          // level 0:
          // /data/%04Y/%05n/%03j/nsh-FOO-%5n-%1r-%04Y-%03j-%02H%02M%02S.xml
          //      12   3
@@ -440,24 +443,30 @@ namespace gpstk
 
          // find the first part of the path that contains a FileSpec token
       string::size_type stokpos = spec.find('%', pos);
+      cerr << "  FSF stokpos = " << stokpos << endl;
          // find the beginning of the remaining path (subdirectory or
          // file within the directory starting at stokpos)
       string::size_type stoppos = min(stokpos, spec.rfind('/', stokpos));
+      cerr << "  FSF stoppos = " << stokpos << endl;
          // srest is the first character of the "rest" of the path
          // i.e. lower depths in the tree.
       string::size_type srest =
          (stokpos == string::npos ? string::npos : spec.find('/', stokpos+1));
+      cerr << "  FSF srest   = " << srest << endl;
          // thisSpec is JUST the part of the path that we've already searched
       string thisSpec(spec.substr(0, srest));
+      cerr << "  FSF thisSpec = " << thisSpec << endl;
          // patternSpec takes the parts of the original spec that have
          // already been matched and replaces that with the "matched"
          // string which fixes us into the specific directory tree
          // we're searching with glob
       string patternSpec(thisSpec);
       patternSpec.replace(0, pos, matched);
+      cerr << "  FSF patternSpec = " << patternSpec << endl;
          // pattern is the same as patternSpec but with all the
          // FileSpec tokens replaced with glob patterns.
       string pattern = transToken(patternSpec);
+      cerr << "  FSF pattern = " << pattern << endl;
          // currentSpec and currentSpecScanner contain the file spec
          // for just the currently searched directory.  We do this to
          // minimize the amount of effort done in matching, because
@@ -468,6 +477,8 @@ namespace gpstk
       string currentSpec = thisSpec.substr(stoppos+1);
       FileSpec currentSpecScanner(currentSpec);
       bool checkTime = currentSpecScanner.hasTimeField();
+      cerr << "  FSF currentSpec = " << currentSpec << endl
+           << "  FSF checkTime   = " << checkTime << endl;
 
          // Use the current spec to turn our time range into something
          // that will be useable to match at this level in the
@@ -478,6 +489,8 @@ namespace gpstk
       {
          string fromString = specScanner.toString(fromTime, dummyFSTS);
          string toString = specScanner.toString(toTime, dummyFSTS);
+         cerr << "  FSF fromString = " << fromString << endl
+              << "  FSF toString   = " << toString << endl;
          fromTimeMatch = specScanner.extractCommonTime(fromString);
          toTimeMatch = specScanner.extractCommonTime(toString);
             // Make sure our conditions can be met, i.e. from <= t < to
@@ -501,6 +514,7 @@ namespace gpstk
                specScanner.extractCommonTime(globbuf.gl_pathv[i]);
             timeMatched = ((fromTimeMatch <= fileTime) &&
                            (fileTime < toTimeMatch));
+            cerr << "  FSF timeMatched = " << timeMatched << endl;
          }
          if (timeMatched)
          {
