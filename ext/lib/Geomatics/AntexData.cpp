@@ -72,29 +72,45 @@ namespace gpstk
    const string AntexData::endOfAntennaString = "END OF ANTENNA";
 
    // NB. this dimension must be updated with the list
+   //  in IGS file rcvr_ant.tab.   See that file for 
+   //  additional information.
    /// Number of types that are used for satellites
-   const int Nsattype=19;
+   const int Nsattype=33;
    string sattype[Nsattype] =
    { 
-      string("BLOCK I"),         // 1
-      string("BLOCK II"),        // 2
-      string("BLOCK IIA"),       // 3
-      string("BLOCK IIR"),       // 4
-      string("BLOCK IIR-A"),     // 5
-      string("BLOCK IIR-B"),     // 6
-      string("BLOCK IIR-M"),     // 7
-      string("BLOCK IIF"),       // 8
-      string("BLOCK IIIA"),      // 9
-      string("GLONASS"),         // 10
-      string("GLONASS-M"),       // 11
-      string("GLONASS-K1"),      // 12
-      string("BEIDOU-2G"),       // 13
-      string("BEIDOU-2I"),       // 14
-      string("BEIDOU-2M"),       // 15
-      string("GALILEO-1"),       // 16
-      string("GALILEO-2"),       // 17
-      string("GALILEO-0A"),      // 18
-      string("GALILEO-0B")       // 19
+      string("BEIDOU-2G"),         //  1
+      string("BEIDOU-2I"),         //  2
+      string("BEIDOU-2M"),         //  3
+      string("BEIDOU-3I"),         //  4
+      string("BEIDOU-3SI-CAST"),   //  5
+      string("BEIDOU-3SI-SECM"),   //  6
+      string("BEIDOU-3SM-CAST"),   //  7
+      string("BEIDOU-3SM-SECM"),   //  8
+      string("BEIDOU-3M-CAST"),    //  9
+      string("BEIDOU-3M-SECM"),    // 10
+      string("BEIDOU-3G-CAST"),    // 11
+      string("BLOCK I"),           // 12
+      string("BLOCK II"),          // 13
+      string("BLOCK IIA"),         // 14
+      string("BLOCK IIR-A"),       // 15
+      string("BLOCK IIR-B"),       // 16
+      string("BLOCK IIR-M"),       // 17
+      string("BLOCK IIF"),         // 18
+      string("BLOCK IIIA"),        // 19
+      string("GALILEO-0A"),        // 20
+      string("GALILEO-0B"),        // 21
+      string("GALILEO-1"),         // 22
+      string("GALILEO-2"),         // 23
+      string("GLONASS"),           // 24
+      string("GLONASS-M"),         // 25
+      string("GLONASS-M+"),        // 26
+      string("GLONASS-K1"),        // 27
+      string("GLONASS-K2"),        // 28
+      string("IRNSS-1GEO"),        // 29
+      string("IRNSS-1IGSO"),       // 30
+      string("QZSS"),              // 31
+      string("QZSS-2I"),           // 32
+      string("QZSS-2G")            // 33
    };
    /// vector of type strings that identify satellites; must be kept updated.
    const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);
