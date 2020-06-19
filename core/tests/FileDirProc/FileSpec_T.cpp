@@ -509,21 +509,6 @@ unsigned FileSpec_T :: testHasField()
       oss << "unexpected exception: " << fse;
       TUFAIL(oss.str());
    }
-
-      // temporary performance test
-   string testspec("/datadir/%04Y/hg/%5n/hgnav%5n-%04Y%03j.h5");
-   gpstk::SystemTime t0;
-   unsigned matchCount = 0;
-   FileSpec spec(testspec);
-   for (unsigned i = 0; i < 100000; i++)
-   {
-      if (spec.hasField(gpstk::FileSpec::day))
-         matchCount++;
-   }
-   gpstk::SystemTime t1;
-   cout << "run time constructor: "
-        << (gpstk::CommonTime(t1)-gpstk::CommonTime(t0)) << " " << matchCount
-        << endl;
    TURETURN();
 }
 
