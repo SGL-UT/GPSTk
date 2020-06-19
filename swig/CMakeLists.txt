@@ -24,7 +24,7 @@ set( CMAKE_SWIG_FLAGS "-w362,383,384,389,503 -builtin" )
 #----------------------------------------
 # Don't set the RPATH for dependencies.
 #----------------------------------------
-set( CMAKE_SKIP_INSTALL_RPATH TRUE )
+set( CMAKE_SKIP_RPATH TRUE )
 
 #----------------------------------------
 # Compiler flags that are used only

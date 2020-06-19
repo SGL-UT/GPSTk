@@ -65,6 +65,11 @@
 //#include "MathBase.hpp"
 #include "SatMetaDataStore.hpp"
 
+#ifdef SWIG
+// make sure SWIG doesn't generate broken accessor methods to this data
+%immutable gpstk::OrbElemBase::satMetaDataStore;
+#endif
+
 namespace gpstk
 {
    class OrbElemBase
@@ -232,6 +237,12 @@ namespace gpstk
 
          /// Set this to a valid store to get PRN->SVN translations in dump().
       static SatMetaDataStore *satMetaDataStore;
+         /// Accessor for python
+      static void setSatMetaDataStore(SatMetaDataStore *smds)
+      { satMetaDataStore = smds; }
+         /// Accessor for python
+      static SatMetaDataStore* getSatMetaDataStore()
+      { return satMetaDataStore; }
 
 
          // Fit Interval Definition

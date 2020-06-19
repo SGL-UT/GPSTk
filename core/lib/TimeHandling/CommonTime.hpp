@@ -181,8 +181,8 @@ namespace gpstk
           * Set method for internal variable m_timeSystem.
           */
           //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
-      void setTimeSystem( const TimeSystem& timeSystem )
-      { m_timeSystem = timeSystem; }
+      CommonTime& setTimeSystem( const TimeSystem& timeSystem )
+      { m_timeSystem = timeSystem; return *this; }
 
          /**
           * Get method.  Obtain values in days, second of day and fractional

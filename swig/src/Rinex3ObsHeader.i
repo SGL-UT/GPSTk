@@ -27,6 +27,16 @@
             std::vector<SatID> satList;
             /// vector of wavelength factor values
             short wavelengthFactor[2];
+            ExtraWaveFact& setWavelengthFactor(short wf1, short wf2)
+            {
+               wavelengthFactor[0] = wf1;
+               wavelengthFactor[1] = wf2;
+               return *this;
+            }
+            short getWavelengthFactor1()
+            { return wavelengthFactor[0]; }
+            short getWavelengthFactor2()
+            { return wavelengthFactor[1]; }
     };
 
     class Fields
