@@ -591,12 +591,14 @@ namespace gpstk
                }
             } // if (!filter.empty())
 
+            cerr << "  FSF matchedFilter = " << matchedFilter << endl;
             if (matchedFilter)
             {
                   // If srest is npos, that means there is no more path
                   // depth and no more recursion to process.
                if (srest == string::npos)
                {
+                  cerr << "  FSF adding " << globbuf.gl_pathv[i] << endl;
                   rv.push_back(globbuf.gl_pathv[i]);
                }
                else
@@ -611,6 +613,7 @@ namespace gpstk
          } // if ((fromTimeMatch <= fileTime) && (fileTime < toTimeMatch))
       } // for (size_t i = 0; i < globbuf.gl_pathc; i++)
       globfree(&globbuf);
+      cerr << "  FSF returning " << rv.size() << " matches" << endl;
       return rv;
    }
 }
