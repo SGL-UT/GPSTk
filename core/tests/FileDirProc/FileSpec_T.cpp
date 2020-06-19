@@ -37,6 +37,7 @@
 #include "FileSpec.hpp"
 #include "YDSTime.hpp"
 #include "GPSWeekZcount.hpp"
+#include "SystemTime.hpp"
 #include "TestUtil.hpp"
 #include <iostream>
 #include <set>
@@ -106,6 +107,9 @@ public:
       // test FileSpec method sortList()
       // @return  number of failures, i.e., 0=PASS, !0=FAIL
    unsigned testSortList();
+
+      // test FileSpec method hasTimeField()
+   unsigned testHasTimeField();
 
 }; // class FileSpec_T
 
@@ -505,6 +509,21 @@ unsigned FileSpec_T :: testHasField()
       oss << "unexpected exception: " << fse;
       TUFAIL(oss.str());
    }
+
+      // temporary performance test
+   string testspec("/datadir/%04Y/hg/%5n/hgnav%5n-%04Y%03j.h5");
+   gpstk::SystemTime t0;
+   unsigned matchCount = 0;
+   FileSpec spec(testspec);
+   for (unsigned i = 0; i < 100000; i++)
+   {
+      if (spec.hasField(gpstk::FileSpec::day))
+         matchCount++;
+   }
+   gpstk::SystemTime t1;
+   cout << "run time constructor: "
+        << (gpstk::CommonTime(t1)-gpstk::CommonTime(t0)) << " " << matchCount
+        << endl;
    TURETURN();
 }
 
@@ -1031,6 +1050,48 @@ unsigned FileSpec_T :: testSortList()
 }
 
 
+unsigned FileSpec_T ::
+testHasTimeField()
+{
+   TUDEF("FileSpec", "hasTimeField");
+
+   try
+   {
+      for (unsigned i = gpstk::FileSpec::unknown; i < gpstk::FileSpec::end; i++)
+      {
+            // Skip unknown and fixed.
+         if ((i == gpstk::FileSpec::unknown) || (i == gpstk::FileSpec::fixed))
+            continue;
+            // FileSpecType enums are expected to be "separated" into
+            // two groups, the first group being the non-time fields
+            // and the second group being nothing but time fields.  So
+            // we expect hasTimeField to return true for all enums >=
+            // firstTime.
+         gpstk::FileSpec::FileSpecType fst = (gpstk::FileSpec::FileSpecType)i;
+         string specString = "Some-junk-%" +
+            gpstk::FileSpec::convertFileSpecType(fst);
+         gpstk::FileSpec fs(specString);
+         TUASSERTE(bool, i >= gpstk::FileSpec::firstTime, fs.hasTimeField());
+      }
+   }
+   catch (gpstk::Exception& exc)
+   {
+      cerr << exc << endl;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      cerr << exc.what() << endl;
+      TUFAIL("Unexpected exception");
+   }
+   catch (...)
+   {
+      TUFAIL("Unknown exception");
+   }
+   TURETURN();
+}
+
+
 /** Run the program.
  *
  * @return Total error count for all tests
@@ -1053,6 +1114,7 @@ int main(int argc, char *argv[])
    errorTotal += testClass.testExtractCommonTime();
    errorTotal += testClass.testToString();
    errorTotal += testClass.testSortList();
+   errorTotal += testClass.testHasTimeField();
 
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
 

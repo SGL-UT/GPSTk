@@ -207,20 +207,44 @@ namespace gpstk
       gpstk::StringUtils::change(spec, "%"+selTok, "%"+selLenS+selTok);
          // Fill in other defaults, which will get set to a fixed
          // width by FileSpec.
-      if (dummyFSTS.find(gpstk::FileSpec::station) == dummyFSTS.end())
-         dummyFSTS[gpstk::FileSpec::station] = "";
-      if (dummyFSTS.find(gpstk::FileSpec::receiver) == dummyFSTS.end())
-         dummyFSTS[gpstk::FileSpec::receiver] = "";
-      if (dummyFSTS.find(gpstk::FileSpec::prn) == dummyFSTS.end())
-         dummyFSTS[gpstk::FileSpec::prn] = "";
-      if (dummyFSTS.find(gpstk::FileSpec::sequence) == dummyFSTS.end())
-         dummyFSTS[gpstk::FileSpec::sequence] = "";
-      if (dummyFSTS.find(gpstk::FileSpec::version) == dummyFSTS.end())
-         dummyFSTS[gpstk::FileSpec::version] = "";
-      if (dummyFSTS.find(gpstk::FileSpec::clock) == dummyFSTS.end())
-         dummyFSTS[gpstk::FileSpec::clock] = "";
+      for (unsigned i = gpstk::FileSpec::unknown;
+           i < gpstk::FileSpec::firstTime; i++)
+      {
+         gpstk::FileSpec::FileSpecType fst = (gpstk::FileSpec::FileSpecType)i;
+         if ((fst == FileSpec::fixed) || (fst == FileSpec::unknown))
+            continue;
+         if (dummyFSTS.find(fst) == dummyFSTS.end())
+            dummyFSTS[fst] = "";
+      }
 
-      return findGlob(start, end, spec, dummyFSTS);
+      Filter filter;
+
+      return findGlob(start, end, spec, dummyFSTS, filter);
+   }
+
+
+   std::list<std::string> FileSpecFind ::
+   find(const std::string& fileSpec,
+        const CommonTime& start,
+        const CommonTime& end,
+        const Filter& filter)
+   {
+         // The filter can contain multiple values.
+         // "Cowardly refusing to implement variable width FileSpec"
+      FileSpec::FSTStringMap dummyFSTS;
+         // still gotta fill it, though, because even fixed width
+         // tokens won't get translated if there's no value, e.g. %5n
+         // will stay %5n after converting to string if there's no
+         // station value in dummyFSTS
+      for (unsigned i = gpstk::FileSpec::unknown;
+           i < gpstk::FileSpec::firstTime; i++)
+      {
+         gpstk::FileSpec::FileSpecType fst = (gpstk::FileSpec::FileSpecType)i;
+         if ((fst == FileSpec::fixed) || (fst == FileSpec::unknown))
+            continue;
+         dummyFSTS[fst] = "";
+      }
+      return findGlob(start, end, fileSpec, dummyFSTS, filter);
    }
 
 
@@ -234,6 +258,8 @@ namespace gpstk
          gpstk::FileSpec::text);
       string selTok = gpstk::FileSpec::convertFileSpecType(
          gpstk::FileSpec::selected);
+      string stnTok = gpstk::FileSpec::convertFileSpecType(
+         gpstk::FileSpec::station);
       while (true)
       {
          string::size_type ppos = token.find('%', spos);
@@ -257,7 +283,8 @@ namespace gpstk
          else
          {
             if ((token[fpos] == textTok[0]) || // arbitrary text
-                (token[fpos] == selTok[0]))    // selected
+                (token[fpos] == selTok[0]) ||  // selected
+                (token[fpos] == stnTok[0]))    // station ID
             {
                   // text values, just use single character matches for
                   // the appropriate length
@@ -392,30 +419,34 @@ namespace gpstk
             const gpstk::CommonTime& toTime,
             const string& spec,
             const gpstk::FileSpec::FSTStringMap& dummyFSTS,
+            const Filter& filter,
             const string& matched,
             string::size_type pos)
    {
       list<string> rv;
+         // level 0:
+         // /data/%04Y/%05n/%03j/nsh-FOO-%5n-%1r-%04Y-%03j-%02H%02M%02S.xml
+         //      12   3
+         // 1 = stoppos
+         // 2 = stokpos
+         // 3 = srest
+         //
+         // level 3:
+         // /data/%04Y/%05n/%03j/nsh-FOO-%5n-%1r-%04Y-%03j-%02H%02M%02S.xml
+         //                     1        2                                 3
+         // 1 = stoppos
+         // 2 = stokpos
+         // 3 = srest
+
          // find the first part of the path that contains a FileSpec token
       string::size_type stokpos = spec.find('%', pos);
-         // Hard-coded path separator, sorry. This code will only work
-         // under unix anyway, and the file system separator character
-         // is part of c++17 and not yet available in the version of
-         // gcc shipped with RedHat.
+         // find the beginning of the remaining path (subdirectory or
+         // file within the directory starting at stokpos)
       string::size_type stoppos = min(stokpos, spec.rfind('/', stokpos));
-      string stopdir;
-      if (stoppos == 0)
-      {
-            // handle relative paths
-         stopdir = ".";
-      }
-      else
-      {
-         stopdir = spec.substr(0, stoppos);
-      }
          // srest is the first character of the "rest" of the path
          // i.e. lower depths in the tree.
-      string::size_type srest = spec.find('/', stokpos+1);
+      string::size_type srest =
+         (stokpos == string::npos ? string::npos : spec.find('/', stokpos+1));
          // thisSpec is JUST the part of the path that we've already searched
       string thisSpec(spec.substr(0, srest));
          // patternSpec takes the parts of the original spec that have
@@ -427,49 +458,144 @@ namespace gpstk
          // pattern is the same as patternSpec but with all the
          // FileSpec tokens replaced with glob patterns.
       string pattern = transToken(patternSpec);
+         // currentSpec and currentSpecScanner contain the file spec
+         // for just the currently searched directory.  We do this to
+         // minimize the amount of effort done in matching, because
+         // we're doing recursive searches there's zero reason to
+         // check upper level directories against the filter, or time
+         // range if there are no time-related spec types at this
+         // level, as they will have already been checked.
+      string currentSpec = thisSpec.substr(stoppos+1);
+      FileSpec currentSpecScanner(currentSpec);
+      bool checkTime = currentSpecScanner.hasTimeField();
+
          // Use the current spec to turn our time range into something
          // that will be useable to match at this level in the
          // heirarchy.
       gpstk::CommonTime fromTimeMatch, toTimeMatch;
       gpstk::FileSpec specScanner(thisSpec);
-      string fromString = specScanner.toString(fromTime, dummyFSTS);
-      string toString = specScanner.toString(toTime, dummyFSTS);
-      fromTimeMatch = specScanner.extractCommonTime(fromString);
-      toTimeMatch = specScanner.extractCommonTime(toString);
-         // Make sure our conditions can be met, i.e. from <= t < to
-         // by adding 1/10th of a second to "to" if from and to are the same
-      if (toTimeMatch == fromTimeMatch)
-         toTimeMatch += 0.1;
+      if (checkTime)
+      {
+         string fromString = specScanner.toString(fromTime, dummyFSTS);
+         string toString = specScanner.toString(toTime, dummyFSTS);
+         fromTimeMatch = specScanner.extractCommonTime(fromString);
+         toTimeMatch = specScanner.extractCommonTime(toString);
+            // Make sure our conditions can be met, i.e. from <= t < to
+            // by adding 1/10th of a second to "to" if from and to are the same
+         if (toTimeMatch == fromTimeMatch)
+            toTimeMatch += 0.1;
+      }
 
          // Find all the files that match the pattern at this level.
       glob_t globbuf;
-      int g = glob(pattern.c_str(), GLOB_ERR|GLOB_NOSORT|GLOB_TILDE, NULL,
+      int g = glob(pattern.c_str(), GLOB_ERR|GLOB_NOSORT|GLOB_TILDE, nullptr,
                    &globbuf);
       for (size_t i = 0; i < globbuf.gl_pathc; i++)
       {
-            // check if the matched files/directories are within the search time
-         gpstk::CommonTime fileTime =
-            specScanner.extractCommonTime(globbuf.gl_pathv[i]);
-         if ((fromTimeMatch <= fileTime) && (fileTime < toTimeMatch))
+         bool timeMatched = true;
+         if (checkTime)
+         {
+               // check if the matched files/directories are within
+               // the search time
+            gpstk::CommonTime fileTime =
+               specScanner.extractCommonTime(globbuf.gl_pathv[i]);
+            timeMatched = ((fromTimeMatch <= fileTime) &&
+                           (fileTime < toTimeMatch));
+         }
+         if (timeMatched)
          {
                // File's/directory's time is within the desired span.
+               // Allow optional filter to determine whether to recurse further
+            bool matchedFilter = true;
+            if (!filter.empty())
+            {
+                  // Iterate through the filter data, attempting to
+                  // match the filter values with the spec.  Do NOT
+                  // use the increment operator on the iterator as
+                  // part of a for loop as that will cause the loop to
+                  // get stuck at the end of the multimap.
+               Filter::const_iterator fi = filter.begin();
+                  // Keep the value of the most recently extracted
+                  // field so we don't spend time extracting it over
+                  // and over if multiple values for a given
+                  // FileSpecType are specified.
+               std::string fieldVal;
+                  // Keep track of the FileSpecType associated with
+                  // the value in fieldVal
+               FileSpec::FileSpecType lastFST = FileSpec::unknown;
+               while (fi != filter.end())
+               {
+                     // Check to see if the current directory level of
+                     // the file spec contains the FileSpecType
+                     // pointed to by the filter iterator.  We compare
+                     // the FST against lastFST first because it's
+                     // really fast compared to hasField().
+                  if ((fi->first == lastFST) ||
+                      currentSpecScanner.hasField(fi->first))
+                  {
+                        // thisSpec, which only matches the current
+                        // directory level, contains this particular
+                        // FileSpecType, so check to see if the value
+                        // matches.
+                     if (fi->first != lastFST)
+                     {
+                           // extract the field value from the path
+                           // which we haven't done yet.
+                        fieldVal = specScanner.extractField(globbuf.gl_pathv[i],
+                                                            fi->first);
+                        lastFST = fi->first;
+                     }
+                     if (fi->second == fieldVal)
+                     {
+                           // field value in the path matches, so move
+                           // on to the next FileSpecType
+                        fi = filter.upper_bound(fi->first);
+                     }
+                     else
+                     {
+                           // try the next filter value
+                        fi++;
+                           // but check to make sure we haven't
+                           // exhausted all possible matches for a
+                           // Filtered field.
+                        if ((fi == filter.end()) ||
+                            (fi->first != lastFST))
+                        {
+                           matchedFilter = false;
+                           break;
+                        }
+                     }
+                  }
+                  else
+                  {
+                        // currentSpec, which only matches the current
+                        // directory level, doesn't contain this
+                        // particular FileSpecType, so skip to the
+                        // next FileSpecType.
+                     fi = filter.upper_bound(fi->first);
+                  }
+               }
+            } // if (!filter.empty())
 
-               // If srest is npos, that means there is no more path
-               // depth and no more recursion to process.
-            if (srest == string::npos)
+            if (matchedFilter)
             {
-               rv.push_back(globbuf.gl_pathv[i]);
-            }
-            else
-            {
-                  // Still more path depth to go, recurse.
-               list<string> toAdd =
-                  findGlob(fromTime, toTime, spec, dummyFSTS,
-                           globbuf.gl_pathv[i], thisSpec.length());
-               rv.splice(rv.end(), toAdd);
-            }
-         }
-      }
+                  // If srest is npos, that means there is no more path
+                  // depth and no more recursion to process.
+               if (srest == string::npos)
+               {
+                  rv.push_back(globbuf.gl_pathv[i]);
+               }
+               else
+               {
+                     // Still more path depth to go, recurse.
+                  list<string> toAdd =
+                     findGlob(fromTime, toTime, spec, dummyFSTS, filter,
+                              globbuf.gl_pathv[i], thisSpec.length());
+                  rv.splice(rv.end(), toAdd);
+               }
+            } // if (matchedFilter)
+         } // if ((fromTimeMatch <= fileTime) && (fileTime < toTimeMatch))
+      } // for (size_t i = 0; i < globbuf.gl_pathc; i++)
       globfree(&globbuf);
       return rv;
    }

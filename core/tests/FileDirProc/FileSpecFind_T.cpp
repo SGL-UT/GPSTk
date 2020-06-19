@@ -214,6 +214,157 @@ findTests(const std::string& tld, const std::string& testName)
       // make sure we got all valid files
    TUASSERT(openable(files));
 
+      // change the search spec for filter to not have variable length tokens.
+   searchSpec = tld + fs + "%04Y" + fs + "%05n" + fs + "%03j" + fs +
+      "nsh-%3x-%5n-%1r-%04Y-%03j-%02H%02M%02S.xml";
+   TUCSM("find(" + testName + ") multiple epochs with filter");
+   try
+   {
+      gpstk::FileSpecFind::Filter filter;
+      filter.insert(gpstk::FileSpecFind::Filter::value_type(
+                       gpstk::FileSpec::station, "10000"));
+      files = gpstk::FileSpecFind::find(
+         searchSpec,
+         gpstk::YDSTime(2018,211,67500),
+         gpstk::YDSTime(2018,211,67801),
+         filter);
+   }
+   catch (gpstk::Exception &exc)
+   {
+      cerr << exc;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      TUFAIL("Unexpected exception " + std::string(exc.what()));
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+   TUASSERTE(ListSize, 5, files.size());
+      // make sure we got all valid files
+   TUASSERT(openable(files));
+
+   try
+   {
+      gpstk::FileSpecFind::Filter filter;
+      filter.insert(gpstk::FileSpecFind::Filter::value_type(
+                       gpstk::FileSpec::station, "10000"));
+      filter.insert(gpstk::FileSpecFind::Filter::value_type(
+                       gpstk::FileSpec::text, "FOO"));
+      files = gpstk::FileSpecFind::find(
+         searchSpec,
+         gpstk::YDSTime(2018,211,67500),
+         gpstk::YDSTime(2018,211,67801),
+         filter);
+   }
+   catch (gpstk::Exception &exc)
+   {
+      cerr << exc;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      TUFAIL("Unexpected exception " + std::string(exc.what()));
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+   TUASSERTE(ListSize, 4, files.size());
+      // make sure we got all valid files
+   TUASSERT(openable(files));
+
+   try
+   {
+      gpstk::FileSpecFind::Filter filter;
+      filter.insert(gpstk::FileSpecFind::Filter::value_type(
+                       gpstk::FileSpec::station, "10000"));
+      filter.insert(gpstk::FileSpecFind::Filter::value_type(
+                       gpstk::FileSpec::text, "BAR"));
+      files = gpstk::FileSpecFind::find(
+         searchSpec,
+         gpstk::YDSTime(2018,211,67500),
+         gpstk::YDSTime(2018,211,67801),
+         filter);
+   }
+   catch (gpstk::Exception &exc)
+   {
+      cerr << exc;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      TUFAIL("Unexpected exception " + std::string(exc.what()));
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+   TUASSERTE(ListSize, 1, files.size());
+      // make sure we got all valid files
+   TUASSERT(openable(files));
+
+   try
+   {
+      gpstk::FileSpecFind::Filter filter;
+      filter.insert(gpstk::FileSpecFind::Filter::value_type(
+                       gpstk::FileSpec::station, "10000"));
+      filter.insert(gpstk::FileSpecFind::Filter::value_type(
+                       gpstk::FileSpec::receiver, "2"));
+      files = gpstk::FileSpecFind::find(
+         searchSpec,
+         gpstk::YDSTime(2018,211,67500),
+         gpstk::YDSTime(2018,211,67801),
+         filter);
+   }
+   catch (gpstk::Exception &exc)
+   {
+      cerr << exc;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      TUFAIL("Unexpected exception " + std::string(exc.what()));
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+   TUASSERTE(ListSize, 2, files.size());
+      // make sure we got all valid files
+   TUASSERT(openable(files));
+
+   searchSpec = tld + fs + "2018" + fs + "10000" + fs + "211" + fs +
+      "nsh-FOO-10000-1-2018-211-184500.xml";
+   TUCSM("find(" + testName + ") exact file name");
+   try
+   {
+      gpstk::FileSpecFind::Filter filter;
+      files = gpstk::FileSpecFind::find(
+         searchSpec,
+         gpstk::CommonTime::BEGINNING_OF_TIME,
+         gpstk::CommonTime::END_OF_TIME,
+         filter);
+   }
+   catch (gpstk::Exception &exc)
+   {
+      cerr << exc;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      TUFAIL("Unexpected exception " + std::string(exc.what()));
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+   TUASSERTE(ListSize, 1, files.size());
+      // make sure we got all valid files
+   TUASSERT(openable(files));
+
    TURETURN();
 }
 
