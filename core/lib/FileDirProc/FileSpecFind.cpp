@@ -62,12 +62,18 @@ static bool winMatchRE(const std::string& pattern, const std::string& test)
 static void winGlob(const char *pattern, std::list<std::string>& results)
 {
    WIN32_FIND_DATA findFileData; 
-   HANDLE hFindFile; 
+   HANDLE hFindFile;
+   cerr << "winGlob pattern = " << pattern << endl;
    std::string patternStr(pattern);
    if (patternStr.empty())
+   {
+      cerr << "  winGlob giving up" << endl;
       return;
+   }
    std::string::size_type pos = patternStr.find_first_of("*?["), pos2;
+   cerr << "  winGlob pos (1) = " << pos << endl;
    pos = patternStr.rfind(gpstk::getFileSep(), pos);
+   cerr << "  winGlob pos (2) = " << pos << endl;
    if (pos != std::string::npos)
    {
       pos++; // skip over the file separator.
@@ -127,6 +133,7 @@ static int glob(const char *pattern, int flags,
                 int (*errfunc) (const char *epath, int eerrno),
                 glob_t *pglob)
 {
+   cerr << "glob(" << pattern << ", " << flags << ",...)" << endl;
    pglob->gl_pathc = 0;
    pglob->gl_pathv = nullptr;
    std::list<std::string> results;
