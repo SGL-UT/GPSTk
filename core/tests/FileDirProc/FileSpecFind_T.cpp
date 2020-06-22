@@ -13,7 +13,7 @@
 
 /** @note This test is expected to run with the data directory being
  * current working directory.  If it is run anywhere else, it will
- * probably fail. */
+ * fail. */
 
 
 using namespace std;
@@ -33,6 +33,8 @@ public:
    unsigned findTestsRelDot();
       /// test find with relative paths that include ..
    unsigned findTestsRelDotDot();
+      /// test find with a simple file name with no wildcards and no path
+   unsigned findSimpleFileName();
 
 private:
       /// generic version of above tests
@@ -369,6 +371,44 @@ findTests(const std::string& tld, const std::string& testName)
 }
 
 
+unsigned FileSpecFind_T ::
+findSimpleFileName()
+{
+   TUDEF("FileSpecFind", "find(simple file name)");
+   list<string> files;
+   using ListSize = list<string>::size_type;
+   try
+   {
+         // The spec doesn't really matter too much as long as it
+         // refers to a file that exists in the data directory.  This
+         // also assumes the test is run in the data directory, but
+         // the other tests do as well.
+      files = gpstk::FileSpecFind::find(
+         "TropModel_Zero.exp",
+         gpstk::YDSTime(2016,211,0),
+         gpstk::YDSTime(2016,212,0));
+   }
+   catch (gpstk::Exception &exc)
+   {
+      cerr << exc;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      TUFAIL("Unexpected exception " + std::string(exc.what()));
+   }
+   catch (...)
+   {
+      TUFAIL("Unexpected exception");
+   }
+   TUASSERTE(ListSize, 1, files.size());
+      // make sure we got all valid files
+   TUASSERT(openable(files));
+
+   TURETURN();
+}
+
+
 int main(int argc, char *argv[])
 {
    unsigned errorTotal = 0;
@@ -377,6 +417,7 @@ int main(int argc, char *argv[])
    errorTotal += testClass.findTestsRel();
    errorTotal += testClass.findTestsRelDot();
    errorTotal += testClass.findTestsRelDotDot();
+   errorTotal += testClass.findSimpleFileName();
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
    return errorTotal;
 }
