@@ -92,7 +92,7 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
       hFindFile = FindFirstFile(pathSearch.c_str(), &findFileData);
       cerr << "  winGlob pathSearch = " << pathSearch << endl
            << "  winGlob hFindFile  = " << hFindFile << endl;
-      if(hFindFile != INVALID_HANDLE_VALUE) 
+      if (hFindFile != INVALID_HANDLE_VALUE) 
       { 
          do 
          {
@@ -128,6 +128,14 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
    else
    {
       cerr << "  winGlob end or fail or something" << endl;
+         // If we're here, then we're looking for a file with no path
+         // and no wildcards, so just try to match the pattern
+         // directly.
+      hFindFile = FindFirstFile(pattern, &findFileData);
+      if (hFindFile != INVALID_HANDLE_VALUE)
+      {
+         results.push_back(pattern);
+      }
    }
 }
 
