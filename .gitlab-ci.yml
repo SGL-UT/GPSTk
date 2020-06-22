@@ -71,6 +71,7 @@ build_debian_8:
 
 build_debian_9:
   stage: build
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -102,6 +103,7 @@ build_debian_10:
 
 build_conda_py27:
   stage: build
+  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py27
@@ -118,6 +120,7 @@ build_conda_py27:
 
 build_conda_py36:
   stage: build
+  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py36
@@ -134,6 +137,7 @@ build_conda_py36:
 
 build_redhat:
   stage: build
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -226,6 +230,7 @@ test_debian_8:
 
 test_debian_9:
   stage: test
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -277,6 +282,7 @@ test_debian_10:
 
 test_conda_py27:
   stage: test
+  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py27
@@ -303,6 +309,7 @@ test_conda_py27:
 
 test_conda_py36:
   stage: test
+  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py36
@@ -329,6 +336,7 @@ test_conda_py36:
 
 test_redhat:
   stage: test
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -373,6 +381,7 @@ test_windows:
 # Tests user install of GPSTk on each platform, saves artifacts for downstream builds.
 user_install_debian_9:
   stage: install
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -391,6 +400,7 @@ user_install_debian_9:
 
 user_install_redhat:
   stage: install
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -424,6 +434,7 @@ user_install_windows:
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 system_install_debian_9:
   stage: install
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -440,6 +451,7 @@ system_install_debian_9:
 
 system_install_redhat:
   stage: install
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -651,6 +663,7 @@ deploy_redhat_py36:
 
 sgltk_debian:
   stage: downstream
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -669,6 +682,7 @@ sgltk_debian:
 
 sgltk_redhat:
   stage: downstream
+  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
