@@ -2,8 +2,10 @@
 #include "FileSpecFind.hpp"
 #ifndef WIN32
 #include <glob.h>
+#define PATH_SEP_STRING "/"
 #else
-#include "build_config.h" // for getPathSep
+#include "build_config.h" // for getFileSep
+#define PATH_SEP_STRING "/\\"
 #include <windows.h>
 #include <shlwapi.h>
 /// Copied from glob(3) man page, here to minimize changes to code under windows
@@ -72,12 +74,17 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
    }
    std::string::size_type pos = patternStr.find_first_of("*?["), pos2;
    cerr << "  winGlob pos (1) = " << pos << endl;
-   pos = patternStr.rfind(gpstk::getFileSep(), pos);
+      /** @note We don't use getFileSep because both forward slash and
+       * backslash are supported.  This does lead to potential issues
+       * however if someone were to put a forward slash in an actual
+       * file or directory name.  Not sure how to support such a
+       * circumstance, though. */
+   pos = patternStr.find_last_of(PATH_SEP_STRING, pos);
    cerr << "  winGlob pos (2) = " << pos << endl;
    if (pos != std::string::npos)
    {
       pos++; // skip over the file separator.
-      pos2 = patternStr.find(gpstk::getFileSep(),pos);
+      pos2 = patternStr.find(PATH_SEP_STRING, pos);
       std::string pathSearch = patternStr.substr(0,pos2);
          // turn POSIX glob pattern into windows pattern before trying to find
       pathSearch = gpstk::StringUtils::change(pathSearch, "[0-9]", "?");
@@ -461,12 +468,15 @@ namespace gpstk
       cerr << "  FSF stokpos = " << stokpos << endl;
          // find the beginning of the remaining path (subdirectory or
          // file within the directory starting at stokpos)
-      string::size_type stoppos = min(stokpos, spec.rfind('/', stokpos));
+      string::size_type stoppos = min(
+         stokpos, spec.find_last_of(PATH_SEP_STRING, stokpos));
       cerr << "  FSF stoppos = " << stokpos << endl;
          // srest is the first character of the "rest" of the path
          // i.e. lower depths in the tree.
       string::size_type srest =
-         (stokpos == string::npos ? string::npos : spec.find('/', stokpos+1));
+         (stokpos == string::npos
+          ? string::npos
+          : spec.find_first_of(PATH_SEP_STRING, stokpos+1));
       cerr << "  FSF srest   = " << srest << endl;
          // thisSpec is JUST the part of the path that we've already searched
       string thisSpec(spec.substr(0, srest));

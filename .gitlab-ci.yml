@@ -13,7 +13,7 @@ stages:
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
 # this can be used for incremental builds
-#  GIT_CLEAN_FLAGS: none
+GIT_CLEAN_FLAGS: none
 
 # Template for all "big" builds.
 .big_build:
@@ -29,6 +29,7 @@ variables:
 # Runs static analysis on code.
 static_analysis:
   stage: check
+  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -164,9 +165,9 @@ build_windows:
     paths:
     - build/
 # used for incremental builds
-#  cache:
-#    paths:
-#    - build/
+  cache:
+    paths:
+    - build/
   timeout: 30m
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
