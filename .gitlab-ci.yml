@@ -13,7 +13,7 @@ stages:
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
 # this can be used for incremental builds
-  GIT_CLEAN_FLAGS: none
+#  GIT_CLEAN_FLAGS: none
 
 # Template for all "big" builds.
 .big_build:
@@ -29,7 +29,6 @@ variables:
 # Runs static analysis on code.
 static_analysis:
   stage: check
-  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -72,7 +71,6 @@ build_debian_8:
 
 build_debian_9:
   stage: build
-  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -104,7 +102,6 @@ build_debian_10:
 
 build_conda_py27:
   stage: build
-  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py27
@@ -121,7 +118,6 @@ build_conda_py27:
 
 build_conda_py36:
   stage: build
-  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py36
@@ -138,7 +134,6 @@ build_conda_py36:
 
 build_redhat:
   stage: build
-  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -158,9 +153,9 @@ build_windows:
     - win10
   script:
 # incremental builds
-    - if not exist "%CI_PROJECT_DIR%/build/" mkdir "%CI_PROJECT_DIR%/build"
+#    - if not exist "%CI_PROJECT_DIR%/build/" mkdir "%CI_PROJECT_DIR%/build"
 # non-incremental builds
-#    - mkdir build
+    - mkdir build
     - cd build
     - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DTEST_SWITCH=ON -G "Visual Studio 14 2015 Win64" ../
     - cmake --build . --config Release
@@ -168,9 +163,9 @@ build_windows:
     paths:
     - build/
 # used for incremental builds
-  cache:
-    paths:
-    - build/
+#  cache:
+#    paths:
+#    - build/
   timeout: 30m
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
@@ -234,7 +229,6 @@ test_debian_8:
 
 test_debian_9:
   stage: test
-  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -286,7 +280,6 @@ test_debian_10:
 
 test_conda_py27:
   stage: test
-  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py27
@@ -313,7 +306,6 @@ test_conda_py27:
 
 test_conda_py36:
   stage: test
-  extends: .big_build
   tags:
     - docker-executor
   image: deb9_conda_py36
@@ -340,7 +332,6 @@ test_conda_py36:
 
 test_redhat:
   stage: test
-  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -385,7 +376,6 @@ test_windows:
 # Tests user install of GPSTk on each platform, saves artifacts for downstream builds.
 user_install_debian_9:
   stage: install
-  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -404,7 +394,6 @@ user_install_debian_9:
 
 user_install_redhat:
   stage: install
-  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -438,7 +427,6 @@ user_install_windows:
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 system_install_debian_9:
   stage: install
-  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -455,7 +443,6 @@ system_install_debian_9:
 
 system_install_redhat:
   stage: install
-  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
@@ -667,7 +654,6 @@ deploy_redhat_py36:
 
 sgltk_debian:
   stage: downstream
-  extends: .big_build
   tags:
     - docker-executor
   image: debian9_fai_ish
@@ -686,7 +672,6 @@ sgltk_debian:
 
 sgltk_redhat:
   stage: downstream
-  extends: .big_build
   tags:
     - docker-executor
   image: centos7_sgl
