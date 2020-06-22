@@ -118,6 +118,10 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
          FindClose(hFindFile); 
       }
    }
+   else
+   {
+      cerr << "  winGlob end or fail or something" << endl;
+   }
 }
 
 
