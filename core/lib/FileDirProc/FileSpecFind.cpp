@@ -37,14 +37,12 @@ using namespace std;
  */
 static bool winMatchRE(const std::string& pattern, const std::string& test)
 {
-   cerr << "  winMatchRE pattern = " << pattern << "  test = " << test << endl; 
       // change wildcards to regular expressions, making sure to match
       // the whole string.
    std::string patternRE = "^" + gpstk::StringUtils::change(pattern,".","\\.") +
       "$";
    patternRE = gpstk::StringUtils::change(patternRE,"*",".*");
    patternRE = gpstk::StringUtils::change(patternRE,"?",".");
-   cerr << "  winMatchRE patternRE = " << patternRE << endl;
    std::regex re(patternRE, std::regex::basic);
    std::smatch m;
    std::regex_search(test, m, re);
@@ -65,22 +63,16 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
 {
    WIN32_FIND_DATA findFileData; 
    HANDLE hFindFile;
-   cerr << "winGlob pattern = " << pattern << endl;
    std::string patternStr(pattern);
    if (patternStr.empty())
-   {
-      cerr << "  winGlob giving up" << endl;
       return;
-   }
    std::string::size_type pos = patternStr.find_first_of("*?["), pos2;
-   cerr << "  winGlob pos (1) = " << pos << endl;
       /** @note We don't use getFileSep because both forward slash and
        * backslash are supported.  This does lead to potential issues
        * however if someone were to put a forward slash in an actual
        * file or directory name.  Not sure how to support such a
        * circumstance, though. */
    pos = patternStr.find_last_of(PATH_SEP_STRING, pos);
-   cerr << "  winGlob pos (2) = " << pos << endl;
    if (pos != std::string::npos)
    {
       pos++; // skip over the file separator.
@@ -90,8 +82,6 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
       pathSearch = gpstk::StringUtils::change(pathSearch, "[0-9]", "?");
       std::string matchPattern = patternStr.substr(pos,pos2-pos);
       hFindFile = FindFirstFile(pathSearch.c_str(), &findFileData);
-      cerr << "  winGlob pathSearch = " << pathSearch << endl
-           << "  winGlob hFindFile  = " << hFindFile << endl;
       if (hFindFile != INVALID_HANDLE_VALUE) 
       { 
          do 
@@ -127,7 +117,6 @@ static void winGlob(const char *pattern, std::list<std::string>& results)
    }
    else
    {
-      cerr << "  winGlob end or fail or something" << endl;
          // If we're here, then we're looking for a file with no path
          // and no wildcards, so just try to match the pattern
          // directly.
@@ -152,7 +141,6 @@ static int glob(const char *pattern, int flags,
                 int (*errfunc) (const char *epath, int eerrno),
                 glob_t *pglob)
 {
-   cerr << "glob(" << pattern << ", " << flags << ",...)" << endl;
    pglob->gl_pathc = 0;
    pglob->gl_pathv = nullptr;
    std::list<std::string> results;
@@ -454,9 +442,6 @@ namespace gpstk
             string::size_type pos)
    {
       list<string> rv;
-      cerr << "FSF::findGlob" << endl
-           << "  FSF spec    = " << spec << endl
-           << "  FSF matched = " << matched << endl;
          // level 0:
          // /data/%04Y/%05n/%03j/nsh-FOO-%5n-%1r-%04Y-%03j-%02H%02M%02S.xml
          //      12   3
@@ -473,33 +458,27 @@ namespace gpstk
 
          // find the first part of the path that contains a FileSpec token
       string::size_type stokpos = spec.find('%', pos);
-      cerr << "  FSF stokpos = " << stokpos << endl;
          // find the beginning of the remaining path (subdirectory or
          // file within the directory starting at stokpos)
       string::size_type stoppos = min(
          stokpos, spec.find_last_of(PATH_SEP_STRING, stokpos));
-      cerr << "  FSF stoppos = " << stokpos << endl;
          // srest is the first character of the "rest" of the path
          // i.e. lower depths in the tree.
       string::size_type srest =
          (stokpos == string::npos
           ? string::npos
           : spec.find_first_of(PATH_SEP_STRING, stokpos+1));
-      cerr << "  FSF srest   = " << srest << endl;
          // thisSpec is JUST the part of the path that we've already searched
       string thisSpec(spec.substr(0, srest));
-      cerr << "  FSF thisSpec = " << thisSpec << endl;
          // patternSpec takes the parts of the original spec that have
          // already been matched and replaces that with the "matched"
          // string which fixes us into the specific directory tree
          // we're searching with glob
       string patternSpec(thisSpec);
       patternSpec.replace(0, pos, matched);
-      cerr << "  FSF patternSpec = " << patternSpec << endl;
          // pattern is the same as patternSpec but with all the
          // FileSpec tokens replaced with glob patterns.
       string pattern = transToken(patternSpec);
-      cerr << "  FSF pattern = " << pattern << endl;
          // currentSpec and currentSpecScanner contain the file spec
          // for just the currently searched directory.  We do this to
          // minimize the amount of effort done in matching, because
@@ -510,8 +489,6 @@ namespace gpstk
       string currentSpec = thisSpec.substr(stoppos+1);
       FileSpec currentSpecScanner(currentSpec);
       bool checkTime = currentSpecScanner.hasTimeField();
-      cerr << "  FSF currentSpec = " << currentSpec << endl
-           << "  FSF checkTime   = " << checkTime << endl;
 
          // Use the current spec to turn our time range into something
          // that will be useable to match at this level in the
@@ -522,8 +499,6 @@ namespace gpstk
       {
          string fromString = specScanner.toString(fromTime, dummyFSTS);
          string toString = specScanner.toString(toTime, dummyFSTS);
-         cerr << "  FSF fromString = " << fromString << endl
-              << "  FSF toString   = " << toString << endl;
          fromTimeMatch = specScanner.extractCommonTime(fromString);
          toTimeMatch = specScanner.extractCommonTime(toString);
             // Make sure our conditions can be met, i.e. from <= t < to
@@ -536,7 +511,6 @@ namespace gpstk
       glob_t globbuf;
       int g = glob(pattern.c_str(), GLOB_ERR|GLOB_NOSORT|GLOB_TILDE, nullptr,
                    &globbuf);
-      cerr << "  FSF glob returned " << globbuf.gl_pathc << " matches" << endl;
       for (size_t i = 0; i < globbuf.gl_pathc; i++)
       {
          bool timeMatched = true;
@@ -548,7 +522,6 @@ namespace gpstk
                specScanner.extractCommonTime(globbuf.gl_pathv[i]);
             timeMatched = ((fromTimeMatch <= fileTime) &&
                            (fileTime < toTimeMatch));
-            cerr << "  FSF timeMatched = " << timeMatched << endl;
          }
          if (timeMatched)
          {
@@ -625,14 +598,12 @@ namespace gpstk
                }
             } // if (!filter.empty())
 
-            cerr << "  FSF matchedFilter = " << matchedFilter << endl;
             if (matchedFilter)
             {
                   // If srest is npos, that means there is no more path
                   // depth and no more recursion to process.
                if (srest == string::npos)
                {
-                  cerr << "  FSF adding " << globbuf.gl_pathv[i] << endl;
                   rv.push_back(globbuf.gl_pathv[i]);
                }
                else
@@ -647,7 +618,6 @@ namespace gpstk
          } // if ((fromTimeMatch <= fileTime) && (fileTime < toTimeMatch))
       } // for (size_t i = 0; i < globbuf.gl_pathc; i++)
       globfree(&globbuf);
-      cerr << "  FSF returning " << rv.size() << " matches" << endl;
       return rv;
    }
 }
