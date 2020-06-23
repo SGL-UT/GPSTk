@@ -251,7 +251,7 @@ namespace gpstk
       }
 
       string tform = "%02m/%02d/%04Y %03j %02H:%02M:%02S"; 
-      string ssys = SatID::convertSatelliteSystemToString(satID.system); 
+      string ssys = convertSatelliteSystemToString(satID.system); 
       s << setw(7) << ssys;
       s << " " << setw(2) << satID.id;
 

@@ -318,7 +318,7 @@ setUpCNAV()
          
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]); 
@@ -376,7 +376,7 @@ setUpCNAV()
          
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]); 

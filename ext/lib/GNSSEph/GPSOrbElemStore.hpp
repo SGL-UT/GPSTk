@@ -68,7 +68,7 @@ namespace gpstk
       {
          initialTime.setTimeSystem(TimeSystem::Any);
          finalTime.setTimeSystem(TimeSystem::Any);
-         addSatSys(SatID::systemGPS);
+         addSatSys(SatelliteSystem::GPS);
          setTimeSystem(TimeSystem::GPS);
       }
 

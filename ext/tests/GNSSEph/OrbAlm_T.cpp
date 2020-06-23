@@ -246,7 +246,7 @@ setUpLNAV()
       dataList.push_back(msg);
    }
 
-   SatID sid(1,SatID::systemGPS); 
+   SatID sid(1,SatelliteSystem::GPS); 
 
       // 12/31/2015 12:00 == Week 1877, DOW 4, SOD 43200
    /*
@@ -279,7 +279,7 @@ setUpLNAV()
    PassFailData pfd(sid,truthTime,truthXvt);
    pfList.push_back(pfd);
 
-   sid = SatID(2,SatID::systemGPS); 
+   sid = SatID(2,SatelliteSystem::GPS); 
    truthXvt.x = Triple( -1441.679351, -16790.824227,  21014.933039);
    truthXvt.v = Triple( 24392.452591,   8269.357517,   8018.651385);
    truthXvt.x = 1000.0 * truthXvt.x;    // Convert from km to m
@@ -289,7 +289,7 @@ setUpLNAV()
    pfd = PassFailData(sid,truthTime,truthXvt);
    pfList.push_back(pfd);
 
-   sid = SatID(25,SatID::systemGPS); 
+   sid = SatID(25,SatelliteSystem::GPS); 
    truthXvt.x = Triple( -14870.571034,  -8788.484129,  20126.874993);
    truthXvt.v = Triple(  -2637.830466, -25557.191698, -12868.533309);
    truthXvt.x = 1000.0 * truthXvt.x;    // Convert from km to m
@@ -369,7 +369,7 @@ setUpCNAV()
          
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]); 
@@ -427,7 +427,7 @@ setUpCNAV()
          
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]); 

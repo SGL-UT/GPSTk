@@ -56,7 +56,7 @@ class xRinexNav
     TestUtil testFramework( "Rinex3EphemerisStore", "addToList", __FILE__, __LINE__ );
                         
     const short PRN6 = 6 ;
-    gpstk::SatID sid6( PRN6, gpstk::SatID::systemGPS ); 
+    gpstk::SatID sid6( PRN6, gpstk::SatelliteSystem::GPS ); 
 
     try
     {

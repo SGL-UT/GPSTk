@@ -322,7 +322,7 @@ namespace gpstk
           * well.  The caller owns any added ephemerides and must delete them.
           * @return the number of ephemerides added. */
       virtual int addToList(std::list<OrbitEph*>& v,
-                            SatID sat=SatID(-1,SatID::systemUnknown)) const;
+                            SatID sat=SatID(-1,SatelliteSystem::Unknown)) const;
 
          /// use findNearOrbitEph() in getXvt()
          // MUST be done prior to starting to load nav data sets.

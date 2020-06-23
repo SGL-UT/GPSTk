@@ -111,7 +111,7 @@ namespace gpstk
 
       virtual void dumpContents(std::ostream& s = std::cout,
                                 const gpstk::SatID& sidr =
-                                      gpstk::SatID(0,gpstk::SatID::systemUnknown),
+                                      gpstk::SatID(0,gpstk::SatelliteSystem::Unknown),
                                 const gpstk::NavID& navtype =
                                       gpstk::NavID(gpstk::NavID::ntUnknown),
                                 const unsigned long UID = 0)
@@ -144,8 +144,8 @@ namespace gpstk
       void setTimeSystem(const TimeSystem ts) { timeSysForStore = ts; }
 
       /// Classes to set/test the satellite system list.
-      bool isSatSysPresent(const SatID::SatelliteSystem ss) const;
-      void addSatSys(const SatID::SatelliteSystem ss);
+      bool isSatSysPresent(const SatelliteSystem ss) const;
+      void addSatSys(const SatelliteSystem ss);
          /**
           * @throw InvalidRequest
           */
@@ -238,11 +238,11 @@ namespace gpstk
       /// @return list of SatID objects
       std::list<gpstk::NavID> getNavIDList() const;
 
-      /// Return a list of SatID::SatelliteSystem enums representing the satellite
+      /// Return a list of SatelliteSystem enums representing the satellite
       /// systems that
       /// are contained in the store.
-      /// @return list of SatID::SatelliteSystem items
-      const std::list<gpstk::SatID::SatelliteSystem>& getSatSysList() const;
+      /// @return list of SatelliteSystem items
+      const std::list<gpstk::SatelliteSystem>& getSatSysList() const;
 
       /// Following methods retrieve particular data types
       /// (e.g. SV config or UTC offset information) based
@@ -293,7 +293,7 @@ namespace gpstk
 
          // List of the satellite systems stored in this store.  Typically
          // only one and set by descendents.
-      std::list<SatID::SatelliteSystem> sysList;
+      std::list<SatelliteSystem> sysList;
 
          // TimeSystem used in this store.  Set by default to "Any", but
          // typically overridden by descendents.

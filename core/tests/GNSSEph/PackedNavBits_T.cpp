@@ -242,7 +242,7 @@ realDataTest()
    TUDEF("PackedNavBits", "real data round-trip");
 
       //Test Data copied from RINEX file for PRN3, week 1638, day 153 2011
-   SatID satID(3, SatID::systemGPS);
+   SatID satID(3, SatelliteSystem::GPS);
    ObsID obsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcCA );
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 10, 00, 0.0, TimeSystem::GPS );
@@ -520,13 +520,13 @@ equalityTest()
       // At this point, the "packed bits" section of 
       // this object is empty.  We are focused on testing
       // the metadata handling. 
-   SatID satID(1, SatID::systemGPS);
+   SatID satID(1, SatelliteSystem::GPS);
    ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
    NavID navID(satID,obsID);
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
 
-   SatID satID2(2, SatID::systemGPS);
+   SatID satID2(2, SatelliteSystem::GPS);
    ObsID obsID2(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcQ5 );
    NavID navID2(satID2,obsID2); 
    std::string rxID2 = "rx2";
@@ -731,7 +731,7 @@ ancillaryMethods()
       // At this point, the "packed bits" section of 
       // this object is empty.  We are focused on testing
       // the metadata handling. 
-   SatID satID(1, SatID::systemGPS);
+   SatID satID(1, SatelliteSystem::GPS);
    ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
    NavID navID(satID,obsID);
    std::string rxID = "rx1";

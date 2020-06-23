@@ -48,7 +48,7 @@ testSvXvt()
    oe.af1      =  .227373675443e-11;
    oe.af2      =  .000000000000e+00;
    oe.dataLoadedFlag = true;
-   oe.satID = gpstk::SatID(2, gpstk::SatID::systemGPS);
+   oe.satID = gpstk::SatID(2, gpstk::SatelliteSystem::GPS);
    oe.ctToe    = gpstk::GPSWeekSecond(1854,.716800000000e+04);
       // iode .700000000000e+01
       // codes on L2 .100000000000e+01

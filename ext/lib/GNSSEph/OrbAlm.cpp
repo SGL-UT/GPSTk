@@ -56,7 +56,7 @@ namespace gpstk
       std::string tform("test");
       
          // To do, generalize for all systems
-      if (subjectSV.system==SatID::systemIRNSS)
+      if (subjectSV.system==SatelliteSystem::IRNSS)
 	 tform = "%02m/%02d/%Y %03j %02H:%02M:%02S  %7.0s  %4O %6.0g  %P";
       else 
 	 tform = "%02m/%02d/%Y %03j %02H:%02M:%02S  %7.0s  %4F %6.0g  %P";

@@ -57,7 +57,7 @@ testSvXvtMEO()
    oe.af1      =  .227373675443e-11;
    oe.af2      =  .000000000000e+00;
    oe.dataLoadedFlag = true;
-   oe.satID = gpstk::SatID(2, gpstk::SatID::systemBeiDou);
+   oe.satID = gpstk::SatID(2, gpstk::SatelliteSystem::BeiDou);
    oe.ctToe    = gpstk::BDSWeekSecond(498,.716800000000e+04);
       // iode .700000000000e+01
       // codes on L2 .100000000000e+01
@@ -177,7 +177,7 @@ testSvXvtGEO()
    oe.af1      =  4.48929782E-11;
    oe.af2      =  0.00000000E+00;
    oe.dataLoadedFlag = true;
-   oe.satID = gpstk::SatID(1, gpstk::SatID::systemBeiDou);
+   oe.satID = gpstk::SatID(1, gpstk::SatelliteSystem::BeiDou);
    oe.ctToe    = oe.ctToc;
    bool testFailed = false;
    try
@@ -291,7 +291,7 @@ wut()
       oe.af1      = 4.48929782E-11;
       oe.af2      = 0.00000000E+00;
       oe.dataLoadedFlag = true;
-      oe.satID = gpstk::SatID(1, gpstk::SatID::systemBeiDou);
+      oe.satID = gpstk::SatID(1, gpstk::SatelliteSystem::BeiDou);
       oe.ctToe    = gpstk::CivilTime(2020,3,1,0,0,0,gpstk::TimeSystem::BDT);
       writeVel(oe);
    }

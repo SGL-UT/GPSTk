@@ -507,7 +507,7 @@ int processFiles(void)
                      if (j->first.system == it->sat.system)
                         RHout.numObsForSat.erase(j);
                   }
-                  if (it->sat.system == SatID::systemGlonass)
+                  if (it->sat.system == SatelliteSystem::Glonass)
                      RHout.glonassFreqNo.clear();
 
                      // Remove obs types for that system

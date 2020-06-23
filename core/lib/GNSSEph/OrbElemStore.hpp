@@ -202,10 +202,10 @@ namespace gpstk
       void setTimeSystem(const TimeSystem ts) { timeSysForStore = ts; }
 
          /// Classes to set/test the satellite system list.
-      bool isSatSysPresent(const SatID::SatelliteSystem ss) const;
-      void addSatSys(const SatID::SatelliteSystem ss); 
+      bool isSatSysPresent(const SatelliteSystem ss) const;
+      void addSatSys(const SatelliteSystem ss); 
       void validSatSystem(const SatID& sat) const;
-      std::list<SatID::SatelliteSystem> getValidSystemList() const;
+      std::list<SatelliteSystem> getValidSystemList() const;
       void dumpValidSystemList(std::ostream& out) const;  
 
       /*
@@ -286,7 +286,7 @@ namespace gpstk
 
          // List of the satellite systems stored in this store.  Typically
          // only one and set by descendents. 
-      std::list<SatID::SatelliteSystem> sysList;
+      std::list<SatelliteSystem> sysList;
       
          // TimeSystem used in this store.  Set by default to "Any", but
          // typically overridden by descendents. 

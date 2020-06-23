@@ -254,7 +254,7 @@ namespace gpstk
          //Check if we have a mixed system
          for ( i = 0; i < Satellite.size(); ++i)
          {
-            satSystems[i] = ((Satellite[i].system == SatID::systemGlonass) ? (1) : (0) );
+            satSystems[i] = ((Satellite[i].system == SatelliteSystem::Glonass) ? (1) : (0) );
 
             if (satSystems[i] == 1) hasGlonass = true;
             else hasOther = true;
@@ -529,7 +529,7 @@ namespace gpstk
          if (Satellite[i].id <= 0) continue;
 
             // test the system
-            if(Satellite[i].system == SatID::systemGPS)
+            if(Satellite[i].system == SatelliteSystem::GPS)
                ;
             else {
                Satellite[i].id = -::abs(Satellite[i].id);
