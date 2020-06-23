@@ -66,7 +66,7 @@ namespace gpstk
          // simple way to index the columns without having to change
          // all the numbers with every little change.
       unsigned i = 1;
-      sat.sys = convertStringToSatelliteSystem(vals[i++]);
+      sat.sys = SatID::convertStringToSatelliteSystem(vals[i++]);
       sat.svn = vals[i++];
       if (StringUtils::isDigitString(vals[i]))
       {
@@ -144,7 +144,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   findSat(SatelliteSystem sys, uint32_t prn,
+   findSat(SatID::SatelliteSystem sys, uint32_t prn,
            const gpstk::CommonTime& when,
            SatMetaData& sat)
       const
@@ -193,7 +193,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   findSatBySVN(SatelliteSystem sys, const std::string& svn,
+   findSatBySVN(SatID::SatelliteSystem sys, const std::string& svn,
                 const gpstk::CommonTime& when,
                 SatMetaData& sat)
       const
@@ -228,7 +228,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   getSVN(SatelliteSystem sys, uint32_t prn,
+   getSVN(SatID::SatelliteSystem sys, uint32_t prn,
           const gpstk::CommonTime& when,
           std::string& svn)
       const
@@ -244,7 +244,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   getPRN(SatelliteSystem sys, const std::string& svn,
+   getPRN(SatID::SatelliteSystem sys, const std::string& svn,
           const gpstk::CommonTime& when,
           uint32_t& prn)
       const

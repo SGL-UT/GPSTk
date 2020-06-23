@@ -141,7 +141,7 @@ namespace gpstk
       virtual void adjustValidity(void)
       {
          if(!dataLoadedFlag) GPSTK_THROW(InvalidRequest("Data not loaded"));
-         if (satID.system == SatelliteSystem::GPS)
+         if (satID.system == SatID::systemGPS)
             beginValid = ctToe - 7200.0;
          endValid = ctToe + 7200.0;
       }

@@ -137,7 +137,7 @@ int gdc::DiscontinuityCorrector(SatPass& SP, string& retMsg, vector<string>& cmd
 {
    try {
       sat = SP.getSat();
-      isGLO = (sat.system == SatelliteSystem::Glonass);
+      isGLO = (sat.system == SatID::systemGlonass);
       GLOchan = GLOn;
       // if GLONASS frequency channel not given, try to find it
       if(isGLO && GLOchan == -99) {
@@ -232,7 +232,7 @@ int gdc::DiscontinuityCorrector(
       beginT += dt_in[0];
       outfmt = outfmt_in;
 
-      isGLO = (sat.system == SatelliteSystem::Glonass);
+      isGLO = (sat.system == SatID::systemGlonass);
       GLOchan = GLOn;
       if(isGLO && GLOchan == -99) {
          //// this is the non-SatPass version, still in SatPass.cpp

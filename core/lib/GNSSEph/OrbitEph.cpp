@@ -252,7 +252,7 @@ namespace gpstk {
       GPSEllipsoid gell;
       CGCS2000Ellipsoid bell;
       EllipsoidModel *ell;
-      if (satID.system==SatelliteSystem::BeiDou)
+      if (satID.system==SatID::systemBeiDou)
          ell = &bell;
       else
          ell = &gell;
@@ -294,13 +294,13 @@ namespace gpstk {
          ostringstream os;
          string sys;
          switch(satID.system) {
-            case SatelliteSystem::GPS: sys = "G"; break;
-            case SatelliteSystem::Galileo: sys = "E"; break;
-            case SatelliteSystem::BeiDou: sys = "C"; break;
-            case SatelliteSystem::QZSS: sys = "J"; break;
+            case SatID::systemGPS: sys = "G"; break;
+            case SatID::systemGalileo: sys = "E"; break;
+            case SatID::systemBeiDou: sys = "C"; break;
+            case SatID::systemQZSS: sys = "J"; break;
             default:
                os << "EPH Error - invalid satellite system "
-                  << convertSatelliteSystemToString(satID.system) << endl;
+                  << SatID::convertSatelliteSystemToString(satID.system) << endl;
                return os.str();
          }
 
@@ -378,7 +378,7 @@ namespace gpstk {
       os << "****************************************************************"
         << "************" << endl
         << "Broadcast Orbit Ephemeris of class " << getName() << endl;
-      os << "Satellite: " << convertSatelliteSystemToString(satID.system)
+      os << "Satellite: " << SatID::convertSatelliteSystemToString(satID.system)
          << " " << setfill('0') << setw(2) << satID.id << setfill(' ') << endl;
    }
 

@@ -96,7 +96,7 @@ public:
          eph3.addSubframe(&eph3A[20], 1919, 11, 1);
 */
 
-         gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
+         gpstk::SatID sat(11, gpstk::SatID::systemGPS);
          gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
                             gpstk::ObsID::cbL1,
                             gpstk::ObsID::tcCA);

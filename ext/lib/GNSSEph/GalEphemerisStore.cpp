@@ -68,14 +68,14 @@ namespace gpstk
    {
       // get the list from OrbitEphStore
       list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst,SatID(-1,SatelliteSystem::Galileo));
+      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemGalileo));
 
       // pull out the Gal ones
       int n(0);
       list<OrbitEph*>::const_iterator it;
       for(it = oelst.begin(); it != oelst.end(); ++it) {
          OrbitEph *ptr = *it;
-         if((ptr->satID).system == SatelliteSystem::Galileo &&
+         if((ptr->satID).system == SatID::systemGalileo &&
             (sat.id == -1 || (ptr->satID).id == sat.id))
          {
             GalEphemeris *galptr = dynamic_cast<GalEphemeris*>(ptr);

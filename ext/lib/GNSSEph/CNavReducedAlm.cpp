@@ -146,7 +146,7 @@ namespace gpstk
 
       ctAlmEpoch = ctAlm;
 
-      subjSv = SatID(prnId, SatelliteSystem::GPS);
+      subjSv = SatID(prnId, SatID::systemGPS);
       unsigned nextStart = startBit + 6 + offset;
       deltaA = pnb.asSignedDouble(nextStart, 8, 9);
       A = deltaA + A_ref;
@@ -176,7 +176,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      string ssys = convertSatelliteSystemToString(subjSv.system); 
+      string ssys = SatID::convertSatelliteSystemToString(subjSv.system); 
       s << setw(7) << ssys;
       s << ":" << setw(2) << setfill('0') << subjSv.id << setfill(' ');
    }

@@ -64,11 +64,11 @@ public:
 
       header.fileProgram = "rinex3Test";
       if(satString == "M")
-         header.fileSysSat.system = SatelliteSystem::Mixed;
+         header.fileSysSat.system = SatID::systemMixed;
       else if(satString == "R")
-         header.fileSysSat.system = SatelliteSystem::Glonass;
+         header.fileSysSat.system = SatID::systemGlonass;
       else
-         header.fileSysSat.system = SatelliteSystem::GPS;
+         header.fileSysSat.system = SatID::systemGPS;
       std::ostringstream ostr;
       ostr << gpstk::CivilTime(SystemTime());
       header.date = ostr.str();

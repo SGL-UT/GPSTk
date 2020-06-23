@@ -75,7 +75,7 @@ namespace gpstk
       throw()
    {
       for(int prn = 1; prn <= gpstk::MAX_PRN; prn++)
-         modes[SatID(prn, SatelliteSystem::GPS)] = IGNORE;
+         modes[SatID(prn, SatID::systemGPS)] = IGNORE;
 
       for(SvModeMap::const_iterator i = right.begin(); i != right.end(); i++)
          modes[i->first] = i->second;

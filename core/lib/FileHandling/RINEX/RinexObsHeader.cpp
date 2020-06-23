@@ -227,7 +227,7 @@ namespace gpstk
             GPSTK_THROW(err);
          }
 
-         if (system.system == SatelliteSystem::Unknown)
+         if (system.system == RinexSatID::systemUnknown)
          {
             FFStreamError err("Invalid satellite system");
             GPSTK_THROW(err);
@@ -398,9 +398,9 @@ namespace gpstk
       {
          line  = writeTime(firstObs);
          line += string(48-line.size(),' ');
-         if(firstSystem.system == SatelliteSystem::GPS) line += "GPS";
-         if(firstSystem.system == SatelliteSystem::Glonass) line += "GLO";
-         if(firstSystem.system == SatelliteSystem::Galileo) line += "GAL";
+         if(firstSystem.system == RinexSatID::systemGPS) line += "GPS";
+         if(firstSystem.system == RinexSatID::systemGlonass) line += "GLO";
+         if(firstSystem.system == RinexSatID::systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
          line += firstTimeString;
          strm << line << endl;
@@ -410,9 +410,9 @@ namespace gpstk
       {
          line  = writeTime(lastObs);
          line += string(48-line.size(),' ');
-         if(lastSystem.system == SatelliteSystem::GPS) line += "GPS";
-         if(lastSystem.system == SatelliteSystem::Glonass) line += "GLO";
-         if(lastSystem.system == SatelliteSystem::Galileo) line += "GAL";
+         if(lastSystem.system == RinexSatID::systemGPS) line += "GPS";
+         if(lastSystem.system == RinexSatID::systemGlonass) line += "GLO";
+         if(lastSystem.system == RinexSatID::systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
          line += lastTimeString;
          strm << line << endl;
@@ -672,17 +672,17 @@ namespace gpstk
       else if (label == firstTimeString)
       {
          firstObs = parseTime(line);
-         firstSystem.system = SatelliteSystem::GPS;
-         if(line.substr(48,3)=="GLO") firstSystem.system=SatelliteSystem::Glonass;
-         if(line.substr(48,3)=="GAL") firstSystem.system=SatelliteSystem::Galileo;
+         firstSystem.system = RinexSatID::systemGPS;
+         if(line.substr(48,3)=="GLO") firstSystem.system=RinexSatID::systemGlonass;
+         if(line.substr(48,3)=="GAL") firstSystem.system=RinexSatID::systemGalileo;
          valid |= firstTimeValid;
       }
       else if (label == lastTimeString)
       {
          lastObs = parseTime(line);
-         lastSystem.system = SatelliteSystem::GPS;
-         if(line.substr(48,3)=="GLO") lastSystem.system=SatelliteSystem::Glonass;
-         if(line.substr(48,3)=="GAL") lastSystem.system=SatelliteSystem::Galileo;
+         lastSystem.system = RinexSatID::systemGPS;
+         if(line.substr(48,3)=="GLO") lastSystem.system=RinexSatID::systemGlonass;
+         if(line.substr(48,3)=="GAL") lastSystem.system=RinexSatID::systemGalileo;
          valid |= lastTimeValid;
       }
       else if (label == receiverOffsetString)
@@ -906,8 +906,8 @@ namespace gpstk
             << " " << obsTypeList[i].description
             << " (" << obsTypeList[i].units << ")." << endl;
       s << "Time of first obs " << (static_cast<CivilTime>(firstObs)).printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (firstSystem.system==SatelliteSystem::Glonass ? "GLO" :
-                   (firstSystem.system==SatelliteSystem::Galileo ? "GAL" : "GPS")) << endl;
+         << " " << (firstSystem.system==RinexSatID::systemGlonass ? "GLO" :
+                   (firstSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       s << "(This header is ";
       if((valid & allValid211) == allValid211) s << "VALID 2.11";
       else if((valid & allValid21) == allValid21) s << "VALID 2.1";
@@ -934,8 +934,8 @@ namespace gpstk
          << fixed << setw(7) << setprecision(3) << interval << endl;
       if(valid & lastTimeValid) s << "Time of last obs "
          << (static_cast<CivilTime>(lastObs)).printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (lastSystem.system==SatelliteSystem::Glonass ? "GLO":
-                   (lastSystem.system==SatelliteSystem::Galileo ? "GAL" : "GPS")) << endl;
+         << " " << (lastSystem.system==RinexSatID::systemGlonass ? "GLO":
+                   (lastSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;
       if(valid & receiverOffsetValid) s << "Clock offset record is present and offsets "
          << (receiverOffset?"ARE":"are NOT") << " applied." << endl;

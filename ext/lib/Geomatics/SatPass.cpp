@@ -253,7 +253,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 bool SatPass::getGLOchannel(int& n, string& msg)
 {
 try {
-   if(sat.system != SatelliteSystem::Glonass) return false;
+   if(sat.system != SatID::systemGlonass) return false;
 
    // make sure L1, L2, C1/P1, P2 are present
    bool useC1=false;

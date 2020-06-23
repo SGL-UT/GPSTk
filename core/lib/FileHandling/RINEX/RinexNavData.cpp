@@ -213,7 +213,7 @@ namespace gpstk
       try
       {
             // Overhead
-         gpse.satID = SatID(PRNID, SatelliteSystem::GPS);
+         gpse.satID = SatID(PRNID, SatID::systemGPS);
          gpse.ctToe = time;
 
             // clock model

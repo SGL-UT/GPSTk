@@ -845,10 +845,10 @@ try {
       LOG(VERBOSE) << "\nDump ephemeris sat list with count, times and GLO channel.";
       for(i=0; i<sats.size(); i++) {                           // loop over sats
          // check for some GLO channel - can't compute b/c we don't have data yet
-         if(sats[i].system == SatelliteSystem::Glonass) {
+         if(sats[i].system == SatID::systemGlonass) {
             map<RinexSatID,int>::const_iterator it(C.GLOfreqChannel.find(sats[i]));
             if(it == C.GLOfreqChannel.end()
-                           && sats[i].system == SatelliteSystem::Glonass) {
+                           && sats[i].system == RinexSatID::systemGlonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
                // set it to zero
@@ -924,15 +924,15 @@ try {
          LOG(VERBOSE) << "Read " << nread << " RINEX navigation files, containing "
             << nrec << " records, into store.";
          LOG(VERBOSE) << "GPS ephemeris store contains "
-            << C.RinEphStore.size(SatelliteSystem::GPS) << " ephemerides.";
+            << C.RinEphStore.size(SatID::systemGPS) << " ephemerides.";
          LOG(VERBOSE) << "GAL ephemeris store contains "
-            << C.RinEphStore.size(SatelliteSystem::Galileo) << " ephemerides.";
+            << C.RinEphStore.size(SatID::systemGalileo) << " ephemerides.";
          LOG(VERBOSE) << "BDS ephemeris store contains "
-            << C.RinEphStore.size(SatelliteSystem::BeiDou) << " ephemerides.";
+            << C.RinEphStore.size(SatID::systemBeiDou) << " ephemerides.";
          LOG(VERBOSE) << "QZS ephemeris store contains "
-            << C.RinEphStore.size(SatelliteSystem::QZSS) << " ephemerides.";
+            << C.RinEphStore.size(SatID::systemQZSS) << " ephemerides.";
          LOG(VERBOSE) << "GLO ephemeris store contains "
-            << C.RinEphStore.size(SatelliteSystem::Glonass) << " satellites.";
+            << C.RinEphStore.size(SatID::systemGlonass) << " satellites.";
          // dump the entire store
          C.RinEphStore.dump(LOGstrm,(C.debug > -1 ? 2:0));
       }
@@ -1051,7 +1051,7 @@ try {
 
             try { sat.fromString(word); }
             catch(Exception& e) { continue; }
-            if(sat.system == SatelliteSystem::Unknown || sat.id == -1) continue;
+            if(sat.system == SatID::systemUnknown || sat.id == -1) continue;
 
             word = stripFirstWord(line);  // get bias
             if(word.empty()) continue;
@@ -2571,7 +2571,7 @@ int SolutionObject::WriteORDs(const CommonTime& time, const int iret)
          if(Satellites[i].id < 0) continue;
 
          // get the system, then clock solution for this system
-         vector<SatelliteSystem>::const_iterator jt;
+         vector<SatID::SatelliteSystem>::const_iterator jt;
          jt = find(prs.dataGNSS.begin(),prs.dataGNSS.end(),Satellites[i].system);
          if(jt == prs.dataGNSS.end()) continue;      // should never happen
          j = jt - prs.dataGNSS.begin();              // index

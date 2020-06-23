@@ -218,7 +218,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      string ssys = convertSatelliteSystemToString(satID.system); 
+      string ssys = SatID::convertSatelliteSystemToString(satID.system); 
       s << setw(7) << ssys;
       s << " " << setw(2) << satID.id;
 

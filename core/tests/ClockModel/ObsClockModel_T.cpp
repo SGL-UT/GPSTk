@@ -106,7 +106,7 @@ int ObsClockModel_T :: test_constructor_defaults( void )
     try
     {
         ObsClockModel_Child testObsClockModel;
-        SatID testSatID( 1, SatelliteSystem::GPS );
+        SatID testSatID( 1, SatID::systemGPS );
 
         test_util.assert( testObsClockModel.getSigmaMultiplier() == 2.0 , "Default sigma value is not as expected", __LINE__ );
         test_util.assert( testObsClockModel.getElevationMask() == 0.0 , "Default elmask value is not as expected", __LINE__ );
@@ -142,7 +142,7 @@ int ObsClockModel_T :: test_getSvMode( void )
         const ObsClockModel& dummyModel = testObsClockModel.setSvMode( expectedSvMode );
 
         // need at least one SatId in order to extract the SvMode
-        SatID testSatID( 1, SatelliteSystem::GPS );
+        SatID testSatID( 1, SatID::systemGPS );
         ObsClockModel::SvMode returnedSvMode = testObsClockModel.getSvMode( testSatID );
 
         test_util.assert( returnedSvMode == expectedSvMode, test_fail_msg, __LINE__ );

@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
             // Make a GPSTK SatID object for your PRN so you can search it
             // -----------------------------------------------------------
-         SatID prn( myprn, SatelliteSystem::GPS );
+         SatID prn( myprn, SatID::systemGPS );
 
             // Check to see if your PRN is in view at this epoch (ie.
             // search for the PRN).

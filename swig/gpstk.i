@@ -7,16 +7,6 @@
 using namespace gpstk;
 %}
 
-%inline %{
-      // put this forward declaration here so that SWIG knows it's an
-      // enum, otherwise it will generate code treating it as an
-      // object.
-   namespace gpstk
-   {
-      enum class SatelliteSystem;
-   }
-%}
-
 // =============================================================
 //  Section 1: C++ template containers & typedefs
 // =============================================================
@@ -122,7 +112,6 @@ using namespace gpstk;
 // =============================================================
 // Utils stuff
 %include "gps_constants.hpp"
-%include "SatelliteSystem.hpp"
 %include "SatID.hpp"
 %include "SatID.i"
 %include "ObsIDInitializer.hpp"
@@ -373,17 +362,3 @@ namespace std { class fstream {}; }
         del locals()['stuff']
         del locals()['to_remove']
     %}
-
-// Leaving this code here but commented out for the moment 
-/* %pythoncode %{ */
-/* from enum import Enum */
-/* def renameEnums(prefix): */
-/*     tmpD = {k:v for k,v in globals().items() if k.startswith(prefix+'_')} */
-/*     for k,v in tmpD.items(): */
-/*         del globals()[k] */
-/*     tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()} */
-/*     globals()[prefix] = Enum(prefix,tmpD) */
-/* renameEnums('SatelliteSystem') */
-/* del renameEnums */
-/* del Enum */
-/* %} */

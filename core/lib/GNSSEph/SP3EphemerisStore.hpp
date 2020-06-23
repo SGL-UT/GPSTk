@@ -541,7 +541,7 @@ namespace gpstk
 
          /** Get the number of (position) data records for the given
           * satellite system */
-      inline int ndata(const SatelliteSystem& sys) const throw()
+      inline int ndata(const SatID::SatelliteSystem& sys) const throw()
       { return posStore.ndata(sys); }
 
          /// Get the total number of position data records in the store
@@ -554,7 +554,7 @@ namespace gpstk
 
          /** Get the number of position data records for the given
           * satellite system */
-      inline int ndataPosition(const SatelliteSystem& sys) const throw()
+      inline int ndataPosition(const SatID::SatelliteSystem& sys) const throw()
       { return posStore.ndata(sys); }
 
          /// Get the total number of clock data records in the store
@@ -567,7 +567,7 @@ namespace gpstk
 
          /** Get the number of clock data records for the given
           * satellite system */
-      inline int ndataClock(const SatelliteSystem& sys) const throw()
+      inline int ndataClock(const SatID::SatelliteSystem& sys) const throw()
       { return clkStore.ndata(sys); }
 
          /// same as ndataPosition()

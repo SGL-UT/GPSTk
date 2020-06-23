@@ -184,7 +184,7 @@ try {
       otmap = it->second;
 
          // ignore non-GPS satellites
-      if(sat.system != SatelliteSystem::GPS) continue;
+      if(sat.system != SatID::systemGPS) continue;
 
          // is the satellite excluded?
       if(index(CI.ExSV,sat) != -1) continue;

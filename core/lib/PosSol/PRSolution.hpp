@@ -252,11 +252,11 @@ namespace gpstk
       /// solution exceeds this.
       double ConvergenceLimit;
 
-      /// vector<SatelliteSystem> containing the satellite systems allowed
+      /// vector<SatID::SatelliteSystem> containing the satellite systems allowed
       /// in the solution. **This vector MUST be defined before computing solutions.**
       /// It is used to determine which clock biases are included in the solution,
       /// as well as the apriori state vector (see hasMemory below)
-      std::vector<SatelliteSystem> allowedGNSS;
+      std::vector<SatID::SatelliteSystem> allowedGNSS;
 
       /// This determines whether this object will maintain a "memory" of all the
       /// solutions it has computed. This is used for several things, including the
@@ -301,10 +301,10 @@ namespace gpstk
       /// Matrix<double> containing the partials matrix used in the final solution.
       Matrix<double> Partials;
 
-      /// vector<SatelliteSystem> containing the satellite systems found in
+      /// vector<SatID::SatelliteSystem> containing the satellite systems found in
       /// the data at each epoch, after calls to SimplePRSolution and RAIMCompute.
       /// See also allowedGNSS.
-      std::vector<SatelliteSystem> dataGNSS;
+      std::vector<SatID::SatelliteSystem> dataGNSS;
 
       /// The "memory" of this object, used only when hasMemory is true.
       WtdAveStats was;

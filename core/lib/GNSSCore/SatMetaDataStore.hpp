@@ -30,7 +30,7 @@ namespace gpstk
          /// Set of satellites ordered by PRN or channel/slotID.
       using SatSet = std::multiset<SatMetaData, SatMetaDataSort>;
          /// Satellites grouped by system.
-      using SatMetaMap = std::map<SatelliteSystem, SatSet>;
+      using SatMetaMap = std::map<SatID::SatelliteSystem, SatSet>;
 
          /// Nothin doin.
       SatMetaDataStore() = default;
@@ -85,7 +85,7 @@ namespace gpstk
           * @param[out] sat If found the satellite's metadata.
           * @return true if the requested satellite mapping was found.
           */
-      bool findSat(SatelliteSystem sys, uint32_t prn,
+      bool findSat(SatID::SatelliteSystem sys, uint32_t prn,
                    const gpstk::CommonTime& when,
                    SatMetaData& sat)
          const;
@@ -112,7 +112,7 @@ namespace gpstk
           * @param[out] svn If found the satellite's vehicle number.
           * @return true if the requested satellite mapping was found.
           */
-      bool getSVN(SatelliteSystem sys, uint32_t prn,
+      bool getSVN(SatID::SatelliteSystem sys, uint32_t prn,
                   const gpstk::CommonTime& when,
                   std::string& svn)
          const;
@@ -137,7 +137,7 @@ namespace gpstk
           * @param[out] sat If found the satellite's metadata.
           * @return true if the requested satellite mapping was found.
           */
-      bool findSatBySVN(SatelliteSystem sys, const std::string& svn,
+      bool findSatBySVN(SatID::SatelliteSystem sys, const std::string& svn,
                         const gpstk::CommonTime& when,
                         SatMetaData& sat)
          const;
@@ -151,7 +151,7 @@ namespace gpstk
           * @param[out] prn If found the satellite's pseudo-random number.
           * @return true if the requested satellite mapping was found.
           */
-      bool getPRN(SatelliteSystem sys, const std::string& svn,
+      bool getPRN(SatID::SatelliteSystem sys, const std::string& svn,
                   const gpstk::CommonTime& when,
                   uint32_t& prn)
          const;

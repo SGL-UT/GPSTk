@@ -113,7 +113,7 @@ namespace gpstk
       void clear(void) throw()
       {
          datatype = std::string();
-         sat = RinexSatID(-1,SatelliteSystem::GPS);
+         sat = RinexSatID(-1,RinexSatID::systemGPS);
          time = CommonTime::BEGINNING_OF_TIME;
          bias = sig_bias = drift = sig_drift = accel = sig_accel = 0.0;
       }

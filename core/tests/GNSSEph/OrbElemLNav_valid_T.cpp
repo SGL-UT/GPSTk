@@ -73,8 +73,8 @@ int main()
 
    int fitHours = 4; 
 
-   SatID gpsSatId = SatID(1,SatelliteSystem::GPS);
-   SatID qzsSatId = SatID(MIN_PRN_QZS,SatelliteSystem::QZSS); 
+   SatID gpsSatId = SatID(1,SatID::systemGPS);
+   SatID qzsSatId = SatID(MIN_PRN_QZS,SatID::systemQZSS); 
 
       // Data set cutover without upload cutover.
    CommonTime xmit = CivilTime(2019, 1, 11, 2, 0, 0.0, TimeSystem::GPS); 

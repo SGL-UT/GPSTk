@@ -49,25 +49,25 @@ namespace gpstk {
    public:
 
       /// empty constructor, creates an invalid object
-      GSatID() throw() { id=-1; system=SatelliteSystem::GPS; }
+      GSatID() throw() { id=-1; system=systemGPS; }
 
       /// explicit constructor, no defaults
       GSatID(int p, SatelliteSystem s) throw()
       {
          id = p; system = s;
          switch(system) {
-            case SatelliteSystem::GPS:
-            case SatelliteSystem::Galileo:
-            case SatelliteSystem::Glonass:
-            case SatelliteSystem::Geosync:
-            case SatelliteSystem::LEO:
-            case SatelliteSystem::Transit:
-            case SatelliteSystem::QZSS:
-            case SatelliteSystem::BeiDou:
-            case SatelliteSystem::IRNSS:
+            case systemGPS:
+            case systemGalileo:
+            case systemGlonass:
+            case systemGeosync:
+            case systemLEO:
+            case systemTransit:
+            case systemQZSS:
+            case systemBeiDou:
+            case systemIRNSS:
                break;
             default:
-               system = SatelliteSystem::GPS;
+               system = systemGPS;
                id = -1;
          }
       }
@@ -135,16 +135,16 @@ namespace gpstk {
       char systemChar() const throw()
       {
          switch(system) {
-            case SatelliteSystem::GPS:     return 'G';
-            case SatelliteSystem::Galileo: return 'E';
-            case SatelliteSystem::Glonass: return 'R';
-            case SatelliteSystem::Geosync: return 'S';
-            case SatelliteSystem::Transit: return 'T';
-            case SatelliteSystem::LEO:     return 'L';
-            case SatelliteSystem::QZSS:    return 'J';
-            case SatelliteSystem::BeiDou:  return 'C';
-            case SatelliteSystem::IRNSS:   return 'I';
-            default:                       return '?';
+            case systemGPS:     return 'G';
+            case systemGalileo: return 'E';
+            case systemGlonass: return 'R';
+            case systemGeosync: return 'S';
+            case systemTransit: return 'T';
+            case systemLEO:     return 'L';
+            case systemQZSS:    return 'J';
+            case systemBeiDou:  return 'C';
+            case systemIRNSS:   return 'I';
+            default:            return '?';
          }
       };
 
@@ -152,16 +152,16 @@ namespace gpstk {
       std::string systemString() const throw()
       {
          switch(system) {
-            case SatelliteSystem::GPS:     return "GPS";
-            case SatelliteSystem::Galileo: return "Galileo";
-            case SatelliteSystem::Glonass: return "Glonass";
-            case SatelliteSystem::Geosync: return "Geosync";
-            case SatelliteSystem::Transit: return "Transit";
-            case SatelliteSystem::LEO:     return "LEO";
-            case SatelliteSystem::QZSS:    return "QZSS";
-            case SatelliteSystem::BeiDou:  return "BeiDou";
-            case SatelliteSystem::IRNSS:   return "IRNSS";
-            default:                       return "Unknown";
+            case systemGPS:     return "GPS";
+            case systemGalileo: return "Galileo";
+            case systemGlonass: return "Glonass";
+            case systemGeosync: return "Geosync";
+            case systemTransit: return "Transit";
+            case systemLEO:     return "LEO";
+            case systemQZSS:    return "QZSS";
+            case systemBeiDou:  return "BeiDou";
+            case systemIRNSS:   return "IRNSS";
+            default:            return "Unknown";
          }
       };
 
@@ -173,7 +173,7 @@ namespace gpstk {
          char c;
          std::istringstream iss(s);
 
-         id = -1; system = SatelliteSystem::GPS;  // default
+         id = -1; system = systemGPS;  // default
          if(s.find_first_not_of(std::string(" \t\n"), 0) == std::string::npos)
             return;                    // all whitespace yields the default
 
@@ -184,34 +184,34 @@ namespace gpstk {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                iss.putback(c);
-               system = SatelliteSystem::GPS;
+               system = SatID::systemGPS;
                break;
             case 'R': case 'r':
-               system = SatelliteSystem::Glonass;
+               system = SatID::systemGlonass;
                break;
             case 'T': case 't':
-               system = SatelliteSystem::Transit;
+               system = SatID::systemTransit;
                break;
             case 'S': case 's':
-               system = SatelliteSystem::Geosync;
+               system = SatID::systemGeosync;
                break;
             case 'E': case 'e':
-               system = SatelliteSystem::Galileo;
+               system = SatID::systemGalileo;
                break;
             case 'L': case 'l':
-               system = SatelliteSystem::LEO;
+               system = SatID::systemLEO;
                break;
             case ' ': case 'G': case 'g':
-               system = SatelliteSystem::GPS;
+               system = SatID::systemGPS;
                break;
             case 'J': case 'j':
-               system = SatelliteSystem::QZSS;
+               system = SatID::systemQZSS;
                break;
             case 'C': case 'c':
-               system = SatelliteSystem::BeiDou;
+               system = SatID::systemBeiDou;
                break;
             case 'I': case 'i':
-               system = SatelliteSystem::IRNSS;
+               system = SatID::systemIRNSS;
                break;
             default:                   // invalid system character
                Exception e(std::string("Invalid system character \"")

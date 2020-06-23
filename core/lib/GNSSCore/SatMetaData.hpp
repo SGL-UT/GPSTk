@@ -55,7 +55,7 @@ namespace gpstk
       int32_t norad;   ///< NORAD-assigned ID for this satellite.
       int32_t chl;     ///< Channel ID for FDMA satellites.
       uint32_t slotID; ///< Slot ID for FDMA satellites.
-      SatelliteSystem sys;   ///< Which GNSS this satellite is from.
+      SatID::SatelliteSystem sys;   ///< Which GNSS this satellite is from.
       gpstk::CommonTime launchTime; ///< When the satellite was launched.
       gpstk::CommonTime startTime;  ///< When the satellite became operational.
       gpstk::CommonTime endTime;    ///< When the satellite ceased operation.

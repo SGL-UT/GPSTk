@@ -76,7 +76,7 @@ namespace gpstk
        * @code
        *   SatDataReader satread;
        *
-       *   SatID prn28(28, SatelliteSystem::GPS);
+       *   SatID prn28(28, SatID::systemGPS);
        *   CommonTime time(1995, 331, 43200);
        *
        *   satread.open("PRN_GPS");

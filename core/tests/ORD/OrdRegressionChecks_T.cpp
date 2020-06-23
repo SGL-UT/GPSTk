@@ -90,7 +90,7 @@ TEST(OrdTestRegression, TestIonoFreeRange) {
 TEST(OrdTestRegression, TestRawRange1) {
     MockXvtStore foo;
     gpstk::Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     gpstk::Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -119,7 +119,7 @@ TEST(OrdTestRegression, TestRawRange1) {
 TEST(OrdTestRegression, TestRawRange2) {
     MockXvtStore foo;
     gpstk::Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     gpstk::Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -148,7 +148,7 @@ TEST(OrdTestRegression, TestRawRange2) {
 TEST(OrdTestRegression, TestRawRange3) {
     MockXvtStore foo;
     gpstk::Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     gpstk::Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -177,7 +177,7 @@ TEST(OrdTestRegression, TestRawRange3) {
 TEST(OrdTestRegression, TestRawRange4) {
     MockXvtStore foo;
     gpstk::Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
+    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     gpstk::Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);

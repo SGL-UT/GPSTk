@@ -90,7 +90,7 @@ namespace gpstk
       daf1 = msg.asSignedDouble(startBit+21,8,-51);
       UDRA = msg.asLong(startBit+29,5,1);
 
-      subjSv = SatID(subjPrnId,SatelliteSystem::GPS);
+      subjSv = SatID(subjPrnId,SatID::systemGPS);
 
          // CNAV-2 corrections are always for CNAV-2.  In the 
          // case of CNAV, the data may be either for CNAv or LNAb.

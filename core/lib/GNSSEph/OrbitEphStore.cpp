@@ -418,7 +418,7 @@ namespace gpstk
       SatTableMap::const_iterator it;
       if(sat.id == -1) {
          for(it = satTables.begin(); it != satTables.end(); ++it) {
-            if(it->first.system != sat.system && sat.system != SatelliteSystem::Mixed)
+            if(it->first.system != sat.system && sat.system != SatID::systemMixed)
                continue;
             n += it->second.size();
          }
@@ -623,7 +623,7 @@ namespace gpstk
       SatTableMap::const_iterator it;
       for (it = satTables.begin(); it != satTables.end(); it++)
       {
-         if(sat.system != SatelliteSystem::Unknown) {
+         if(sat.system != SatID::systemUnknown) {
             if(it->first.system != sat.system) continue;
             if(sat.id != -1 && it->first.id != sat.id) continue;
          }

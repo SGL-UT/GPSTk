@@ -149,7 +149,7 @@ namespace gpstk
       if (!validSatSystem(subjID))
       {
          stringstream ss;
-         ss << convertSatelliteSystemToString(subjID.system) 
+         ss << subjID.convertSatelliteSystemToString(subjID.system) 
             << " is not a valid Satellite system for this OrbAlmStore.";
          InvalidRequest ir(ss.str());
          GPSTK_THROW(ir);

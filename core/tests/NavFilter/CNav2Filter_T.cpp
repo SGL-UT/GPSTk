@@ -98,7 +98,7 @@ loadData()
 {
    ObsID oidCNAV2(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcG1X); 
    unsigned PRN = 1;
-   SatID sid(PRN,SatelliteSystem::GPS);
+   SatID sid(PRN,SatID::systemGPS);
    CommonTime ct = GPSWeekSecond(2000,86400.0);
    double MESSAGE_INTERVAL = 18.0;      // CNAV-2 message rate
    size_t MAX_PAGE_NUMBER = 6;

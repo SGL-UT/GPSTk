@@ -152,15 +152,15 @@ namespace gpstk
       {
          stringstream ess;
          ess << "Store does not contain orbit/clock elements for system ";
-         ess << static_cast<int>(sat.system);
+         ess << sat.system;
          ess << ". " << endl;
          ess << " Valid systems are :" << endl;
          
-         list<SatelliteSystem>::const_iterator cit;
+         list<SatID::SatelliteSystem>::const_iterator cit;
          for (cit=sysList.begin();cit!=sysList.end();cit++)
          {
-            SatelliteSystem ssTest = *cit;
-            ess << convertSatelliteSystemToString(ssTest) << endl;
+            SatID::SatelliteSystem ssTest = *cit;
+            ess << SatID::convertSatelliteSystemToString(ssTest) << endl;
          }
          
          InvalidRequest ir(ess.str());
@@ -735,29 +735,29 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
 
-   bool OrbElemStore::isSatSysPresent(const SatelliteSystem ss) const
+   bool OrbElemStore::isSatSysPresent(const SatID::SatelliteSystem ss) const
    {
-      list<SatelliteSystem>::const_iterator cit;
+      list<SatID::SatelliteSystem>::const_iterator cit;
       for (cit=sysList.begin();cit!=sysList.end();cit++)
       {
-         SatelliteSystem ssTest = *cit;
+         SatID::SatelliteSystem ssTest = *cit;
          if (ssTest==ss) return true;
       }
       return false;
    }
    
-   void OrbElemStore::addSatSys(const SatelliteSystem ss)
+   void OrbElemStore::addSatSys(const SatID::SatelliteSystem ss)
    {
       sysList.push_back(ss);
    }
 
-   std::list<SatelliteSystem> OrbElemStore::getValidSystemList() const
+   std::list<SatID::SatelliteSystem> OrbElemStore::getValidSystemList() const
    {
-      list<SatelliteSystem> retList; 
-      list<SatelliteSystem>::const_iterator cit;
+      list<SatID::SatelliteSystem> retList; 
+      list<SatID::SatelliteSystem>::const_iterator cit;
       for (cit=sysList.begin();cit!=sysList.end();cit++)
       {
-         SatelliteSystem ssTest = *cit;
+         SatID::SatelliteSystem ssTest = *cit;
          retList.push_back(ssTest);
       }
       return retList;     
@@ -767,13 +767,13 @@ namespace gpstk
    {
       out << "List of systems in OrbElemStore: "; 
       bool first = true; 
-      list<SatelliteSystem>::const_iterator cit;
+      list<SatID::SatelliteSystem>::const_iterator cit;
       for (cit=sysList.begin();cit!=sysList.end();cit++)
       {
          if (!first)
             out << ", ";
-         SatelliteSystem ssTest = *cit;
-         out << static_cast<int>(ssTest);
+         SatID::SatelliteSystem ssTest = *cit;
+         out << ssTest;
          first = false; 
       }
       out << endl;
@@ -789,8 +789,8 @@ namespace gpstk
 //-----------------------------------------------------------------------------
    void OrbElemStore::rationalize( )
     {
-      // check to verify that the system type is SatelliteSystem::GPS
-      bool sat_sys_gps = OrbElemStore::isSatSysPresent(SatelliteSystem::GPS);
+      // check to verify that the system type is SatID::systemGPS
+      bool sat_sys_gps = OrbElemStore::isSatSysPresent(SatID::systemGPS);
 
       if (sat_sys_gps)
       {

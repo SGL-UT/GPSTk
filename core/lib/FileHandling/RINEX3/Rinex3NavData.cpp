@@ -60,7 +60,7 @@ namespace gpstk
       time = rnd.time;
       satSys = "G";
       PRNID = rnd.PRNID;
-      sat = RinexSatID(PRNID,SatelliteSystem::GPS);
+      sat = RinexSatID(PRNID,SatID::systemGPS);
       xmitTime = rnd.getXmitWS().sow;
       weeknum = rnd.getXmitWS().week;
       accuracy = rnd.accuracy;
@@ -205,7 +205,7 @@ namespace gpstk
       weeknum = static_cast<QZSWeekSecond>(qzseph.transmitTime).getWeek();
 
       PRNID -= 192;                    // RINEX stores PRN minus 192
-      sat = RinexSatID(PRNID,SatelliteSystem::QZSS);
+      sat = RinexSatID(PRNID,SatID::systemQZSS);
       IODC = qzseph.IODC;
       IODE = qzseph.IODE;
       health = qzseph.health;
@@ -228,7 +228,7 @@ namespace gpstk
       // epoch info
       satSys = ee.getSatSys();
       PRNID  = ee.getPRNID();
-      sat    = RinexSatID(PRNID,SatelliteSystem::GPS);
+      sat    = RinexSatID(PRNID,SatID::systemGPS);
       time   = ee.getEpochTime();
 
       Toc     = ee.getToc();
@@ -285,7 +285,7 @@ namespace gpstk
          // Epoch info
       satSys = gloe.getSatSys();
       PRNID  = gloe.getPRNID();
-      sat    = RinexSatID(PRNID,SatelliteSystem::Glonass);
+      sat    = RinexSatID(PRNID,SatID::systemGlonass);
       time   = gloe.getEpochTime();
 
          // GLONASS parameters
@@ -625,7 +625,7 @@ namespace gpstk
       castTo(ptr);                                 //sets dataLoadedFlag
 
       // is it right?
-      if(gpse.satID.system != SatelliteSystem::GPS)
+      if(gpse.satID.system != SatID::systemGPS)
          gpse.dataLoadedFlag = false;
 
       if(!gpse.dataLoadedFlag)
@@ -719,7 +719,7 @@ namespace gpstk
       castTo(ptr);                                          // sets dataLoadedFlag
 
       // is it right?
-      if(gale.satID.system != SatelliteSystem::Galileo)
+      if(gale.satID.system != SatID::systemGalileo)
          gale.dataLoadedFlag = false;
 
       if(!gale.dataLoadedFlag)
@@ -770,7 +770,7 @@ namespace gpstk
       castTo(ptr);                                    // set dataLoadedFlag
 
       // is it right?
-      if(bdse.satID.system != SatelliteSystem::BeiDou)
+      if(bdse.satID.system != SatID::systemBeiDou)
          bdse.dataLoadedFlag = false;
 
       if(!bdse.dataLoadedFlag)
@@ -815,7 +815,7 @@ namespace gpstk
       castTo(dynamic_cast<OrbitEph*>(&qzse));
 
       // is it right?
-      if(qzse.satID.system != SatelliteSystem::QZSS)
+      if(qzse.satID.system != SatID::systemQZSS)
          qzse.dataLoadedFlag = false;
 
       if(!qzse.dataLoadedFlag)
@@ -841,7 +841,7 @@ namespace gpstk
       qzse.ctToc.setTimeSystem(TimeSystem::QZS);
 
       // now load the QZSS-specific parts
-      qzse.satID = SatID(qzse.satID.id + 192, SatelliteSystem::QZSS);
+      qzse.satID = SatID(qzse.satID.id + 192, SatID::systemQZSS);
       qzse.IODC = IODC;
       qzse.IODE = IODE;
       qzse.health = health;

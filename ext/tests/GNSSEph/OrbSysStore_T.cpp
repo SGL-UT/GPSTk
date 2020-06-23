@@ -160,13 +160,13 @@ createAndDump_LNAV()
 //--- Test the isPresent( ) method --------------------------------
    currMethod = typeDesc + " OrbSysStore.isPresent() ";
    TUCSM(currMethod);
-   SatID sidT1(1,SatelliteSystem::GPS);
+   SatID sidT1(1,SatID::systemGPS);
    if (oss.isPresent(sidT1))
       TUPASS("");
    else
       TUFAIL("Failed to find PRN 1 in store");
 
-   SatID sidT2(33,SatelliteSystem::GPS);
+   SatID sidT2(33,SatID::systemGPS);
    if (oss.isPresent(sidT2))
       TUFAIL("Reported PRN 33 as present (which is not true)");
    else
@@ -221,7 +221,7 @@ createAndDump_LNAV()
 //--- Test the find( ) method --------------------------------
    currMethod = typeDesc + " OrbSysStore.find() ";
    TUCSM(currMethod);
-   SatID sidTest(1,SatelliteSystem::GPS);
+   SatID sidTest(1,SatID::systemGPS);
    NavID nidTest(NavID::ntGPSLNAV);
    unsigned long UID = 56;
 
@@ -404,7 +404,7 @@ createAndDump_LNAV()
    list<SatID> satIDList = oss.getSatIDList();
    TUASSERTE(int,3,satIDList.size());
    SatID sid = satIDList.front();
-   TUASSERTE(SatID,sid,SatID(1,SatelliteSystem::GPS));
+   TUASSERTE(SatID,sid,SatID(1,SatID::systemGPS));
 
       // Test getNavIDList()
    currMethod = typeDesc + " OrbSysStore.getNavIDList()";
@@ -419,12 +419,12 @@ createAndDump_LNAV()
    /*
    currMethod = typeDesc + " OrbSysStore.getSatSysList()";
    TUCSM(currMethod);
-   const list<SatelliteSystem>& satSysList = oss.getSatSysList();
+   const list<SatID::SatelliteSystem>& satSysList = oss.getSatSysList();
    TUASSERTE(int,1,satSysList.size());
-   SatelliteSystem ss = satSysList.front();
-   TUASSERTE(SatelliteSystem,ss,SatelliteSystem::GPS);
+   SatID::SatelliteSystem ss = satSysList.front();
+   TUASSERTE(SatID::SatelliteSystem,ss,SatID::systemGPS);
    cout << "Length of satSysList: " << satSysList.size() << endl;
-   list<SatelliteSystem>::const_iterator tt;
+   list<SatID::SatelliteSystem>::const_iterator tt;
    for (tt=satSysList.begin(); tt!=satSysList.end(); tt++)
    {
       cout << " " << *tt << endl;
@@ -542,13 +542,13 @@ createAndDump_LNAV()
       // Define SVs of interest
    SatID sidAr[] =
    {
-      SatID(18,SatelliteSystem::GPS),    // Block IIA.  None in system on 12/13/2015.  Had to hand-edit data
-      SatID(19,SatelliteSystem::GPS),    // Block IIR.  SVN 59/PRN 19
-      SatID(17,SatelliteSystem::GPS),    // Block IIR-M.  SVN 53/PRN 17
-      SatID( 9,SatelliteSystem::GPS),    // Block IIF.  SVN 68/PRN 9
-      SatID( 1,SatelliteSystem::GPS),    // GPS III.  None in system on 12/13/2015.  Had to hand-edit data
-      SatID(99,SatelliteSystem::GPS),    // Invalid PRN ID.
-      SatID( 1,SatelliteSystem::BeiDou), // Invalid System
+      SatID(18,SatID::systemGPS),    // Block IIA.  None in system on 12/13/2015.  Had to hand-edit data
+      SatID(19,SatID::systemGPS),    // Block IIR.  SVN 59/PRN 19
+      SatID(17,SatID::systemGPS),    // Block IIR-M.  SVN 53/PRN 17
+      SatID( 9,SatID::systemGPS),    // Block IIF.  SVN 68/PRN 9
+      SatID( 1,SatID::systemGPS),    // GPS III.  None in system on 12/13/2015.  Had to hand-edit data
+      SatID(99,SatID::systemGPS),    // Invalid PRN ID.
+      SatID( 1,SatID::systemBeiDou), // Invalid System
    };
 
       // Define signals of interest
@@ -955,7 +955,7 @@ setUpGLO()
 
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatelliteSystem::GPS);
+         SatID sid(prn,SatID::systemGPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]);
@@ -1013,7 +1013,7 @@ setUpGLO()
 
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatelliteSystem::GPS);
+         SatID sid(prn,SatID::systemGPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]);

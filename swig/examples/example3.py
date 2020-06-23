@@ -16,7 +16,7 @@ import gpstk
 rfn = gpstk.getPathData() + '/test_input_rinex2_obs_RinexObsFile.06o'
 
 # Make a GPSTk SatID used to find a specific satellite in the data
-svid = gpstk.RinexSatID(5, gpstk.SatelliteSystem.GPS)
+svid = gpstk.RinexSatID(5, gpstk.SatID.systemGPS)
 
 try:
     header, data = gpstk.readRinex3Obs(rfn, strict=True)

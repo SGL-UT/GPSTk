@@ -125,7 +125,7 @@ namespace gpstk
             {
                int prn = static_cast<short>( ficked[19] );
                if (prn) {
-                  SatID sat(prn,SatelliteSystem::GPS);
+                  SatID sat(prn,SatID::systemGPS);
                   almPRN[sat] = AlmOrbit(prn, ficked[7], ficked[9], ficked[10],
                                          ficked[12], ficked[13], ficked[14],
                                          ficked[15], ficked[16], ficked[17],
@@ -445,7 +445,7 @@ namespace gpstk
       {
          try
          {
-            double svToa = getToa(gpstk::SatID(prn, SatelliteSystem::GPS));
+            double svToa = getToa(gpstk::SatID(prn, SatID::systemGPS));
             if (svToa != p51Toa)
             {
                s << "Toa mis-match on prn " << prn

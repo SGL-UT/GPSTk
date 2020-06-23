@@ -144,7 +144,7 @@ loadData()
       CommonTime ct = GPSWeekSecond(gpsWeek, sow, TimeSystem::GPS);
       
       int prn = StringUtils::asInt(words[5]);
-      SatID sid(prn, SatelliteSystem::GPS);
+      SatID sid(prn, SatID::systemGPS);
 
       string rxString = "unk";
 

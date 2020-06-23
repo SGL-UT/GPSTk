@@ -453,10 +453,10 @@ try {
       vector<SatID> sats(C.SP3EphStore.getSatList());
       for(i=0; i<sats.size(); i++) {                           // loop over sats
          // check for some GLO channel - can't compute b/c we don't have data yet
-         if(sats[i].system == SatelliteSystem::Glonass) {
+         if(sats[i].system == SatID::systemGlonass) {
             map<RinexSatID,int>::const_iterator it(C.GLOfreqChan.find(sats[i]));
             if(it==C.GLOfreqChan.end()
-                                 && sats[i].system==SatelliteSystem::Glonass) {
+                                 && sats[i].system==RinexSatID::systemGlonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
 
@@ -554,15 +554,15 @@ try {
          //LOG(VERBOSE) << "Read " << nread << " RINEX navigation files, containing "
          //   << nrec << " records, into store.";
          //LOG(VERBOSE) << "GPS ephemeris store contains "
-         //   << C.RinEphStore.size(SatelliteSystem::GPS) << " ephemerides.";
+         //   << C.RinEphStore.size(SatID::systemGPS) << " ephemerides.";
          //LOG(VERBOSE) << "GAL ephemeris store contains "
-         //   << C.RinEphStore.size(SatelliteSystem::Galileo) << " ephemerides.";
+         //   << C.RinEphStore.size(SatID::systemGalileo) << " ephemerides.";
          //LOG(VERBOSE) << "BDS ephemeris store contains "
-         //   << C.RinEphStore.size(SatelliteSystem::BeiDou) << " ephemerides.";
+         //   << C.RinEphStore.size(SatID::systemBeiDou) << " ephemerides.";
          //LOG(VERBOSE) << "QZS ephemeris store contains "
-         //   << C.RinEphStore.size(SatelliteSystem::QZSS) << " ephemerides.";
+         //   << C.RinEphStore.size(SatID::systemQZSS) << " ephemerides.";
          //LOG(VERBOSE) << "GLO ephemeris store contains "
-         //   << C.RinEphStore.size(SatelliteSystem::Glonass) << " satellites.";
+         //   << C.RinEphStore.size(SatID::systemGlonass) << " satellites.";
          // dump the entire store
          //int level=0;
          //if(C.verbose) level=2; else if(C.debug > -1) level=3;
@@ -2203,11 +2203,11 @@ bool LinCom::ParseAndSave(const string& lab, bool save)
             // convert to TECU
             double TECUperM(1.0);
             if(C.doTECU) {
-               if(sat.system == SatelliteSystem::GPS) {
+               if(sat.system == SatID::systemGPS) {
                   static const double GPSL1(L1_FREQ_GPS*1.e-8);
                   TECUperM = GPSL1*GPSL1/40.28;
                }
-               else if(sat.system == SatelliteSystem::Glonass) {
+               else if(sat.system == SatID::systemGlonass) {
                   static const double GLOL1((L1_FREQ_GLO
                                  + C.GLOfreqChan.count(sat)*L1_FREQ_STEP_GLO)*1.e-8);
                   TECUperM = GLOL1*GLOL1/40.28;

@@ -137,10 +137,10 @@ namespace gpstk
 
     // The system is assumed (legacy navigation message is from GPS)
       satID.id     = static_cast<short>( rinNav.PRNID );
-      satID.system = SatelliteSystem::GPS;
+      satID.system = SatID::systemGPS;
       if (satID.id>=MIN_PRN_QZS && 
           satID.id<=MAX_PRN_QZS) 
-         satID.system = SatelliteSystem::QZSS;  
+         satID.system = SatID::systemQZSS;  
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -289,7 +289,7 @@ namespace gpstk
          // Galileo-specific override
          // This points out that the existing OrbElemRinex is wholly inadequate to the 
          // task of representing all the special cases in Rinex V3.
-      if (satID.system==SatelliteSystem::Galileo)
+      if (satID.system==SatID::systemGalileo)
       {
          IODC = rinNav.IODnav;
       }
@@ -341,8 +341,8 @@ namespace gpstk
    {
       switch (satID.system)
       {
-         case SatelliteSystem::GPS:     { determineTimesGPS();     break; }
-         case SatelliteSystem::Galileo: { determineTimesGalileo(); break; }
+         case SatID::systemGPS:     { determineTimesGPS();     break; }
+         case SatID::systemGalileo: { determineTimesGalileo(); break; }
          default:                   { determineTimesDefault(); }
       }
       return;
@@ -541,7 +541,7 @@ namespace gpstk
 
       switch (satID.system)
       {
-         case SatelliteSystem::Glonass: 
+         case SatID::systemGlonass: 
          {
             ctToc        = GPSWeekSecond(epochWeek,       Toc3,       TimeSystem::GPS);
             ctToe        = GPSWeekSecond(epochWeek,       Toe3,       TimeSystem::GPS);
@@ -551,7 +551,7 @@ namespace gpstk
             break; 
          }
 
-         case SatelliteSystem::BeiDou:  
+         case SatID::systemBeiDou:  
          { 
             beginValid   = BDSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::BDT);
             transmitTime = BDSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::BDT);
@@ -561,7 +561,7 @@ namespace gpstk
             break; 
          }
          
-         case SatelliteSystem::QZSS:    
+         case SatID::systemQZSS:    
          { 
             beginValid   = QZSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::QZS);
             transmitTime = QZSWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::QZS);
@@ -571,7 +571,7 @@ namespace gpstk
             break; 
          }
          
-         case SatelliteSystem::IRNSS:   
+         case SatID::systemIRNSS:   
          { 
             beginValid   = IRNWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::IRN);
             transmitTime = IRNWeekSecond(fullXmitWeekNum, XmitSOW,   TimeSystem::IRN);
@@ -592,7 +592,7 @@ namespace gpstk
 
          // The adjustment logic only applies to GPS.  The other
          // systems do not make these promises in their ICDs. 
-      if (satID.system!=SatelliteSystem::GPS) 
+      if (satID.system!=SatID::systemGPS) 
          return;
 
          // The nominal beginning of validity is calculated from
@@ -783,7 +783,7 @@ namespace gpstk
          // to the beginning of the two hour interval. 
          // NOTE: This is only true for GPS.   We can't do this
          // for QZSS, even though it also broadcasts the LNAV message format.
-      if (satID.system==SatelliteSystem::GPS && isNominalToe(ctToe))
+      if (satID.system==SatID::systemGPS && isNominalToe(ctToe))
       {
          xmitSOW = xmitSOW - (xmitSOW % TWO_HOURS);
       }

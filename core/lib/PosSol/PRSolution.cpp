@@ -208,15 +208,15 @@ namespace gpstk
       try {
          // -----------------------------------------------------------
          // counts, systems and dimensions
-         vector<SatelliteSystem> currGNSS;
+         vector<SatID::SatelliteSystem> currGNSS;
          {
             // define the current systems vector, and count good satellites
-            vector<SatelliteSystem> tempGNSS;
+            vector<SatID::SatelliteSystem> tempGNSS;
             for(Nsvs=0,i=0; i<Sats.size(); i++) {
                if(Sats[i].id <= 0)                          // reject marked sats
                   continue;
 
-               SatelliteSystem sys(Sats[i].system);  // get this system
+               SatID::SatelliteSystem sys(Sats[i].system);  // get this system
                if(vectorindex(allowedGNSS, sys) == -1)      // reject disallowed sys
                   continue;
 
@@ -525,7 +525,7 @@ namespace gpstk
          Vector<double> BestSol(3,0.0),BestPFR;
          vector<SatID> BestSats,SaveSats;
          Matrix<double> SVP,BestCov,BestInvMCov,BestPartials;
-         vector<SatelliteSystem> BestGNSS;
+         vector<SatID::SatelliteSystem> BestGNSS;
 
          // initialize
          Valid = false;

@@ -657,7 +657,7 @@ try {
    // if the satellite is Glonass, compute the frequency channel, if necessary,
    // and define wavelengths and other constants for this satellite
    GLOn = GLOn_in;
-   if(sat.system == SatelliteSystem::Glonass) {
+   if(sat.system == SatID::systemGlonass) {
 
       // only compute it if it is out of range
       if(GLOn < -7 || GLOn > 7) {
@@ -3091,7 +3091,7 @@ try {
       << " DT " << fixed << setprecision(2) << cfg(DT)
       << " wavelengths " << wl1*100.0 << " " << wl2*100.0
       << " " << wlwl*100.0 << " " << wlgf*100.0;
-   if(sat.system == SatelliteSystem::Glonass) oss << " GLOn " << GLOn;
+   if(sat.system == SatID::systemGlonass) oss << " GLOn " << GLOn;
    oss << endl;
 
    // print WL & GF stats for whole pass
@@ -3133,7 +3133,7 @@ try {
    for(kt=learn.begin(); kt != learn.end(); kt++)
       oss << GDCtag << " " << GDCUnique << " " << sat
          << " " << setw(3) << kt->second << " " << kt->first << endl;
-   //if(sat.system == SatelliteSystem::Glonass)
+   //if(sat.system == SatID::systemGlonass)
    //   oss << GDCtag << " " << GDCUnique << " " << sat
    //      << "  " << GLOn << string(" GLONASS frequency channel") << endl;
 

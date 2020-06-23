@@ -251,9 +251,9 @@ int main(int argc, char **argv)
             //   LOG(VERBOSE) << "Exclude pass #" << setw(2) << npass+1 << " (" << sat
             //      << ") as satellite is excluded explicitly.";
             //}
-            //else if((!cfg.doGLO && sat.system != SatelliteSystem::GPS) ||
-            //        ( cfg.doGLO && sat.system != SatelliteSystem::GPS
-            //                    && sat.system != SatelliteSystem::Glonass))
+            //else if((!cfg.doGLO && sat.system != SatID::systemGPS) ||
+            //        ( cfg.doGLO && sat.system != SatID::systemGPS
+            //                    && sat.system != SatID::systemGlonass))
             //{
             //   cfg.SPList[npass].status() = -1;
             //   LOG(VERBOSE) << "Exclude pass #" << setw(2) << npass+1 << " (" << sat
@@ -452,7 +452,7 @@ try {
    cfg.SVonly.setfill('0');                     // set fill char in RinexSatID
 
    // catch input trap
-   if(!cfg.doGLO && cfg.SVonly.system == SatelliteSystem::Glonass) {
+   if(!cfg.doGLO && cfg.SVonly.system == SatID::systemGlonass) {
       LOG(VERBOSE) << "SVonly is GLONASS - turn on processing of GLONASS";
       cfg.doGLO = true;
    }
@@ -985,7 +985,7 @@ try {
    }
 
    // if no GLO, add to exSat
-   if(!cfg.doGLO && cfg.SVonly.system != SatelliteSystem::Glonass) {
+   if(!cfg.doGLO && cfg.SVonly.system != SatID::systemGlonass) {
       sat.fromString("R");
       if(vectorindex(cfg.exSat,sat) == -1) cfg.exSat.push_back(sat);
    }

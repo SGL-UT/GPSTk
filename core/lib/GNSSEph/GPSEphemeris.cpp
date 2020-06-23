@@ -182,7 +182,7 @@ namespace gpstk
          os << "****************************************************************"
             << "************" << endl
             << "Broadcast Orbit Ephemeris of class " << getName() << endl;
-         os << "Satellite: " << convertSatelliteSystemToString(satID.system)
+         os << "Satellite: " << SatID::convertSatelliteSystemToString(satID.system)
             << " " << setfill('0') << setw(2) << satID.id << setfill(' ');
 
       }

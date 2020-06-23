@@ -109,17 +109,17 @@ namespace gpstk
 
                // Get satellite id. If it doesn't fit GPS or Glonass, it is
                // marked as unknown
-            SatID sat(StringUtils::asInt(prn),SatelliteSystem::Unknown);
+            SatID sat(StringUtils::asInt(prn),SatID::systemUnknown);
                // Let's identify satellite system
             if(block[0] == 'I')
             {
-               sat.system = SatelliteSystem::GPS;
+               sat.system = SatID::systemGPS;
             }
             else
             { 
                if (block.substr(0, 3) == "GLO")
                {
-                  sat.system = SatelliteSystem::Glonass;
+                  sat.system = SatID::systemGlonass;
                }
             }
 

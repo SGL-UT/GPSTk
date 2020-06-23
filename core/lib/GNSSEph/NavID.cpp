@@ -71,7 +71,7 @@ namespace gpstk
             //corresponds to GPS LNAV.
          switch (sidr.system)
          {
-           case SatelliteSystem::GPS:
+           case SatID::systemGPS:
            {
               if (( oidr.band==ObsID::cbL1 || oidr.band==ObsID::cbL2 ) &&
                   ( oidr.code==ObsID::tcCA || oidr.code==ObsID::tcP ||
@@ -104,7 +104,7 @@ namespace gpstk
                         navType = ntGPSMNAV;
               break;
             }
-            case SatelliteSystem::QZSS:
+            case SatID::systemQZSS:
             {
                if ( oidr.band==ObsID::cbL1  &&
                     oidr.code==ObsID::tcCA )
@@ -127,7 +127,7 @@ namespace gpstk
                          navType = ntGPSCNAV2;
                break;
             }
-            case SatelliteSystem::BeiDou:
+            case SatID::systemBeiDou:
             {             
                if ( sidr.id>5 &&                                                  
                   ( oidr.band==ObsID::cbB1   || oidr.band==ObsID::cbB2   ||
@@ -150,7 +150,7 @@ namespace gpstk
                          navType = ntBeiDou_D2;
                break;
             }
-            case SatelliteSystem::Glonass:
+            case SatID::systemGlonass:
             {
                if (( oidr.band==ObsID::cbG1 || oidr.band==ObsID::cbG2 ) &&         
                    ( oidr.code==ObsID::tcGCA ))  
@@ -162,7 +162,7 @@ namespace gpstk
                          navType = ntGloCivilC;
                break;
             }
-            case SatelliteSystem::Galileo:
+            case SatID::systemGalileo:
             {
                if ( oidr.band==ObsID::cbL1 && oidr.code==ObsID::tcB )
                   navType = ntGalINAV;
@@ -174,7 +174,7 @@ namespace gpstk
                        navType = ntGalFNAV; 
                break;
             }
-            case SatelliteSystem::IRNSS:
+            case SatID::systemIRNSS:
             {
                if ( oidr.band==ObsID::cbL5 &&
                   ( oidr.code==ObsID::tcIA5 || oidr.code==ObsID::tcIB5 ||

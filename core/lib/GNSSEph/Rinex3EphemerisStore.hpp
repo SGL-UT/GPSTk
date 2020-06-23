@@ -208,14 +208,14 @@ namespace gpstk
       virtual bool isPresent(const SatID& sat) const
       {
          switch(sat.system) {
-            case SatelliteSystem::GPS:
-            case SatelliteSystem::Galileo:
-            case SatelliteSystem::BeiDou:
-            case SatelliteSystem::QZSS:
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
                return ORBstore.isPresent(sat);
-            case SatelliteSystem::Glonass:
+            case SatID::systemGlonass:
                return GLOstore.isPresent(sat);
-                  //case SatelliteSystem::Geosync:
+                  //case SatID::systemGeosync:
                   //return GEOstore.isPresent(sat);
             default:
                return false;
@@ -274,27 +274,27 @@ namespace gpstk
           * objects of sat's system, further if sat.id is not -1, add
           * only records for that sat. */
       int addToList(std::list<Rinex3NavData>& theList,
-                    SatID sat=SatID(-1,SatelliteSystem::Mixed)) const;
+                    SatID sat=SatID(-1,SatID::systemMixed)) const;
 
          /** get the number of records or ephemerides for the given
-          * satellite; an overload size(SatelliteSystem) gives
+          * satellite; an overload size(SatID::SatelliteSystem) gives
           * the total per system.
           * @param SatID sat satellite
           * @return the number of records or ephemerides */
       int size(const SatID sat) const
       {
          int n(0);
-         SatelliteSystem sys = sat.system;
+         SatID::SatelliteSystem sys = sat.system;
 
-         if(sys == SatelliteSystem::Mixed || sys == SatelliteSystem::GPS ||
-            sys == SatelliteSystem::Galileo || sys == SatelliteSystem::BeiDou ||
-            sys == SatelliteSystem::QZSS)
+         if(sys == SatID::systemMixed || sys == SatID::systemGPS ||
+            sys == SatID::systemGalileo || sys == SatID::systemBeiDou ||
+            sys == SatID::systemQZSS)
             n += ORBstore.size(sat);
 
-         if(sys == SatelliteSystem::Mixed || sys == SatelliteSystem::Glonass)
+         if(sys == SatID::systemMixed || sys == SatID::systemGlonass)
             n += GLOstore.size();
 
-            //if(sys == SatelliteSystem::Mixed || sys == SatelliteSystem::Geosync)
+            //if(sys == SatID::systemMixed || sys == SatID::systemGeosync)
             //   n += GEOstore.size();
 
          return n;
@@ -302,9 +302,9 @@ namespace gpstk
 
          /** get the number of records by system; default is systemMixed,
           * which returns the overall total
-          * @param SatelliteSystem GNSS of interest
+          * @param SatID::SatelliteSystem GNSS of interest
           * @return the number of records or ephemerides in this system */
-      int size(const SatelliteSystem sys = SatelliteSystem::Mixed) const
+      int size(const SatID::SatelliteSystem sys = SatID::systemMixed) const
       { return size(SatID(-1,sys)); }
 
          /** Add to the map of time system corrections. Overwrite the existing

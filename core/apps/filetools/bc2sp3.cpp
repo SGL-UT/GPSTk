@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
          bool foundSome = false;
          for(i=1; i<33; i++)              // for each PRN ...
          {
-            SatID sat(i,SatelliteSystem::GPS);
+            SatID sat(i,SatID::systemGPS);
             try
             {
                GPSEphemeris ee = BCEph.findEphemeris(sat, tt);
@@ -353,7 +353,7 @@ int main(int argc, char *argv[])
          for(i=1; i<33; i++)
          {
             long iode;
-            SatID sat(i,SatelliteSystem::GPS);
+            SatID sat(i,SatID::systemGPS);
             Xvt xvt;
             GPSEphemeris ee;
 

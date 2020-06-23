@@ -179,7 +179,7 @@ namespace gpstk
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
       preserveVerType = false; // let the write methods chose the above
-      fileSysSat = SatID(-1,SatelliteSystem::GPS);
+      fileSysSat = SatID(-1,SatID::systemGPS);
       fileProgram.clear();
       fileAgency.clear();
       date.clear();
@@ -359,7 +359,7 @@ namespace gpstk
          }
          else
          {
-            if(fileSysSat.system == SatelliteSystem::Unknown)
+            if(fileSysSat.system == RinexSatID::systemUnknown)
             {
                FFStreamError err("Invalid satellite system");
                GPSTK_THROW(err);
@@ -367,7 +367,7 @@ namespace gpstk
 
             line += leftJustify(string("OBSERVATION DATA"), 20);
             string str;
-            if(fileSysSat.system == SatelliteSystem::Mixed)
+            if(fileSysSat.system == SatID::systemMixed)
                str = "MIXED";
             else
             {
@@ -1074,7 +1074,7 @@ namespace gpstk
             fileSysSat = SatID(sat);
          }
          else
-            fileSysSat = SatID(-1,SatelliteSystem::Mixed);
+            fileSysSat = SatID(-1,SatID::systemMixed);
 
          if(fileType[0] != 'O' && fileType[0] != 'o')
          {
@@ -1645,7 +1645,7 @@ namespace gpstk
                   syss.push_back(sys);
             }
          }
-         else if(fileSysSat.system != SatelliteSystem::Mixed)
+         else if(fileSysSat.system != SatID::systemMixed)
          {
                // only one system in this file
             syss.push_back(string(1,RinexSatID(fileSysSat).systemChar()));
@@ -1756,32 +1756,32 @@ namespace gpstk
       if(strm.timesystem == TimeSystem::Any ||
          strm.timesystem == TimeSystem::Unknown)
       {
-         if(fileSysSat.system == SatelliteSystem::GPS)
+         if(fileSysSat.system == SatID::systemGPS)
          {
             strm.timesystem = TimeSystem::GPS;
             firstObs.setTimeSystem(TimeSystem::GPS);
          }
-         else if(fileSysSat.system == SatelliteSystem::Glonass)
+         else if(fileSysSat.system == SatID::systemGlonass)
          {
             strm.timesystem = TimeSystem::UTC;
             firstObs.setTimeSystem(TimeSystem::UTC);
          }
-         else if(fileSysSat.system == SatelliteSystem::Galileo)
+         else if(fileSysSat.system == SatID::systemGalileo)
          {
             strm.timesystem = TimeSystem::GAL;
             firstObs.setTimeSystem(TimeSystem::GAL);
          }
-         else if(fileSysSat.system == SatelliteSystem::QZSS)
+         else if(fileSysSat.system == SatID::systemQZSS)
          {
             strm.timesystem = TimeSystem::QZS;
             firstObs.setTimeSystem(TimeSystem::QZS);
          }
-         else if(fileSysSat.system == SatelliteSystem::BeiDou)
+         else if(fileSysSat.system == SatID::systemBeiDou)
          {
             strm.timesystem = TimeSystem::BDT;
             firstObs.setTimeSystem(TimeSystem::BDT);
          }
-         else if(fileSysSat.system == SatelliteSystem::Mixed)
+         else if(fileSysSat.system == SatID::systemMixed)
          {
             // lenient
             strm.timesystem = TimeSystem::GPS;
@@ -2240,7 +2240,7 @@ namespace gpstk
       size_t i;
 
       string str;
-      if(fileSysSat.system == SatelliteSystem::Mixed)
+      if(fileSysSat.system == SatID::systemMixed)
          str = "MIXED";
       else
       {
@@ -2442,7 +2442,7 @@ namespace gpstk
          s << "Number of Satellites with data : " << numSVs << endl;
       if(valid & validPrnObs)
       {
-         RinexSatID sat, sys(-1,SatelliteSystem::Unknown);
+         RinexSatID sat, sys(-1,SatID::systemUnknown);
          s << " PRN and number of observations for each obs type:" << endl;
          map<RinexSatID, vector<int> >::const_iterator it = numObsForSat.begin();
          while (it != numObsForSat.end())

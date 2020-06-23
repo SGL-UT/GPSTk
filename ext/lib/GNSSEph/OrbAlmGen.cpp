@@ -547,7 +547,7 @@ namespace gpstk
       s << "w           " << setw(16) << w         << " rad" << endl;
       s << "M0          " << setw(16) << M0        << " rad" << endl;
 
-      if (subjectSV.system==SatelliteSystem::BeiDou)
+      if (subjectSV.system==SatID::systemBeiDou)
       {
          s << "Health                 0x" << hex << setfill('0') << setw(3) 
                         << health << " 9 bits"
@@ -604,7 +604,7 @@ namespace gpstk
       }
       string tform2("%02m/%02d/%4Y %03j %02H:%02M:%02S");
       stringstream ss; 
-      string ssys = convertSatelliteSystemToString(subjectSV.system); 
+      string ssys = SatID::convertSatelliteSystemToString(subjectSV.system); 
       ss << setw(7) << ssys;
       ss << " " << setw(2) << subjectSV.id;
       ss << "  AL ";
@@ -664,12 +664,12 @@ namespace gpstk
       satID = msg.getsatSys();
       if (satID.id>=MIN_PRN_QZS && satID.id<=MAX_PRN_QZS)
       {
-         satID.system = SatelliteSystem::QZSS; 
+         satID.system = SatID::systemQZSS; 
       }
 
          // Set the subjectSV (found in OrbAlm.hpp)
       int subjectPRN = SVID;
-      if (subjectPRN>0 && satID.system==SatelliteSystem::QZSS)
+      if (subjectPRN>0 && satID.system==SatID::systemQZSS)
       {
          subjectPRN += (MIN_PRN_QZS - 1); 
       }
@@ -754,7 +754,7 @@ namespace gpstk
       satID = msg.getsatSys();
 
          // Set the subjectSV (found in OrbAlm.hpp)
-      subjectSV = SatID(SVID, SatelliteSystem::GPS);
+      subjectSV = SatID(SVID, SatID::systemGPS);
 
          // Crack the bits into engineering units. 
       unsigned short wna = (unsigned short) msg.asUnsignedLong(127,13,1);

@@ -57,10 +57,10 @@ public:
          //---------------------------------------------------------------------
          //Does the Explicit Constructor function?
          //---------------------------------------------------------------------
-      gpstk::SP3SatID Compare1(5, gpstk::SatelliteSystem(1));
+      gpstk::SP3SatID Compare1(5, gpstk::SatID::SatelliteSystem(1));
       testFramework.assert(Compare1.id == 5,
                            "Explicit constructor did not set the correct ID", __LINE__);
-      testFramework.assert(Compare1.system == gpstk::SatelliteSystem(1),
+      testFramework.assert(Compare1.system == gpstk::SatID::SatelliteSystem(1),
                            "Explicit constructor did not set the correct SatelliteSystem", __LINE__);
 
 
@@ -71,7 +71,7 @@ public:
       gpstk::SP3SatID Compare2;
       testFramework.assert(Compare2.id == -1,
                            "Default constructor did not set the expected ID", __LINE__);
-      testFramework.assert(Compare2.system == gpstk::SatelliteSystem(1),
+      testFramework.assert(Compare2.system == gpstk::SatID::SatelliteSystem(1),
                            "Default constructor did not set the expected SatelliteSystem", __LINE__);
 
 
@@ -82,7 +82,7 @@ public:
       gpstk::SP3SatID Compare3("G 10");
       testFramework.assert(Compare3.id == 10,
                            "fromString constructor did not set the correct ID", __LINE__);
-      testFramework.assert(Compare3.system == gpstk::SatelliteSystem(1),
+      testFramework.assert(Compare3.system == gpstk::SatID::SatelliteSystem(1),
                            "fromString constructor did not set the correct SatelliteSystem", __LINE__);
 
          //Did the constructor throw an exception for an improper string?
@@ -103,11 +103,11 @@ public:
          //Does the SatID Constructor function?
          //---------------------------------------------------------------------
       testFramework.changeSourceMethod("ConstructorSatID");
-      gpstk::SatID sat1(7, gpstk::SatelliteSystem(1));
+      gpstk::SatID sat1(7, gpstk::SatID::SatelliteSystem(1));
       gpstk::SP3SatID Compare4(sat1);
       testFramework.assert(Compare4.id == 7,
                            "SatID constructor did not set the correct ID", __LINE__);
-      testFramework.assert(Compare4.system == gpstk::SatelliteSystem(1),
+      testFramework.assert(Compare4.system == gpstk::SatID::SatelliteSystem(1),
                            "SatID constructor did not set the correct SatelliteSystem", __LINE__);
 
       return testFramework.countFails();
@@ -122,13 +122,13 @@ public:
       gpstk::TestUtil testFramework( "SatID", "OperatorEquivalence", __FILE__, __LINE__);
 
 
-      gpstk::SP3SatID Compare    (5, gpstk::SatelliteSystem(2) );
-      gpstk::SP3SatID Equivalent (5, gpstk::SatelliteSystem(2) );
-      gpstk::SP3SatID LessThanID (2, gpstk::SatelliteSystem(2) );
-      gpstk::SP3SatID DiffSatSys (5, gpstk::SatelliteSystem(3) );
-      gpstk::SP3SatID DiffEvery  (2, gpstk::SatelliteSystem(3) );
-      gpstk::SP3SatID DiffEvery2 (7, gpstk::SatelliteSystem(1) );
-      gpstk::SP3SatID Redirected (6, gpstk::SatelliteSystem(1) );
+      gpstk::SP3SatID Compare    (5, gpstk::SatID::SatelliteSystem(2) );
+      gpstk::SP3SatID Equivalent (5, gpstk::SatID::SatelliteSystem(2) );
+      gpstk::SP3SatID LessThanID (2, gpstk::SatID::SatelliteSystem(2) );
+      gpstk::SP3SatID DiffSatSys (5, gpstk::SatID::SatelliteSystem(3) );
+      gpstk::SP3SatID DiffEvery  (2, gpstk::SatID::SatelliteSystem(3) );
+      gpstk::SP3SatID DiffEvery2 (7, gpstk::SatID::SatelliteSystem(1) );
+      gpstk::SP3SatID Redirected (6, gpstk::SatID::SatelliteSystem(1) );
 
          //---------------------------------------------------------------------
          //Does the == Operator function?
@@ -333,20 +333,20 @@ public:
 
       std::string inputStringArray[12] = {"7", "07", "30", "E10", "E100", "G08", "E08", "R08", "L08", "C08", "J08", "M08"};
       int         expectedID[12]       = {  7,    7,   30,    10,    100,     8,     8,     8,     8,     8,    200,     8};
-      gpstk::SatelliteSystem expectedSatSysArray[12] =
+      gpstk::SatID::SatelliteSystem expectedSatSysArray[12] =
          {
-            gpstk::SatelliteSystem::GPS,
-            gpstk::SatelliteSystem::GPS,
-            gpstk::SatelliteSystem::GPS,
-            gpstk::SatelliteSystem::Galileo,
-            gpstk::SatelliteSystem::Galileo,
-            gpstk::SatelliteSystem::GPS,
-            gpstk::SatelliteSystem::Galileo,
-            gpstk::SatelliteSystem::Glonass,
-            gpstk::SatelliteSystem::LEO,
-            gpstk::SatelliteSystem::BeiDou,
-            gpstk::SatelliteSystem::QZSS,
-            gpstk::SatelliteSystem::Mixed
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGalileo,
+            gpstk::SatID::systemGalileo,
+            gpstk::SatID::systemGPS,
+            gpstk::SatID::systemGalileo,
+            gpstk::SatID::systemGlonass,
+            gpstk::SatID::systemLEO,
+            gpstk::SatID::systemBeiDou,
+            gpstk::SatID::systemQZSS,
+            gpstk::SatID::systemMixed
          };
       gpstk::SP3SatID Compare;
 
@@ -407,7 +407,7 @@ public:
       
       try
       {
-         gpstk::SP3SatID Compare1(5, gpstk::SatelliteSystem::GPS);
+         gpstk::SP3SatID Compare1(5, gpstk::SatID::systemGPS);
          outputString1 = Compare1.toString();
          compareString1 = "G05";
          s.str("");
@@ -426,7 +426,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare2(20, gpstk::SatelliteSystem::Galileo);
+         gpstk::SP3SatID Compare2(20, gpstk::SatID::systemGalileo);
          outputString2 = Compare2.toString();
          compareString2 = "E20";
          s.str("");
@@ -445,7 +445,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare3(-5, gpstk::SatelliteSystem::GPS);
+         gpstk::SP3SatID Compare3(-5, gpstk::SatID::systemGPS);
          outputString3 = Compare3.toString();
          compareString3 = "G-5";
          s.str("");
@@ -464,7 +464,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare4(1, gpstk::SatelliteSystem::Glonass);
+         gpstk::SP3SatID Compare4(1, gpstk::SatID::systemGlonass);
          outputString4 = Compare4.toString();
          compareString4 = "R01";
          s.str("");
@@ -483,7 +483,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare5(1, gpstk::SatelliteSystem::LEO);
+         gpstk::SP3SatID Compare5(1, gpstk::SatID::systemLEO);
          outputString5 = Compare5.toString();
          compareString5 = "L01";
          s.str("");
@@ -502,7 +502,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare6(1, gpstk::SatelliteSystem::BeiDou);
+         gpstk::SP3SatID Compare6(1, gpstk::SatID::systemBeiDou);
          outputString6 = Compare6.toString();
          compareString6 = "C01";
          s.str("");
@@ -521,7 +521,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare7(193, gpstk::SatelliteSystem::QZSS);
+         gpstk::SP3SatID Compare7(193, gpstk::SatID::systemQZSS);
          outputString7 = Compare7.toString();
          compareString7 = "J01";
          s.str("");
@@ -540,7 +540,7 @@ public:
 
       try
       {
-         gpstk::SP3SatID Compare8(1, gpstk::SatelliteSystem::Mixed);
+         gpstk::SP3SatID Compare8(1, gpstk::SatID::systemMixed);
          outputString8 = Compare8.toString();
          compareString8 = "M01";
          s.str("");
@@ -560,7 +560,7 @@ public:
       // finally, test that bad system inputs cause '?' outputs from toString
       try
       {
-         gpstk::SP3SatID Compare9(1, gpstk::SatelliteSystem::Unknown);
+         gpstk::SP3SatID Compare9(1, gpstk::SatID::systemUnknown);
          outputString9 = Compare9.toString();
          compareString9 = "?-1";
          s.str("");

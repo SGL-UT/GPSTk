@@ -794,7 +794,7 @@ namespace gpstk
             }
             fileType = "N: GNSS NAV DATA";
             fileSys = "MIXED";
-            fileSysSat = SatID(-1, SatelliteSystem::Mixed);
+            fileSysSat = SatID(-1, SatID::systemMixed);
          }
          else
          {
@@ -809,11 +809,11 @@ namespace gpstk
             else
             {
                   // RINEX 2
-               if(sat.system == SatelliteSystem::GPS)
+               if(sat.system == SatID::systemGPS)
                   fileType = "N: GPS NAV DATA";
-               else if(sat.system == SatelliteSystem::Glonass)
+               else if(sat.system == SatID::systemGlonass)
                   fileType = "G: GLO NAV DATA)";
-               else if(sat.system == SatelliteSystem::Geosync)
+               else if(sat.system == SatID::systemGeosync)
                   fileType = "H: GEO NAV DATA";
                else 
                {

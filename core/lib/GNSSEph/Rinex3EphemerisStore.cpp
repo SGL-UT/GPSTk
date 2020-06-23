@@ -59,7 +59,7 @@ namespace gpstk
       Rinex3NavData Rdata(inRdata);
 
       switch(Rdata.sat.system) {
-         case SatelliteSystem::GPS:
+         case SatID::systemGPS:
          {
             Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::GPS);
             GPSEphemeris eph(Rdata);
@@ -67,7 +67,7 @@ namespace gpstk
             break;
          }
 
-         case SatelliteSystem::Galileo:
+         case SatID::systemGalileo:
          {
             Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::GAL);
             GalEphemeris eph(Rdata);
@@ -75,7 +75,7 @@ namespace gpstk
             break;
          }
 
-         case SatelliteSystem::BeiDou:
+         case SatID::systemBeiDou:
          {
             Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::BDT);
             BDSEphemeris eph(Rdata);
@@ -83,7 +83,7 @@ namespace gpstk
             break;
          }
 
-         case SatelliteSystem::QZSS:
+         case SatID::systemQZSS:
          {
             Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::QZS);
             QZSEphemeris eph(Rdata);
@@ -91,12 +91,12 @@ namespace gpstk
             break;
          }
 
-         case SatelliteSystem::Glonass:
+         case SatID::systemGlonass:
             Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::GLO);
             return GLOstore.addEphemeris(GloEphemeris(Rdata));
             break;
 
-         case SatelliteSystem::Geosync:
+         case SatID::systemGeosync:
             //return GEOstore.addEphemeris(GeoEphemeris(Rdata));
             break;
 
@@ -267,22 +267,22 @@ namespace gpstk
          TimeSystem ts;
 
          switch(sat.system) {
-            case SatelliteSystem::GPS:
-            case SatelliteSystem::Galileo:
-            case SatelliteSystem::BeiDou:
-            case SatelliteSystem::QZSS:
-               if(sat.system == SatelliteSystem::GPS    ) ts = TimeSystem::GPS;
-               if(sat.system == SatelliteSystem::Galileo) ts = TimeSystem::GAL;
-               if(sat.system == SatelliteSystem::BeiDou ) ts = TimeSystem::BDT;
-               if(sat.system == SatelliteSystem::QZSS   ) ts = TimeSystem::QZS;
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
+               if(sat.system == SatID::systemGPS    ) ts = TimeSystem::GPS;
+               if(sat.system == SatID::systemGalileo) ts = TimeSystem::GAL;
+               if(sat.system == SatID::systemBeiDou ) ts = TimeSystem::BDT;
+               if(sat.system == SatID::systemQZSS   ) ts = TimeSystem::QZS;
                ttag = correctTimeSystem(inttag, ts);
                xvt = ORBstore.getXvt(sat,ttag);
                break;
-            case SatelliteSystem::Glonass:
+            case SatID::systemGlonass:
                ttag = correctTimeSystem(inttag, TimeSystem::GLO);
                xvt = GLOstore.getXvt(sat,ttag);
                break;
-            //case SatelliteSystem::Geosync:
+            //case SatID::systemGeosync:
             //   ttag = correctTimeSystem(inttag, TimeSystem::GEO);
             //   xvt = GEOstore.getXvt(sat,ttag);
             //   break;
@@ -310,22 +310,22 @@ namespace gpstk
 
          switch(sat.system)
          {
-            case SatelliteSystem::GPS:
-            case SatelliteSystem::Galileo:
-            case SatelliteSystem::BeiDou:
-            case SatelliteSystem::QZSS:
-               if(sat.system == SatelliteSystem::GPS    ) ts = TimeSystem::GPS;
-               if(sat.system == SatelliteSystem::Galileo) ts = TimeSystem::GAL;
-               if(sat.system == SatelliteSystem::BeiDou ) ts = TimeSystem::BDT;
-               if(sat.system == SatelliteSystem::QZSS   ) ts = TimeSystem::QZS;
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
+               if(sat.system == SatID::systemGPS    ) ts = TimeSystem::GPS;
+               if(sat.system == SatID::systemGalileo) ts = TimeSystem::GAL;
+               if(sat.system == SatID::systemBeiDou ) ts = TimeSystem::BDT;
+               if(sat.system == SatID::systemQZSS   ) ts = TimeSystem::QZS;
                ttag = correctTimeSystem(inttag, ts);
                return ORBstore.computeXvt(sat,ttag);
                break;
-            case SatelliteSystem::Glonass:
+            case SatID::systemGlonass:
                ttag = correctTimeSystem(inttag, TimeSystem::GLO);
                return GLOstore.computeXvt(sat,ttag);
                break;
-            //case SatelliteSystem::Geosync:
+            //case SatID::systemGeosync:
             //   ttag = correctTimeSystem(inttag, TimeSystem::GEO);
             //   xvt = GEOstore.computeXvt(sat,ttag);
             //   break;
@@ -353,22 +353,22 @@ namespace gpstk
 
          switch(sat.system)
          {
-            case SatelliteSystem::GPS:
-            case SatelliteSystem::Galileo:
-            case SatelliteSystem::BeiDou:
-            case SatelliteSystem::QZSS:
-               if(sat.system == SatelliteSystem::GPS    ) ts = TimeSystem::GPS;
-               if(sat.system == SatelliteSystem::Galileo) ts = TimeSystem::GAL;
-               if(sat.system == SatelliteSystem::BeiDou ) ts = TimeSystem::BDT;
-               if(sat.system == SatelliteSystem::QZSS   ) ts = TimeSystem::QZS;
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
+               if(sat.system == SatID::systemGPS    ) ts = TimeSystem::GPS;
+               if(sat.system == SatID::systemGalileo) ts = TimeSystem::GAL;
+               if(sat.system == SatID::systemBeiDou ) ts = TimeSystem::BDT;
+               if(sat.system == SatID::systemQZSS   ) ts = TimeSystem::QZS;
                ttag = correctTimeSystem(inttag, ts);
                return ORBstore.getSVHealth(sat,ttag);
                break;
-            case SatelliteSystem::Glonass:
+            case SatID::systemGlonass:
                ttag = correctTimeSystem(inttag, TimeSystem::GLO);
                return GLOstore.getSVHealth(sat,ttag);
                break;
-            //case SatelliteSystem::Geosync:
+            //case SatID::systemGeosync:
             //   ttag = correctTimeSystem(inttag, TimeSystem::GEO);
             //   xvt = GEOstore.computeXvt(sat,ttag);
             //   break;
@@ -504,21 +504,21 @@ namespace gpstk
    CommonTime Rinex3EphemerisStore::getInitialTime(const SatID& sat) const
    {
       try {
-         if(sat.system == SatelliteSystem::Mixed)
+         if(sat.system == SatID::systemMixed)
             return getInitialTime();
 
          CommonTime retTime(CommonTime::END_OF_TIME),time;
          retTime.setTimeSystem(TimeSystem::Any);
 
          switch(sat.system) {
-            case SatelliteSystem::GPS:
-            case SatelliteSystem::Galileo:
-            case SatelliteSystem::BeiDou:
-            case SatelliteSystem::QZSS:
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
                retTime = ORBstore.getInitialTime(sat);
-            case SatelliteSystem::Glonass:
+            case SatID::systemGlonass:
                retTime = GLOstore.getInitialTime(sat);
-            //case SatelliteSystem::Geosync:
+            //case SatID::systemGeosync:
                //retTime = GEOstore.getInitialTime(sat);
             default:
                break;
@@ -537,21 +537,21 @@ namespace gpstk
    CommonTime Rinex3EphemerisStore::getFinalTime(const SatID& sat) const
    {
       try {
-         if(sat.system == SatelliteSystem::Mixed)
+         if(sat.system == SatID::systemMixed)
             return getFinalTime();
 
          CommonTime retTime(CommonTime::BEGINNING_OF_TIME);
          retTime.setTimeSystem(TimeSystem::Any);
 
          switch(sat.system) {
-            case SatelliteSystem::GPS:
-            case SatelliteSystem::Galileo:
-            case SatelliteSystem::BeiDou:
-            case SatelliteSystem::QZSS:
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
                retTime = ORBstore.getFinalTime(sat);
-            case SatelliteSystem::Glonass:
+            case SatID::systemGlonass:
                retTime = GLOstore.getFinalTime(sat);
-            //case SatelliteSystem::Geosync:
+            //case SatID::systemGeosync:
                //retTime = GEOstore.getFinalTime(sat);
             default:
                break;
@@ -570,13 +570,13 @@ namespace gpstk
       int n(0);
 
       // pure fussiness
-      const bool keepAll(sysSat.system == SatelliteSystem::Mixed);
-      const bool keepGPS(keepAll || sysSat.system==SatelliteSystem::GPS);
-      const bool keepGAL(keepAll || sysSat.system==SatelliteSystem::Galileo);
-      const bool keepGLO(keepAll || sysSat.system==SatelliteSystem::Glonass);
-      const bool keepBDS(keepAll || sysSat.system==SatelliteSystem::BeiDou);
-      const bool keepQZS(keepAll || sysSat.system==SatelliteSystem::QZSS);
-      //const bool keepGEO(keepAll || sysSat.system==SatelliteSystem::Geosync);
+      const bool keepAll(sysSat.system == SatID::systemMixed);
+      const bool keepGPS(keepAll || sysSat.system==SatID::systemGPS);
+      const bool keepGAL(keepAll || sysSat.system==SatID::systemGalileo);
+      const bool keepGLO(keepAll || sysSat.system==SatID::systemGlonass);
+      const bool keepBDS(keepAll || sysSat.system==SatID::systemBeiDou);
+      const bool keepQZS(keepAll || sysSat.system==SatID::systemQZSS);
+      //const bool keepGEO(keepAll || sysSat.system==SatID::systemGeosync);
       const bool keepOrb(keepAll || keepGPS || keepGAL || keepBDS || keepQZS);
 
       if(keepOrb) {
@@ -586,22 +586,22 @@ namespace gpstk
          list<OrbitEph*>::const_iterator it;
          for(it=OElist.begin(); it != OElist.end(); ++it) {
             OrbitEph *ptr = *it;
-            if((ptr->satID).system == SatelliteSystem::GPS && keepGPS) {
+            if((ptr->satID).system == SatID::systemGPS && keepGPS) {
                GPSEphemeris *sysptr = dynamic_cast<GPSEphemeris*>(ptr);
                theList.push_back(Rinex3NavData(*sysptr));
                n++;
             }
-            else if((ptr->satID).system == SatelliteSystem::Galileo && keepGAL) {
+            else if((ptr->satID).system == SatID::systemGalileo && keepGAL) {
                GalEphemeris *sysptr = dynamic_cast<GalEphemeris*>(ptr);
                theList.push_back(Rinex3NavData(*sysptr));
                n++;
             }
-            else if((ptr->satID).system == SatelliteSystem::BeiDou && keepBDS) {
+            else if((ptr->satID).system == SatID::systemBeiDou && keepBDS) {
                BDSEphemeris *sysptr = dynamic_cast<BDSEphemeris*>(ptr);
                theList.push_back(Rinex3NavData(*sysptr));
                n++;
             }
-            else if((ptr->satID).system == SatelliteSystem::QZSS && keepQZS) {
+            else if((ptr->satID).system == SatID::systemQZSS && keepQZS) {
                QZSEphemeris *sysptr = dynamic_cast<QZSEphemeris*>(ptr);
                theList.push_back(Rinex3NavData(*sysptr));
                n++;
