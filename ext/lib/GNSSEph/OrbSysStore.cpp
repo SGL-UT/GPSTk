@@ -88,7 +88,7 @@ namespace gpstk
       NavID navtype = NavID(sidr,oidr);
 
          // Have to account for the fact that SatID/ObsID are ambiguous for BeiDou
-      if (sidr.system==SatID::systemBeiDou)
+      if (sidr.system==SatelliteSystem::BeiDou)
       {
          unsigned long dt = UID/10000;
          if (dt==1)
@@ -1170,25 +1170,25 @@ namespace gpstk
    }
 
 //-----------------------------------------------------------------------------
-   const std::list<gpstk::SatID::SatelliteSystem>& OrbSysStore::getSatSysList() const
+   const std::list<gpstk::SatelliteSystem>& OrbSysStore::getSatSysList() const
    {
       return sysList;
    }
 
 //-----------------------------------------------------------------------------
-   bool OrbSysStore::isSatSysPresent(const SatID::SatelliteSystem ss) const
+   bool OrbSysStore::isSatSysPresent(const SatelliteSystem ss) const
    {
-      list<SatID::SatelliteSystem>::const_iterator cit;
+      list<SatelliteSystem>::const_iterator cit;
       for (cit=sysList.begin();cit!=sysList.end();cit++)
       {
-         SatID::SatelliteSystem ssTest = *cit;
+         SatelliteSystem ssTest = *cit;
          if (ssTest==ss) return true;
       }
       return false;
    }
 
 //-----------------------------------------------------------------------------
-   void OrbSysStore::addSatSys(const SatID::SatelliteSystem ss)
+   void OrbSysStore::addSatSys(const SatelliteSystem ss)
    {
       sysList.push_back(ss);
    }
@@ -1200,15 +1200,15 @@ namespace gpstk
       {
          stringstream ess;
          ess << "Store does not contain orbit/clock elements for system ";
-         ess << sat.system;
+         ess << convertSatelliteSystemToString(sat.system);
          ess << ". " << endl;
          ess << " Valid systems are :" << endl;
 
-         list<SatID::SatelliteSystem>::const_iterator cit;
+         list<SatelliteSystem>::const_iterator cit;
          for (cit=sysList.begin();cit!=sysList.end();cit++)
          {
-            SatID::SatelliteSystem ssTest = *cit;
-            ess << SatID::convertSatelliteSystemToString(ssTest) << endl;
+            SatelliteSystem ssTest = *cit;
+            ess << convertSatelliteSystemToString(ssTest) << endl;
          }
 
          InvalidRequest ir(ess.str());
@@ -1221,7 +1221,7 @@ namespace gpstk
                                const ObsID& oidr) const
    {
       bool retVal = false;
-      if (sidr.system!=SatID::systemGPS)
+      if (sidr.system!=SatelliteSystem::GPS)
       {
          stringstream ss;
          ss << "OrbSysStore::hasSignal() is only valid for GPS at this time.  sidr: " << sidr;

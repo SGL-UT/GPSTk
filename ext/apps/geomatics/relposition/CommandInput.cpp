@@ -120,7 +120,7 @@ try {
    PhaseBiasReset = 10;
    ExSV.clear();
       // timetable
-   RefSat = GSatID(-1,SatID::systemGPS);
+   RefSat = GSatID(-1,SatelliteSystem::GPS);
       // estimation
    noEstimate = false;                    // for Estimation()
    nIter = 5;                             // for Estimation()

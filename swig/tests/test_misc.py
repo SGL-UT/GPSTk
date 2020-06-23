@@ -22,7 +22,7 @@ class ReferenceFrame_test(unittest.TestCase):
 
 class SatID_test(unittest.TestCase):
     def test_validity(self):
-        s = gpstk.SatID(1, gpstk.SatID.systemGPS)
+        s = gpstk.SatID(1, gpstk.SatelliteSystem_GPS)
         self.assertTrue(s.isValid())
 
     def test_invalid(self):
@@ -30,13 +30,13 @@ class SatID_test(unittest.TestCase):
         self.assertFalse(s.isValid())
 
     def test_str(self):
-        a = gpstk.SatID(3, gpstk.SatID.systemGlonass)
+        a = gpstk.SatID(3, gpstk.SatelliteSystem_Glonass)
         self.assertEqual('GLONASS 3', str(a))
 
-        b = gpstk.SatID(1, gpstk.SatID.systemLEO)
+        b = gpstk.SatID(1, gpstk.SatelliteSystem_LEO)
         self.assertEqual('LEO 1', str(b))
 
-        c = gpstk.SatID(4)  # optional arg should be SatID.systemGPS
+        c = gpstk.SatID(4)  # optional arg should be SatelliteSystem_GPS
         self.assertEqual('GPS 4', str(c))
 
 

@@ -202,11 +202,11 @@ public:
       const short PRN32 = 32;
       const short PRN33 = 33;  // Top PRN (33) (Border test case);
 
-      const SatID sid0(PRN0,SatID::systemGPS);
-      const SatID sid1(PRN1,SatID::systemGPS);
-      const SatID sid15(PRN15,SatID::systemGPS);
-      const SatID sid32(PRN32,SatID::systemGPS);
-      const SatID sid33(PRN33,SatID::systemGPS);
+      const SatID sid0(PRN0,SatelliteSystem::GPS);
+      const SatID sid1(PRN1,SatelliteSystem::GPS);
+      const SatID sid15(PRN15,SatelliteSystem::GPS);
+      const SatID sid32(PRN32,SatelliteSystem::GPS);
+      const SatID sid33(PRN33,SatelliteSystem::GPS);
 
       CivilTime Time(2006,1,31,11,45,0,2);
          // Border Time (Time of Border test cases)
@@ -312,7 +312,7 @@ public:
             // inconsistent in its use of this data.
          TUASSERTE(short, 4, eph.fitint);
             // OrbitEph data
-         TUASSERTE(SatID, SatID(1, SatID::systemGPS), eph.satID);
+         TUASSERTE(SatID, SatID(1, SatelliteSystem::GPS), eph.satID);
             // skipping obsID which is unknown, not stored in RINEX
          TUASSERTE(CommonTime, toeCT, eph.ctToe);
          TUASSERTE(CommonTime, tocCT, eph.ctToc);
@@ -381,11 +381,11 @@ public:
       const short PRN15 = 15;
       const short PRN32 = 32;
       const short PRN33 = 33;  // Top PRN (33) (Border test case);
-      SatID sid0(PRN0,SatID::systemGPS);
-      SatID sid1(PRN1,SatID::systemGPS);
-      SatID sid15(PRN15,SatID::systemGPS);
-      SatID sid32(PRN32,SatID::systemGPS);
-      SatID sid33(PRN33,SatID::systemGPS);
+      SatID sid0(PRN0,SatelliteSystem::GPS);
+      SatID sid1(PRN1,SatelliteSystem::GPS);
+      SatID sid15(PRN15,SatelliteSystem::GPS);
+      SatID sid32(PRN32,SatelliteSystem::GPS);
+      SatID sid33(PRN33,SatelliteSystem::GPS);
 
       CivilTime Time(2006,1,31,11,45,0,1);
          // Border Time (Time of Border test cases)
@@ -521,11 +521,11 @@ public:
          const short PRN32 = 32;
          const short PRN33 = 33;  // Top PRN (33) (Border test case);
 
-         SatID sid0(PRN0,SatID::systemGPS);
-         SatID sid1(PRN1,SatID::systemGPS);
-         SatID sid15(PRN15,SatID::systemGPS);
-         SatID sid32(PRN32,SatID::systemGPS);
-         SatID sid33(PRN33,SatID::systemGPS);
+         SatID sid0(PRN0,SatelliteSystem::GPS);
+         SatID sid1(PRN1,SatelliteSystem::GPS);
+         SatID sid15(PRN15,SatelliteSystem::GPS);
+         SatID sid32(PRN32,SatelliteSystem::GPS);
+         SatID sid33(PRN33,SatelliteSystem::GPS);
 
          CivilTime tTime(2006,1,31,11,45,0,1);
             // Border Time (Time of Border test cases)
@@ -575,11 +575,11 @@ public:
          const short PRN32 = 32;
          const short PRN33 = 33;  // Top PRN (33) (Border test case);
 
-         SatID sid0(PRN0,SatID::systemGPS);
-         SatID sid1(PRN1,SatID::systemGPS);
-         SatID sid15(PRN15,SatID::systemGPS);
-         SatID sid32(PRN32,SatID::systemGPS);
-         SatID sid33(PRN33,SatID::systemGPS);
+         SatID sid0(PRN0,SatelliteSystem::GPS);
+         SatID sid1(PRN1,SatelliteSystem::GPS);
+         SatID sid15(PRN15,SatelliteSystem::GPS);
+         SatID sid32(PRN32,SatelliteSystem::GPS);
+         SatID sid33(PRN33,SatelliteSystem::GPS);
 
          CivilTime Time(2006,1,31,11,45,0,1);
             // Border Time (Time of Border test cases)
@@ -658,11 +658,11 @@ public:
         const short PRN15 = 15;
         const short PRN32 = 32;
         const short PRN33 = 33;  // Top PRN (33) (Border test case);
-        SatID sid0(PRN0,SatID::systemGPS);
-        SatID sid1(PRN1,SatID::systemGPS);
-        SatID sid15(PRN15,SatID::systemGPS);
-        SatID sid32(PRN32,SatID::systemGPS);
-        SatID sid33(PRN33,SatID::systemGPS);
+        SatID sid0(PRN0,SatelliteSystem::GPS);
+        SatID sid1(PRN1,SatelliteSystem::GPS);
+        SatID sid15(PRN15,SatelliteSystem::GPS);
+        SatID sid32(PRN32,SatelliteSystem::GPS);
+        SatID sid33(PRN33,SatelliteSystem::GPS);
 
         short IODC0 = 89;
         short IODC1 = 372;
@@ -880,7 +880,7 @@ public:
       }
 
       short PRN = 1;
-      SatID sid(PRN,SatID::systemGPS);
+      SatID sid(PRN,SatelliteSystem::GPS);
 
       CivilTime Time(2006,1,31,11,45,0,2);
          // CivilTime TimeB(2006,1,31,9,59,44,2);
@@ -1240,11 +1240,11 @@ public:
       short PRN15 = 15;
       short PRN32 = 32;
       short PRN33 = 33;
-      SatID sid0(PRN0,SatID::systemGPS);
-      SatID sid1(PRN1,SatID::systemGPS);
-      SatID sid15(PRN15,SatID::systemGPS);
-      SatID sid32(PRN32,SatID::systemGPS);
-      SatID sid33(PRN33,SatID::systemGPS);
+      SatID sid0(PRN0,SatelliteSystem::GPS);
+      SatID sid1(PRN1,SatelliteSystem::GPS);
+      SatID sid15(PRN15,SatelliteSystem::GPS);
+      SatID sid32(PRN32,SatelliteSystem::GPS);
+      SatID sid33(PRN33,SatelliteSystem::GPS);
 
       try
       {
@@ -1364,11 +1364,11 @@ public:
       short PRN15 = 15;
       short PRN32 = 32;
       short PRN33 = 33;
-      SatID sid0(PRN0,SatID::systemGPS);
-      SatID sid1(PRN1,SatID::systemGPS);
-      SatID sid15(PRN15,SatID::systemGPS);
-      SatID sid32(PRN32,SatID::systemGPS);
-      SatID sid33(PRN33,SatID::systemGPS);
+      SatID sid0(PRN0,SatelliteSystem::GPS);
+      SatID sid1(PRN1,SatelliteSystem::GPS);
+      SatID sid15(PRN15,SatelliteSystem::GPS);
+      SatID sid32(PRN32,SatelliteSystem::GPS);
+      SatID sid33(PRN33,SatelliteSystem::GPS);
 
       try
       {
@@ -1483,9 +1483,9 @@ public:
       unsigned numberOfEntries15 = 13;
       unsigned numberOfEntries32 = 13;
 
-      SatID sid1(PRN1,SatID::systemGPS);
-      SatID sid15(PRN15,SatID::systemGPS);
-      SatID sid32(PRN32,SatID::systemGPS);
+      SatID sid1(PRN1,SatelliteSystem::GPS);
+      SatID sid15(PRN15,SatelliteSystem::GPS);
+      SatID sid32(PRN32,SatelliteSystem::GPS);
 
       RinexEphemerisStore rinEphStore;
       rinEphStore.loadFile(inputRinexNavData.c_str());

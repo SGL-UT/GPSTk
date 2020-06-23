@@ -74,8 +74,8 @@ namespace gpstk
        *   DCBDataReader dcbP1P2("P1P21002_ALL.DCB");
        *   DCBDataReader dcbP1C1("P1C11002.DCB");
        *   
-       *   double p1p2Sat1 = dcbP1P2.getDCB(1, SatID::systemGPS);
-       *   double p1c1Sat1 = dcbP1C1.getDCB(1, SatID::systemGPS);
+       *   double p1p2Sat1 = dcbP1P2.getDCB(1, SatelliteSystem::GPS);
+       *   double p1c1Sat1 = dcbP1C1.getDCB(1, SatelliteSystem::GPS);
        *   
        *   double p1p2ALGO = dcbP1P2.getDCB("ALGO");
        *
@@ -132,7 +132,7 @@ namespace gpstk
          /// @param    system the satellite system you desired
          /// @return          P1-P2 or P1-C1 depend what you have loaded
       double getDCB(const int& prn,
-         const SatID::SatelliteSystem& system = SatID::systemGPS);
+         const SatelliteSystem& system = SatelliteSystem::GPS);
 
 
          /// Get DCB data of a receiver
@@ -140,7 +140,7 @@ namespace gpstk
          /// @param    system     the satellite system you desired
          /// @return              P1-P2
       double getDCB(const std::string& station,
-         const SatID::SatelliteSystem& system = SatID::systemGPS);
+         const SatelliteSystem& system = SatelliteSystem::GPS);
 
 
          /// Destructor

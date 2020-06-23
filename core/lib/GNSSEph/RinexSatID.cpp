@@ -61,15 +61,15 @@ namespace gpstk
    {
       switch(system)
       {
-         case systemGPS:     return 'G';
-         case systemGalileo: return 'E';
-         case systemGlonass: return 'R';
-         case systemGeosync: return 'S';
-         case systemTransit: return 'T';
-         case systemQZSS:    return 'J';
-         case systemBeiDou:  return 'C';
-         case systemIRNSS:   return 'I';
-         default:            return '?';
+         case SatelliteSystem::GPS:     return 'G';
+         case SatelliteSystem::Galileo: return 'E';
+         case SatelliteSystem::Glonass: return 'R';
+         case SatelliteSystem::Geosync: return 'S';
+         case SatelliteSystem::Transit: return 'T';
+         case SatelliteSystem::QZSS:    return 'J';
+         case SatelliteSystem::BeiDou:  return 'C';
+         case SatelliteSystem::IRNSS:   return 'I';
+         default:                       return '?';
       }
    }
 
@@ -80,15 +80,15 @@ namespace gpstk
    {
       switch(system)
       {
-         case systemGPS:     return "GPS";
-         case systemGalileo: return "Galileo";
-         case systemGlonass: return "GLONASS";
-         case systemGeosync: return "Geosync";
-         case systemTransit: return "Transit";
-         case systemQZSS:    return "QZSS";
-         case systemBeiDou:  return "BeiDou";
-         case systemIRNSS:   return "IRNSS";
-         default:            return "Unknown";
+         case SatelliteSystem::GPS:     return "GPS";
+         case SatelliteSystem::Galileo: return "Galileo";
+         case SatelliteSystem::Glonass: return "GLONASS";
+         case SatelliteSystem::Geosync: return "Geosync";
+         case SatelliteSystem::Transit: return "Transit";
+         case SatelliteSystem::QZSS:    return "QZSS";
+         case SatelliteSystem::BeiDou:  return "BeiDou";
+         case SatelliteSystem::IRNSS:   return "IRNSS";
+         default:                       return "Unknown";
       }
    }
 
@@ -99,15 +99,15 @@ namespace gpstk
    {
       switch(system)
       {
-         case systemGPS:     return "GPS";
-         case systemGalileo: return "GAL";
-         case systemGlonass: return "GLO";
-         case systemGeosync: return "GEO";
-         case systemTransit: return "TRN";     // RINEX ver 2
-         case systemQZSS:    return "QZS";
-         case systemBeiDou:  return "BDS";
-         case systemIRNSS:   return "IRN";      // RINEX ver 3.03
-         default:            return "Unk";
+         case SatelliteSystem::GPS:     return "GPS";
+         case SatelliteSystem::Galileo: return "GAL";
+         case SatelliteSystem::Glonass: return "GLO";
+         case SatelliteSystem::Geosync: return "GEO";
+         case SatelliteSystem::Transit: return "TRN";     // RINEX ver 2
+         case SatelliteSystem::QZSS:    return "QZS";
+         case SatelliteSystem::BeiDou:  return "BDS";
+         case SatelliteSystem::IRNSS:   return "IRN";      // RINEX ver 3.03
+         default:                       return "Unk";
       }
    }
 
@@ -119,7 +119,7 @@ namespace gpstk
       std::istringstream iss(s);
 
       id = -1;
-      system = systemGPS;  // default
+      system = SatelliteSystem::GPS;  // default
       if(s.find_first_not_of(std::string(" \t\n"), 0) == std::string::npos)
          return;                    // all whitespace yields the default
 
@@ -130,34 +130,34 @@ namespace gpstk
          case '0': case '1': case '2': case '3': case '4':
          case '5': case '6': case '7': case '8': case '9':
             iss.putback(c);
-            system = SatID::systemGPS;
+            system = SatelliteSystem::GPS;
             break;
          case 'R': case 'r':
-            system = SatID::systemGlonass;
+            system = SatelliteSystem::Glonass;
             break;
          case 'T': case 't':
-            system = SatID::systemTransit;
+            system = SatelliteSystem::Transit;
             break;
          case 'S': case 's':
-            system = SatID::systemGeosync;
+            system = SatelliteSystem::Geosync;
             break;
          case 'E': case 'e':
-            system = SatID::systemGalileo;
+            system = SatelliteSystem::Galileo;
             break;
          case 'M': case 'm':
-            system = SatID::systemMixed;
+            system = SatelliteSystem::Mixed;
             break;
          case ' ': case 'G': case 'g':
-            system = SatID::systemGPS;
+            system = SatelliteSystem::GPS;
             break;
          case 'J': case 'j':
-            system = SatID::systemQZSS;
+            system = SatelliteSystem::QZSS;
             break;
          case 'I': case 'i':
-            system = SatID::systemIRNSS;
+            system = SatelliteSystem::IRNSS;
             break;
          case 'C': case 'c':
-            system = SatID::systemBeiDou;
+            system = SatelliteSystem::BeiDou;
             break;
          default:                   // non-RINEX system character
             Exception e(std::string("Invalid system character \"")
@@ -174,10 +174,10 @@ namespace gpstk
             // do the kludging that RINEX does for PRNs > 99
          switch (system)
          {
-            case SatID::systemGeosync:
+            case SatelliteSystem::Geosync:
                id += 100;
                break;
-            case SatID::systemQZSS:
+            case SatelliteSystem::QZSS:
                if (id < 83)
                {
                      // PRN codes in the range of 193-197
@@ -207,10 +207,10 @@ namespace gpstk
       {
          switch (system)
          {
-            case SatID::systemGeosync:
+            case SatelliteSystem::Geosync:
                rinexID -= 100;
                break;
-            case SatID::systemQZSS:
+            case SatelliteSystem::QZSS:
                if (rinexID >= 193)
                {
                      // PRN codes in the range of 193-197
@@ -234,19 +234,19 @@ namespace gpstk
    {
       switch(system)
       {
-         case systemGPS:
-         case systemGalileo:
-         case systemGlonass:
-         case systemGeosync:
-         case systemTransit:
-         case systemQZSS:
-         case systemBeiDou:
-         case systemIRNSS:
-         case systemMixed:
+         case SatelliteSystem::GPS:
+         case SatelliteSystem::Galileo:
+         case SatelliteSystem::Glonass:
+         case SatelliteSystem::Geosync:
+         case SatelliteSystem::Transit:
+         case SatelliteSystem::QZSS:
+         case SatelliteSystem::BeiDou:
+         case SatelliteSystem::IRNSS:
+         case SatelliteSystem::Mixed:
             break;
                // Invalidate anything non-RINEX.
          default:
-            system = systemUnknown;
+            system = SatelliteSystem::Unknown;
             id = -1;
       }
    }

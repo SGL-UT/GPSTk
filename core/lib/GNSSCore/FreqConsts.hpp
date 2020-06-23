@@ -180,13 +180,13 @@ namespace gpstk
        * @return 0 if rinexBandNum is not a valid band for the given
        *   system, otherwise the wavelength in meters.
        */
-   inline double getWavelength(SatID::SatelliteSystem sys,
+   inline double getWavelength(SatelliteSystem sys,
                                int rinexBandNum, int gloChan=0)
       throw()
    {
       switch(sys)
       {
-         case SatID::systemGPS:
+         case SatelliteSystem::GPS:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_GPS_L1;
@@ -194,7 +194,7 @@ namespace gpstk
                case 5: return WAVELENGTH_GPS_L5;
             }
             break;
-         case SatID::systemGlonass:
+         case SatelliteSystem::Glonass:
             switch (rinexBandNum)
             {
                case 1:
@@ -206,7 +206,7 @@ namespace gpstk
                case 3: return WAVELENGTH_GLONASS_G3;
             }
             break;
-         case SatID::systemGalileo:
+         case SatelliteSystem::Galileo:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_GALILEO_E1;
@@ -216,14 +216,14 @@ namespace gpstk
                case 5: return WAVELENGTH_GALILEO_E5a;
             }
             break;
-         case SatID::systemGeosync:
+         case SatelliteSystem::Geosync:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_SBAS_L1;
                case 5: return WAVELENGTH_SBAS_L5;
             }
             break;
-         case SatID::systemQZSS:
+         case SatelliteSystem::QZSS:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_QZSS_L1;
@@ -232,7 +232,7 @@ namespace gpstk
                case 6: return WAVELENGTH_QZSS_L6;
             }
             break;
-         case SatID::systemBeiDou:
+         case SatelliteSystem::BeiDou:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_BEIDOU_L1;
@@ -243,7 +243,7 @@ namespace gpstk
                case 5: return WAVELENGTH_BEIDOU_B2a;
             }
             break;
-         case SatID::systemIRNSS:
+         case SatelliteSystem::IRNSS:
             switch (rinexBandNum)
             {
                case 9: return WAVELENGTH_NAVIC_S;
@@ -260,7 +260,7 @@ namespace gpstk
        * given satellite system.
        * @return 0 if either of the input n's are not valid RINEX bands
        *   for the system. */
-   inline double getBeta(SatID::SatelliteSystem sys, int na, int nb)
+   inline double getBeta(SatelliteSystem sys, int na, int nb)
       throw()
    {
       double wla = getWavelength(sys,na);
@@ -275,7 +275,7 @@ namespace gpstk
        * system (sat.id is ignored).
        * @return 0 if either of the input n's are not valid RINEX
        *   bands for the satellite system. */
-   inline double getAlpha(SatID::SatelliteSystem sys, int na, int nb)
+   inline double getAlpha(SatelliteSystem sys, int na, int nb)
       throw()
    {
       double beta(getBeta(sys,na,nb));

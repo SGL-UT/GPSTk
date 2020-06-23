@@ -1192,7 +1192,7 @@ try {
       }
 
       // get the GLOn
-      if(sat.system == SatID::systemGlonass) {
+      if(sat.system == SatelliteSystem::Glonass) {
          gloit = GD.GLOfreqCh.find(sat);
 
          // if GLONASS frequency channel not given, try to find it
@@ -1221,7 +1221,7 @@ try {
       int unique(GD.GDC.getUniqueNumber());        // == i+1 here
 
       // save the GLO freq channel
-      if(sat.system == SatID::systemGlonass &&
+      if(sat.system == SatelliteSystem::Glonass &&
          GD.GLOfreqCh.find(sat) == GD.GLOfreqCh.end())
             GD.GLOfreqCh[sat] = GLOn;
 

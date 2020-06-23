@@ -342,7 +342,7 @@ namespace gpstk
       else {
          line = RecType;                                    // P or V
          if (isVerA) {
-            if(sat.system != SatID::systemGPS) {
+            if(sat.system != SatelliteSystem::GPS) {
                FFStreamError fse("Cannot output non-GPS to SP3a");
                GPSTK_THROW(fse);
             }

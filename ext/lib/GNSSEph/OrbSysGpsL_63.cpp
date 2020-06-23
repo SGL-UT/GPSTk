@@ -100,7 +100,7 @@ namespace gpstk
        }
 
       // Check for a valid satelilte ID
-       if (sidr.system!=SatID::systemGPS ||
+       if (sidr.system!=SatelliteSystem::GPS ||
            sidr.id>MAX_PRN)
        {
            stringstream ss;
@@ -246,7 +246,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      string ssys = SatID::convertSatelliteSystemToString(satID.system);
+      string ssys = convertSatelliteSystemToString(satID.system);
       s << setw(7) << ssys;
       s << " " << setw(2) << satID.id;
 

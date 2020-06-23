@@ -69,7 +69,7 @@ namespace gpstk
    {
       // get the list from OrbitEphStore
       list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemQZSS));
+      OrbitEphStore::addToList(oelst,SatID(-1,SatelliteSystem::QZSS));
 
       int n(0);
       list<OrbitEph*>::const_iterator it;

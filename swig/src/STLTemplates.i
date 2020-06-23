@@ -1,13 +1,15 @@
 %{
 #include "SatID.hpp"
+#include "SatelliteSystem.hpp"
 %}
 
 %include "SatID.hpp"
+%include "SatelliteSystem.hpp"
 
 //////////////////////////////////////////////////
 //            std::vector wraps
 //////////////////////////////////////////////////
-%template(vector_GNSS)       std::vector<gpstk::SatID::SatelliteSystem>;
+%template(vector_GNSS)       std::vector<gpstk::SatelliteSystem>;
 %template(vector_SatID)      std::vector<gpstk::SatID>;
 %template(vector_ObsID)      std::vector<gpstk::ObsID>;
 %template(vector_double)     std::vector<double>;

@@ -399,10 +399,10 @@ namespace gpstk
       Triple tp;
       switch (sidr.system)
       {
-         case SatID::systemGPS:     {sys='G'; break;}
-         case SatID::systemGalileo: {sys='E'; break;}  
-         case SatID::systemGlonass: {sys='R'; break;}
-         case SatID::systemBeiDou:  {sys='C'; break;}
+         case SatelliteSystem::GPS:     {sys='G'; break;}
+         case SatelliteSystem::Galileo: {sys='E'; break;}  
+         case SatelliteSystem::Glonass: {sys='R'; break;}
+         case SatelliteSystem::BeiDou:  {sys='C'; break;}
          default:
          {
             stringstream ss;

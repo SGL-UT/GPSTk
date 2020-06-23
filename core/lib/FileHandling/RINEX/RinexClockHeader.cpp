@@ -251,8 +251,8 @@ namespace gpstk
             string sat;
             switch(prnListItr->system)
             {
-               case SatID::systemGPS:     sat = "G"; break;
-               case SatID::systemGlonass: sat = "R"; break;
+               case SatelliteSystem::GPS:     sat = "G"; break;
+               case SatelliteSystem::Glonass: sat = "R"; break;
                default:                   sat = "?"; break;
             }
             sat += rightJustify(asString(prnListItr->id), 2, '0');
@@ -461,9 +461,9 @@ namespace gpstk
             prnCount++;
 
             string sat;
-            if (itr->system == SatID::systemGPS)
+            if (itr->system == SatelliteSystem::GPS)
                sat = "G";
-            else if (itr->system == SatID::systemGlonass)
+            else if (itr->system == SatelliteSystem::Glonass)
                sat = "R";
             else
                sat = " ";
@@ -769,12 +769,12 @@ namespace gpstk
             if ( word[0] == 'G' || word[0] == 'g' )
             {
                prnList.push_back(SatID(asInt(word.substr(1,2)),
-                                       SatID::systemGPS));
+                                       SatelliteSystem::GPS));
             }
             else if ( word[0] == 'R' || word[0] == 'r' )
             {
                prnList.push_back(SatID(asInt(word.substr(1,2)),
-                                       SatID::systemGlonass));
+                                       SatelliteSystem::Glonass));
             }
             else
             {  // unknown satellite system - throw

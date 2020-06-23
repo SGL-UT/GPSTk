@@ -178,11 +178,11 @@ public:
          const short PRN31 = 31;
          const short PRN32 = 32; // Nonexistent in SP3 file
 
-         SatID sid0(PRN0,SatID::systemGPS);
-         SatID sid1(PRN1,SatID::systemGPS);
-         SatID sid15(PRN15,SatID::systemGPS);
-         SatID sid31(PRN31,SatID::systemGPS);
-         SatID sid32(PRN32,SatID::systemGPS);
+         SatID sid0(PRN0,SatelliteSystem::GPS);
+         SatID sid1(PRN1,SatelliteSystem::GPS);
+         SatID sid15(PRN15,SatelliteSystem::GPS);
+         SatID sid31(PRN31,SatelliteSystem::GPS);
+         SatID sid32(PRN32,SatelliteSystem::GPS);
 
          CivilTime eTimeCiv(1997,4,6,6,15,0); // Time stamp of one epoch
          CommonTime eTime = eTimeCiv.convertToCommonTime();
@@ -283,11 +283,11 @@ public:
          stringstream outputStream15;
          stringstream outputStream31;
          Xvt rv;
-         SatID sid0(0, SatID::systemGPS);
-         SatID sid1(1, SatID::systemGPS);
-         SatID sid15(15, SatID::systemGPS);
-         SatID sid31(31, SatID::systemGPS);
-         SatID sid32(32, SatID::systemGPS);
+         SatID sid0(0, SatelliteSystem::GPS);
+         SatID sid1(1, SatelliteSystem::GPS);
+         SatID sid15(15, SatelliteSystem::GPS);
+         SatID sid31(31, SatelliteSystem::GPS);
+         SatID sid32(32, SatelliteSystem::GPS);
          CommonTime eTime = CivilTime(1997,4,6,6,15,0,gpstk::TimeSystem::GPS);
          CommonTime bTime = CivilTime(1997,4,6,0,0,0,gpstk::TimeSystem::GPS);
 
@@ -339,12 +339,12 @@ public:
             // SP3 can provide Xvt data but not health data.
          SP3EphemerisStore store;
          Xvt::HealthStatus rv;
-         SatID sid0(0, SatID::systemGPS);
-         SatID sid1(1, SatID::systemGPS);
-         SatID sid15(15, SatID::systemGPS);
-         SatID sid27(27, SatID::systemGPS);
-         SatID sid31(31, SatID::systemGPS);
-         SatID sid32(32, SatID::systemGPS);
+         SatID sid0(0, SatelliteSystem::GPS);
+         SatID sid1(1, SatelliteSystem::GPS);
+         SatID sid15(15, SatelliteSystem::GPS);
+         SatID sid27(27, SatelliteSystem::GPS);
+         SatID sid31(31, SatelliteSystem::GPS);
+         SatID sid32(32, SatelliteSystem::GPS);
          CommonTime eTime = CivilTime(1997,4,6,6,15,0,gpstk::TimeSystem::GPS);
          CommonTime bTime = CivilTime(1997,4,6,0,0,0,gpstk::TimeSystem::GPS);
 
@@ -364,7 +364,7 @@ public:
          store.clear();
          TUASSERTE(int, 0, store.size());
          store.loadFile(inputSixNinesData);
-         SatID sid4(4, SatID::systemGPS);
+         SatID sid4(4, SatelliteSystem::GPS);
          CommonTime cTime = CivilTime(2019,1,10,1,5,0,gpstk::TimeSystem::GPS);
             // PRN 4 has clock bias of 999999.999999 but a valid position
          TUCATCH(rv = store.getSVHealth(sid4, cTime));
@@ -466,8 +466,8 @@ public:
          CivilTime igsTimeCiv(1997,4,6,2,0,0);
          CommonTime igsTime = igsTimeCiv.convertToCommonTime();
 
-         SatID sid1(PRN1,SatID::systemGPS);
-         SatID sid31(PRN31,SatID::systemGPS);
+         SatID sid1(PRN1,SatelliteSystem::GPS);
+         SatID sid31(PRN31,SatelliteSystem::GPS);
 
          Triple computedPosition_igs1  = igsStore.getPosition(sid1,igsTime);
          Triple computedPosition_igs31 = igsStore.getPosition(sid31,igsTime);
@@ -568,7 +568,7 @@ public:
          {
             if (i!=12 && i!=16 && i!=32)
             {
-               SatID sid(i,SatID::systemGPS);
+               SatID sid(i,SatelliteSystem::GPS);
                expectedSet.insert(sid);
             }
          }
@@ -629,8 +629,8 @@ public:
          CivilTime testTimeCiv(2001,7,22,2,0,0);
          CommonTime testTime = testTimeCiv.convertToCommonTime();
 
-         SatID sid1(PRN1,SatID::systemGPS);
-         SatID sid31(PRN31,SatID::systemGPS);
+         SatID sid1(PRN1,SatelliteSystem::GPS);
+         SatID sid31(PRN31,SatelliteSystem::GPS);
 
          Triple computedVelocity_1 = Store.getVelocity(sid1,testTime);
          Triple computedVelocity_31 = Store.getVelocity(sid31,testTime);
