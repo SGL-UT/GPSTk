@@ -375,15 +375,15 @@ namespace std { class fstream {}; }
     %}
 
 // Leaving this code here but commented out for the moment 
-/* %pythoncode %{ */
-/* from enum import Enum */
-/* def renameEnums(prefix): */
-/*     tmpD = {k:v for k,v in globals().items() if k.startswith(prefix+'_')} */
-/*     for k,v in tmpD.items(): */
-/*         del globals()[k] */
-/*     tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()} */
-/*     globals()[prefix] = Enum(prefix,tmpD) */
-/* renameEnums('SatelliteSystem') */
-/* del renameEnums */
-/* del Enum */
-/* %} */
+%pythoncode %{
+from enum import IntEnum
+def renameEnums(prefix):
+    tmpD = {k:v for k,v in globals().items() if k.startswith(prefix+'_')}
+    for k,v in tmpD.items():
+        del globals()[k]
+    tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()}
+    globals()[prefix] = IntEnum(prefix,tmpD)
+renameEnums('SatelliteSystem')
+del renameEnums
+del IntEnum
+%}
