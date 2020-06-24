@@ -23,7 +23,7 @@ namespace gpstk
       IRNSS,
       Mixed,
       UserDefined,
-      Unknown = 255
+      Unknown
    };
 
       /** Translate system enumeration to its string representation.
