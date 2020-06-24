@@ -344,6 +344,8 @@ test_redhat:
     - build/Testing/Temporary/
   dependencies:
     - build_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
   after_script:
     # Only show the failure log, if there were failures.
     # Also, the whole log is too long, so grep for lines of interest.
@@ -408,6 +410,8 @@ user_install_redhat:
       - build/install
   dependencies:
     - build_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 user_install_windows:
   stage: install
@@ -453,6 +457,8 @@ system_install_redhat:
     - python -c "import gpstk"
   dependencies:
     - build_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 # Package Stage
 # Tests packaging of GPSTk on all platforms
@@ -526,6 +532,8 @@ package_redhat:
       - rpm_files/RPMS/x86_64/gpstk-*
       - rpm_files/SRPMS/gpstk-*
   dependencies: []
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 package_redhat_py36:
   stage: package
@@ -543,6 +551,8 @@ package_redhat_py36:
       - rpm_files/RPMS/x86_64/python3-gpstk-*
       - rpm_files/SRPMS/python3-gpstk-*
   dependencies: []
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 package_redhat_py27:
   stage: package
@@ -560,6 +570,8 @@ package_redhat_py27:
       - rpm_files/RPMS/x86_64/python-gpstk-*
       - rpm_files/SRPMS/python-gpstk-*
   dependencies: []
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 package_redhat_wheel:
   stage: package
@@ -576,6 +588,8 @@ package_redhat_wheel:
       - dist/
   dependencies:
     - build_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 # Deploy Stage
 # Tests install of GPSTk package on each platform, saves artifacts for downstream builds.
@@ -605,6 +619,8 @@ deploy_redhat:
     - timeconvert
   dependencies:
     - package_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 deploy_redhat_py27:
   stage: deploy
@@ -621,6 +637,8 @@ deploy_redhat_py27:
   dependencies:
     - package_redhat_py27
     - package_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 deploy_redhat_py36:
   stage: deploy
@@ -637,6 +655,8 @@ deploy_redhat_py36:
   dependencies:
     - package_redhat_py36
     - package_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 # package_windows:
 #   stage: package
@@ -686,3 +706,5 @@ sgltk_redhat:
     - make all -j 4
   dependencies:
     - user_install_redhat
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
