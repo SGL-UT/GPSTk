@@ -6,16 +6,6 @@
 
 namespace gpstk
 {
-   enum BlahBlah
-   {
-      bbFoo,
-      bbBar,
-      bbBaz
-   };
-
-   inline void testFunc(BlahBlah blah)
-   { std::cerr << blah << std::endl; }
-
       /** Supported satellite systems
        * @note any additions to this enumeration list should also
        *   be added to convertSatelliteSystemToString() and
@@ -125,17 +115,6 @@ namespace gpstk
          return SatelliteSystem::UserDefined;
       return SatelliteSystem::Unknown;
    }
-
-// #ifdef SWIG
-//    %typemap(in) SatelliteSystem {
-//       PyErr_SetString(PyExc_TypeError, "Conversion unsupported");
-//       return NULL;
-//    }
-//    %typemap(out) SatelliteSystem {
-//       PyErr_SetString(PyExc_TypeError, "back-Conversion unsupported");
-//       return NULL;
-//    }
-// #endif
 
 } // namespace gpstk
 
