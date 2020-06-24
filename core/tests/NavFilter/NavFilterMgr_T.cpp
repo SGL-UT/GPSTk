@@ -257,7 +257,7 @@ loadData()
          // note that the test file contents use enums that probably
          // don't match ObsID's enums but that's really not important
          // for this test.
-      tmp.carrier = (ObsID::CarrierBand)gpstk::StringUtils::asInt(
+      tmp.carrier = (CarrierBand)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 3, ','));
       tmp.code = (ObsID::TrackingCode)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 4, ','));

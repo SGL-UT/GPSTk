@@ -608,7 +608,7 @@ namespace gpstk
              mapIter++)
          {
             bool addedChannel = false;
-            std::set<ObsID::CarrierBand> addedIono;
+            std::set<CarrierBand> addedIono;
             int obsWritten = 0;
             line = ""; // make sure the line contents are reset
 
@@ -2847,7 +2847,7 @@ namespace gpstk
             // only be listed once (or once per band in the case of
             // the ionospheric delay) in any sane manner.
          bool addedChannel = false;
-         std::set<ObsID::CarrierBand> addedIono;
+         std::set<CarrierBand> addedIono;
          for(size_t i = 0; i < mapIter.second.size(); i++)
          {
             if (mapIter.second[i].type == ObsID::otIono)

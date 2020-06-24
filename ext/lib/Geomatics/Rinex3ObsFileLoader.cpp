@@ -630,23 +630,33 @@ void dumpAllRinex3ObsTypes(ostream& os)
    // build a table: table[sys][band][codedesc][type] = 4-char ObsID;
    //                      char cb..  tc..      ot..
    tableMap table;
-   for(size_t s=0; s<syss.size(); s++)
-      for(int j=ObsID::cbAny; j<ObsID::cbUndefined; ++j)
-         for(int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
-            for(int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
-               try {
-                  string tag(string(1,syss[s]) +
-                             string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
-                             string(1,ObsID::cb2char[ObsID::CarrierBand(j)]) +
-                             string(1,ObsID::tc2char[ObsID::TrackingCode(k)]));
+   for (size_t s=0; s<syss.size(); s++)
+   {
+      for (CarrierBand j : CarrierBandIterator())
+      {
+         for (int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
+         {
+            for (int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
+            {
+               try
+               {
+                  string tag(
+                     string(1,syss[s]) +
+                     string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
+                     string(1,ObsID::cb2char[CarrierBand(j)]) +
+                     string(1,ObsID::tc2char[ObsID::TrackingCode(k)]));
                   ObsID obs(tag, Rinex3ObsBase::currentVersion);
                   string name(asString(obs));
-                  if(name.find("Unknown") != string::npos ||
-                     name.find("undefined") != string::npos ||
-                     name.find("Any") != string::npos ||
-                     !isValidRinexObsID(tag)) continue;
+                  if (name.find("Unknown") != string::npos ||
+                      name.find("undefined") != string::npos ||
+                      name.find("Any") != string::npos ||
+                      !isValidRinexObsID(tag))
+                  {
+                     continue;
+                  }
 
-                  if(find(goodtags.begin(),goodtags.end(),tag) == goodtags.end()) {
+                  if(find(goodtags.begin(),goodtags.end(),tag) == goodtags.end())
+                  {
                      goodtags.push_back(tag);
                      string sys(RinexSatID(string(1,tag[0])).systemString3());
                      char type(ObsID::ot2char[ObsID::ObservationType(i)]);
@@ -659,7 +669,14 @@ void dumpAllRinex3ObsTypes(ostream& os)
                      table[sys][band][codedesc][type] = id;
                   }
                }
-               catch(InvalidParameter& ) { continue; }
+               catch (InvalidParameter& )
+               {
+                  continue;
+               }
+            } // for (int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
+         } // for (int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
+      } // for (CarrierBand j : CarrierBandIterator())
+   } // for (size_t s=0; s<syss.size(); s++)
 
    tableMap::iterator it;
    obsMap::iterator jt;

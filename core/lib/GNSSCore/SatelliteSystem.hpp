@@ -2,7 +2,6 @@
 #define GPSTK_SATELLITESYSTEM_HPP
 
 #include <string>
-#include <iostream>
 
 namespace gpstk
 {

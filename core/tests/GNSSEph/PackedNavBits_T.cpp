@@ -243,7 +243,7 @@ realDataTest()
 
       //Test Data copied from RINEX file for PRN3, week 1638, day 153 2011
    SatID satID(3, SatelliteSystem::GPS);
-   ObsID obsID( ObsID::otNavMsg, ObsID::cbL1, ObsID::tcCA );
+   ObsID obsID( ObsID::otNavMsg, CarrierBand::L1, ObsID::tcCA );
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 10, 00, 0.0, TimeSystem::GPS );
    PackedNavBits pnb(satID,obsID,rxID,ct);
@@ -521,13 +521,13 @@ equalityTest()
       // this object is empty.  We are focused on testing
       // the metadata handling. 
    SatID satID(1, SatelliteSystem::GPS);
-   ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
+   ObsID obsID( ObsID::otNavMsg, CarrierBand::L2, ObsID::tcC2LM );
    NavID navID(satID,obsID);
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
 
    SatID satID2(2, SatelliteSystem::GPS);
-   ObsID obsID2(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcQ5 );
+   ObsID obsID2(ObsID::otNavMsg, CarrierBand::L5, ObsID::tcQ5 );
    NavID navID2(satID2,obsID2); 
    std::string rxID2 = "rx2";
    CommonTime ctPlus = ct + 900.0;
@@ -732,7 +732,7 @@ ancillaryMethods()
       // this object is empty.  We are focused on testing
       // the metadata handling. 
    SatID satID(1, SatelliteSystem::GPS);
-   ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
+   ObsID obsID( ObsID::otNavMsg, CarrierBand::L2, ObsID::tcC2LM );
    NavID navID(satID,obsID);
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );

@@ -19,7 +19,7 @@ namespace gpstk
          /// Specifies a single GNSS signal.
       struct Signal
       {
-         ObsID::CarrierBand carrier; ///< Carrier frequency.
+         CarrierBand carrier; ///< Carrier frequency.
          ObsID::TrackingCode code;   ///< Tracking code.
          NavID::NavType nav;         ///< Navigation code.
       };

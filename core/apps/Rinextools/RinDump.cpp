@@ -941,16 +941,15 @@ int Configuration::ProcessUserInput(int argc, char **argv)
       map<string, map<string, map<string, map<char,string> > > > table;
       for(size_t s=0; s<syss.size(); s++)
       {
-         for(int j=0; j<ObsID::cbLast; ++j)
+         for (CarrierBand carrierBand : CarrierBandIterator())
          {
-            ObsID::CarrierBand carrierBand = (ObsID::CarrierBand)j;
             switch (carrierBand)
             {
-               case ObsID::cbUnknown:
-               case ObsID::cbAny:
-               case ObsID::cbUndefined:
-               case ObsID::cbLast:
-               case ObsID::cbZero:
+               case CarrierBand::Unknown:
+               case CarrierBand::Any:
+               case CarrierBand::Undefined:
+               case CarrierBand::Last:
+               case CarrierBand::Zero:
                      // skip the above tracking codes
                   continue;
             }

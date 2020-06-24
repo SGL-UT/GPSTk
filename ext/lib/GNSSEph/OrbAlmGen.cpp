@@ -776,12 +776,12 @@ namespace gpstk
 
       setHealthy(false); 
       const ObsID& oidr = msg.getobsID();
-      if (oidr.band==ObsID::cbL2 &&
+      if (oidr.band==CarrierBand::L2 &&
            !(health & 0x02))
       {
          setHealthy(true);
       }
-      if (oidr.band==ObsID::cbL5 &&
+      if (oidr.band==CarrierBand::L5 &&
           !(health & 0x01))
       {
          setHealthy(false); 

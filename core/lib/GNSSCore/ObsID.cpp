@@ -44,14 +44,14 @@ namespace gpstk
 {
    // descriptions (strings) of each code, carrier and type
    std::map< ObsID::TrackingCode,    std::string > ObsID::tcDesc;
-   std::map< ObsID::CarrierBand,     std::string > ObsID::cbDesc;
+   std::map< CarrierBand,     std::string > ObsID::cbDesc;
    std::map< ObsID::ObservationType, std::string > ObsID::otDesc;
    // mappings between code, carrier, type and characters
    std::map< char, ObsID::ObservationType> ObsID::char2ot;
-   std::map< char, ObsID::CarrierBand> ObsID::char2cb;
+   std::map< char, CarrierBand> ObsID::char2cb;
    std::map< char, ObsID::TrackingCode> ObsID::char2tc;
    std::map< ObsID::ObservationType, char > ObsID::ot2char;
-   std::map< ObsID::CarrierBand, char > ObsID::cb2char;
+   std::map< CarrierBand, char > ObsID::cb2char;
    std::map< ObsID::TrackingCode, char> ObsID::tc2char;
 
    // map of valid RINEX tracking codes, systems and frequency
@@ -120,9 +120,9 @@ namespace gpstk
       {
          case 'G':    // GPS
       {
-         if (tc=='X' && band==cbL5)
+         if (tc=='X' && band==CarrierBand::L5)
             code = tcIQ5;
-         if (band==cbL1)
+         if (band==CarrierBand::L1)
          {
             if (tc=='X') code = tcG1X;
             if (tc=='S') code = tcG1D;
@@ -165,7 +165,7 @@ namespace gpstk
 //
          case 'E':   // Galileo
       {
-         if (band==cbL1)
+         if (band==CarrierBand::L1)
          {
             switch (code)
             {
@@ -174,7 +174,7 @@ namespace gpstk
                default: break;
             }
          }
-         if (band==cbE6)
+         if (band==CarrierBand::E6)
          {
             switch (code)
             {
@@ -203,7 +203,7 @@ namespace gpstk
                   break;
             }
          }
-         if (band==cbL5)
+         if (band==CarrierBand::L5)
          {
             switch (code)
             {
@@ -213,7 +213,7 @@ namespace gpstk
                default: break;
             }
          }
-         if (band==cbE5b)
+         if (band==CarrierBand::E5b)
          {
             switch (code)
             {
@@ -223,7 +223,7 @@ namespace gpstk
                default: break;
             }
          }
-         if (band==cbE5ab)
+         if (band==CarrierBand::E5ab)
          {
             switch (code)
             {
@@ -239,22 +239,22 @@ namespace gpstk
       {
          switch (band)
          {
-            case cbL1: band = cbG1; break;
-            case cbL2: band = cbG2; break;
-            case cbE6: band = cbG2a; break;
+            case CarrierBand::L1: band = CarrierBand::G1; break;
+            case CarrierBand::L2: band = CarrierBand::G2; break;
+            case CarrierBand::E6: band = CarrierBand::G2a; break;
             default: break;
          }
          switch (band)
          {
-            case cbG1:
-            case cbG2:
+            case CarrierBand::G1:
+            case CarrierBand::G2:
                switch (code)
                {
                   case tcCA: code = tcGCA; break;
                   case tcP: code = tcGP; break;
                }
                break;
-            case cbG1a:
+            case CarrierBand::G1a:
                switch (code)
                {
                   case tcA: code = tcL1OCD; break;
@@ -262,7 +262,7 @@ namespace gpstk
                   case tcIQR3: case tcC2LM: code = tcL1OC; break;
                }
                break;
-            case cbG2a:
+            case CarrierBand::G2a:
                switch (code)
                {
                   case tcA: code = tcL2CSI; break;
@@ -270,7 +270,7 @@ namespace gpstk
                   case tcIQR3: case tcC2LM: code = tcL2CSIOCp; break;
                }
                break;
-            case cbG3:
+            case CarrierBand::G3:
                switch (code)
                {
                   case tcI5: code = tcIR3; break;
@@ -295,7 +295,7 @@ namespace gpstk
       }
          case 'J':   // QZSS
       {
-         if(band == cbL1) switch (code)
+         if(band == CarrierBand::L1) switch (code)
          {
             case tcCA: code = tcJCA; break;     // 'C'
             case tcC2M: case tcG1D: code = tcJD1; break;    // 'S'
@@ -304,14 +304,14 @@ namespace gpstk
             case tcABC: code = tcJZ1; break;    // 'Z'
             default: break;
          }
-         if(band == cbL2) switch (code)
+         if(band == CarrierBand::L2) switch (code)
          {
             case tcC2M: case tcG1D: code = tcJM2; break;    // 'S'
             case tcC2L: case tcG1P: code = tcJL2; break;    // 'L'
             case tcC2LM: case tcG1X: code = tcJX2; break;   // 'X'
             default: break;
          }
-         if(band == cbL5) switch (code)
+         if(band == CarrierBand::L5) switch (code)
          {
             case tcI5: code = tcJI5; break;     // 'I'
             case tcQ5: code = tcJQ5; break;     // 'Q'
@@ -321,7 +321,7 @@ namespace gpstk
             case tcABC: code = tcJIQ5S; break;
             default: break;
          }
-         if(band == cbE6) switch (code)
+         if(band == CarrierBand::E6) switch (code)
          {
             case tcC2M: case tcG1D: code = tcJI6; break;    // 'S'
             case tcC2L: case tcG1P: code = tcJQ6; break;    // 'L'
@@ -336,23 +336,23 @@ namespace gpstk
          if (fabs(rinexVersion - 3.02) < 0.005)
          {
                // RINEX 3.02
-            if(band == cbL1)
-               band = cbB1;
+            if(band == CarrierBand::L1)
+               band = CarrierBand::B1;
          }
          else
          {
                // RINEX 3.0[013]
-            if (band == cbL2)
-               band = cbB1;
+            if (band == CarrierBand::L2)
+               band = CarrierBand::B1;
          }
-         if (band == cbE6)
-            band = cbB3;
-         else if (band == cbE5b)
-            band = cbB2;
+         if (band == CarrierBand::E6)
+            band = CarrierBand::B3;
+         else if (band == CarrierBand::E5b)
+            band = CarrierBand::B2;
 
          switch (band)
          {
-            case cbB1: // B1-2
+            case CarrierBand::B1: // B1-2
                switch (code)
                {
                   case tcI5:     // 'I'
@@ -369,7 +369,7 @@ namespace gpstk
                      break;
                }
                break;
-            case cbL1: // B1
+            case CarrierBand::L1: // B1
                switch (code)
                {
                   case tcD:
@@ -389,7 +389,7 @@ namespace gpstk
                      break;
                }
                break;
-            case cbL5: // B2a
+            case CarrierBand::L5: // B2a
                switch (code)
                {
                   case tcD:
@@ -403,7 +403,7 @@ namespace gpstk
                      break;
                }
                break;
-            case cbB2: // B2b
+            case CarrierBand::B2: // B2b
                switch (code)
                {
                   case tcI5:
@@ -426,7 +426,7 @@ namespace gpstk
                      break;
                }
                break;
-            case cbE5ab:
+            case CarrierBand::E5ab:
                switch (code)
                {
                   case tcD:
@@ -440,7 +440,7 @@ namespace gpstk
                      break;
                }
                break;
-            case cbB3: // B3
+            case CarrierBand::B3: // B3
                switch (code)
                {
                   case tcI5:     // 'I'
@@ -460,7 +460,7 @@ namespace gpstk
                      break;
                }
                break;
-            case cbE5b: 
+            case CarrierBand::E5b: 
                switch (code)
                {
                   case tcI5:     // 'I'
@@ -482,7 +482,7 @@ namespace gpstk
       }
          case 'I':  // IRNSS
       {
-         if(band == cbL5)
+         if(band == CarrierBand::L5)
          {
             switch (code)
             {
@@ -493,7 +493,7 @@ namespace gpstk
             default: break;
             }
          }
-         if(band == cbI9)
+         if(band == CarrierBand::I9)
          {
             switch (code)
             {
@@ -582,7 +582,8 @@ namespace gpstk
    {
          // Version comparison is intentionally left out.
       bool ot = type == otAny || right.type == otAny || type == right.type;
-      bool cb = band == cbAny || right.band == cbAny || band == right.band;
+      bool cb = band == CarrierBand::Any || right.band == CarrierBand::Any ||
+         band == right.band;
       bool tc = code == tcAny || right.code == tcAny || code == right.code;
       return ot && cb && tc;
    }
@@ -691,86 +692,6 @@ namespace gpstk
       if (s == "Undefined")
          return otUndefined;
       return otUnknown;
-   }
-
-
-   std::string ObsID ::
-   asString(CarrierBand e) throw()
-   {
-      switch (e)
-      {
-         case cbZero:      return "Zero";
-         case cbL1L2:      return "L1L2";
-         case cbL1:        return "L1";
-         case cbL2:        return "L2";
-         case cbL5:        return "L5";
-         case cbG1:        return "G1";
-         case cbG1a:       return "G1a";
-         case cbG2a:       return "G2a";
-         case cbG2:        return "G2";
-         case cbG3:        return "G3";
-         case cbE6:        return "E6";
-         case cbE5b:       return "E5b";
-         case cbE5ab:      return "E5ab";
-         case cbB1:        return "B1";
-         case cbB3:        return "B3";
-         case cbB2:        return "B2";
-         case cbI9:        return "I9";
-         case cbUnknown:   return "Unknown";
-         case cbAny:       return "Any";
-         case cbUndefined: return "Undefined";
-         case cbLast:      return "Last";
-         default:          return "???";
-      }
-   }
-
-
-   ObsID::CarrierBand ObsID ::
-   asCarrierBand(const std::string& s) throw()
-   {
-      if (s == "Zero")
-         return cbZero;
-      if (s == "L1L2")
-         return cbL1L2;
-      if (s == "L1")
-         return cbL1;
-      if (s == "L2")
-         return cbL2;
-      if (s == "L5")
-         return cbL5;
-      if (s == "G1")
-         return cbG1;
-      if (s == "G1a")
-         return cbG1a;
-      if (s == "G2a")
-         return cbG2a;
-      if (s == "G2")
-         return cbG2;
-      if (s == "G3")
-         return cbG3;
-      if (s == "E6")
-         return cbE6;
-      if (s == "E5b")
-         return cbE5b;
-      if (s == "E5ab")
-         return cbE5ab;
-      if (s == "B1")
-         return cbB1;
-      if (s == "B3")
-         return cbB3;
-      if (s == "B2")
-         return cbB2;
-      if (s == "I9")
-         return cbI9;
-      if (s == "Unknown")
-         return cbUnknown;
-      if (s == "Any")
-         return cbAny;
-      if (s == "Undefined")
-         return cbUndefined;
-      if (s == "Last")
-         return cbLast;
-      return cbUnknown;
    }
 
 

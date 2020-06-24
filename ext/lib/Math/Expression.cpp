@@ -634,12 +634,12 @@ namespace gpstk
 
          switch (i->first.band)
          {
-            case ObsID::cbL1:   band = "1"; break;
-            case ObsID::cbL2:   band = "2"; break;
-            case ObsID::cbL5:   band = "5"; break;
-            case ObsID::cbE6:   band = "6"; break;
-            case ObsID::cbE5b:  band = "7"; break;
-            case ObsID::cbE5ab: band = "8"; break;
+            case CarrierBand::L1:   band = "1"; break;
+            case CarrierBand::L2:   band = "2"; break;
+            case CarrierBand::L5:   band = "5"; break;
+            case CarrierBand::E6:   band = "6"; break;
+            case CarrierBand::E5b:  band = "7"; break;
+            case CarrierBand::E5ab: band = "8"; break;
 			default: break; //NB Determine if additional enumeration values need to be handled	
          }
 

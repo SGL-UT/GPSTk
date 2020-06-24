@@ -89,7 +89,7 @@ int main()
          // note that the test file contents use enums that probably
          // don't match ObsID's enums but that's really not important
          // for this example.
-      navFiltData.carrier = (ObsID::CarrierBand)gpstk::StringUtils::asInt(
+      navFiltData.carrier = (CarrierBand)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 3, ','));
       navFiltData.code = (ObsID::TrackingCode)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 4, ','));
@@ -101,7 +101,8 @@ int main()
       for (nmli = l.begin(); nmli != l.end(); nmli++)
       {
          cout << timeString << ", 310, " << setw(2) << (*nmli)->prn << ", "
-              << setw(1) << (*nmli)->carrier << ", " << (*nmli)->code << ", 1";
+              << setw(1) << static_cast<int>((*nmli)->carrier) << ", "
+              << (*nmli)->code << ", 1";
          LNavFilterData *fd = dynamic_cast<LNavFilterData*>(*nmli);
          for (unsigned sfword = 0; sfword < 10; sfword++)
          {

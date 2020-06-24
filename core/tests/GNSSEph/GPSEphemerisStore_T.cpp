@@ -98,7 +98,7 @@ public:
 
          gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
          gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
-                            gpstk::ObsID::cbL1,
+                            gpstk::CarrierBand::L1,
                             gpstk::ObsID::tcCA);
 
          eph1.transmitTime = gpstk::GPSWeekSecond(1917, 568800);

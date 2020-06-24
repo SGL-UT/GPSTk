@@ -73,54 +73,54 @@ namespace gpstk
          {
            case SatelliteSystem::GPS:
            {
-              if (( oidr.band==ObsID::cbL1 || oidr.band==ObsID::cbL2 ) &&
+              if (( oidr.band==CarrierBand::L1 || oidr.band==CarrierBand::L2 ) &&
                   ( oidr.code==ObsID::tcCA || oidr.code==ObsID::tcP ||
                     oidr.code==ObsID::tcY  || oidr.code==ObsID::tcY ||
                     oidr.code==ObsID::tcW  || oidr.code==ObsID::tcN ||
                     oidr.code==ObsID::tcD  )) 
                     navType = ntGPSLNAV;
               
-              else if ( oidr.band==ObsID::cbL2 &&
+              else if ( oidr.band==CarrierBand::L2 &&
                        (oidr.code==ObsID::tcC2M || 
                         oidr.code==ObsID::tcC2L ||
                         oidr.code==ObsID::tcC2LM )) 
                         navType = ntGPSCNAVL2;
               
-              else if ( oidr.band==ObsID::cbL5 &&             
+              else if ( oidr.band==CarrierBand::L5 &&             
                        (oidr.code==ObsID::tcI5 || 
                         oidr.code==ObsID::tcQ5 ||                
                         oidr.code==ObsID::tcIQ5 )) 
                         navType = ntGPSCNAVL5;
  
-              else if ( oidr.band==ObsID::cbL1 &&
+              else if ( oidr.band==CarrierBand::L1 &&
                       ( oidr.code==ObsID::tcG1P ||
                         oidr.code==ObsID::tcG1D ||
                         oidr.code==ObsID::tcG1X ) )
                         navType = ntGPSCNAV2;
 
-              else if ((oidr.band==ObsID::cbL1 ||
-                        oidr.band==ObsID::cbL2) &&
+              else if ((oidr.band==CarrierBand::L1 ||
+                        oidr.band==CarrierBand::L2) &&
                         oidr.code==ObsID::tcM ) 
                         navType = ntGPSMNAV;
               break;
             }
             case SatelliteSystem::QZSS:
             {
-               if ( oidr.band==ObsID::cbL1  &&
+               if ( oidr.band==CarrierBand::L1  &&
                     oidr.code==ObsID::tcCA )
                     navType = ntGPSLNAV;
               
-               else if ( oidr.band==ObsID::cbL2 &&
+               else if ( oidr.band==CarrierBand::L2 &&
                        ( oidr.code==ObsID::tcC2M  || oidr.code==ObsID::tcC2L ||
                          oidr.code==ObsID::tcC2LM )) 
                          navType = ntGPSCNAVL2;
               
-               else if ( oidr.band==ObsID::cbL5 &&             
+               else if ( oidr.band==CarrierBand::L5 &&             
                        ( oidr.code==ObsID::tcI5 || oidr.code==ObsID::tcQ5 ||                
                          oidr.code==ObsID::tcIQ5 )) 
                          navType = ntGPSCNAVL5;
 
-               else if ( oidr.band==ObsID::cbL1 &&
+               else if ( oidr.band==CarrierBand::L1 &&
                        ( oidr.code==ObsID::tcG1P ||
                          oidr.code==ObsID::tcG1D ||
                          oidr.code==ObsID::tcG1X ))
@@ -130,8 +130,8 @@ namespace gpstk
             case SatelliteSystem::BeiDou:
             {             
                if ( sidr.id>5 &&                                                  
-                  ( oidr.band==ObsID::cbB1   || oidr.band==ObsID::cbB2   ||
-                    oidr.band==ObsID::cbB3 ) &&
+                  ( oidr.band==CarrierBand::B1   || oidr.band==CarrierBand::B2   ||
+                    oidr.band==CarrierBand::B3 ) &&
                   ( oidr.code==ObsID::tcCI1  || oidr.code==ObsID::tcCQ1  ||                
                     oidr.code==ObsID::tcCIQ1 || oidr.code==ObsID::tcCI7  ||
                     oidr.code==ObsID::tcCQ7  || oidr.code==ObsID::tcCIQ7 ||
@@ -140,8 +140,8 @@ namespace gpstk
                     navType = ntBeiDou_D1; 
          
                else if ( sidr.id<=5 &&                                                  
-                       ( oidr.band==ObsID::cbB1   || oidr.band==ObsID::cbB2   ||
-                         oidr.band==ObsID::cbB3 )&&
+                       ( oidr.band==CarrierBand::B1   || oidr.band==CarrierBand::B2   ||
+                         oidr.band==CarrierBand::B3 )&&
                        ( oidr.code==ObsID::tcCI1  || oidr.code==ObsID::tcCQ1  ||                
                          oidr.code==ObsID::tcCIQ1 || oidr.code==ObsID::tcCI7  ||
                          oidr.code==ObsID::tcCQ7  || oidr.code==ObsID::tcCIQ7 ||
@@ -152,11 +152,11 @@ namespace gpstk
             }
             case SatelliteSystem::Glonass:
             {
-               if (( oidr.band==ObsID::cbG1 || oidr.band==ObsID::cbG2 ) &&         
+               if (( oidr.band==CarrierBand::G1 || oidr.band==CarrierBand::G2 ) &&         
                    ( oidr.code==ObsID::tcGCA ))  
                    navType = ntGloCivilF;
              
-               else if ( oidr.band==ObsID::cbG3 &&
+               else if ( oidr.band==CarrierBand::G3 &&
                        ( oidr.code==ObsID::tcIR3 || oidr.code==ObsID::tcQR3 ||
                          oidr.code==ObsID::tcIQR3 )) 
                          navType = ntGloCivilC;
@@ -164,19 +164,19 @@ namespace gpstk
             }
             case SatelliteSystem::Galileo:
             {
-               if ( oidr.band==ObsID::cbL1 && oidr.code==ObsID::tcB )
+               if ( oidr.band==CarrierBand::L1 && oidr.code==ObsID::tcB )
                   navType = ntGalINAV;
-               else if ( oidr.band==ObsID::cbE5b  && 
+               else if ( oidr.band==CarrierBand::E5b  && 
                        ( oidr.code==ObsID::tcIE5b || oidr.code==ObsID::tcIQE5b ))
                        navType = ntGalINAV;
-               else if ( oidr.band==ObsID::cbL5 &&            // This is Galileo E5a
+               else if ( oidr.band==CarrierBand::L5 &&            // This is Galileo E5a
                        ( oidr.code==ObsID::tcIE5a || oidr.code==ObsID::tcIQE5a ))
                        navType = ntGalFNAV; 
                break;
             }
             case SatelliteSystem::IRNSS:
             {
-               if ( oidr.band==ObsID::cbL5 &&
+               if ( oidr.band==CarrierBand::L5 &&
                   ( oidr.code==ObsID::tcIA5 || oidr.code==ObsID::tcIB5 ||
                     oidr.code==ObsID::tcIC5 || oidr.code==ObsID::tcIX5 ))  
                     navType = ntIRNSS_SPS; 

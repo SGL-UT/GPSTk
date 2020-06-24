@@ -273,7 +273,7 @@ namespace gpstk
         // each of L1 C/A, L1 P(Y), and L2 P(Y).   We'll
         // load obsID with L1 C/A for the sake of completeness,
         // but this will probably never be examined.
-     oag.obsID = ObsID(ObsID::otNavMsg,ObsID::cbL1,ObsID::tcCA);
+     oag.obsID = ObsID(ObsID::otNavMsg,CarrierBand::L1,ObsID::tcCA);
 
      return oag;       
    }

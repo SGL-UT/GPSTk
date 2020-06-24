@@ -7,15 +7,14 @@
 using namespace gpstk;
 %}
 
-%inline %{
-      // put this forward declaration here so that SWIG knows it's an
-      // enum, otherwise it will generate code treating it as an
-      // object.
-   namespace gpstk
-   {
-      enum class SatelliteSystem;
-   }
-%}
+   
+// Put these enum definitions first so that SWIG knows that they're
+// enums, otherwise it will generate code treating them as objects.
+// =============================================================
+//  Section 0: C++ enum definitions
+// =============================================================
+%include "SatelliteSystem.hpp"
+%include "CarrierBand.hpp"
 
 // =============================================================
 //  Section 1: C++ template containers & typedefs
@@ -122,7 +121,6 @@ using namespace gpstk;
 // =============================================================
 // Utils stuff
 %include "gps_constants.hpp"
-%include "SatelliteSystem.hpp"
 %include "SatID.hpp"
 %include "SatID.i"
 %include "ObsIDInitializer.hpp"
@@ -397,6 +395,7 @@ def renameEnums(prefix):
     globals()[prefix] = IntEnum(prefix,tmpD)
 # Turn the gpstk.SatelliteSystem_* constants into a Python enum
 renameEnums('SatelliteSystem')
+renameEnums('CarrierBand')
 del renameEnums
 del IntEnum
 %}

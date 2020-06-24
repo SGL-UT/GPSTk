@@ -159,7 +159,7 @@ setUpCNAV()
 
       // Define state variables for writing an CNAV data
    gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg, 
-                    gpstk::ObsID::cbL2, 
+                    gpstk::CarrierBand::L2, 
                     gpstk::ObsID::tcC2LM);
    typeDesc = "GPS_CNAV";
    initialCT = CivilTime(2017,1,1,00,00,24,TimeSystem::GPS);

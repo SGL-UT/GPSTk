@@ -62,7 +62,7 @@ public:
          gpstk::OrbElemRinex baleted;             // Picked OrbElemRinex as minimum concrete class derived from OrbElemBase
          gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
          gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
-                            gpstk::ObsID::cbL1,
+                            gpstk::CarrierBand::L1,
                             gpstk::ObsID::tcCA);
          baleted.dataLoadedFlag = true;
          baleted.satID = sat;
@@ -148,7 +148,7 @@ public:
          gpstk::OrbElemRinex to1;
          gpstk::SatID sat1(1, gpstk::SatelliteSystem::GPS);
          gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
-                            gpstk::ObsID::cbL1,
+                            gpstk::CarrierBand::L1,
                             gpstk::ObsID::tcCA);
          to1.dataLoadedFlag = true;
          to1.satID = sat1;

@@ -215,31 +215,31 @@ public:
        std::vector<RinexObsID> newObsIds;
 
        RinexObsID obsID1; //L1
-       obsID1.band = ObsID::cbL1;
+       obsID1.band = CarrierBand::L1;
        obsID1.code = ObsID::tcP;
        obsID1.type = ObsID::otPhase;
        newObsIds.push_back(obsID1);
 
        RinexObsID obsID2; //P1
-       obsID2.band = ObsID::cbL1;
+       obsID2.band = CarrierBand::L1;
        obsID2.code = ObsID::tcP;
        obsID2.type = ObsID::otRange;
        newObsIds.push_back(obsID2);
 
        RinexObsID obsID3; //C1
-       obsID3.band = ObsID::cbL1;
+       obsID3.band = CarrierBand::L1;
        obsID3.code = ObsID::tcCA;
        obsID3.type = ObsID::otRange;
        newObsIds.push_back(obsID3);
 
        RinexObsID obsID4; //L2
-       obsID4.band = ObsID::cbL2;
+       obsID4.band = CarrierBand::L2;
        obsID4.code = ObsID::tcP;
        obsID4.type = ObsID::otPhase;
        newObsIds.push_back(obsID4);
 
        RinexObsID obsID5;
-       obsID5.band = ObsID::cbL2;
+       obsID5.band = CarrierBand::L2;
        obsID5.code = ObsID::tcP;
        obsID5.type = ObsID::otRange;
        newObsIds.push_back(obsID5);

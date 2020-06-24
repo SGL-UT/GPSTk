@@ -158,7 +158,7 @@ class GPS_URA_test(unittest.TestCase):
 
 class ObsID_test(unittest.TestCase):
     def test(self):
-        o1 = gpstk.ObsID(gpstk.ObsID.otRange, gpstk.ObsID.cbAny, gpstk.ObsID.tcA)
+        o1 = gpstk.ObsID(gpstk.ObsID.otRange, gpstk.CarrierBand.Any, gpstk.ObsID.tcA)
         self.assertEqual('AnyBand GALA pseudorange', str(o1))
 
 

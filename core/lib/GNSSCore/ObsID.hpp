@@ -55,6 +55,7 @@
 #include "SatID.hpp"
 #include "ObsIDInitializer.hpp"
 #include "Rinex3ObsBase.hpp"
+#include "CarrierBand.hpp"
 
 namespace gpstk
 {
@@ -95,34 +96,6 @@ namespace gpstk
          otUndefined, ///< Undefined
          otLast       ///< Used to verify that all items are described at compile time
       };
-
-
-         /// The frequency band this obs was collected from.
-      enum CarrierBand
-      {
-         cbUnknown,   ///< Uninitialized value
-         cbAny,       ///< Used to match any carrier band
-         cbZero,      ///< Used with the channel observation type (see RINEx3 section 5.13)
-         cbL1,        ///< GPS L1, Galileo E1, SBAS L1, QZSS L1, BeiDou L1
-         cbL2,        ///< GPS L2, QZSS L2
-         cbL5,        ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5, BeiDou B2a, NavIC L5
-         cbG1,        ///< GLONASS G1
-         cbG1a,       ///< GLONASS G1a
-         cbG2a,       ///< GLONASS G2a
-         cbG2,        ///< GLONASS G2
-         cbG3,        ///< GLONASS G3
-         cbE5b,       ///< Galileo E5b
-         cbE5ab,      ///< Galileo E5, BeiDou B2
-         cbE6,        ///< Galileo E6, QZSS L6
-         cbB1,        ///< BeiDou B1
-         cbB2,        ///< BeiDou B2b
-         cbB3,        ///< BeiDou B3
-         cbI9,        ///< NavIC S
-         cbL1L2,      ///< GPS L1+L2
-         cbUndefined, ///< Code is known to be undefined (as opposed to unknown)
-         cbLast,      ///< Used to verify that all items are described at compile time
-      };
-
 
          /** The code used to collect the observation. Each of these
           * should uniquely identify a code that was correlated
@@ -253,7 +226,7 @@ namespace gpstk
 
          /// empty constructor, creates a wildcard object.
       ObsID()
-            : type(otUnknown), band(cbUnknown), code(tcUnknown),
+            : type(otUnknown), band(CarrierBand::Unknown), code(tcUnknown),
               rinexVersion(Rinex3ObsBase::currentVersion)
       {}
 
@@ -379,10 +352,6 @@ namespace gpstk
       static std::string asString(ObservationType e) throw();
          /// Convert a string name to an ObservationType
       static ObservationType asObservationType(const std::string& s) throw();
-         /// Convert a CarrierBand to a whitespace-free string name.
-      static std::string asString(CarrierBand e) throw();
-         /// Convert a string name to an CarrierBand
-      static CarrierBand asCarrierBand(const std::string& s) throw();
          /// Convert a TrackingCode to a whitespace-free string name.
       static std::string asString(TrackingCode e) throw();
          /// Convert a string name to a TrackingCode

@@ -51,9 +51,9 @@ namespace gpstk
       s << (long)e << " (" << ObsID::asString(e) << ")";
       return s;
    }
-   std::ostream& operator<<(std::ostream& s, ObsID::CarrierBand e)
+   std::ostream& operator<<(std::ostream& s, CarrierBand e)
    {
-      s << (long)e << " (" << ObsID::asString(e) << ")";
+      s << (long)e << " (" << StringUtils::asString(e) << ")";
       return s;
    }
    std::ostream& operator<<(std::ostream& s, ObsID::TrackingCode e)
@@ -73,7 +73,7 @@ namespace gpstk
       TUASSERTE(gpstk::ObsID::ObservationType,                        \
                 gpstk::ObsID::otPhase,                                \
                 obs.type);                                            \
-      TUASSERTE(gpstk::ObsID::CarrierBand,                            \
+      TUASSERTE(gpstk::CarrierBand,                            \
                 CARRIERBAND, obs.band);                               \
       TUASSERTE(gpstk::ObsID::TrackingCode,                           \
                 TRACKINGCODE, obs.code);                              \
@@ -100,18 +100,18 @@ public:
       gpstk::ObsID empty;
       TUASSERTE(gpstk::ObsID::ObservationType,
                 gpstk::ObsID::otUnknown, empty.type);
-      TUASSERTE(gpstk::ObsID::CarrierBand,
-                gpstk::ObsID::cbUnknown, empty.band);
+      TUASSERTE(gpstk::CarrierBand,
+                gpstk::CarrierBand::Unknown, empty.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,
                 gpstk::ObsID::tcUnknown, empty.code);
 
       TUCSM("ObsID(ObservationType,CarrierBand,TrackingCode)");
-      gpstk::ObsID compare(gpstk::ObsID::otRange, gpstk::ObsID::cbL1,
+      gpstk::ObsID compare(gpstk::ObsID::otRange, gpstk::CarrierBand::L1,
                            gpstk::ObsID::tcCA);
       TUASSERTE(gpstk::ObsID::ObservationType,
                 gpstk::ObsID::otRange, compare.type);
-      TUASSERTE(gpstk::ObsID::CarrierBand,
-                gpstk::ObsID::cbL1, compare.band);
+      TUASSERTE(gpstk::CarrierBand,
+                gpstk::CarrierBand::L1, compare.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,
                 gpstk::ObsID::tcCA, compare.code);
 
@@ -123,7 +123,7 @@ public:
    {
       TUDEF("ObsID", "dump");
       std::string failMesg;
-      gpstk::ObsID compare(gpstk::ObsID::otDoppler, gpstk::ObsID::cbL2,
+      gpstk::ObsID compare(gpstk::ObsID::otDoppler, gpstk::CarrierBand::L2,
                            gpstk::ObsID::tcY);
 
       std::string outputString, referenceString;
@@ -144,7 +144,7 @@ public:
    {
       TUDEF("ObsID", "asString");
       std::string failMesg;
-      gpstk::ObsID compare(gpstk::ObsID::otPhase, gpstk::ObsID::cbE5b,
+      gpstk::ObsID compare(gpstk::ObsID::otPhase, gpstk::CarrierBand::E5b,
                            gpstk::ObsID::tcIE5);
 
       std::string outputString, referenceString;
@@ -178,16 +178,15 @@ public:
          TUCATCH(ot2 = gpstk::ObsID::asObservationType(s));
          TUASSERTE(gpstk::ObsID::ObservationType, ot, ot2);
       }
-      for (unsigned i = 0; i < gpstk::ObsID::cbLast; i++)
+      for (gpstk::CarrierBand cb : gpstk::CarrierBandIterator())
       {
-         gpstk::ObsID::CarrierBand cb = (gpstk::ObsID::CarrierBand)i;
          std::string s;
-         TUCATCH(s = gpstk::ObsID::asString(cb));
+         TUCATCH(s = gpstk::StringUtils::asString(cb));
          TUASSERT(!s.empty());
          TUASSERT(s != "???");
-         gpstk::ObsID::CarrierBand cb2;
-         TUCATCH(cb2 = gpstk::ObsID::asCarrierBand(s));
-         TUASSERTE(gpstk::ObsID::CarrierBand, cb, cb2);
+         gpstk::CarrierBand cb2;
+         TUCATCH(cb2 = gpstk::StringUtils::asCarrierBand(s));
+         TUASSERTE(gpstk::CarrierBand, cb, cb2);
       }
       for (unsigned i = 0; i < gpstk::ObsID::tcLast; i++)
       {
@@ -236,7 +235,7 @@ public:
          // GPS L1 C/A PseudoRange
       gpstk::ObsID obs1("GC1C",gpstk::Rinex3ObsBase::currentVersion);
       TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,obs1.type);
-      TUASSERTE(gpstk::ObsID::CarrierBand,gpstk::ObsID::cbL1,obs1.band);
+      TUASSERTE(gpstk::CarrierBand,gpstk::CarrierBand::L1,obs1.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,gpstk::ObsID::tcCA,obs1.code);
 
          //testing only case of reassinged codes for GPS
@@ -244,138 +243,138 @@ public:
       gpstk::ObsID obs2("GD5X",gpstk::Rinex3ObsBase::currentVersion);
       TUASSERTE(gpstk::ObsID::ObservationType,
                 gpstk::ObsID::otDoppler, obs2.type);
-      TUASSERTE(gpstk::ObsID::CarrierBand,gpstk::ObsID::cbL5,obs2.band);
+      TUASSERTE(gpstk::CarrierBand,gpstk::CarrierBand::L5,obs2.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,gpstk::ObsID::tcIQ5,obs2.code);
 
          //testing completely random case
          // QZSS E6 L Carrier Phase
       gpstk::ObsID obs3("JL6L",gpstk::Rinex3ObsBase::currentVersion);
       TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otPhase,obs3.type);
-      TUASSERTE(gpstk::ObsID::CarrierBand,gpstk::ObsID::cbE6,obs3.band);
+      TUASSERTE(gpstk::CarrierBand,gpstk::CarrierBand::E6,obs3.band);
       TUASSERTE(gpstk::ObsID::TrackingCode,gpstk::ObsID::tcJQ6,obs3.code);
 
-      CONTEST("CL2I", gpstk::ObsID::cbB1, gpstk::ObsID::tcCI1);
-      CONTEST("CL2Q", gpstk::ObsID::cbB1, gpstk::ObsID::tcCQ1);
-      CONTEST("CL2X", gpstk::ObsID::cbB1, gpstk::ObsID::tcCIQ1);
-      CONTEST("CL1D", gpstk::ObsID::cbL1, gpstk::ObsID::tcCCD1);
-      CONTEST("CL1P", gpstk::ObsID::cbL1, gpstk::ObsID::tcCCP1);
-      CONTEST("CL1X", gpstk::ObsID::cbL1, gpstk::ObsID::tcCCDP1);
-      CONTEST("CL1A", gpstk::ObsID::cbL1, gpstk::ObsID::tcCA1);
-      CONTEST("CL1N", gpstk::ObsID::cbL1, gpstk::ObsID::tcCodelessC);
+      CONTEST("CL2I", gpstk::CarrierBand::B1, gpstk::ObsID::tcCI1);
+      CONTEST("CL2Q", gpstk::CarrierBand::B1, gpstk::ObsID::tcCQ1);
+      CONTEST("CL2X", gpstk::CarrierBand::B1, gpstk::ObsID::tcCIQ1);
+      CONTEST("CL1D", gpstk::CarrierBand::L1, gpstk::ObsID::tcCCD1);
+      CONTEST("CL1P", gpstk::CarrierBand::L1, gpstk::ObsID::tcCCP1);
+      CONTEST("CL1X", gpstk::CarrierBand::L1, gpstk::ObsID::tcCCDP1);
+      CONTEST("CL1A", gpstk::CarrierBand::L1, gpstk::ObsID::tcCA1);
+      CONTEST("CL1N", gpstk::CarrierBand::L1, gpstk::ObsID::tcCodelessC);
          // these are only valid in rinex 3.02 and the macro defaults
          // to the current version, which is not 3.02.
-      // CONTEST("CL1I", gpstk::ObsID::cbB1, gpstk::ObsID::tcCI1);
-      // CONTEST("CL1Q", gpstk::ObsID::cbB1, gpstk::ObsID::tcCQ1);
-      CONTEST("CL5D", gpstk::ObsID::cbL5, gpstk::ObsID::tcCI2a);
-      CONTEST("CL5P", gpstk::ObsID::cbL5, gpstk::ObsID::tcCQ2a);
-      CONTEST("CL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcCIQ2a);
-      CONTEST("CL7I", gpstk::ObsID::cbB2, gpstk::ObsID::tcCI7);
-      CONTEST("CL7Q", gpstk::ObsID::cbB2, gpstk::ObsID::tcCQ7);
-      CONTEST("CL7X", gpstk::ObsID::cbB2, gpstk::ObsID::tcCIQ7);
-      CONTEST("CL7D", gpstk::ObsID::cbB2, gpstk::ObsID::tcCI2b);
-      CONTEST("CL7P", gpstk::ObsID::cbB2, gpstk::ObsID::tcCQ2b);
-      CONTEST("CL7Z", gpstk::ObsID::cbB2, gpstk::ObsID::tcCIQ2b);
-      CONTEST("CL8D", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcCI2ab);
-      CONTEST("CL8P", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcCQ2ab);
-      CONTEST("CL8X", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcCIQ2ab);
-      CONTEST("CL6I", gpstk::ObsID::cbB3, gpstk::ObsID::tcCI6);
-      CONTEST("CL6Q", gpstk::ObsID::cbB3, gpstk::ObsID::tcCQ6);
-      CONTEST("CL6X", gpstk::ObsID::cbB3, gpstk::ObsID::tcCIQ6);
-      CONTEST("CL6A", gpstk::ObsID::cbB3, gpstk::ObsID::tcCIQ3A);
-      CONTEST("EL1A", gpstk::ObsID::cbL1, gpstk::ObsID::tcA);
-      CONTEST("EL1B", gpstk::ObsID::cbL1, gpstk::ObsID::tcB);
-      CONTEST("EL1C", gpstk::ObsID::cbL1, gpstk::ObsID::tcC);
-      CONTEST("EL1X", gpstk::ObsID::cbL1, gpstk::ObsID::tcBC);
-      CONTEST("EL1Z", gpstk::ObsID::cbL1, gpstk::ObsID::tcABC);
-      CONTEST("EL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcIE5a);
-      CONTEST("EL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcQE5a);
-      CONTEST("EL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcIQE5a);
-      CONTEST("EL7I", gpstk::ObsID::cbE5b, gpstk::ObsID::tcIE5b);
-      CONTEST("EL7Q", gpstk::ObsID::cbE5b, gpstk::ObsID::tcQE5b);
-      CONTEST("EL7X", gpstk::ObsID::cbE5b, gpstk::ObsID::tcIQE5b);
-      CONTEST("EL8I", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcIE5);
-      CONTEST("EL8Q", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcQE5);
-      CONTEST("EL8X", gpstk::ObsID::cbE5ab, gpstk::ObsID::tcIQE5);
-      CONTEST("EL6A", gpstk::ObsID::cbE6, gpstk::ObsID::tcA6);
-      CONTEST("EL6B", gpstk::ObsID::cbE6, gpstk::ObsID::tcB6);
-      CONTEST("EL6C", gpstk::ObsID::cbE6, gpstk::ObsID::tcC6);
-      CONTEST("EL6X", gpstk::ObsID::cbE6, gpstk::ObsID::tcBC6);
-      CONTEST("EL6Z", gpstk::ObsID::cbE6, gpstk::ObsID::tcABC6);
-      CONTEST("RL1C", gpstk::ObsID::cbG1, gpstk::ObsID::tcGCA);
-      CONTEST("RL1P", gpstk::ObsID::cbG1, gpstk::ObsID::tcGP);
-      CONTEST("RL4A", gpstk::ObsID::cbG1a, gpstk::ObsID::tcL1OCD);
-      CONTEST("RL4B", gpstk::ObsID::cbG1a, gpstk::ObsID::tcL1OCP);
-      CONTEST("RL4X", gpstk::ObsID::cbG1a, gpstk::ObsID::tcL1OC);
-      CONTEST("RL2C", gpstk::ObsID::cbG2, gpstk::ObsID::tcGCA);
-      CONTEST("RL2P", gpstk::ObsID::cbG2, gpstk::ObsID::tcGP);
-      CONTEST("RL6A", gpstk::ObsID::cbG2a, gpstk::ObsID::tcL2CSI);
-      CONTEST("RL6B", gpstk::ObsID::cbG2a, gpstk::ObsID::tcL2OCP);
-      CONTEST("RL6X", gpstk::ObsID::cbG2a, gpstk::ObsID::tcL2CSIOCp);
-      CONTEST("RL3I", gpstk::ObsID::cbG3, gpstk::ObsID::tcIR3);
-      CONTEST("RL3Q", gpstk::ObsID::cbG3, gpstk::ObsID::tcQR3);
-      CONTEST("RL3X", gpstk::ObsID::cbG3, gpstk::ObsID::tcIQR3);
-      CONTEST("GL1C", gpstk::ObsID::cbL1, gpstk::ObsID::tcCA);
-      CONTEST("GL1S", gpstk::ObsID::cbL1, gpstk::ObsID::tcG1D);
-      CONTEST("GL1L", gpstk::ObsID::cbL1, gpstk::ObsID::tcG1P);
-      CONTEST("GL1X", gpstk::ObsID::cbL1, gpstk::ObsID::tcG1X);
-      CONTEST("GL1P", gpstk::ObsID::cbL1, gpstk::ObsID::tcP);
-      CONTEST("GL1W", gpstk::ObsID::cbL1, gpstk::ObsID::tcW);
-      CONTEST("GL1Y", gpstk::ObsID::cbL1, gpstk::ObsID::tcY);
-      CONTEST("GL1M", gpstk::ObsID::cbL1, gpstk::ObsID::tcM);
-      CONTEST("GL1N", gpstk::ObsID::cbL1, gpstk::ObsID::tcN);
-      CONTEST("GL2C", gpstk::ObsID::cbL2, gpstk::ObsID::tcCA);
-      CONTEST("GL2D", gpstk::ObsID::cbL2, gpstk::ObsID::tcD);
-      CONTEST("GL2S", gpstk::ObsID::cbL2, gpstk::ObsID::tcC2M);
-      CONTEST("GL2L", gpstk::ObsID::cbL2, gpstk::ObsID::tcC2L);
-      CONTEST("GL2X", gpstk::ObsID::cbL2, gpstk::ObsID::tcC2LM);
-      CONTEST("GL2P", gpstk::ObsID::cbL2, gpstk::ObsID::tcP);
-      CONTEST("GL2W", gpstk::ObsID::cbL2, gpstk::ObsID::tcW);
-      CONTEST("GL2Y", gpstk::ObsID::cbL2, gpstk::ObsID::tcY);
-      CONTEST("GL2M", gpstk::ObsID::cbL2, gpstk::ObsID::tcM);
-      CONTEST("GL2N", gpstk::ObsID::cbL2, gpstk::ObsID::tcN);
-      CONTEST("GL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcI5);
-      CONTEST("GL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcQ5);
-      CONTEST("GL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcIQ5);
-      CONTEST("IL5A", gpstk::ObsID::cbL5, gpstk::ObsID::tcIA5);
-      CONTEST("IL5B", gpstk::ObsID::cbL5, gpstk::ObsID::tcIB5);
-      CONTEST("IL5C", gpstk::ObsID::cbL5, gpstk::ObsID::tcIC5);
-      CONTEST("IL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcIX5);
-      CONTEST("IL9A", gpstk::ObsID::cbI9, gpstk::ObsID::tcIA9);
-      CONTEST("IL9B", gpstk::ObsID::cbI9, gpstk::ObsID::tcIB9);
-      CONTEST("IL9C", gpstk::ObsID::cbI9, gpstk::ObsID::tcIC9);
-      CONTEST("IL9X", gpstk::ObsID::cbI9, gpstk::ObsID::tcIX9);
-      CONTEST("JL1C", gpstk::ObsID::cbL1, gpstk::ObsID::tcJCA);
-      CONTEST("JL1L", gpstk::ObsID::cbL1, gpstk::ObsID::tcJP1);
-      CONTEST("JL1S", gpstk::ObsID::cbL1, gpstk::ObsID::tcJD1);
-      CONTEST("JL1X", gpstk::ObsID::cbL1, gpstk::ObsID::tcJX1);
-      CONTEST("JL1Z", gpstk::ObsID::cbL1, gpstk::ObsID::tcJZ1);
-      CONTEST("JL2S", gpstk::ObsID::cbL2, gpstk::ObsID::tcJM2);
-      CONTEST("JL2L", gpstk::ObsID::cbL2, gpstk::ObsID::tcJL2);
-      CONTEST("JL2X", gpstk::ObsID::cbL2, gpstk::ObsID::tcJX2);
-      CONTEST("JL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcJI5);
-      CONTEST("JL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcJQ5);
-      CONTEST("JL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcJIQ5);
-      CONTEST("JL5D", gpstk::ObsID::cbL5, gpstk::ObsID::tcJI5S);
-      CONTEST("JL5P", gpstk::ObsID::cbL5, gpstk::ObsID::tcJQ5S);
-      CONTEST("JL5Z", gpstk::ObsID::cbL5, gpstk::ObsID::tcJIQ5S);
-      CONTEST("JL6S", gpstk::ObsID::cbE6, gpstk::ObsID::tcJI6);
+      // CONTEST("CL1I", gpstk::CarrierBand::B1, gpstk::ObsID::tcCI1);
+      // CONTEST("CL1Q", gpstk::CarrierBand::B1, gpstk::ObsID::tcCQ1);
+      CONTEST("CL5D", gpstk::CarrierBand::L5, gpstk::ObsID::tcCI2a);
+      CONTEST("CL5P", gpstk::CarrierBand::L5, gpstk::ObsID::tcCQ2a);
+      CONTEST("CL5X", gpstk::CarrierBand::L5, gpstk::ObsID::tcCIQ2a);
+      CONTEST("CL7I", gpstk::CarrierBand::B2, gpstk::ObsID::tcCI7);
+      CONTEST("CL7Q", gpstk::CarrierBand::B2, gpstk::ObsID::tcCQ7);
+      CONTEST("CL7X", gpstk::CarrierBand::B2, gpstk::ObsID::tcCIQ7);
+      CONTEST("CL7D", gpstk::CarrierBand::B2, gpstk::ObsID::tcCI2b);
+      CONTEST("CL7P", gpstk::CarrierBand::B2, gpstk::ObsID::tcCQ2b);
+      CONTEST("CL7Z", gpstk::CarrierBand::B2, gpstk::ObsID::tcCIQ2b);
+      CONTEST("CL8D", gpstk::CarrierBand::E5ab, gpstk::ObsID::tcCI2ab);
+      CONTEST("CL8P", gpstk::CarrierBand::E5ab, gpstk::ObsID::tcCQ2ab);
+      CONTEST("CL8X", gpstk::CarrierBand::E5ab, gpstk::ObsID::tcCIQ2ab);
+      CONTEST("CL6I", gpstk::CarrierBand::B3, gpstk::ObsID::tcCI6);
+      CONTEST("CL6Q", gpstk::CarrierBand::B3, gpstk::ObsID::tcCQ6);
+      CONTEST("CL6X", gpstk::CarrierBand::B3, gpstk::ObsID::tcCIQ6);
+      CONTEST("CL6A", gpstk::CarrierBand::B3, gpstk::ObsID::tcCIQ3A);
+      CONTEST("EL1A", gpstk::CarrierBand::L1, gpstk::ObsID::tcA);
+      CONTEST("EL1B", gpstk::CarrierBand::L1, gpstk::ObsID::tcB);
+      CONTEST("EL1C", gpstk::CarrierBand::L1, gpstk::ObsID::tcC);
+      CONTEST("EL1X", gpstk::CarrierBand::L1, gpstk::ObsID::tcBC);
+      CONTEST("EL1Z", gpstk::CarrierBand::L1, gpstk::ObsID::tcABC);
+      CONTEST("EL5I", gpstk::CarrierBand::L5, gpstk::ObsID::tcIE5a);
+      CONTEST("EL5Q", gpstk::CarrierBand::L5, gpstk::ObsID::tcQE5a);
+      CONTEST("EL5X", gpstk::CarrierBand::L5, gpstk::ObsID::tcIQE5a);
+      CONTEST("EL7I", gpstk::CarrierBand::E5b, gpstk::ObsID::tcIE5b);
+      CONTEST("EL7Q", gpstk::CarrierBand::E5b, gpstk::ObsID::tcQE5b);
+      CONTEST("EL7X", gpstk::CarrierBand::E5b, gpstk::ObsID::tcIQE5b);
+      CONTEST("EL8I", gpstk::CarrierBand::E5ab, gpstk::ObsID::tcIE5);
+      CONTEST("EL8Q", gpstk::CarrierBand::E5ab, gpstk::ObsID::tcQE5);
+      CONTEST("EL8X", gpstk::CarrierBand::E5ab, gpstk::ObsID::tcIQE5);
+      CONTEST("EL6A", gpstk::CarrierBand::E6, gpstk::ObsID::tcA6);
+      CONTEST("EL6B", gpstk::CarrierBand::E6, gpstk::ObsID::tcB6);
+      CONTEST("EL6C", gpstk::CarrierBand::E6, gpstk::ObsID::tcC6);
+      CONTEST("EL6X", gpstk::CarrierBand::E6, gpstk::ObsID::tcBC6);
+      CONTEST("EL6Z", gpstk::CarrierBand::E6, gpstk::ObsID::tcABC6);
+      CONTEST("RL1C", gpstk::CarrierBand::G1, gpstk::ObsID::tcGCA);
+      CONTEST("RL1P", gpstk::CarrierBand::G1, gpstk::ObsID::tcGP);
+      CONTEST("RL4A", gpstk::CarrierBand::G1a, gpstk::ObsID::tcL1OCD);
+      CONTEST("RL4B", gpstk::CarrierBand::G1a, gpstk::ObsID::tcL1OCP);
+      CONTEST("RL4X", gpstk::CarrierBand::G1a, gpstk::ObsID::tcL1OC);
+      CONTEST("RL2C", gpstk::CarrierBand::G2, gpstk::ObsID::tcGCA);
+      CONTEST("RL2P", gpstk::CarrierBand::G2, gpstk::ObsID::tcGP);
+      CONTEST("RL6A", gpstk::CarrierBand::G2a, gpstk::ObsID::tcL2CSI);
+      CONTEST("RL6B", gpstk::CarrierBand::G2a, gpstk::ObsID::tcL2OCP);
+      CONTEST("RL6X", gpstk::CarrierBand::G2a, gpstk::ObsID::tcL2CSIOCp);
+      CONTEST("RL3I", gpstk::CarrierBand::G3, gpstk::ObsID::tcIR3);
+      CONTEST("RL3Q", gpstk::CarrierBand::G3, gpstk::ObsID::tcQR3);
+      CONTEST("RL3X", gpstk::CarrierBand::G3, gpstk::ObsID::tcIQR3);
+      CONTEST("GL1C", gpstk::CarrierBand::L1, gpstk::ObsID::tcCA);
+      CONTEST("GL1S", gpstk::CarrierBand::L1, gpstk::ObsID::tcG1D);
+      CONTEST("GL1L", gpstk::CarrierBand::L1, gpstk::ObsID::tcG1P);
+      CONTEST("GL1X", gpstk::CarrierBand::L1, gpstk::ObsID::tcG1X);
+      CONTEST("GL1P", gpstk::CarrierBand::L1, gpstk::ObsID::tcP);
+      CONTEST("GL1W", gpstk::CarrierBand::L1, gpstk::ObsID::tcW);
+      CONTEST("GL1Y", gpstk::CarrierBand::L1, gpstk::ObsID::tcY);
+      CONTEST("GL1M", gpstk::CarrierBand::L1, gpstk::ObsID::tcM);
+      CONTEST("GL1N", gpstk::CarrierBand::L1, gpstk::ObsID::tcN);
+      CONTEST("GL2C", gpstk::CarrierBand::L2, gpstk::ObsID::tcCA);
+      CONTEST("GL2D", gpstk::CarrierBand::L2, gpstk::ObsID::tcD);
+      CONTEST("GL2S", gpstk::CarrierBand::L2, gpstk::ObsID::tcC2M);
+      CONTEST("GL2L", gpstk::CarrierBand::L2, gpstk::ObsID::tcC2L);
+      CONTEST("GL2X", gpstk::CarrierBand::L2, gpstk::ObsID::tcC2LM);
+      CONTEST("GL2P", gpstk::CarrierBand::L2, gpstk::ObsID::tcP);
+      CONTEST("GL2W", gpstk::CarrierBand::L2, gpstk::ObsID::tcW);
+      CONTEST("GL2Y", gpstk::CarrierBand::L2, gpstk::ObsID::tcY);
+      CONTEST("GL2M", gpstk::CarrierBand::L2, gpstk::ObsID::tcM);
+      CONTEST("GL2N", gpstk::CarrierBand::L2, gpstk::ObsID::tcN);
+      CONTEST("GL5I", gpstk::CarrierBand::L5, gpstk::ObsID::tcI5);
+      CONTEST("GL5Q", gpstk::CarrierBand::L5, gpstk::ObsID::tcQ5);
+      CONTEST("GL5X", gpstk::CarrierBand::L5, gpstk::ObsID::tcIQ5);
+      CONTEST("IL5A", gpstk::CarrierBand::L5, gpstk::ObsID::tcIA5);
+      CONTEST("IL5B", gpstk::CarrierBand::L5, gpstk::ObsID::tcIB5);
+      CONTEST("IL5C", gpstk::CarrierBand::L5, gpstk::ObsID::tcIC5);
+      CONTEST("IL5X", gpstk::CarrierBand::L5, gpstk::ObsID::tcIX5);
+      CONTEST("IL9A", gpstk::CarrierBand::I9, gpstk::ObsID::tcIA9);
+      CONTEST("IL9B", gpstk::CarrierBand::I9, gpstk::ObsID::tcIB9);
+      CONTEST("IL9C", gpstk::CarrierBand::I9, gpstk::ObsID::tcIC9);
+      CONTEST("IL9X", gpstk::CarrierBand::I9, gpstk::ObsID::tcIX9);
+      CONTEST("JL1C", gpstk::CarrierBand::L1, gpstk::ObsID::tcJCA);
+      CONTEST("JL1L", gpstk::CarrierBand::L1, gpstk::ObsID::tcJP1);
+      CONTEST("JL1S", gpstk::CarrierBand::L1, gpstk::ObsID::tcJD1);
+      CONTEST("JL1X", gpstk::CarrierBand::L1, gpstk::ObsID::tcJX1);
+      CONTEST("JL1Z", gpstk::CarrierBand::L1, gpstk::ObsID::tcJZ1);
+      CONTEST("JL2S", gpstk::CarrierBand::L2, gpstk::ObsID::tcJM2);
+      CONTEST("JL2L", gpstk::CarrierBand::L2, gpstk::ObsID::tcJL2);
+      CONTEST("JL2X", gpstk::CarrierBand::L2, gpstk::ObsID::tcJX2);
+      CONTEST("JL5I", gpstk::CarrierBand::L5, gpstk::ObsID::tcJI5);
+      CONTEST("JL5Q", gpstk::CarrierBand::L5, gpstk::ObsID::tcJQ5);
+      CONTEST("JL5X", gpstk::CarrierBand::L5, gpstk::ObsID::tcJIQ5);
+      CONTEST("JL5D", gpstk::CarrierBand::L5, gpstk::ObsID::tcJI5S);
+      CONTEST("JL5P", gpstk::CarrierBand::L5, gpstk::ObsID::tcJQ5S);
+      CONTEST("JL5Z", gpstk::CarrierBand::L5, gpstk::ObsID::tcJIQ5S);
+      CONTEST("JL6S", gpstk::CarrierBand::E6, gpstk::ObsID::tcJI6);
          // This is a duplicate of the previous one only with
          // different expectations so we have to ignore one or the
          // other.  I chose to ignore this one since the previous one
          // is how we've been decoding things in the past.
-         //CONTEST("JL6S", gpstk::ObsID::cbE6, gpstk::ObsID::tcJD6);
-      CONTEST("JL6L", gpstk::ObsID::cbE6, gpstk::ObsID::tcJQ6);
-      CONTEST("JL6X", gpstk::ObsID::cbE6, gpstk::ObsID::tcJIQ6);
-      CONTEST("JL6E", gpstk::ObsID::cbE6, gpstk::ObsID::tcJE6);
-      CONTEST("JL6Z", gpstk::ObsID::cbE6, gpstk::ObsID::tcJDE6);
-      CONTEST("SL1C", gpstk::ObsID::cbL1, gpstk::ObsID::tcSCA);
-      CONTEST("SL5I", gpstk::ObsID::cbL5, gpstk::ObsID::tcSI5);
-      CONTEST("SL5Q", gpstk::ObsID::cbL5, gpstk::ObsID::tcSQ5);
-      CONTEST("SL5X", gpstk::ObsID::cbL5, gpstk::ObsID::tcSIQ5);
+         //CONTEST("JL6S", gpstk::CarrierBand::E6, gpstk::ObsID::tcJD6);
+      CONTEST("JL6L", gpstk::CarrierBand::E6, gpstk::ObsID::tcJQ6);
+      CONTEST("JL6X", gpstk::CarrierBand::E6, gpstk::ObsID::tcJIQ6);
+      CONTEST("JL6E", gpstk::CarrierBand::E6, gpstk::ObsID::tcJE6);
+      CONTEST("JL6Z", gpstk::CarrierBand::E6, gpstk::ObsID::tcJDE6);
+      CONTEST("SL1C", gpstk::CarrierBand::L1, gpstk::ObsID::tcSCA);
+      CONTEST("SL5I", gpstk::CarrierBand::L5, gpstk::ObsID::tcSI5);
+      CONTEST("SL5Q", gpstk::CarrierBand::L5, gpstk::ObsID::tcSQ5);
+      CONTEST("SL5X", gpstk::CarrierBand::L5, gpstk::ObsID::tcSIQ5);
 
       gpstk::ObsID wild("****", gpstk::Rinex3ObsBase::currentVersion);
       TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otAny, wild.type);
-      TUASSERTE(gpstk::ObsID::CarrierBand, gpstk::ObsID::cbAny, wild.band);
+      TUASSERTE(gpstk::CarrierBand, gpstk::CarrierBand::Any, wild.band);
       TUASSERTE(gpstk::ObsID::TrackingCode, gpstk::ObsID::tcAny, wild.code);
 
       TURETURN();
@@ -386,11 +385,11 @@ public:
       TUDEF("ObsID", "operator==");
       std::string failMesg;
 
-      gpstk::ObsID compare1(gpstk::ObsID::otRange, gpstk::ObsID::cbL1,
+      gpstk::ObsID compare1(gpstk::ObsID::otRange, gpstk::CarrierBand::L1,
                             gpstk::ObsID::tcCA);
-      gpstk::ObsID compare2(gpstk::ObsID::otRange, gpstk::ObsID::cbL1,
+      gpstk::ObsID compare2(gpstk::ObsID::otRange, gpstk::CarrierBand::L1,
                             gpstk::ObsID::tcCA);
-      gpstk::ObsID compare3(gpstk::ObsID::otDoppler, gpstk::ObsID::cbL1,
+      gpstk::ObsID compare3(gpstk::ObsID::otDoppler, gpstk::CarrierBand::L1,
                             gpstk::ObsID::tcCA);
 
       TUASSERTE(gpstk::ObsID, compare1, compare2);
@@ -426,7 +425,7 @@ public:
       TUASSERT(gpstk::ObsID::char2tc.count('W') > 0);
       TUASSERTE(gpstk::ObsID::ObservationType,
                 fic.type, gpstk::ObsID::char2ot['T']);
-      TUASSERTE(gpstk::ObsID::CarrierBand,
+      TUASSERTE(gpstk::CarrierBand,
                 fic.band, gpstk::ObsID::char2cb['9']);
       TUASSERTE(gpstk::ObsID::TrackingCode,
                 fic.code, gpstk::ObsID::char2tc['W']);
@@ -450,19 +449,19 @@ public:
    unsigned cbDescTest()
    {
       TUDEF("ObsID", "cbDesc");
-      CBDESCTEST("B1", gpstk::ObsID::cbB1);
-      CBDESCTEST("B2", gpstk::ObsID::cbB2);
-      CBDESCTEST("B3", gpstk::ObsID::cbB3);
-      CBDESCTEST("comboL1L2", gpstk::ObsID::cbL1L2);
-      CBDESCTEST("E5a+b", gpstk::ObsID::cbE5ab);
-      CBDESCTEST("E5b", gpstk::ObsID::cbE5b);
-      CBDESCTEST("E6", gpstk::ObsID::cbE6);
-      CBDESCTEST("G1", gpstk::ObsID::cbG1);
-      CBDESCTEST("G2", gpstk::ObsID::cbG2);
-      CBDESCTEST("G3", gpstk::ObsID::cbG3);
-      CBDESCTEST("L1", gpstk::ObsID::cbL1);
-      CBDESCTEST("L2", gpstk::ObsID::cbL2);
-      CBDESCTEST("L5", gpstk::ObsID::cbL5);
+      CBDESCTEST("B1", gpstk::CarrierBand::B1);
+      CBDESCTEST("B2", gpstk::CarrierBand::B2);
+      CBDESCTEST("B3", gpstk::CarrierBand::B3);
+      CBDESCTEST("comboL1L2", gpstk::CarrierBand::L1L2);
+      CBDESCTEST("E5a+b", gpstk::CarrierBand::E5ab);
+      CBDESCTEST("E5b", gpstk::CarrierBand::E5b);
+      CBDESCTEST("E6", gpstk::CarrierBand::E6);
+      CBDESCTEST("G1", gpstk::CarrierBand::G1);
+      CBDESCTEST("G2", gpstk::CarrierBand::G2);
+      CBDESCTEST("G3", gpstk::CarrierBand::G3);
+      CBDESCTEST("L1", gpstk::CarrierBand::L1);
+      CBDESCTEST("L2", gpstk::CarrierBand::L2);
+      CBDESCTEST("L5", gpstk::CarrierBand::L5);
       TURETURN();
    }
 

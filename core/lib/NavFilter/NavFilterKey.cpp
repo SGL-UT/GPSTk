@@ -43,7 +43,7 @@ namespace gpstk
    NavFilterKey()
          : stationID(""),
            rxID(""),
-           carrier(ObsID::cbUnknown),
+           carrier(CarrierBand::Unknown),
            code(ObsID::tcUnknown)
    {
    }

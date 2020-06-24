@@ -63,26 +63,26 @@ namespace gpstk {
       ObsID::otDesc[ObsID::otFreqIndx]  = "freqIndx";
       ObsID::otDesc[ObsID::otUndefined] = "undefined";     //Rinex -
 
-      ObsID::cbDesc[ObsID::cbUnknown]   = "UnknownBand";   //Rinex (sp)
-      ObsID::cbDesc[ObsID::cbAny]       = "AnyBand";       //Rinex *
-      ObsID::cbDesc[ObsID::cbZero]      = "";              //Rinex  
-      ObsID::cbDesc[ObsID::cbL1]        = "L1";            //Rinex 1
-      ObsID::cbDesc[ObsID::cbL2]        = "L2";            //Rinex 2
-      ObsID::cbDesc[ObsID::cbL5]        = "L5";            //Rinex 5
-      ObsID::cbDesc[ObsID::cbG1a]       = "G1a";
-      ObsID::cbDesc[ObsID::cbG1]        = "G1";            //Rinex 1
-      ObsID::cbDesc[ObsID::cbG2a]       = "G2a";
-      ObsID::cbDesc[ObsID::cbG2]        = "G2";            //Rinex 2
-      ObsID::cbDesc[ObsID::cbG3]        = "G3";            //Rinex 3
-      ObsID::cbDesc[ObsID::cbE5b]       = "E5b";           //Rinex 7
-      ObsID::cbDesc[ObsID::cbE5ab]      = "E5a+b";         //Rinex 8
-      ObsID::cbDesc[ObsID::cbE6]        = "E6";            //Rinex 6
-      ObsID::cbDesc[ObsID::cbB1]        = "B1";            //Rinex 1  2 in RINEX 3.0[013]
-      ObsID::cbDesc[ObsID::cbB2]        = "B2";            //Rinex 7
-      ObsID::cbDesc[ObsID::cbB3]        = "B3";            //Rinex 6
-      ObsID::cbDesc[ObsID::cbI9]        = "I9";            //Rinex 9
-      ObsID::cbDesc[ObsID::cbL1L2]      = "comboL1L2";     //Rinex 3
-      ObsID::cbDesc[ObsID::cbUndefined] = "undefined";     //Rinex -
+      ObsID::cbDesc[CarrierBand::Unknown]   = "UnknownBand";   //Rinex (sp)
+      ObsID::cbDesc[CarrierBand::Any]       = "AnyBand";       //Rinex *
+      ObsID::cbDesc[CarrierBand::Zero]      = "";              //Rinex  
+      ObsID::cbDesc[CarrierBand::L1]        = "L1";            //Rinex 1
+      ObsID::cbDesc[CarrierBand::L2]        = "L2";            //Rinex 2
+      ObsID::cbDesc[CarrierBand::L5]        = "L5";            //Rinex 5
+      ObsID::cbDesc[CarrierBand::G1a]       = "G1a";
+      ObsID::cbDesc[CarrierBand::G1]        = "G1";            //Rinex 1
+      ObsID::cbDesc[CarrierBand::G2a]       = "G2a";
+      ObsID::cbDesc[CarrierBand::G2]        = "G2";            //Rinex 2
+      ObsID::cbDesc[CarrierBand::G3]        = "G3";            //Rinex 3
+      ObsID::cbDesc[CarrierBand::E5b]       = "E5b";           //Rinex 7
+      ObsID::cbDesc[CarrierBand::E5ab]      = "E5a+b";         //Rinex 8
+      ObsID::cbDesc[CarrierBand::E6]        = "E6";            //Rinex 6
+      ObsID::cbDesc[CarrierBand::B1]        = "B1";            //Rinex 1  2 in RINEX 3.0[013]
+      ObsID::cbDesc[CarrierBand::B2]        = "B2";            //Rinex 7
+      ObsID::cbDesc[CarrierBand::B3]        = "B3";            //Rinex 6
+      ObsID::cbDesc[CarrierBand::I9]        = "I9";            //Rinex 9
+      ObsID::cbDesc[CarrierBand::L1L2]      = "comboL1L2";     //Rinex 3
+      ObsID::cbDesc[CarrierBand::Undefined] = "undefined";     //Rinex -
 
       ObsID::tcDesc[ObsID::tcUnknown]   = "UnknownCode";   //Rinex (sp)
       ObsID::tcDesc[ObsID::tcAny]       = "AnyCode";       //Rinex *
@@ -199,7 +199,7 @@ namespace gpstk {
 
       if (ObsID::otDesc.size() != (int)ObsID::otLast)
          std::cerr << "Error in otDesc" << std::endl;
-      if (ObsID::cbDesc.size() != (int)ObsID::cbLast)
+      if (ObsID::cbDesc.size() != (int)CarrierBand::Last)
          std::cerr << "Error in cbDesc" << std::endl;
       if (ObsID::tcDesc.size() != (int)ObsID::tcLast)
          std::cerr << "Error in tcDesc" << std::endl;
@@ -218,18 +218,18 @@ namespace gpstk {
       ObsID::char2ot['X'] = ObsID::otChannel;
       ObsID::char2ot['-'] = ObsID::otUndefined;
 
-      ObsID::char2cb[' '] = ObsID::cbUnknown;
-      ObsID::char2cb['*'] = ObsID::cbAny;
-      ObsID::char2cb['1'] = ObsID::cbL1;
-      ObsID::char2cb['2'] = ObsID::cbL2;
-      ObsID::char2cb['3'] = ObsID::cbG3;
-      ObsID::char2cb['4'] = ObsID::cbG1a;
-      ObsID::char2cb['5'] = ObsID::cbL5;
-      ObsID::char2cb['6'] = ObsID::cbE6;
-      ObsID::char2cb['7'] = ObsID::cbE5b;
-      ObsID::char2cb['8'] = ObsID::cbE5ab;
-      ObsID::char2cb['9'] = ObsID::cbI9;
-      ObsID::char2cb['-'] = ObsID::cbUndefined;
+      ObsID::char2cb[' '] = CarrierBand::Unknown;
+      ObsID::char2cb['*'] = CarrierBand::Any;
+      ObsID::char2cb['1'] = CarrierBand::L1;
+      ObsID::char2cb['2'] = CarrierBand::L2;
+      ObsID::char2cb['3'] = CarrierBand::G3;
+      ObsID::char2cb['4'] = CarrierBand::G1a;
+      ObsID::char2cb['5'] = CarrierBand::L5;
+      ObsID::char2cb['6'] = CarrierBand::E6;
+      ObsID::char2cb['7'] = CarrierBand::E5b;
+      ObsID::char2cb['8'] = CarrierBand::E5ab;
+      ObsID::char2cb['9'] = CarrierBand::I9;
+      ObsID::char2cb['-'] = CarrierBand::Undefined;
 
       ObsID::char2tc[' '] = ObsID::tcUnknown;
       ObsID::char2tc['*'] = ObsID::tcAny;
@@ -255,8 +255,8 @@ namespace gpstk {
       // definitions, make sure there is an entry for all values
       for(int i=ObsID::otUnknown; i<ObsID::otLast; i++)
          ObsID::ot2char[(ObsID::ObservationType)i] = ' ';
-      for(int i=ObsID::cbUnknown; i<ObsID::cbLast; i++)
-         ObsID::cb2char[(ObsID::CarrierBand)i] = ' ';
+      for (CarrierBand i : CarrierBandIterator())
+         ObsID::cb2char[i] = ' ';
       for(int i=ObsID::tcUnknown; i<ObsID::tcLast; i++)
          ObsID::tc2char[(ObsID::TrackingCode)i] = ' ';
 
@@ -265,7 +265,7 @@ namespace gpstk {
            i != ObsID::char2ot.end(); i++)
          ObsID::ot2char[i->second] = i->first;
 
-      for(std::map<char, ObsID::CarrierBand>::const_iterator i=ObsID::char2cb.begin();
+      for(std::map<char, CarrierBand>::const_iterator i=ObsID::char2cb.begin();
            i != ObsID::char2cb.end(); i++)
          ObsID::cb2char[i->second] = i->first;
 
@@ -274,24 +274,24 @@ namespace gpstk {
          ObsID::tc2char[i->second] = i->first;
 
       // And add the couple 'special' cases
-      ObsID::cb2char[ObsID::cbL1]        = '1';
-      ObsID::cb2char[ObsID::cbL2]        = '2';
-      ObsID::cb2char[ObsID::cbL5]        = '5';
-      ObsID::cb2char[ObsID::cbG1]        = '1';
-      ObsID::cb2char[ObsID::cbG1a]       = '4';
-      ObsID::cb2char[ObsID::cbG2a]       = '6';
-      ObsID::cb2char[ObsID::cbG2]        = '2';
-      ObsID::cb2char[ObsID::cbG3]        = '3';
-      ObsID::cb2char[ObsID::cbE6]        = '6';
-      ObsID::cb2char[ObsID::cbE5b]       = '7';
-      ObsID::cb2char[ObsID::cbE5ab]      = '8';
-      ObsID::cb2char[ObsID::cbB1]        = '2';
-      ObsID::cb2char[ObsID::cbB3]        = '6';
-      ObsID::cb2char[ObsID::cbB2]        = '7';
-      ObsID::cb2char[ObsID::cbI9]        = '9';
-      ObsID::cb2char[ObsID::cbUnknown]   = ' ';
-      ObsID::cb2char[ObsID::cbAny]       = '*';
-      ObsID::cb2char[ObsID::cbUndefined] = '-';
+      ObsID::cb2char[CarrierBand::L1]        = '1';
+      ObsID::cb2char[CarrierBand::L2]        = '2';
+      ObsID::cb2char[CarrierBand::L5]        = '5';
+      ObsID::cb2char[CarrierBand::G1]        = '1';
+      ObsID::cb2char[CarrierBand::G1a]       = '4';
+      ObsID::cb2char[CarrierBand::G2a]       = '6';
+      ObsID::cb2char[CarrierBand::G2]        = '2';
+      ObsID::cb2char[CarrierBand::G3]        = '3';
+      ObsID::cb2char[CarrierBand::E6]        = '6';
+      ObsID::cb2char[CarrierBand::E5b]       = '7';
+      ObsID::cb2char[CarrierBand::E5ab]      = '8';
+      ObsID::cb2char[CarrierBand::B1]        = '2';
+      ObsID::cb2char[CarrierBand::B3]        = '6';
+      ObsID::cb2char[CarrierBand::B2]        = '7';
+      ObsID::cb2char[CarrierBand::I9]        = '9';
+      ObsID::cb2char[CarrierBand::Unknown]   = ' ';
+      ObsID::cb2char[CarrierBand::Any]       = '*';
+      ObsID::cb2char[CarrierBand::Undefined] = '-';
 
       ObsID::tc2char[ObsID::tcCA]         = 'C';
       ObsID::tc2char[ObsID::tcN]          = 'N';
