@@ -146,6 +146,8 @@ build_redhat:
   artifacts:
     paths:
     - build/
+  # allow failures until we can resolve the ancient software problem (swig 2)
+  allow_failure: true
 
 build_windows:
   stage: build
