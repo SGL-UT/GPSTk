@@ -138,6 +138,9 @@ build_redhat:
     - docker-executor
   image: centos7_sgl
   script:
+    - sudo yum remove swig
+    - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm
+    - sudo rpm -ivh swig*.rpm
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
