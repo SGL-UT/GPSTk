@@ -147,6 +147,21 @@ build_redhat:
     paths:
     - build/
 
+build_redhat_swig3:
+  stage: build
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
+
 build_windows:
   stage: build
   tags:
@@ -352,6 +367,31 @@ test_redhat:
          grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
       fi
 
+test_redhat_swig3:
+  stage: test
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+      - build/Testing/Temporary/
+  dependencies:
+    - build_redhat_swig3
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
+
 test_windows:
   stage: test
   tags:
@@ -407,6 +447,24 @@ user_install_redhat:
   dependencies:
     - build_redhat
 
+user_install_redhat_swig3:
+  stage: install
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - export gpstk=`pwd`/install
+    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - make install -j 4
+    - python -c "import gpstk"
+  artifacts:
+    paths:
+      - build/install
+  dependencies:
+    - build_redhat_swig3
+
 user_install_windows:
   stage: install
   tags:
@@ -451,6 +509,20 @@ system_install_redhat:
     - python -c "import gpstk"
   dependencies:
     - build_redhat
+
+system_install_redhat_swig3:
+  stage: install
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - export gpstk=/usr/local
+    - cmake -DPYTHON_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - sudo make install -j 4
+    - python -c "import gpstk"
+  dependencies:
+    - build_redhat_swig3
 
 # Package Stage
 # Tests packaging of GPSTk on all platforms
