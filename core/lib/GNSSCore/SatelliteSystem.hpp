@@ -9,11 +9,7 @@ namespace gpstk
        * @note any additions to this enumeration list should also
        *   be added to convertSatelliteSystemToString() and
        *   convertStringToSatelliteSystem() and to SatID_T. */
-#if !defined(SWIG) || SWIG_VERSION >= 0x030000 
    enum class SatelliteSystem
-#else
-   enum SatelliteSystem
-#endif
    {
       GPS = 1,
       Galileo,

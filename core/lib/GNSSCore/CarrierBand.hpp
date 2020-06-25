@@ -6,11 +6,7 @@
 
 namespace gpstk
 {
-#if !defined(SWIG) || SWIG_VERSION >= 0x030000 
    enum class CarrierBand
-#else
-   enum CarrierBand
-#endif
    {
       Unknown,   ///< Uninitialized value
       Any,       ///< Used to match any carrier band
