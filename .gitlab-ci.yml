@@ -756,3 +756,21 @@ sgltk_redhat:
     - make all -j 4
   dependencies:
     - user_install_redhat
+
+sgltk_redhat_swig3:
+  stage: downstream
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - export gpstk=`pwd`/install
+    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
+    - cd sgltk
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
+  dependencies:
+    - user_install_redhat_swig3
