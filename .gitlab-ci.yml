@@ -403,6 +403,7 @@ user_install_redhat:
     - docker-executor
   image: centos7_sgl
   script:
+    - sudo yum -y install python-enum34
     - cd build
     - export gpstk=`pwd`/install
     - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
@@ -454,6 +455,7 @@ system_install_redhat:
     - docker-executor
   image: centos7_sgl
   script:
+    - sudo yum -y install python-enum34
     - cd build
     - export gpstk=/usr/local
     - cmake -DPYTHON_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=$gpstk ../
@@ -633,6 +635,7 @@ deploy_redhat_py27:
     - docker-executor
   image: centos7_sgl
   script:
+    - sudo yum -y install python-enum34
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
     - sudo yum install python-gpstk-*.rpm -y
@@ -651,6 +654,7 @@ deploy_redhat_py36:
     - docker-executor
   image: centos7_sgl
   script:
+    - sudo yum -y install python-enum34
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
     - sudo yum install python3-gpstk-*.rpm -y
