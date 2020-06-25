@@ -12,6 +12,8 @@ stages:
 # Default cmake arguments
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
+  # this is usually set to master, unless there are downstream dependencies
+  SGLTK_BRANCH: issue_327
 # this can be used for incremental builds
 #  GIT_CLEAN_FLAGS: none
 
@@ -140,7 +142,7 @@ build_redhat:
   script:
     - sudo yum -y remove swig
     - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm
-    - sudo rpm -ivh swig*.rpm
+    - sudo yum install swig*.rpm -y
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
@@ -439,6 +441,9 @@ user_install_redhat:
     - docker-executor
   image: centos7_sgl
   script:
+    - sudo yum -y remove swig
+    - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm
+    - sudo yum install swig*.rpm -y
     - sudo yum -y install python-enum34
     - cd build
     - export gpstk=`pwd`/install
@@ -507,6 +512,9 @@ system_install_redhat:
     - docker-executor
   image: centos7_sgl
   script:
+    - sudo yum -y remove swig
+    - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm
+    - sudo yum install swig*.rpm -y
     - sudo yum -y install python-enum34
     - cd build
     - export gpstk=/usr/local
@@ -736,7 +744,7 @@ sgltk_debian:
   image: debian9_fai_ish
   script:
     - cd build
-    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
@@ -754,7 +762,7 @@ sgltk_redhat:
   image: centos7_sgl
   script:
     - cd build
-    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
@@ -772,7 +780,7 @@ sgltk_redhat_swig3:
   image: centos7_swig3_sgl
   script:
     - cd build
-    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
