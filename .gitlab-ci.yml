@@ -149,8 +149,21 @@ build_redhat:
   artifacts:
     paths:
     - build/
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
+
+build_redhat_swig3:
+  stage: build
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
 
 build_windows:
   stage: build
@@ -348,8 +361,31 @@ test_redhat:
     - build/Testing/Temporary/
   dependencies:
     - build_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
+  after_script:
+    # Only show the failure log, if there were failures.
+    # Also, the whole log is too long, so grep for lines of interest.
+    - |
+      if [ -e success ]; then
+         echo "Good. Gooooood."
+      else
+         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
+      fi
+
+test_redhat_swig3:
+  stage: test
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - ctest -j 4
+    - touch $CI_PROJECT_DIR/success
+  artifacts:
+    when: on_failure
+    paths:
+      - build/Testing/Temporary/
+  dependencies:
+    - build_redhat_swig3
   after_script:
     # Only show the failure log, if there were failures.
     # Also, the whole log is too long, so grep for lines of interest.
@@ -415,8 +451,24 @@ user_install_redhat:
       - build/install
   dependencies:
     - build_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
+
+user_install_redhat_swig3:
+  stage: install
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - export gpstk=`pwd`/install
+    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - make install -j 4
+    - python -c "import gpstk"
+  artifacts:
+    paths:
+      - build/install
+  dependencies:
+    - build_redhat_swig3
 
 user_install_windows:
   stage: install
@@ -463,8 +515,20 @@ system_install_redhat:
     - python -c "import gpstk"
   dependencies:
     - build_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
+
+system_install_redhat_swig3:
+  stage: install
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - export gpstk=/usr/local
+    - cmake -DPYTHON_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - sudo make install -j 4
+    - python -c "import gpstk"
+  dependencies:
+    - build_redhat_swig3
 
 # Package Stage
 # Tests packaging of GPSTk on all platforms
@@ -538,8 +602,6 @@ package_redhat:
       - rpm_files/RPMS/x86_64/gpstk-*
       - rpm_files/SRPMS/gpstk-*
   dependencies: []
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
 
 package_redhat_py36:
   stage: package
@@ -557,8 +619,6 @@ package_redhat_py36:
       - rpm_files/RPMS/x86_64/python3-gpstk-*
       - rpm_files/SRPMS/python3-gpstk-*
   dependencies: []
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
 
 package_redhat_py27:
   stage: package
@@ -576,8 +636,6 @@ package_redhat_py27:
       - rpm_files/RPMS/x86_64/python-gpstk-*
       - rpm_files/SRPMS/python-gpstk-*
   dependencies: []
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
 
 package_redhat_wheel:
   stage: package
@@ -594,8 +652,6 @@ package_redhat_wheel:
       - dist/
   dependencies:
     - build_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
 
 # Deploy Stage
 # Tests install of GPSTk package on each platform, saves artifacts for downstream builds.
@@ -625,8 +681,6 @@ deploy_redhat:
     - timeconvert
   dependencies:
     - package_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
 
 deploy_redhat_py27:
   stage: deploy
@@ -644,8 +698,6 @@ deploy_redhat_py27:
   dependencies:
     - package_redhat_py27
     - package_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
 
 deploy_redhat_py36:
   stage: deploy
@@ -663,8 +715,6 @@ deploy_redhat_py36:
   dependencies:
     - package_redhat_py36
     - package_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
 
 # package_windows:
 #   stage: package
@@ -714,5 +764,21 @@ sgltk_redhat:
     - make all -j 4
   dependencies:
     - user_install_redhat
-  # allow failures until we can resolve the ancient software problem (swig 2)
-  allow_failure: true
+
+sgltk_redhat_swig3:
+  stage: downstream
+  tags:
+    - docker-executor
+  image: centos7_swig3_sgl
+  script:
+    - cd build
+    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - export gpstk=`pwd`/install
+    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
+    - cd sgltk
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - make all -j 4
+  dependencies:
+    - user_install_redhat_swig3
