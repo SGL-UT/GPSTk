@@ -645,23 +645,23 @@ namespace gpstk
 
          switch (i->first.code)
          {
-            case ObsID::tcCA:   attribute = "C"; break;
-            case ObsID::tcP:    attribute = "P"; break;
-            case ObsID::tcY:    attribute = "Y"; break;
-            case ObsID::tcW:    attribute = "W"; break;
-            case ObsID::tcN:    attribute = "N"; break;
-            case ObsID::tcM:    attribute = "M"; break;
-            case ObsID::tcC2M:  attribute = "S"; break;
-            case ObsID::tcC2L:  attribute = "L"; break;
-            case ObsID::tcC2LM: attribute = "X"; break;
-            case ObsID::tcI5:   attribute = "I"; break;
-            case ObsID::tcQ5:   attribute = "Q"; break;
-            case ObsID::tcIQ5:  attribute = "X"; break;
-            case ObsID::tcA:    attribute = "A"; break;
-            case ObsID::tcB:    attribute = "B"; break;
-            case ObsID::tcC:    attribute = "C"; break;
-            case ObsID::tcBC:   attribute = "X"; break;
-            case ObsID::tcABC:  attribute = "Z"; break;
+            case TrackingCode::CA:   attribute = "C"; break;
+            case TrackingCode::P:    attribute = "P"; break;
+            case TrackingCode::Y:    attribute = "Y"; break;
+            case TrackingCode::W:    attribute = "W"; break;
+            case TrackingCode::N:    attribute = "N"; break;
+            case TrackingCode::M:    attribute = "M"; break;
+            case TrackingCode::C2M:  attribute = "S"; break;
+            case TrackingCode::C2L:  attribute = "L"; break;
+            case TrackingCode::C2LM: attribute = "X"; break;
+            case TrackingCode::I5:   attribute = "I"; break;
+            case TrackingCode::Q5:   attribute = "Q"; break;
+            case TrackingCode::IQ5:  attribute = "X"; break;
+            case TrackingCode::A:    attribute = "A"; break;
+            case TrackingCode::B:    attribute = "B"; break;
+            case TrackingCode::C:    attribute = "C"; break;
+            case TrackingCode::BC:   attribute = "X"; break;
+            case TrackingCode::ABC:  attribute = "Z"; break;
 			default: break; //NB Determine if additional enumeration values need to be handled
          }
          if (ignore)

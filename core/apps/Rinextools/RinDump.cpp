@@ -953,15 +953,14 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                      // skip the above tracking codes
                   continue;
             }
-            for(int k=0; k<ObsID::tcLast; ++k)
+            for (TrackingCode trackCode : TrackingCodeIterator())
             {
-               ObsID::TrackingCode trackCode = (ObsID::TrackingCode)k;
                switch (trackCode)
                {
-                  case ObsID::tcUnknown:
-                  case ObsID::tcAny:
-                  case ObsID::tcUndefined:
-                  case ObsID::tcLast:
+                  case TrackingCode::Unknown:
+                  case TrackingCode::Any:
+                  case TrackingCode::Undefined:
+                  case TrackingCode::Last:
                         // skip the above tracking codes
                      continue;
                }

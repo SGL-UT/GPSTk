@@ -634,7 +634,7 @@ void dumpAllRinex3ObsTypes(ostream& os)
    {
       for (CarrierBand j : CarrierBandIterator())
       {
-         for (int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
+         for (TrackingCode k : TrackingCodeIterator())
          {
             for (int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
             {
@@ -643,8 +643,8 @@ void dumpAllRinex3ObsTypes(ostream& os)
                   string tag(
                      string(1,syss[s]) +
                      string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
-                     string(1,ObsID::cb2char[CarrierBand(j)]) +
-                     string(1,ObsID::tc2char[ObsID::TrackingCode(k)]));
+                     string(1,ObsID::cb2char[j]) +
+                     string(1,ObsID::tc2char[k]));
                   ObsID obs(tag, Rinex3ObsBase::currentVersion);
                   string name(asString(obs));
                   if (name.find("Unknown") != string::npos ||
@@ -674,7 +674,7 @@ void dumpAllRinex3ObsTypes(ostream& os)
                   continue;
                }
             } // for (int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
-         } // for (int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
+         } // for (TrackingCode k : TrackingCodeIterator())
       } // for (CarrierBand j : CarrierBandIterator())
    } // for (size_t s=0; s<syss.size(); s++)
 

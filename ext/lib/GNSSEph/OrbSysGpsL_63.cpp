@@ -90,7 +90,7 @@ namespace gpstk
    bool OrbSysGpsL_63::hasSignal(const SatID& sidr,
                                  const CommonTime& ct,
                                  const CarrierBand cb,
-                                 const ObsID::TrackingCode tc) const
+                                 const gpstk::TrackingCode tc) const
    {
       // Verify that the object has been loaded with data.
        if (!dataLoadedFlag)
@@ -117,33 +117,33 @@ namespace gpstk
 
       // Legacy GPS Signals.   L1 P(Y), L2 P(Y), L1 C/A
         if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) &&
-             (tc==ObsID::tcP || tc==ObsID::tcY || tc==ObsID::tcW || tc==ObsID::tcN || tc==ObsID::tcD))
+             (tc==TrackingCode::P || tc==TrackingCode::Y || tc==TrackingCode::W || tc==TrackingCode::N || tc==TrackingCode::D))
         {
             minimumValue = 1;
         }
-        if (cb==CarrierBand::L1 && tc==ObsID::tcCA)
+        if (cb==CarrierBand::L1 && tc==TrackingCode::CA)
         {
             minimumValue = 1;
         }
 
           // L2C and M-Code (added with Block IIR-M)
-        if (cb==CarrierBand::L2 && (tc==ObsID::tcC2L || tc==ObsID::tcC2M || tc==ObsID::tcC2LM))
+        if (cb==CarrierBand::L2 && (tc==TrackingCode::C2L || tc==TrackingCode::C2M || tc==TrackingCode::C2LM))
         {
             minimumValue = 2;
         }
-        if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) && tc==ObsID::tcM)
+        if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) && tc==TrackingCode::M)
         {
             minimumValue = 2;
         }
 
           // L5
-        if (cb==CarrierBand::L5 && (tc==ObsID::tcI5 || tc==ObsID::tcQ5))
+        if (cb==CarrierBand::L5 && (tc==TrackingCode::I5 || tc==TrackingCode::Q5))
         {
             minimumValue = 3;
         }
 
           // L1C
-        if (cb==CarrierBand::L1 && (tc==ObsID::tcG1P || tc==ObsID::tcG1D || tc==ObsID::tcG1X))
+        if (cb==CarrierBand::L1 && (tc==TrackingCode::G1P || tc==TrackingCode::G1D || tc==TrackingCode::G1X))
         {
             minimumValue = 4;
         }
@@ -152,7 +152,8 @@ namespace gpstk
         {
             stringstream ss;
             ss << " Carrier " << StringUtils::asString(cb) << ", tracking code "
-               << tc << " is not a valid combination for a GPS SV.";
+               << StringUtils::asString(tc)
+               << " is not a valid combination for a GPS SV.";
             InvalidRequest ir(ss.str());
             GPSTK_THROW(ir);
         }

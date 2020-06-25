@@ -96,7 +96,7 @@ CNav2Filter_T()
 unsigned CNav2Filter_T ::
 loadData()
 {
-   ObsID oidCNAV2(ObsID::otNavMsg, CarrierBand::L1, ObsID::tcG1X); 
+   ObsID oidCNAV2(ObsID::otNavMsg, CarrierBand::L1, TrackingCode::G1X); 
    unsigned PRN = 1;
    SatID sid(PRN,SatelliteSystem::GPS);
    CommonTime ct = GPSWeekSecond(2000,86400.0);

@@ -69,7 +69,7 @@ public:
 void BrcKeplerOrbit_T ::
 fill(BrcKeplerOrbit& orbit)
 {
-   ObsID oi(ObsID::otNavMsg, CarrierBand::L5, ObsID::tcY);
+   ObsID oi(ObsID::otNavMsg, CarrierBand::L5, TrackingCode::Y);
    orbit.loadData("GPS", oi, 31, GPSWeekZcount(1886, 398400),
                   GPSWeekZcount(1887, 0), GPSWeekZcount(1887, 0), 1, 7, 
                      // these are the same as in EngEphemeris_T.cpp
@@ -158,7 +158,7 @@ equalityTest()
       // obsID
    TUCATCH(orbitCopy = orbit);
    TUASSERTE(BrcKeplerOrbit, orbit, orbitCopy);
-   orbitCopy.obsID = ObsID(ObsID::otNavMsg, CarrierBand::L1, ObsID::tcP);
+   orbitCopy.obsID = ObsID(ObsID::otNavMsg, CarrierBand::L1, TrackingCode::P);
    TUASSERT(orbitCopy != orbit);
    TUASSERT(!(orbitCopy == orbit));
       // PRNID
@@ -313,7 +313,7 @@ svXvtTest()
 {
    TUDEF("BrcKeplerOrbit", "svXvt");
    BrcKeplerOrbit orbit;
-   ObsID oi(ObsID::otNavMsg, CarrierBand::L1, ObsID::tcY);
+   ObsID oi(ObsID::otNavMsg, CarrierBand::L1, TrackingCode::Y);
    gpstk::CommonTime toc = gpstk::CivilTime(2015,7,19,1,59,28.0,
                                             gpstk::TimeSystem::GPS);
    orbit.loadData("GPS", oi, 2, toc, toc+7200,

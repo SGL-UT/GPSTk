@@ -82,13 +82,13 @@
 // These are needed to properly interpret an ObsID instance
 %template(map_ObservationType_string) std::map<enum gpstk::ObsID::ObservationType, std::string>;
 %template(map_CarrierBand_string) std::map<enum gpstk::CarrierBand, std::string>;
-%template(map_TrackingCode_string) std::map<enum gpstk::ObsID::TrackingCode, std::string>;
+%template(map_TrackingCode_string) std::map<enum gpstk::TrackingCode, std::string>;
 %template(map_char_ObservationType) std::map<char, enum gpstk::ObsID::ObservationType>;
 %template(map_char_CarrierBand) std::map<char, enum gpstk::CarrierBand>;
-%template(map_char_TrackingCode) std::map<char, enum gpstk::ObsID::TrackingCode>;
+%template(map_char_TrackingCode) std::map<char, enum gpstk::TrackingCode>;
 %template(map_ObservationType_char) std::map<enum gpstk::ObsID::ObservationType,char>;
 %template(map_CarrierBand_char) std::map<enum gpstk::CarrierBand,char>;
-%template(map_TrackingCode_char) std::map<enum gpstk::ObsID::TrackingCode,char>;
+%template(map_TrackingCode_char) std::map<enum gpstk::TrackingCode,char>;
 
 // ValidType wraps
 %template(validtype_float) gpstk::ValidType<float>;

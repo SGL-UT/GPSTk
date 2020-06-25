@@ -74,56 +74,56 @@ namespace gpstk
            case SatelliteSystem::GPS:
            {
               if (( oidr.band==CarrierBand::L1 || oidr.band==CarrierBand::L2 ) &&
-                  ( oidr.code==ObsID::tcCA || oidr.code==ObsID::tcP ||
-                    oidr.code==ObsID::tcY  || oidr.code==ObsID::tcY ||
-                    oidr.code==ObsID::tcW  || oidr.code==ObsID::tcN ||
-                    oidr.code==ObsID::tcD  )) 
+                  ( oidr.code==TrackingCode::CA || oidr.code==TrackingCode::P ||
+                    oidr.code==TrackingCode::Y  || oidr.code==TrackingCode::Y ||
+                    oidr.code==TrackingCode::W  || oidr.code==TrackingCode::N ||
+                    oidr.code==TrackingCode::D  )) 
                     navType = ntGPSLNAV;
               
               else if ( oidr.band==CarrierBand::L2 &&
-                       (oidr.code==ObsID::tcC2M || 
-                        oidr.code==ObsID::tcC2L ||
-                        oidr.code==ObsID::tcC2LM )) 
+                       (oidr.code==TrackingCode::C2M || 
+                        oidr.code==TrackingCode::C2L ||
+                        oidr.code==TrackingCode::C2LM )) 
                         navType = ntGPSCNAVL2;
               
               else if ( oidr.band==CarrierBand::L5 &&             
-                       (oidr.code==ObsID::tcI5 || 
-                        oidr.code==ObsID::tcQ5 ||                
-                        oidr.code==ObsID::tcIQ5 )) 
+                       (oidr.code==TrackingCode::I5 || 
+                        oidr.code==TrackingCode::Q5 ||                
+                        oidr.code==TrackingCode::IQ5 )) 
                         navType = ntGPSCNAVL5;
  
               else if ( oidr.band==CarrierBand::L1 &&
-                      ( oidr.code==ObsID::tcG1P ||
-                        oidr.code==ObsID::tcG1D ||
-                        oidr.code==ObsID::tcG1X ) )
+                      ( oidr.code==TrackingCode::G1P ||
+                        oidr.code==TrackingCode::G1D ||
+                        oidr.code==TrackingCode::G1X ) )
                         navType = ntGPSCNAV2;
 
               else if ((oidr.band==CarrierBand::L1 ||
                         oidr.band==CarrierBand::L2) &&
-                        oidr.code==ObsID::tcM ) 
+                        oidr.code==TrackingCode::M ) 
                         navType = ntGPSMNAV;
               break;
             }
             case SatelliteSystem::QZSS:
             {
                if ( oidr.band==CarrierBand::L1  &&
-                    oidr.code==ObsID::tcCA )
+                    oidr.code==TrackingCode::CA )
                     navType = ntGPSLNAV;
               
                else if ( oidr.band==CarrierBand::L2 &&
-                       ( oidr.code==ObsID::tcC2M  || oidr.code==ObsID::tcC2L ||
-                         oidr.code==ObsID::tcC2LM )) 
+                       ( oidr.code==TrackingCode::C2M  || oidr.code==TrackingCode::C2L ||
+                         oidr.code==TrackingCode::C2LM )) 
                          navType = ntGPSCNAVL2;
               
                else if ( oidr.band==CarrierBand::L5 &&             
-                       ( oidr.code==ObsID::tcI5 || oidr.code==ObsID::tcQ5 ||                
-                         oidr.code==ObsID::tcIQ5 )) 
+                       ( oidr.code==TrackingCode::I5 || oidr.code==TrackingCode::Q5 ||                
+                         oidr.code==TrackingCode::IQ5 )) 
                          navType = ntGPSCNAVL5;
 
                else if ( oidr.band==CarrierBand::L1 &&
-                       ( oidr.code==ObsID::tcG1P ||
-                         oidr.code==ObsID::tcG1D ||
-                         oidr.code==ObsID::tcG1X ))
+                       ( oidr.code==TrackingCode::G1P ||
+                         oidr.code==TrackingCode::G1D ||
+                         oidr.code==TrackingCode::G1X ))
                          navType = ntGPSCNAV2;
                break;
             }
@@ -132,53 +132,53 @@ namespace gpstk
                if ( sidr.id>5 &&                                                  
                   ( oidr.band==CarrierBand::B1   || oidr.band==CarrierBand::B2   ||
                     oidr.band==CarrierBand::B3 ) &&
-                  ( oidr.code==ObsID::tcCI1  || oidr.code==ObsID::tcCQ1  ||                
-                    oidr.code==ObsID::tcCIQ1 || oidr.code==ObsID::tcCI7  ||
-                    oidr.code==ObsID::tcCQ7  || oidr.code==ObsID::tcCIQ7 ||
-                    oidr.code==ObsID::tcCI6  || oidr.code==ObsID::tcCQ6  ||
-                    oidr.code==ObsID::tcCIQ6 )) 
+                  ( oidr.code==TrackingCode::CI1  || oidr.code==TrackingCode::CQ1  ||                
+                    oidr.code==TrackingCode::CIQ1 || oidr.code==TrackingCode::CI7  ||
+                    oidr.code==TrackingCode::CQ7  || oidr.code==TrackingCode::CIQ7 ||
+                    oidr.code==TrackingCode::CI6  || oidr.code==TrackingCode::CQ6  ||
+                    oidr.code==TrackingCode::CIQ6 )) 
                     navType = ntBeiDou_D1; 
          
                else if ( sidr.id<=5 &&                                                  
                        ( oidr.band==CarrierBand::B1   || oidr.band==CarrierBand::B2   ||
                          oidr.band==CarrierBand::B3 )&&
-                       ( oidr.code==ObsID::tcCI1  || oidr.code==ObsID::tcCQ1  ||                
-                         oidr.code==ObsID::tcCIQ1 || oidr.code==ObsID::tcCI7  ||
-                         oidr.code==ObsID::tcCQ7  || oidr.code==ObsID::tcCIQ7 ||
-                         oidr.code==ObsID::tcCI6  || oidr.code==ObsID::tcCQ6  ||
-                         oidr.code==ObsID::tcCIQ6 )) 
+                       ( oidr.code==TrackingCode::CI1  || oidr.code==TrackingCode::CQ1  ||                
+                         oidr.code==TrackingCode::CIQ1 || oidr.code==TrackingCode::CI7  ||
+                         oidr.code==TrackingCode::CQ7  || oidr.code==TrackingCode::CIQ7 ||
+                         oidr.code==TrackingCode::CI6  || oidr.code==TrackingCode::CQ6  ||
+                         oidr.code==TrackingCode::CIQ6 )) 
                          navType = ntBeiDou_D2;
                break;
             }
             case SatelliteSystem::Glonass:
             {
                if (( oidr.band==CarrierBand::G1 || oidr.band==CarrierBand::G2 ) &&         
-                   ( oidr.code==ObsID::tcGCA ))  
+                   ( oidr.code==TrackingCode::GCA ))  
                    navType = ntGloCivilF;
              
                else if ( oidr.band==CarrierBand::G3 &&
-                       ( oidr.code==ObsID::tcIR3 || oidr.code==ObsID::tcQR3 ||
-                         oidr.code==ObsID::tcIQR3 )) 
+                       ( oidr.code==TrackingCode::IR3 || oidr.code==TrackingCode::QR3 ||
+                         oidr.code==TrackingCode::IQR3 )) 
                          navType = ntGloCivilC;
                break;
             }
             case SatelliteSystem::Galileo:
             {
-               if ( oidr.band==CarrierBand::L1 && oidr.code==ObsID::tcB )
+               if ( oidr.band==CarrierBand::L1 && oidr.code==TrackingCode::B )
                   navType = ntGalINAV;
                else if ( oidr.band==CarrierBand::E5b  && 
-                       ( oidr.code==ObsID::tcIE5b || oidr.code==ObsID::tcIQE5b ))
+                       ( oidr.code==TrackingCode::IE5b || oidr.code==TrackingCode::IQE5b ))
                        navType = ntGalINAV;
                else if ( oidr.band==CarrierBand::L5 &&            // This is Galileo E5a
-                       ( oidr.code==ObsID::tcIE5a || oidr.code==ObsID::tcIQE5a ))
+                       ( oidr.code==TrackingCode::IE5a || oidr.code==TrackingCode::IQE5a ))
                        navType = ntGalFNAV; 
                break;
             }
             case SatelliteSystem::IRNSS:
             {
                if ( oidr.band==CarrierBand::L5 &&
-                  ( oidr.code==ObsID::tcIA5 || oidr.code==ObsID::tcIB5 ||
-                    oidr.code==ObsID::tcIC5 || oidr.code==ObsID::tcIX5 ))  
+                  ( oidr.code==TrackingCode::IA5 || oidr.code==TrackingCode::IB5 ||
+                    oidr.code==TrackingCode::IC5 || oidr.code==TrackingCode::IX5 ))  
                     navType = ntIRNSS_SPS; 
                break;
             }

@@ -63,7 +63,7 @@ public:
          gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
          gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
                             gpstk::CarrierBand::L1,
-                            gpstk::ObsID::tcCA);
+                            gpstk::TrackingCode::CA);
          baleted.dataLoadedFlag = true;
          baleted.satID = sat;
          baleted.obsID = obsID;
@@ -149,7 +149,7 @@ public:
          gpstk::SatID sat1(1, gpstk::SatelliteSystem::GPS);
          gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
                             gpstk::CarrierBand::L1,
-                            gpstk::ObsID::tcCA);
+                            gpstk::TrackingCode::CA);
          to1.dataLoadedFlag = true;
          to1.satID = sat1;
          to1.obsID = obsID;

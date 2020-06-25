@@ -20,7 +20,7 @@ namespace gpstk
       struct Signal
       {
          CarrierBand carrier; ///< Carrier frequency.
-         ObsID::TrackingCode code;   ///< Tracking code.
+         gpstk::TrackingCode code;   ///< Tracking code.
          NavID::NavType nav;         ///< Navigation code.
       };
          /// Set of signals that may be transmitted by a satellite.

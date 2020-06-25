@@ -91,7 +91,7 @@ int main()
          // for this example.
       navFiltData.carrier = (CarrierBand)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 3, ','));
-      navFiltData.code = (ObsID::TrackingCode)gpstk::StringUtils::asInt(
+      navFiltData.code = (gpstk::TrackingCode)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 4, ','));
 
          // validate the subframe
@@ -102,7 +102,7 @@ int main()
       {
          cout << timeString << ", 310, " << setw(2) << (*nmli)->prn << ", "
               << setw(1) << static_cast<int>((*nmli)->carrier) << ", "
-              << (*nmli)->code << ", 1";
+              << static_cast<int>((*nmli)->code) << ", 1";
          LNavFilterData *fd = dynamic_cast<LNavFilterData*>(*nmli);
          for (unsigned sfword = 0; sfword < 10; sfword++)
          {

@@ -62,7 +62,7 @@ public:
 void BrcClockCorrection_T ::
 fill(BrcClockCorrection& orbit)
 {
-   ObsID oi(ObsID::otNavMsg, CarrierBand::L5, ObsID::tcY);
+   ObsID oi(ObsID::otNavMsg, CarrierBand::L5, TrackingCode::Y);
    orbit.loadData("GPS", oi, 31, GPSWeekZcount(1886, 398400),
                   GPSWeekZcount(1887, 0), 5, 7, 9, true,
                   LDEXP(double( int32_t(0xfffff91d)), -31), // af0
@@ -87,7 +87,7 @@ fill2(BrcClockCorrection& orbit)
    double af2      = 0.00000000E+00;
    CommonTime tocCT = GPSWeekSecond(weeknum, toc, TimeSystem::GPS);
    CommonTime topCT = GPSWeekSecond(weeknum, top, TimeSystem::GPS);
-   ObsID oi(ObsID::otNavMsg, CarrierBand::L5, ObsID::tcY);
+   ObsID oi(ObsID::otNavMsg, CarrierBand::L5, TrackingCode::Y);
    orbit.loadData("GPS", oi, 31, tocCT, topCT, uraoc, uraoc1, uraoc2, true,
                   af0, af1, af2);
 }
@@ -142,7 +142,7 @@ equalityTest()
       // obsID
    TUCATCH(clockCopy = clock);
    TUASSERTE(BrcClockCorrection, clock, clockCopy);
-   clockCopy.obsID = ObsID(ObsID::otNavMsg, CarrierBand::L1, ObsID::tcP);
+   clockCopy.obsID = ObsID(ObsID::otNavMsg, CarrierBand::L1, TrackingCode::P);
    TUASSERT(clockCopy != clock);
    TUASSERT(!(clockCopy == clock));
       // PRNID

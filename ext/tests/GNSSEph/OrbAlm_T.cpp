@@ -238,7 +238,7 @@ setUpLNAV()
    if (debugLevel) std::cout << "Building PNB from strings" << std::endl;
    gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
                           gpstk::CarrierBand::L1,
-                          gpstk::ObsID::tcCA);
+                          gpstk::TrackingCode::CA);
    gpstk::PackedNavBits msg;
    for (unsigned short i=0; i<LNavExCount; i++)
    {
@@ -310,7 +310,7 @@ setUpCNAV()
       // Define state variables for writing an CNAV data
    gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg, 
                     gpstk::CarrierBand::L2, 
-                    gpstk::ObsID::tcC2LM);
+                    gpstk::TrackingCode::C2LM);
    typeDesc = "GPS_CNAV";
 
       // Literals for CNAV test data 

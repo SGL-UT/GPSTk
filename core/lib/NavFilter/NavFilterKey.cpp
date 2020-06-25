@@ -44,7 +44,7 @@ namespace gpstk
          : stationID(""),
            rxID(""),
            carrier(CarrierBand::Unknown),
-           code(ObsID::tcUnknown)
+           code(TrackingCode::Unknown)
    {
    }
 

@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
    ObsID::tcDesc[C4y.code] = "y";
    ObsID::cbDesc[C4y.band] = "L4";
 
-   ObsID l1lc(ObsID::otTrackLen, CarrierBand::L1, ObsID::tcY);
+   ObsID l1lc(ObsID::otTrackLen, CarrierBand::L1, TrackingCode::Y);
    i2s[l1lc] = "cust";
 
    i2s[ObsID("C1 ", cv)] = "C1 ";

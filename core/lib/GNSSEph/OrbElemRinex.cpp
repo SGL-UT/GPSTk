@@ -147,7 +147,7 @@ namespace gpstk
          // L1/L2 C/A, P, Y,.....
       obsID.type = ObsID::otNavMsg;
       obsID.band = CarrierBand::Undefined;
-      obsID.code = ObsID::tcUndefined;
+      obsID.code = TrackingCode::Undefined;
 
 	 // Beginning of Validity
          // New concept.  Admit the following.
@@ -299,7 +299,7 @@ namespace gpstk
          // L1/L2 C/A, P, Y,.....
       obsID.type = ObsID::otNavMsg;
       obsID.band = CarrierBand::Undefined;
-      obsID.code = ObsID::tcUndefined;
+      obsID.code = TrackingCode::Undefined;
 
          // The rules for deriving Toe, Toc, begin valid, begin transmit,
          // and end valid are similar, but system-specific. 

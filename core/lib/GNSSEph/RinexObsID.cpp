@@ -61,17 +61,17 @@ namespace gpstk
       // Note that the choice of tracking code for L1, L2, S1, S2 are arbitrary
       // since they are ambiguous in the rinex 2 specifications
       // L1 -> L1P; P1 -> C1P; C1 -> C1C; S1 -> S1P; D1 -> D1P
-      if      (rot == RinexObsHeader::L1) {type=otPhase;   band=CarrierBand::L1; code=tcP;}
-      else if (rot == RinexObsHeader::P1) {type=otRange;   band=CarrierBand::L1; code=tcP;}
-      else if (rot == RinexObsHeader::C1) {type=otRange;   band=CarrierBand::L1; code=tcCA;}
-      else if (rot == RinexObsHeader::S1) {type=otSNR;     band=CarrierBand::L1; code=tcP;}
-      else if (rot == RinexObsHeader::D1) {type=otDoppler; band=CarrierBand::L1; code=tcP;}
+      if      (rot == RinexObsHeader::L1) {type=otPhase;   band=CarrierBand::L1; code=TrackingCode::P;}
+      else if (rot == RinexObsHeader::P1) {type=otRange;   band=CarrierBand::L1; code=TrackingCode::P;}
+      else if (rot == RinexObsHeader::C1) {type=otRange;   band=CarrierBand::L1; code=TrackingCode::CA;}
+      else if (rot == RinexObsHeader::S1) {type=otSNR;     band=CarrierBand::L1; code=TrackingCode::P;}
+      else if (rot == RinexObsHeader::D1) {type=otDoppler; band=CarrierBand::L1; code=TrackingCode::P;}
       // L2 -> L2P; P2 -> C2P; C2 -> C2X; S2 -> S2P; D2 -> D2P
-      else if (rot == RinexObsHeader::L2) {type=otPhase;   band=CarrierBand::L2; code=tcP;}
-      else if (rot == RinexObsHeader::P2) {type=otRange;   band=CarrierBand::L2; code=tcP;}
-      else if (rot == RinexObsHeader::C2) {type=otRange;   band=CarrierBand::L2; code=tcC2LM;}
-      else if (rot == RinexObsHeader::S2) {type=otSNR;     band=CarrierBand::L2; code=tcP;}
-      else if (rot == RinexObsHeader::D2) {type=otDoppler; band=CarrierBand::L2; code=tcP;}
+      else if (rot == RinexObsHeader::L2) {type=otPhase;   band=CarrierBand::L2; code=TrackingCode::P;}
+      else if (rot == RinexObsHeader::P2) {type=otRange;   band=CarrierBand::L2; code=TrackingCode::P;}
+      else if (rot == RinexObsHeader::C2) {type=otRange;   band=CarrierBand::L2; code=TrackingCode::C2LM;}
+      else if (rot == RinexObsHeader::S2) {type=otSNR;     band=CarrierBand::L2; code=TrackingCode::P;}
+      else if (rot == RinexObsHeader::D2) {type=otDoppler; band=CarrierBand::L2; code=TrackingCode::P;}
    }
 
    // Represent this object using the Rinex3 notation
@@ -83,7 +83,8 @@ namespace gpstk
       buff[1] = cb2char[band];
       buff[2] = tc2char[code];
       if ((fabs(version - 3.02) < 0.005) && (band == CarrierBand::B1) &&
-          ((code == tcCI1) || (code == tcCQ1) || (code == tcCIQ1)))
+          ((code == TrackingCode::CI1) || (code == TrackingCode::CQ1) ||
+           (code == TrackingCode::CIQ1)))
       {
             // kludge for RINEX 3.02 BDS codes
          buff[1] = '1';

@@ -75,7 +75,7 @@ namespace gpstk
       std::string rxID;            ///< receiver identifier for data source
       uint32_t prn;                ///< identifier of broadcasting satellite 
       CarrierBand carrier;  ///< carrier band of navigation message
-      ObsID::TrackingCode code;    ///< ranging code of navigation message
+      gpstk::TrackingCode code;    ///< ranging code of navigation message
          // Nav code is not necessary as each filter is unique to a
          // given navigation message structure.
 

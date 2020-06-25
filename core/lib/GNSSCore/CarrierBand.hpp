@@ -31,6 +31,8 @@ namespace gpstk
       Last,      ///< Used to verify that all items are described at compile time
    };
 
+      /** Define an iterator so C++11 can do things like
+       * for (CarrierBand cb : CarrierBandIterator()) */
    typedef EnumIterator<CarrierBand, CarrierBand::Unknown, CarrierBand::Undefined> CarrierBandIterator;
 
    namespace StringUtils

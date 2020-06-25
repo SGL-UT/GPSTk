@@ -141,7 +141,7 @@ channelNumTest()
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
    gpstk::RinexObsID forced(gpstk::ObsID::otChannel, gpstk::CarrierBand::L1,
-                            gpstk::ObsID::tcCA);
+                            gpstk::TrackingCode::CA);
    TUCATCH(hdr.mapObsTypes["G"].push_back(forced));
    hdr.sysPhaseShift["G"][roidValid][sid] = 54.321;
    hdr.date = "20200512 181734 UTC";
@@ -255,7 +255,7 @@ ionoDelayTest()
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
    gpstk::RinexObsID forced(gpstk::ObsID::otIono, gpstk::CarrierBand::L1,
-                            gpstk::ObsID::tcCA);
+                            gpstk::TrackingCode::CA);
    TUCATCH(hdr.mapObsTypes["G"].push_back(forced));
    hdr.sysPhaseShift["G"][roidValid][sid] = 54.321;
    hdr.date = "20200512 181734 UTC";

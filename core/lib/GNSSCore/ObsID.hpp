@@ -56,6 +56,7 @@
 #include "ObsIDInitializer.hpp"
 #include "Rinex3ObsBase.hpp"
 #include "CarrierBand.hpp"
+#include "TrackingCode.hpp"
 
 namespace gpstk
 {
@@ -97,136 +98,11 @@ namespace gpstk
          otLast       ///< Used to verify that all items are described at compile time
       };
 
-         /** The code used to collect the observation. Each of these
-          * should uniquely identify a code that was correlated
-          * against to track the signal. While the notation generally
-          * follows section 5.1 of RINEX 3, due to ambiguities in that
-          * specification some extensions are made. Note that as
-          * concrete specifications for the codes are released, this
-          * list may need to be adjusted. Specifically, this lists
-          * assumes that the same I & Q codes will be used on all
-          * three of the Galileo carriers. If that is not true, more
-          * identifiers need to be allocated */
-      enum TrackingCode
-      {
-         tcUnknown,   ///< Uninitialized value
-         tcAny,       ///< Used to match any tracking code
-         tcCA,        ///< Legacy GPS civil code
-         tcP,         ///< Legacy GPS precise code
-         tcY,         ///< Encrypted legacy GPS precise code
-         tcW,         ///< Encrypted legacy GPS precise code, codeless Z tracking
-         tcN,         ///< Encrypted legacy GPS precise code, squaring codeless tracking
-         tcD,         ///< Encrypted legacy GPS precise code, other codeless tracking
-         tcM,         ///< Modernized GPS military unique code
-         tcC2M,       ///< Modernized GPS L2 civil M code
-         tcC2L,       ///< Modernized GPS L2 civil L code
-         tcC2LM,      ///< Modernized GPS L2 civil M+L combined tracking (such as Trimble NetRS, Septrentrio, and ITT)
-         tcI5,        ///< Modernized GPS L5 civil in-phase
-         tcQ5,        ///< Modernized GPS L5 civil quadrature
-         tcIQ5,       ///< Modernized GPS L5 civil I+Q combined tracking
-         tcG1P,       ///< Modernized GPS L1C civil code tracking (pilot)
-         tcG1D,       ///< Modernized GPS L1C civil code tracking (data)
-         tcG1X,       ///< Modernized GPS L1C civil code tracking (pilot + data)
-
-         tcGCA,       ///< Legacy Glonass civil signal
-         tcGP,        ///< Legacy Glonass precise signal
-         tcIR3,       ///< Glonass L3 I code
-         tcQR3,       ///< Glonass L3 Q code
-         tcIQR3,      ///< Glonass L3 I+Q combined tracking
-         tcL1OCD,     ///< GLONASS L1 OCd code
-         tcL1OCP,     ///< GLONASS L1 OCp code
-         tcL1OC,      ///< GLONASS L1 OCd+OCp combined tracking
-         tcL2CSIOCp,  ///< GLONASS L2 CSI+OCp combined tracking
-         tcL2CSI,     ///< GLONASS L2 CSI code
-         tcL2OCP,     ///< GLONASS L2 OCp code
-
-         tcA,         ///< Galileo L1 PRS code
-         tcB,         ///< Galileo E1-B signal, supporting OS/HAS/SoL
-         tcC,         ///< Galileo E1 Dataless code
-         tcBC,        ///< Galileo E1 B+C combined tracking
-         tcABC,       ///< Galileo E1 A+B+C combined tracking
-         tcIE5,       ///< Galileo E5 I code
-         tcQE5,       ///< Galileo E5 Q code
-         tcIQE5,      ///< Galileo E5 I+Q combined tracking
-         tcIE5a,      ///< Galileo E5a I code
-         tcQE5a,      ///< Galileo E5a Q code
-         tcIQE5a,     ///< Galileo E5a I+Q combined tracking
-         tcIE5b,      ///< Galileo E5b I code
-         tcQE5b,      ///< Galileo E5b Q code
-         tcIQE5b,     ///< Galileo E5b I+Q combined tracking
-         tcA6,        ///< Galileo E6 PRS code
-         tcB6,        ///< Galileo E6-b signal
-         tcC6,        ///< Galileo E6 Dataless code
-         tcBC6,       ///< Galileo E6 B+C combined tracking
-         tcABC6,      ///< Galileo E6 A+B+C combined tracking
-
-         tcSCA,       ///< SBAS civil code
-         tcSI5,       ///< SBAS L5 I code
-         tcSQ5,       ///< SBAS L5 Q code
-         tcSIQ5,      ///< SBAS L5 I+Q code
-
-         tcJCA,       ///< QZSS civil code
-         tcJD1,       ///< QZSS L1C(D)
-         tcJP1,       ///< QZSS L1C(P)
-         tcJX1,       ///< QZSS L1C(D+P)
-         tcJZ1,       ///< QZSS L1-SAIF
-         tcJM2,       ///< QZSS L2C(M)
-         tcJL2,       ///< QZSS L2C(L)
-         tcJX2,       ///< QZSS L2C(M+L)
-         tcJI5,       ///< QZSS L5 in-phase
-         tcJQ5,       ///< QZSS L5 quadrature
-         tcJIQ5,      ///< QZSS L5 I+Q combined tracking
-         tcJI5S,      ///< QZSS L5S in-phase
-         tcJQ5S,      ///< QZSS L5S I+Q combined tracking
-         tcJIQ5S,     ///< QZSS L5S quadrature
-         tcJI6,       ///< QZSS LEX(6) short
-         tcJQ6,       ///< QZSS LEX(6) long
-         tcJIQ6,      ///< QZSS LEX(6) combined tracking
-         tcJD6,       ///< QZSS L6 Block II D code
-         tcJE6,       ///< QZSS L6 Block II E code
-         tcJDE6,      ///< QZSS L6 Block II D+E combined tracking
-
-         tcCI1,       ///< BeiDou B1 I code
-         tcCQ1,       ///< BeiDou B1 Q code
-         tcCIQ1,      ///< BeiDou B1 I+Q code
-         tcCI7,       ///< BeiDou B2 I code
-         tcCQ7,       ///< BeiDou B2 Q code
-         tcCIQ7,      ///< BeiDou B2 I+Q code
-         tcCI6,       ///< BeiDou B3 I code
-         tcCQ6,       ///< BeiDou B3 Q code
-         tcCIQ6,      ///< BeiDou B3 I+Q code
-         tcCA1,       ///< BeiDou B1A code
-         tcCCD1,      ///< BeiDou B1C D code
-         tcCCDP1,     ///< BeiDou B1C D+P code
-         tcCCP1,      ///< BeiDou B1C P code
-         tcCI2ab,     ///< BeiDou B2a+b I code
-         tcCIQ2ab,    ///< BeiDou B2a+B I+Q code
-         tcCQ2ab,     ///< BeiDou B2a+B Q code
-         tcCI2a,      ///< BeiDou B2a I code
-         tcCIQ2a,     ///< BeiDou B2a I+Q code
-         tcCQ2a,      ///< BeiDou B2a Q code
-         tcCI2b,      ///< BeiDou B2b I code
-         tcCIQ2b,     ///< BeiDou B2b I+Q code
-         tcCQ2b,      ///< BeiDou B2b Q code
-         tcCodelessC, ///< BeiDou codeless tracking
-         tcCIQ3A,     ///< BeiDou B3A I+Q code
-
-         tcIA5,       ///< IRNSS L5 SPS
-         tcIB5,       ///< IRNSS L5 RS(D)
-         tcIC5,       ///< IRNSS L5 RS(P)
-         tcIX5,       ///< IRNSS L5 B+C
-         tcIA9,       ///< IRNSS S-band SPS
-         tcIB9,       ///< IRNSS S-band RS(D)
-         tcIC9,       ///< INRSS S-band RS(P)
-         tcIX9,       ///< IRNSS S-band B+C
-
-         tcUndefined, ///< Code is known to be undefined (as opposed to unknown)
-         tcLast,      ///< Used to verify that all items are described at compile time
-      };
 
          /// empty constructor, creates a wildcard object.
       ObsID()
-            : type(otUnknown), band(CarrierBand::Unknown), code(tcUnknown),
+            : type(otUnknown), band(CarrierBand::Unknown),
+              code(TrackingCode::Unknown),
               rinexVersion(Rinex3ObsBase::currentVersion)
       {}
 
@@ -352,10 +228,6 @@ namespace gpstk
       static std::string asString(ObservationType e) throw();
          /// Convert a string name to an ObservationType
       static ObservationType asObservationType(const std::string& s) throw();
-         /// Convert a TrackingCode to a whitespace-free string name.
-      static std::string asString(TrackingCode e) throw();
-         /// Convert a string name to a TrackingCode
-      static TrackingCode asTrackingCode(const std::string& s) throw();
 
          // Note that these are the only data members of objects of this class.
       ObservationType  type;

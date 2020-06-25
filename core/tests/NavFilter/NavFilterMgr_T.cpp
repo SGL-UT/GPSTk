@@ -259,7 +259,7 @@ loadData()
          // for this test.
       tmp.carrier = (CarrierBand)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 3, ','));
-      tmp.code = (ObsID::TrackingCode)gpstk::StringUtils::asInt(
+      tmp.code = (gpstk::TrackingCode)gpstk::StringUtils::asInt(
          gpstk::StringUtils::word(line, 4, ','));
       tmp.timeStamp = recTime;
 

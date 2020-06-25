@@ -43,16 +43,16 @@
 namespace gpstk
 {
    // descriptions (strings) of each code, carrier and type
-   std::map< ObsID::TrackingCode,    std::string > ObsID::tcDesc;
+   std::map< TrackingCode,    std::string > ObsID::tcDesc;
    std::map< CarrierBand,     std::string > ObsID::cbDesc;
    std::map< ObsID::ObservationType, std::string > ObsID::otDesc;
    // mappings between code, carrier, type and characters
    std::map< char, ObsID::ObservationType> ObsID::char2ot;
    std::map< char, CarrierBand> ObsID::char2cb;
-   std::map< char, ObsID::TrackingCode> ObsID::char2tc;
+   std::map< char, TrackingCode> ObsID::char2tc;
    std::map< ObsID::ObservationType, char > ObsID::ot2char;
    std::map< CarrierBand, char > ObsID::cb2char;
-   std::map< ObsID::TrackingCode, char> ObsID::tc2char;
+   std::map< TrackingCode, char> ObsID::tc2char;
 
    // map of valid RINEX tracking codes, systems and frequency
    std::map<char, std::map<char, std::string> > ObsID::validRinexTrackingCodes;
@@ -101,7 +101,7 @@ namespace gpstk
             InvalidParameter e("Invalid channel number pseudo-obs ID " + strID);
             GPSTK_THROW(e);
          }
-         code = tcUndefined;
+         code = TrackingCode::Undefined;
       }
       if (ot == 'I')
       {
@@ -111,7 +111,7 @@ namespace gpstk
                                strID);
             GPSTK_THROW(e);
          }
-         code = tcUndefined;
+         code = TrackingCode::Undefined;
       }
 
       /// This next block takes care of fixing up the codes that are reused
@@ -121,12 +121,12 @@ namespace gpstk
          case 'G':    // GPS
       {
          if (tc=='X' && band==CarrierBand::L5)
-            code = tcIQ5;
+            code = TrackingCode::IQ5;
          if (band==CarrierBand::L1)
          {
-            if (tc=='X') code = tcG1X;
-            if (tc=='S') code = tcG1D;
-            if (tc=='L') code = tcG1P;
+            if (tc=='X') code = TrackingCode::G1X;
+            if (tc=='S') code = TrackingCode::G1D;
+            if (tc=='L') code = TrackingCode::G1P;
          }
          break;
       }
@@ -169,8 +169,8 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcCA:   code = tcC;  break;
-               case tcC2LM: code = tcBC; break;
+               case TrackingCode::CA:   code = TrackingCode::C;  break;
+               case TrackingCode::C2LM: code = TrackingCode::BC; break;
                default: break;
             }
          }
@@ -178,26 +178,26 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcCA:
-                  code = tcC6;
+               case TrackingCode::CA:
+                  code = TrackingCode::C6;
                   break;
-               case tcC2LM:
-                  code = tcBC6;
+               case TrackingCode::C2LM:
+                  code = TrackingCode::BC6;
                   break;
-               case tcA:
-                  code = tcA6;
+               case TrackingCode::A:
+                  code = TrackingCode::A6;
                   break;
-               case tcB:
-                  code = tcB6;
+               case TrackingCode::B:
+                  code = TrackingCode::B6;
                   break;
-               case tcC:
-                  code = tcC6;
+               case TrackingCode::C:
+                  code = TrackingCode::C6;
                   break;
-               case tcBC:
-                  code = tcBC6;
+               case TrackingCode::BC:
+                  code = TrackingCode::BC6;
                   break;
-               case tcABC:
-                  code = tcABC6;
+               case TrackingCode::ABC:
+                  code = TrackingCode::ABC6;
                   break;
                default:
                   break;
@@ -207,9 +207,9 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcI5:   code = tcIE5a;  break;
-               case tcQ5:   code = tcQE5a;  break;
-               case tcC2LM: code = tcIQE5a; break;
+               case TrackingCode::I5:   code = TrackingCode::IE5a;  break;
+               case TrackingCode::Q5:   code = TrackingCode::QE5a;  break;
+               case TrackingCode::C2LM: code = TrackingCode::IQE5a; break;
                default: break;
             }
          }
@@ -217,9 +217,9 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcI5:   code = tcIE5b;  break;
-               case tcQ5:   code = tcQE5b;  break;
-               case tcC2LM: code = tcIQE5b; break;
+               case TrackingCode::I5:   code = TrackingCode::IE5b;  break;
+               case TrackingCode::Q5:   code = TrackingCode::QE5b;  break;
+               case TrackingCode::C2LM: code = TrackingCode::IQE5b; break;
                default: break;
             }
          }
@@ -227,9 +227,9 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcI5:   code = tcIE5;  break;
-               case tcQ5:   code = tcQE5;  break;
-               case tcC2LM: code = tcIQE5; break;
+               case TrackingCode::I5:   code = TrackingCode::IE5;  break;
+               case TrackingCode::Q5:   code = TrackingCode::QE5;  break;
+               case TrackingCode::C2LM: code = TrackingCode::IQE5; break;
                default: break;
             }
          }
@@ -250,32 +250,32 @@ namespace gpstk
             case CarrierBand::G2:
                switch (code)
                {
-                  case tcCA: code = tcGCA; break;
-                  case tcP: code = tcGP; break;
+                  case TrackingCode::CA: code = TrackingCode::GCA; break;
+                  case TrackingCode::P: code = TrackingCode::GP; break;
                }
                break;
             case CarrierBand::G1a:
                switch (code)
                {
-                  case tcA: code = tcL1OCD; break;
-                  case tcB: code = tcL1OCP; break;
-                  case tcIQR3: case tcC2LM: code = tcL1OC; break;
+                  case TrackingCode::A: code = TrackingCode::L1OCD; break;
+                  case TrackingCode::B: code = TrackingCode::L1OCP; break;
+                  case TrackingCode::IQR3: case TrackingCode::C2LM: code = TrackingCode::L1OC; break;
                }
                break;
             case CarrierBand::G2a:
                switch (code)
                {
-                  case tcA: code = tcL2CSI; break;
-                  case tcB: code = tcL2OCP; break;
-                  case tcIQR3: case tcC2LM: code = tcL2CSIOCp; break;
+                  case TrackingCode::A: code = TrackingCode::L2CSI; break;
+                  case TrackingCode::B: code = TrackingCode::L2OCP; break;
+                  case TrackingCode::IQR3: case TrackingCode::C2LM: code = TrackingCode::L2CSIOCp; break;
                }
                break;
             case CarrierBand::G3:
                switch (code)
                {
-                  case tcI5: code = tcIR3; break;
-                  case tcQ5: code = tcQR3; break;
-                  case tcC2LM: case tcG1X: code = tcIQR3; break;
+                  case TrackingCode::I5: code = TrackingCode::IR3; break;
+                  case TrackingCode::Q5: code = TrackingCode::QR3; break;
+                  case TrackingCode::C2LM: case TrackingCode::G1X: code = TrackingCode::IQR3; break;
                }
                break;
          }
@@ -285,10 +285,10 @@ namespace gpstk
       {
          switch (code)
          {
-            case tcCA: code = tcSCA; break;     // 'C'
-            case tcI5: code = tcSI5; break;     // 'I'
-            case tcQ5: code = tcSQ5; break;     // 'Q'
-            case tcC2LM: case tcG1X: code = tcSIQ5; break;  // 'X'
+            case TrackingCode::CA: code = TrackingCode::SCA; break;     // 'C'
+            case TrackingCode::I5: code = TrackingCode::SI5; break;     // 'I'
+            case TrackingCode::Q5: code = TrackingCode::SQ5; break;     // 'Q'
+            case TrackingCode::C2LM: case TrackingCode::G1X: code = TrackingCode::SIQ5; break;  // 'X'
             default: break;
          }
          break;
@@ -297,36 +297,36 @@ namespace gpstk
       {
          if(band == CarrierBand::L1) switch (code)
          {
-            case tcCA: code = tcJCA; break;     // 'C'
-            case tcC2M: case tcG1D: code = tcJD1; break;    // 'S'
-            case tcC2L: case tcG1P: code = tcJP1; break;    // 'L'
-            case tcC2LM: case tcG1X: code = tcJX1; break;   // 'X'
-            case tcABC: code = tcJZ1; break;    // 'Z'
+            case TrackingCode::CA: code = TrackingCode::JCA; break;     // 'C'
+            case TrackingCode::C2M: case TrackingCode::G1D: code = TrackingCode::JD1; break;    // 'S'
+            case TrackingCode::C2L: case TrackingCode::G1P: code = TrackingCode::JP1; break;    // 'L'
+            case TrackingCode::C2LM: case TrackingCode::G1X: code = TrackingCode::JX1; break;   // 'X'
+            case TrackingCode::ABC: code = TrackingCode::JZ1; break;    // 'Z'
             default: break;
          }
          if(band == CarrierBand::L2) switch (code)
          {
-            case tcC2M: case tcG1D: code = tcJM2; break;    // 'S'
-            case tcC2L: case tcG1P: code = tcJL2; break;    // 'L'
-            case tcC2LM: case tcG1X: code = tcJX2; break;   // 'X'
+            case TrackingCode::C2M: case TrackingCode::G1D: code = TrackingCode::JM2; break;    // 'S'
+            case TrackingCode::C2L: case TrackingCode::G1P: code = TrackingCode::JL2; break;    // 'L'
+            case TrackingCode::C2LM: case TrackingCode::G1X: code = TrackingCode::JX2; break;   // 'X'
             default: break;
          }
          if(band == CarrierBand::L5) switch (code)
          {
-            case tcI5: code = tcJI5; break;     // 'I'
-            case tcQ5: code = tcJQ5; break;     // 'Q'
-            case tcC2LM: code = tcJIQ5; break;  // 'X'
-            case tcD: code = tcJI5S; break;
-            case tcP: code = tcJQ5S; break;
-            case tcABC: code = tcJIQ5S; break;
+            case TrackingCode::I5: code = TrackingCode::JI5; break;     // 'I'
+            case TrackingCode::Q5: code = TrackingCode::JQ5; break;     // 'Q'
+            case TrackingCode::C2LM: code = TrackingCode::JIQ5; break;  // 'X'
+            case TrackingCode::D: code = TrackingCode::JI5S; break;
+            case TrackingCode::P: code = TrackingCode::JQ5S; break;
+            case TrackingCode::ABC: code = TrackingCode::JIQ5S; break;
             default: break;
          }
          if(band == CarrierBand::E6) switch (code)
          {
-            case tcC2M: case tcG1D: code = tcJI6; break;    // 'S'
-            case tcC2L: case tcG1P: code = tcJQ6; break;    // 'L'
-            case tcC2LM: case tcG1X: code = tcJIQ6; break;  // 'X'
-            case tcABC: code = tcJDE6; break;
+            case TrackingCode::C2M: case TrackingCode::G1D: code = TrackingCode::JI6; break;    // 'S'
+            case TrackingCode::C2L: case TrackingCode::G1P: code = TrackingCode::JQ6; break;    // 'L'
+            case TrackingCode::C2LM: case TrackingCode::G1X: code = TrackingCode::JIQ6; break;  // 'X'
+            case TrackingCode::ABC: code = TrackingCode::JDE6; break;
             default: break;
          }
          break;
@@ -355,15 +355,15 @@ namespace gpstk
             case CarrierBand::B1: // B1-2
                switch (code)
                {
-                  case tcI5:     // 'I'
-                     code = tcCI1;
+                  case TrackingCode::I5:     // 'I'
+                     code = TrackingCode::CI1;
                      break;
-                  case tcQ5:     // 'Q'
-                     code = tcCQ1;
+                  case TrackingCode::Q5:     // 'Q'
+                     code = TrackingCode::CQ1;
                      break;
-                  case tcC2LM:   // 'X'
-                  case tcG1X:
-                     code = tcCIQ1;
+                  case TrackingCode::C2LM:   // 'X'
+                  case TrackingCode::G1X:
+                     code = TrackingCode::CIQ1;
                      break;
                   default:
                      break;
@@ -372,89 +372,89 @@ namespace gpstk
             case CarrierBand::L1: // B1
                switch (code)
                {
-                  case tcD:
-                     code = tcCCD1;
+                  case TrackingCode::D:
+                     code = TrackingCode::CCD1;
                      break;
-                  case tcP:
-                     code = tcCCP1;
+                  case TrackingCode::P:
+                     code = TrackingCode::CCP1;
                      break;
-                  case tcC2LM:
-                     code = tcCCDP1;
+                  case TrackingCode::C2LM:
+                     code = TrackingCode::CCDP1;
                      break;
-                  case tcA:
-                     code = tcCA1;
+                  case TrackingCode::A:
+                     code = TrackingCode::CA1;
                      break;
-                  case tcN:
-                     code = tcCodelessC;
+                  case TrackingCode::N:
+                     code = TrackingCode::CodelessC;
                      break;
                }
                break;
             case CarrierBand::L5: // B2a
                switch (code)
                {
-                  case tcD:
-                     code = tcCI2a;
+                  case TrackingCode::D:
+                     code = TrackingCode::CI2a;
                      break;
-                  case tcP:
-                     code = tcCQ2a;
+                  case TrackingCode::P:
+                     code = TrackingCode::CQ2a;
                      break;
-                  case tcC2LM:
-                     code = tcCIQ2a;
+                  case TrackingCode::C2LM:
+                     code = TrackingCode::CIQ2a;
                      break;
                }
                break;
             case CarrierBand::B2: // B2b
                switch (code)
                {
-                  case tcI5:
-                     code = tcCI7;
+                  case TrackingCode::I5:
+                     code = TrackingCode::CI7;
                      break;
-                  case tcQ5:
-                     code = tcCQ7;
+                  case TrackingCode::Q5:
+                     code = TrackingCode::CQ7;
                      break;
-                  case tcC2LM:
-                     code = tcCIQ7;
+                  case TrackingCode::C2LM:
+                     code = TrackingCode::CIQ7;
                      break;
-                  case tcD:
-                     code = tcCI2b;
+                  case TrackingCode::D:
+                     code = TrackingCode::CI2b;
                      break;
-                  case tcP:
-                     code = tcCQ2b;
+                  case TrackingCode::P:
+                     code = TrackingCode::CQ2b;
                      break;
-                  case tcABC:
-                     code = tcCIQ2b;
+                  case TrackingCode::ABC:
+                     code = TrackingCode::CIQ2b;
                      break;
                }
                break;
             case CarrierBand::E5ab:
                switch (code)
                {
-                  case tcD:
-                     code = tcCI2ab;
+                  case TrackingCode::D:
+                     code = TrackingCode::CI2ab;
                      break;
-                  case tcP:
-                     code = tcCQ2ab;
+                  case TrackingCode::P:
+                     code = TrackingCode::CQ2ab;
                      break;
-                  case tcC2LM:
-                     code = tcCIQ2ab;
+                  case TrackingCode::C2LM:
+                     code = TrackingCode::CIQ2ab;
                      break;
                }
                break;
             case CarrierBand::B3: // B3
                switch (code)
                {
-                  case tcI5:     // 'I'
-                     code = tcCI6;
+                  case TrackingCode::I5:     // 'I'
+                     code = TrackingCode::CI6;
                      break;
-                  case tcQ5:     // 'Q'
-                     code = tcCQ6;
+                  case TrackingCode::Q5:     // 'Q'
+                     code = TrackingCode::CQ6;
                      break;
-                  case tcC2LM:   // 'X'
-                  case tcG1X:
-                     code = tcCIQ6;
+                  case TrackingCode::C2LM:   // 'X'
+                  case TrackingCode::G1X:
+                     code = TrackingCode::CIQ6;
                      break;
-                  case tcA:
-                     code = tcCIQ3A;
+                  case TrackingCode::A:
+                     code = TrackingCode::CIQ3A;
                      break;
                   default:
                      break;
@@ -463,15 +463,15 @@ namespace gpstk
             case CarrierBand::E5b: 
                switch (code)
                {
-                  case tcI5:     // 'I'
-                     code = tcCI7;
+                  case TrackingCode::I5:     // 'I'
+                     code = TrackingCode::CI7;
                      break;
-                  case tcQ5:     // 'Q'
-                     code = tcCQ7;
+                  case TrackingCode::Q5:     // 'Q'
+                     code = TrackingCode::CQ7;
                      break;
-                  case tcC2LM:   // 'X'
-                  case tcG1X:
-                     code = tcCIQ7;
+                  case TrackingCode::C2LM:   // 'X'
+                  case TrackingCode::G1X:
+                     code = TrackingCode::CIQ7;
                      break;
                   default:
                      break;
@@ -486,10 +486,10 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcCA:   code = tcIC5; break;   // 'C'
-               case tcA:    code = tcIA5; break;   // 'A'
-               case tcB:    code = tcIB5; break;   // 'B'
-               case tcC2LM: case tcG1X: code = tcIX5; break;   // 'X'
+               case TrackingCode::CA:   code = TrackingCode::IC5; break;   // 'C'
+               case TrackingCode::A:    code = TrackingCode::IA5; break;   // 'A'
+               case TrackingCode::B:    code = TrackingCode::IB5; break;   // 'B'
+               case TrackingCode::C2LM: case TrackingCode::G1X: code = TrackingCode::IX5; break;   // 'X'
             default: break;
             }
          }
@@ -497,10 +497,10 @@ namespace gpstk
          {
             switch (code)
             {
-               case tcCA:   code = tcIC9; break;   // 'C'
-               case tcA:    code = tcIA9; break;   // 'A'
-               case tcB:    code = tcIB9; break;   // 'B'
-               case tcC2LM: case tcG1X: code = tcIX9; break;   // 'X'
+               case TrackingCode::CA:   code = TrackingCode::IC9; break;   // 'C'
+               case TrackingCode::A:    code = TrackingCode::IA9; break;   // 'A'
+               case TrackingCode::B:    code = TrackingCode::IB9; break;   // 'B'
+               case TrackingCode::C2LM: case TrackingCode::G1X: code = TrackingCode::IX9; break;   // 'X'
             default: break;
             }
          }
@@ -584,7 +584,8 @@ namespace gpstk
       bool ot = type == otAny || right.type == otAny || type == right.type;
       bool cb = band == CarrierBand::Any || right.band == CarrierBand::Any ||
          band == right.band;
-      bool tc = code == tcAny || right.code == tcAny || code == right.code;
+      bool tc = code == TrackingCode::Any || right.code == TrackingCode::Any ||
+         code == right.code;
       return ot && cb && tc;
    }
 
@@ -692,340 +693,5 @@ namespace gpstk
       if (s == "Undefined")
          return otUndefined;
       return otUnknown;
-   }
-
-
-   std::string ObsID ::
-   asString(TrackingCode e) throw()
-   {
-      switch (e)
-      {
-         case tcCA:        return "CA";
-         case tcN:         return "N";
-         case tcI5:        return "I5";
-         case tcG1D:       return "G1D";
-         case tcG1X:       return "G1X";
-         case tcG1P:       return "G1P";
-         case tcC2LM:      return "C2LM";
-         case tcC2L:       return "C2L";
-         case tcC2M:       return "C2M";
-         case tcIQ5:       return "IQ5";
-         case tcM:         return "M";
-         case tcP:         return "P";
-         case tcQ5:        return "Q5";
-         case tcD:         return "D";
-         case tcY:         return "Y";
-         case tcW:         return "W";
-         case tcL1OCD:     return "L1OCD";
-         case tcL1OCP:     return "L1OCP";
-         case tcL1OC:      return "L1OC";
-         case tcL2CSIOCp:  return "L2CSIOCp";
-         case tcL2CSI:     return "L2CSI";
-         case tcL2OCP:     return "L2OCP";
-         case tcIR3:       return "IR3";
-         case tcIQR3:      return "IQR3";
-         case tcQR3:       return "QR3";
-         case tcGP:        return "GP";
-         case tcGCA:       return "GCA";
-         case tcA:         return "A";
-         case tcABC:       return "ABC";
-         case tcB:         return "B";
-         case tcBC:        return "BC";
-         case tcC:         return "C";
-         case tcIE5:       return "IE5";
-         case tcIQE5:      return "IQE5";
-         case tcQE5:       return "QE5";
-         case tcIE5a:      return "IE5a";
-         case tcIQE5a:     return "IQE5a";
-         case tcQE5a:      return "QE5a";
-         case tcIE5b:      return "IE5b";
-         case tcIQE5b:     return "IQE5b";
-         case tcQE5b:      return "QE5b";
-         case tcA6:        return "A6";
-         case tcABC6:      return "ABC6";
-         case tcB6:        return "B6";
-         case tcBC6:       return "BC6";
-         case tcC6:        return "C6";
-         case tcSCA:       return "SCA";
-         case tcSI5:       return "SI5";
-         case tcSIQ5:      return "SIQ5";
-         case tcSQ5:       return "SQ5";
-         case tcJCA:       return "JCA";
-         case tcJD1:       return "JD1";
-         case tcJX1:       return "JX1";
-         case tcJP1:       return "JP1";
-         case tcJZ1:       return "JZ1";
-         case tcJL2:       return "JL2";
-         case tcJM2:       return "JM2";
-         case tcJX2:       return "JX2";
-         case tcJI5:       return "JI5";
-         case tcJIQ5:      return "JIQ5";
-         case tcJQ5:       return "JQ5";
-         case tcJI5S:      return "JI5S";
-         case tcJIQ5S:     return "JIQ5S";
-         case tcJQ5S:      return "JQ5S";
-         case tcJI6:       return "JI6";
-         case tcJIQ6:      return "JIQ6";
-         case tcJQ6:       return "JQ6";
-         case tcJDE6:      return "JDE6";
-         case tcJD6:       return "JD6";
-         case tcJE6:       return "JE6";
-         case tcCIQ1:      return "CIQ1";
-         case tcCA1:       return "CA1";
-         case tcCCD1:      return "CCD1";
-         case tcCCDP1:     return "CCDP1";
-         case tcCCP1:      return "CCP1";
-         case tcCI1:       return "CI1";
-         case tcCQ1:       return "CQ1";
-         case tcCI2ab:     return "CI2ab";
-         case tcCIQ2ab:    return "CIQ2ab";
-         case tcCQ2ab:     return "CQ2ab";
-         case tcCIQ7:      return "CIQ7";
-         case tcCI2a:      return "CI2a";
-         case tcCIQ2a:     return "CIQ2a";
-         case tcCQ2a:      return "CQ2a";
-         case tcCI2b:      return "CI2b";
-         case tcCIQ2b:     return "CIQ2b";
-         case tcCQ2b:      return "CQ2b";
-         case tcCI7:       return "CI7";
-         case tcCQ7:       return "CQ7";
-         case tcCIQ6:      return "CIQ6";
-         case tcCI6:       return "CI6";
-         case tcCQ6:       return "CQ6";
-         case tcCodelessC: return "CodelessC";
-         case tcCIQ3A:     return "CIQ3A";
-         case tcIB5:       return "IB5";
-         case tcIX5:       return "IX5";
-         case tcIC5:       return "IC5";
-         case tcIB9:       return "IB9";
-         case tcIX9:       return "IX9";
-         case tcIC9:       return "IC9";
-         case tcIA5:       return "IA5";
-         case tcIA9:       return "IA9";
-         case tcUnknown:   return "Unknown";
-         case tcAny:       return "Any";
-         case tcUndefined: return "Undefined";
-         case tcLast:      return "Last";
-         default:          return "???";
-      }
-   }
-
-
-   ObsID::TrackingCode ObsID ::
-   asTrackingCode(const std::string& s) throw()
-   {
-      if (s == "CA")
-         return tcCA;
-      if (s == "N")
-         return tcN;
-      if (s == "I5")
-         return tcI5;
-      if (s == "G1D")
-         return tcG1D;
-      if (s == "G1X")
-         return tcG1X;
-      if (s == "G1P")
-         return tcG1P;
-      if (s == "C2LM")
-         return tcC2LM;
-      if (s == "C2L")
-         return tcC2L;
-      if (s == "C2M")
-         return tcC2M;
-      if (s == "IQ5")
-         return tcIQ5;
-      if (s == "M")
-         return tcM;
-      if (s == "P")
-         return tcP;
-      if (s == "Q5")
-         return tcQ5;
-      if (s == "D")
-         return tcD;
-      if (s == "Y")
-         return tcY;
-      if (s == "W")
-         return tcW;
-      if (s == "L1OCD")
-         return tcL1OCD;
-      if (s == "L1OCP")
-         return tcL1OCP;
-      if (s == "L1OC")
-         return tcL1OC;
-      if (s == "L2CSIOCp")
-         return tcL2CSIOCp;
-      if (s == "L2CSI")
-         return tcL2CSI;
-      if (s == "L2OCP")
-         return tcL2OCP;
-      if (s == "IR3")
-         return tcIR3;
-      if (s == "IQR3")
-         return tcIQR3;
-      if (s == "QR3")
-         return tcQR3;
-      if (s == "GP")
-         return tcGP;
-      if (s == "GCA")
-         return tcGCA;
-      if (s == "A")
-         return tcA;
-      if (s == "ABC")
-         return tcABC;
-      if (s == "B")
-         return tcB;
-      if (s == "BC")
-         return tcBC;
-      if (s == "C")
-         return tcC;
-      if (s == "IE5")
-         return tcIE5;
-      if (s == "IQE5")
-         return tcIQE5;
-      if (s == "QE5")
-         return tcQE5;
-      if (s == "IE5a")
-         return tcIE5a;
-      if (s == "IQE5a")
-         return tcIQE5a;
-      if (s == "QE5a")
-         return tcQE5a;
-      if (s == "IE5b")
-         return tcIE5b;
-      if (s == "IQE5b")
-         return tcIQE5b;
-      if (s == "QE5b")
-         return tcQE5b;
-      if (s == "A6")
-         return tcA6;
-      if (s == "ABC6")
-         return tcABC6;
-      if (s == "B6")
-         return tcB6;
-      if (s == "BC6")
-         return tcBC6;
-      if (s == "C6")
-         return tcC6;
-      if (s == "SCA")
-         return tcSCA;
-      if (s == "SI5")
-         return tcSI5;
-      if (s == "SIQ5")
-         return tcSIQ5;
-      if (s == "SQ5")
-         return tcSQ5;
-      if (s == "JCA")
-         return tcJCA;
-      if (s == "JD1")
-         return tcJD1;
-      if (s == "JX1")
-         return tcJX1;
-      if (s == "JP1")
-         return tcJP1;
-      if (s == "JZ1")
-         return tcJZ1;
-      if (s == "JL2")
-         return tcJL2;
-      if (s == "JM2")
-         return tcJM2;
-      if (s == "JX2")
-         return tcJX2;
-      if (s == "JI5")
-         return tcJI5;
-      if (s == "JIQ5")
-         return tcJIQ5;
-      if (s == "JQ5")
-         return tcJQ5;
-      if (s == "JI5S")
-         return tcJI5S;
-      if (s == "JIQ5S")
-         return tcJIQ5S;
-      if (s == "JQ5S")
-         return tcJQ5S;
-      if (s == "JI6")
-         return tcJI6;
-      if (s == "JIQ6")
-         return tcJIQ6;
-      if (s == "JQ6")
-         return tcJQ6;
-      if (s == "JDE6")
-         return tcJDE6;
-      if (s == "JD6")
-         return tcJD6;
-      if (s == "JE6")
-         return tcJE6;
-      if (s == "CIQ1")
-         return tcCIQ1;
-      if (s == "CA1")
-         return tcCA1;
-      if (s == "CCD1")
-         return tcCCD1;
-      if (s == "CCDP1")
-         return tcCCDP1;
-      if (s == "CCP1")
-         return tcCCP1;
-      if (s == "CI1")
-         return tcCI1;
-      if (s == "CQ1")
-         return tcCQ1;
-      if (s == "CI2ab")
-         return tcCI2ab;
-      if (s == "CIQ2ab")
-         return tcCIQ2ab;
-      if (s == "CQ2ab")
-         return tcCQ2ab;
-      if (s == "CIQ7")
-         return tcCIQ7;
-      if (s == "CI2a")
-         return tcCI2a;
-      if (s == "CIQ2a")
-         return tcCIQ2a;
-      if (s == "CQ2a")
-         return tcCQ2a;
-      if (s == "CI2b")
-         return tcCI2b;
-      if (s == "CIQ2b")
-         return tcCIQ2b;
-      if (s == "CQ2b")
-         return tcCQ2b;
-      if (s == "CI7")
-         return tcCI7;
-      if (s == "CQ7")
-         return tcCQ7;
-      if (s == "CIQ6")
-         return tcCIQ6;
-      if (s == "CI6")
-         return tcCI6;
-      if (s == "CQ6")
-         return tcCQ6;
-      if (s == "CodelessC")
-         return tcCodelessC;
-      if (s == "CIQ3A")
-         return tcCIQ3A;
-      if (s == "IB5")
-         return tcIB5;
-      if (s == "IX5")
-         return tcIX5;
-      if (s == "IC5")
-         return tcIC5;
-      if (s == "IB9")
-         return tcIB9;
-      if (s == "IX9")
-         return tcIX9;
-      if (s == "IC9")
-         return tcIC9;
-      if (s == "IA5")
-         return tcIA5;
-      if (s == "IA9")
-         return tcIA9;
-      if (s == "Unknown")
-         return tcUnknown;
-      if (s == "Any")
-         return tcAny;
-      if (s == "Undefined")
-         return tcUndefined;
-      if (s == "Last")
-         return tcLast;
-      return tcUnknown;
    }
 }

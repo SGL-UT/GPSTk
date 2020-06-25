@@ -94,7 +94,7 @@ namespace gpstk
       bool hasSignal(const gpstk::SatID& sidr,
                      const gpstk::CommonTime& ct,
                      const gpstk::CarrierBand cb,
-                     const gpstk::ObsID::TrackingCode tc) const;
+                     const gpstk::TrackingCode tc) const;
          /**
           * @throw InvalidRequest
           */
