@@ -45,6 +45,7 @@
 #include <vector>
 #include <functional>
 #include <map>
+#include <set>
 
 #include "CommonTime.hpp"
 
@@ -104,6 +105,7 @@ namespace gpstk
 
             // see CommonTime for more information on the following elements
          year,          ///< 'y' or 'Y' A field for a year
+         firstTime = year, ///< First enumeration value pertaining to time
          month,         ///< 'm' A field for month (numeric)
          dayofmonth,    ///< 'd' A field for day-of-month  
          hour,          ///< 'H' A field for hours (out of 24)
@@ -180,9 +182,17 @@ namespace gpstk
 
          /**
           * Given a field type, returns true if the FileSpec has that field.
-          * @throw FileSpecException when you pass in an invalid FileSpecType
           */
-      virtual bool hasField(const FileSpecType) const;
+      virtual bool hasField(FileSpecType fst) const
+      { return fileSpecSet.count(fst) != 0; }
+
+         /// Return true if this FileSpec has any time fields.
+      bool hasTimeField() const
+      { return fileSpecSet.lower_bound(firstTime) != fileSpecSet.end(); }
+
+         /// Return true if this FileSpec has any non-time fields.
+      bool hasNonTimeField() const
+      { return (!fileSpecSet.empty() && ((*fileSpecSet.begin()) < firstTime)); }
 
          /** 
           * If possible, returns a CommonTime object with the time the file
@@ -292,6 +302,8 @@ namespace gpstk
 
          /// Holds all of the FileSpecElements for this FileSpec
       std::vector<FileSpecElement> fileSpecList;
+         /// Set of all FileSpecType values present in this FileSpec
+      std::set<FileSpecType> fileSpecSet;
          /// Holds the string that the fileSpecList was generated from
       std::string fileSpecString;
 

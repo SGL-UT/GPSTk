@@ -54,7 +54,7 @@ namespace gpstk
        * This is an abstract class (loadFile is pure virtual) used to
        * add a list of files and the interface to read files into a
        * datastore.  This is intended to support arbitrary file names,
-       * not a list of similiar file names. See the FileHunter
+       * not a list of similiar file names. See the FileSpecFind
        * framework for support of that type of file.
        */
    template <class HeaderType> class FileStore
