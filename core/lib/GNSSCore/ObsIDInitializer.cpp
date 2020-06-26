@@ -65,7 +65,6 @@ namespace gpstk {
 
       ObsID::cbDesc[CarrierBand::Unknown]   = "UnknownBand";   //Rinex (sp)
       ObsID::cbDesc[CarrierBand::Any]       = "AnyBand";       //Rinex *
-      ObsID::cbDesc[CarrierBand::Zero]      = "";              //Rinex  
       ObsID::cbDesc[CarrierBand::L1]        = "L1";            //Rinex 1
       ObsID::cbDesc[CarrierBand::L2]        = "L2";            //Rinex 2
       ObsID::cbDesc[CarrierBand::L5]        = "L5";            //Rinex 5

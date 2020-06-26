@@ -949,7 +949,6 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                case CarrierBand::Any:
                case CarrierBand::Undefined:
                case CarrierBand::Last:
-               case CarrierBand::Zero:
                      // skip the above tracking codes
                   continue;
             }

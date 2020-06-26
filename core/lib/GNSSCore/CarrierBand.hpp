@@ -10,7 +10,6 @@ namespace gpstk
    {
       Unknown,   ///< Uninitialized value
       Any,       ///< Used to match any carrier band
-      Zero,      ///< Used with the channel observation type (see RINEx3 section 5.13)
       L1,        ///< GPS L1, Galileo E1, SBAS L1, QZSS L1, BeiDou L1
       L2,        ///< GPS L2, QZSS L2
       L5,        ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5, BeiDou B2a, NavIC L5

@@ -8,7 +8,6 @@ namespace gpstk
       {
          switch (e)
          {
-            case CarrierBand::Zero:      return "Zero";
             case CarrierBand::L1L2:      return "L1L2";
             case CarrierBand::L1:        return "L1";
             case CarrierBand::L2:        return "L2";
@@ -36,8 +35,6 @@ namespace gpstk
 
       CarrierBand asCarrierBand(const std::string& s) throw()
       {
-         if (s == "Zero")
-            return CarrierBand::Zero;
          if (s == "L1L2")
             return CarrierBand::L1L2;
          if (s == "L1")
