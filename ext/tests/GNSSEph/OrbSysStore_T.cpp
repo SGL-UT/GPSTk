@@ -554,13 +554,13 @@ createAndDump_LNAV()
       // Define signals of interest
    ObsID oidAr[] =
    {
-      ObsID(ObsID::otUnknown, CarrierBand::L1, TrackingCode::CA),    // L1 C/A  - 0
-      ObsID(ObsID::otUnknown, CarrierBand::L1, TrackingCode::P),     // L1 P    - 1
-      ObsID(ObsID::otUnknown, CarrierBand::L1, TrackingCode::Y),     // L2 Y    - 2
-      ObsID(ObsID::otUnknown, CarrierBand::L2, TrackingCode::C2LM),  // L2 CMCL - 3
-      ObsID(ObsID::otUnknown, CarrierBand::L1, TrackingCode::M),     // L1 M    - 4
-      ObsID(ObsID::otUnknown, CarrierBand::L5, TrackingCode::I5),    // L5 I    - 5
-      ObsID(ObsID::otUnknown, CarrierBand::L1, TrackingCode::G1D),   // L1C     - 6
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::CA),    // L1 C/A  - 0
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::P),     // L1 P    - 1
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::Y),     // L2 Y    - 2
+      ObsID(ObservationType::Unknown, CarrierBand::L2, TrackingCode::C2LM),  // L2 CMCL - 3
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::M),     // L1 M    - 4
+      ObsID(ObservationType::Unknown, CarrierBand::L5, TrackingCode::I5),    // L5 I    - 5
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::G1D),   // L1C     - 6
    };
 
       // Execute the test cases
@@ -858,7 +858,7 @@ setUpLNAV()
 
       // Convert the LNAV strings to PNB
    if (debugLevel) std::cout << "Building PNB from strings" << std::endl;
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
                           gpstk::CarrierBand::L1,
                           gpstk::TrackingCode::CA);
    gpstk::PackedNavBits msg;
@@ -876,10 +876,10 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID L2ObsID(gpstk::ObsID::otNavMsg,
+   gpstk::ObsID L2ObsID(gpstk::ObservationType::NavMsg,
                     gpstk::CarrierBand::L2,
                     gpstk::TrackingCode::C2LM);
-   gpstk::ObsID L5ObsID(gpstk::ObsID::otNavMsg,
+   gpstk::ObsID L5ObsID(gpstk::ObservationType::NavMsg,
                     gpstk::CarrierBand::L5,
                     gpstk::TrackingCode::I5);
    msgsExpectedToBeAdded = 4;

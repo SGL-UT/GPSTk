@@ -952,7 +952,7 @@ setUpLNAV()
    {
       std::cout << "Building PNB from strings" << std::endl;
    }
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
                           gpstk::CarrierBand::L1,
                           gpstk::TrackingCode::CA);
    gpstk::PackedNavBits msg;
@@ -1102,7 +1102,7 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
                           gpstk::CarrierBand::L2,
                           gpstk::TrackingCode::C2LM);
    typeDesc = "GPS_CNAV";
@@ -1314,7 +1314,7 @@ unsigned OrbAlmStore_T ::
 testUnhealthyLNav()
 {
    TUDEF("OrbAlmStore", "getSVHealth");
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
                           gpstk::CarrierBand::L1,
                           gpstk::TrackingCode::CA);
    OrbAlmStore oas;

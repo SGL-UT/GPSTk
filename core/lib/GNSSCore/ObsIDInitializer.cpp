@@ -45,23 +45,23 @@ namespace gpstk {
 
    ObsIDInitializer::ObsIDInitializer()
    {
-      ObsID::otDesc[ObsID::otUnknown]   = "UnknownType";   //Rinex (sp)
-      ObsID::otDesc[ObsID::otAny]       = "AnyType";       //Rinex *
-      ObsID::otDesc[ObsID::otRange]     = "pseudorange";   //Rinex C
-      ObsID::otDesc[ObsID::otPhase]     = "phase";         //Rinex L
-      ObsID::otDesc[ObsID::otDoppler]   = "doppler";       //Rinex D
-      ObsID::otDesc[ObsID::otSNR]       = "snr";           //Rinex S
-      ObsID::otDesc[ObsID::otChannel]   = "channel";       //Rinex  
-      ObsID::otDesc[ObsID::otDemodStat] = "demodStatus";
-      ObsID::otDesc[ObsID::otIono]      = "iono";          //Rinex  
-      ObsID::otDesc[ObsID::otSSI]       = "ssi";           //Rinex  
-      ObsID::otDesc[ObsID::otLLI]       = "lli";           //Rinex  
-      ObsID::otDesc[ObsID::otTrackLen]  = "tlen";          //Rinex  
-      ObsID::otDesc[ObsID::otNavMsg]    = "navmsg";        //Rinex
-      ObsID::otDesc[ObsID::otRngStdDev] = "rngSigma";
-      ObsID::otDesc[ObsID::otPhsStdDev] = "phsSigma";
-      ObsID::otDesc[ObsID::otFreqIndx]  = "freqIndx";
-      ObsID::otDesc[ObsID::otUndefined] = "undefined";     //Rinex -
+      ObsID::otDesc[ObservationType::Unknown]   = "UnknownType";   //Rinex (sp)
+      ObsID::otDesc[ObservationType::Any]       = "AnyType";       //Rinex *
+      ObsID::otDesc[ObservationType::Range]     = "pseudorange";   //Rinex C
+      ObsID::otDesc[ObservationType::Phase]     = "phase";         //Rinex L
+      ObsID::otDesc[ObservationType::Doppler]   = "doppler";       //Rinex D
+      ObsID::otDesc[ObservationType::SNR]       = "snr";           //Rinex S
+      ObsID::otDesc[ObservationType::Channel]   = "channel";       //Rinex  
+      ObsID::otDesc[ObservationType::DemodStat] = "demodStatus";
+      ObsID::otDesc[ObservationType::Iono]      = "iono";          //Rinex  
+      ObsID::otDesc[ObservationType::SSI]       = "ssi";           //Rinex  
+      ObsID::otDesc[ObservationType::LLI]       = "lli";           //Rinex  
+      ObsID::otDesc[ObservationType::TrackLen]  = "tlen";          //Rinex  
+      ObsID::otDesc[ObservationType::NavMsg]    = "navmsg";        //Rinex
+      ObsID::otDesc[ObservationType::RngStdDev] = "rngSigma";
+      ObsID::otDesc[ObservationType::PhsStdDev] = "phsSigma";
+      ObsID::otDesc[ObservationType::FreqIndx]  = "freqIndx";
+      ObsID::otDesc[ObservationType::Undefined] = "undefined";     //Rinex -
 
       ObsID::cbDesc[CarrierBand::Unknown]   = "UnknownBand";   //Rinex (sp)
       ObsID::cbDesc[CarrierBand::Any]       = "AnyBand";       //Rinex *
@@ -196,7 +196,7 @@ namespace gpstk {
 
       ObsID::tcDesc[TrackingCode::Undefined] = "undefined";
 
-      if (ObsID::otDesc.size() != (int)ObsID::otLast)
+      if (ObsID::otDesc.size() != (int)ObservationType::Last)
          std::cerr << "Error in otDesc" << std::endl;
       if (ObsID::cbDesc.size() != (int)CarrierBand::Last)
          std::cerr << "Error in cbDesc" << std::endl;
@@ -207,15 +207,15 @@ namespace gpstk {
       // in the Rinex 3 specification. If an application needs additional ObsID
       // types to be able to be translated to/from Rinex3, the additional types
       // must be added by the application.
-      ObsID::char2ot[' '] = ObsID::otUnknown;
-      ObsID::char2ot['*'] = ObsID::otAny;
-      ObsID::char2ot['C'] = ObsID::otRange;
-      ObsID::char2ot['L'] = ObsID::otPhase;
-      ObsID::char2ot['D'] = ObsID::otDoppler;
-      ObsID::char2ot['I'] = ObsID::otIono;
-      ObsID::char2ot['S'] = ObsID::otSNR;
-      ObsID::char2ot['X'] = ObsID::otChannel;
-      ObsID::char2ot['-'] = ObsID::otUndefined;
+      ObsID::char2ot[' '] = ObservationType::Unknown;
+      ObsID::char2ot['*'] = ObservationType::Any;
+      ObsID::char2ot['C'] = ObservationType::Range;
+      ObsID::char2ot['L'] = ObservationType::Phase;
+      ObsID::char2ot['D'] = ObservationType::Doppler;
+      ObsID::char2ot['I'] = ObservationType::Iono;
+      ObsID::char2ot['S'] = ObservationType::SNR;
+      ObsID::char2ot['X'] = ObservationType::Channel;
+      ObsID::char2ot['-'] = ObservationType::Undefined;
 
       ObsID::char2cb[' '] = CarrierBand::Unknown;
       ObsID::char2cb['*'] = CarrierBand::Any;
@@ -252,15 +252,15 @@ namespace gpstk {
 
       // Since some of the items in the enums don't have corresponding RINEX
       // definitions, make sure there is an entry for all values
-      for(int i=ObsID::otUnknown; i<ObsID::otLast; i++)
-         ObsID::ot2char[(ObsID::ObservationType)i] = ' ';
+      for (ObservationType i : ObservationTypeIterator())
+         ObsID::ot2char[i] = ' ';
       for (CarrierBand i : CarrierBandIterator())
          ObsID::cb2char[i] = ' ';
-      for(TrackingCode i : TrackingCodeIterator())
+      for (TrackingCode i : TrackingCodeIterator())
          ObsID::tc2char[i] = ' ';
 
       // Here the above three maps are reversed to speed up the runtime
-      for(std::map<char, ObsID::ObservationType>::const_iterator i=ObsID::char2ot.begin();
+      for(std::map<char, gpstk::ObservationType>::const_iterator i=ObsID::char2ot.begin();
            i != ObsID::char2ot.end(); i++)
          ObsID::ot2char[i->second] = i->first;
 

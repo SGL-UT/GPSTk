@@ -217,31 +217,31 @@ public:
        RinexObsID obsID1; //L1
        obsID1.band = CarrierBand::L1;
        obsID1.code = TrackingCode::P;
-       obsID1.type = ObsID::otPhase;
+       obsID1.type = ObservationType::Phase;
        newObsIds.push_back(obsID1);
 
        RinexObsID obsID2; //P1
        obsID2.band = CarrierBand::L1;
        obsID2.code = TrackingCode::P;
-       obsID2.type = ObsID::otRange;
+       obsID2.type = ObservationType::Range;
        newObsIds.push_back(obsID2);
 
        RinexObsID obsID3; //C1
        obsID3.band = CarrierBand::L1;
        obsID3.code = TrackingCode::CA;
-       obsID3.type = ObsID::otRange;
+       obsID3.type = ObservationType::Range;
        newObsIds.push_back(obsID3);
 
        RinexObsID obsID4; //L2
        obsID4.band = CarrierBand::L2;
        obsID4.code = TrackingCode::P;
-       obsID4.type = ObsID::otPhase;
+       obsID4.type = ObservationType::Phase;
        newObsIds.push_back(obsID4);
 
        RinexObsID obsID5;
        obsID5.band = CarrierBand::L2;
        obsID5.code = TrackingCode::P;
-       obsID5.type = ObsID::otRange;
+       obsID5.type = ObservationType::Range;
        newObsIds.push_back(obsID5);
 
        return newObsIds;

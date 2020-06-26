@@ -517,7 +517,7 @@ namespace gpstk
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
+      ObsID obsID(ObservationType::NavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
       ee.bcClock.loadData( satSys, obsID, PRNID, tocCT,
                         accFlag, healthy, af0, af1, af2);
 

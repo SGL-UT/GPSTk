@@ -58,7 +58,7 @@ public:
             // this eph will be removed by edit()
          gpstk::OrbitEph baleted;
          gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
-         gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
+         gpstk::ObsID obsID(gpstk::ObservationType::NavMsg,
                             gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
          baleted.dataLoadedFlag = true;
@@ -125,7 +125,7 @@ public:
 
          gpstk::OrbitEph to1;
          gpstk::SatID sat1(1, gpstk::SatelliteSystem::GPS);
-         gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
+         gpstk::ObsID obsID(gpstk::ObservationType::NavMsg,
                             gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
          to1.dataLoadedFlag = true;

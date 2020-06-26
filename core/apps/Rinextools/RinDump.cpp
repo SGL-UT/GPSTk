@@ -963,15 +963,14 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                         // skip the above tracking codes
                      continue;
                }
-               for(int i=0; i<ObsID::otLast; ++i)
+               for(ObservationType obsType : ObservationTypeIterator())
                {
-                  ObsID::ObservationType obsType = (ObsID::ObservationType)i;
                   switch (obsType)
                   {
-                     case ObsID::otUnknown:
-                     case ObsID::otAny:
-                     case ObsID::otUndefined:
-                     case ObsID::otLast:
+                     case ObservationType::Unknown:
+                     case ObservationType::Any:
+                     case ObservationType::Undefined:
+                     case ObservationType::Last:
                            // skip the above obs types
                         continue;
                   }
@@ -998,7 +997,7 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                         goodtags.push_back(tag);
                         string sys(
                            RinexSatID(string(1,tag[0])).systemString3());
-                        char type(ObsID::ot2char[ObsID::ObservationType(i)]);
+                        char type(ObsID::ot2char[obsType]);
                            /// @todo keep sys char ? id(tag.substr(1));
                         string id(tag);
                         string desc(asString(ObsID(tag, useVersion)));

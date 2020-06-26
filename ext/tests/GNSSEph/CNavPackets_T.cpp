@@ -160,7 +160,7 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg, 
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg, 
                     gpstk::CarrierBand::L1, 
                     gpstk::TrackingCode::G1D);
    typeDesc = "GPS_CNAV2";

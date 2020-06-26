@@ -45,12 +45,12 @@ namespace gpstk
    // descriptions (strings) of each code, carrier and type
    std::map< TrackingCode,    std::string > ObsID::tcDesc;
    std::map< CarrierBand,     std::string > ObsID::cbDesc;
-   std::map< ObsID::ObservationType, std::string > ObsID::otDesc;
+   std::map< gpstk::ObservationType, std::string > ObsID::otDesc;
    // mappings between code, carrier, type and characters
-   std::map< char, ObsID::ObservationType> ObsID::char2ot;
+   std::map< char, gpstk::ObservationType> ObsID::char2ot;
    std::map< char, CarrierBand> ObsID::char2cb;
    std::map< char, TrackingCode> ObsID::char2tc;
-   std::map< ObsID::ObservationType, char > ObsID::ot2char;
+   std::map< gpstk::ObservationType, char > ObsID::ot2char;
    std::map< CarrierBand, char > ObsID::cb2char;
    std::map< TrackingCode, char> ObsID::tc2char;
 
@@ -581,7 +581,8 @@ namespace gpstk
    bool ObsID::operator==(const ObsID& right) const
    {
          // Version comparison is intentionally left out.
-      bool ot = type == otAny || right.type == otAny || type == right.type;
+      bool ot = type == ObservationType::Any ||
+         right.type == ObservationType::Any || type == right.type;
       bool cb = band == CarrierBand::Any || right.band == CarrierBand::Any ||
          band == right.band;
       bool tc = code == TrackingCode::Any || right.code == TrackingCode::Any ||
@@ -625,73 +626,5 @@ namespace gpstk
    {
       p.dump(s);
       return s;
-   }
-
-
-   std::string ObsID ::
-   asString(ObservationType e) throw()
-   {
-      switch (e)
-      {
-         case otUnknown:   return "Unknown";
-         case otAny:       return "Any";
-         case otRange:     return "Range";
-         case otPhase:     return "Phase";
-         case otDoppler:   return "Doppler";
-         case otSNR:       return "SNR";
-         case otChannel:   return "Channel";
-         case otDemodStat: return "DemodStat";
-         case otIono:      return "Iono";
-         case otSSI:       return "SSI";
-         case otLLI:       return "LLI";
-         case otTrackLen:  return "TrackLen";
-         case otNavMsg:    return "NavMsg";
-         case otRngStdDev: return "RngStdDev";
-         case otPhsStdDev: return "PhsStdDev";
-         case otFreqIndx:  return "FreqIndx";
-         case otUndefined: return "Undefined";
-         default:          return "???";
-      }
-   }
-
-
-   ObsID::ObservationType ObsID ::
-   asObservationType(const std::string& s) throw()
-   {
-      if (s == "Unknown")
-         return otUnknown;
-      if (s == "Any")
-         return otAny;
-      if (s == "Range")
-         return otRange;
-      if (s == "Phase")
-         return otPhase;
-      if (s == "Doppler")
-         return otDoppler;
-      if (s == "SNR")
-         return otSNR;
-      if (s == "Channel")
-         return otChannel;
-      if (s == "DemodStat")
-         return otDemodStat;
-      if (s == "Iono")
-         return otIono;
-      if (s == "SSI")
-         return otSSI;
-      if (s == "LLI")
-         return otLLI;
-      if (s == "TrackLen")
-         return otTrackLen;
-      if (s == "NavMsg")
-         return otNavMsg;
-      if (s == "RngStdDev")
-         return otRngStdDev;
-      if (s == "PhsStdDev")
-         return otPhsStdDev;
-      if (s == "FreqIndx")
-         return otFreqIndx;
-      if (s == "Undefined")
-         return otUndefined;
-      return otUnknown;
    }
 }

@@ -16,6 +16,7 @@ using namespace gpstk;
 %include "SatelliteSystem.hpp"
 %include "CarrierBand.hpp"
 %include "TrackingCode.hpp"
+%include "ObservationType.hpp"
 
 // =============================================================
 //  Section 1: C++ template containers & typedefs
@@ -398,6 +399,7 @@ def renameEnums(prefix):
 renameEnums('SatelliteSystem')
 renameEnums('CarrierBand')
 renameEnums('TrackingCode')
+renameEnums('ObservationType')
 del renameEnums
 del IntEnum
 %}

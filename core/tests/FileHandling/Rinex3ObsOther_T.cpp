@@ -140,7 +140,7 @@ channelNumTest()
    TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GX2Y", cv)));
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
-   gpstk::RinexObsID forced(gpstk::ObsID::otChannel, gpstk::CarrierBand::L1,
+   gpstk::RinexObsID forced(gpstk::ObservationType::Channel, gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
    TUCATCH(hdr.mapObsTypes["G"].push_back(forced));
    hdr.sysPhaseShift["G"][roidValid][sid] = 54.321;
@@ -254,7 +254,7 @@ ionoDelayTest()
    TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI2Y", cv)));
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
-   gpstk::RinexObsID forced(gpstk::ObsID::otIono, gpstk::CarrierBand::L1,
+   gpstk::RinexObsID forced(gpstk::ObservationType::Iono, gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
    TUCATCH(hdr.mapObsTypes["G"].push_back(forced));
    hdr.sysPhaseShift["G"][roidValid][sid] = 54.321;

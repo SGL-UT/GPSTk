@@ -55,6 +55,7 @@
 #include "SatID.hpp"
 #include "ObsIDInitializer.hpp"
 #include "Rinex3ObsBase.hpp"
+#include "ObservationType.hpp"
 #include "CarrierBand.hpp"
 #include "TrackingCode.hpp"
 
@@ -75,33 +76,9 @@ namespace gpstk
    class ObsID
    {
    public:
-         /// The type of observation.
-      enum ObservationType
-      {
-         otUnknown,
-         otAny,       ///< Used to match any observation type
-         otRange,     ///< pseudorange, in meters
-         otPhase,     ///< accumulated phase, in cycles
-         otDoppler,   ///< Doppler, in Hz
-         otSNR,       ///< Signal strength, in dB-Hz
-         otChannel,   ///< Channel number
-         otDemodStat, ///< Demodulator status
-         otIono,      ///< Ionospheric delay (see RINEX3 section 5.12)
-         otSSI,       ///< Signal Strength Indicator (RINEX)
-         otLLI,       ///< Loss of Lock Indicator (RINEX)
-         otTrackLen,  ///< Number of continuous epochs of 'good' tracking
-         otNavMsg,    ///< Navigation Message data
-         otRngStdDev, ///< pseudorange standard deviation, in meters
-         otPhsStdDev, ///< phase standard deviation, in cycles
-         otFreqIndx,  ///< GLONASS frequency offset index [-6..7]
-         otUndefined, ///< Undefined
-         otLast       ///< Used to verify that all items are described at compile time
-      };
-
-
          /// empty constructor, creates a wildcard object.
       ObsID()
-            : type(otUnknown), band(CarrierBand::Unknown),
+            : type(ObservationType::Unknown), band(CarrierBand::Unknown),
               code(TrackingCode::Unknown),
               rinexVersion(Rinex3ObsBase::currentVersion)
       {}
@@ -219,15 +196,6 @@ namespace gpstk
           * @throw InvalidParameter */
       static ObsID newID(const std::string& id,
                          const std::string& desc="");
-
-         /** @note the methods below differ from other string
-          * conversion methods in that they have no correlation with
-          * RINEX whatsoever. */
-
-         /// Convert a ObservationType to a whitespace-free string name.
-      static std::string asString(ObservationType e) throw();
-         /// Convert a string name to an ObservationType
-      static ObservationType asObservationType(const std::string& s) throw();
 
          // Note that these are the only data members of objects of this class.
       ObservationType  type;

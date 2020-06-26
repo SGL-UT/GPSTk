@@ -622,13 +622,13 @@ namespace gpstk
          bool ignore=false;
          switch (i->first.type)
          {
-            case ObsID::otRange:    type = "C"; break;
-            case ObsID::otPhase:    type = "L"; break;
-            case ObsID::otDoppler:  type = "D"; break;
-            case ObsID::otSNR:      type = "S"; break;
-            case ObsID::otSSI:      ignore = true; break;
-            case ObsID::otLLI:      ignore = true; break;
-            case ObsID::otTrackLen: ignore = true; break;
+            case ObservationType::Range:    type = "C"; break;
+            case ObservationType::Phase:    type = "L"; break;
+            case ObservationType::Doppler:  type = "D"; break;
+            case ObservationType::SNR:      type = "S"; break;
+            case ObservationType::SSI:      ignore = true; break;
+            case ObservationType::LLI:      ignore = true; break;
+            case ObservationType::TrackLen: ignore = true; break;
 			default: break; //NB Determine if additional enumeration values need to be handled
          }
 

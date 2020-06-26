@@ -616,13 +616,13 @@ namespace gpstk
 
             for(size_t i = 0; i < ObsTypeList.size(); i++)
             {
-               if (ObsTypeList[i].type == ObsID::otIono)
+               if (ObsTypeList[i].type == ObservationType::Iono)
                {
                   if (addedIono.count(ObsTypeList[i].band) > 0)
                      continue; // only write this pseudo-obs once
                   addedIono.insert(ObsTypeList[i].band);
                }
-               else if (ObsTypeList[i].type == ObsID::otChannel)
+               else if (ObsTypeList[i].type == ObservationType::Channel)
                {
                   if (addedChannel)
                      continue; // only write this pseudo-obs once
@@ -859,7 +859,7 @@ namespace gpstk
                {
                   RinexSatID sat(jt->second.begin()->first);
                   double corr(jt->second.begin()->second);
-                  if (jt->first.type != ObsID::otPhase)
+                  if (jt->first.type != ObservationType::Phase)
                   {
                         // Phase shift only makes sense for phase measurements.
                      continue;
@@ -2850,13 +2850,13 @@ namespace gpstk
          std::set<CarrierBand> addedIono;
          for(size_t i = 0; i < mapIter.second.size(); i++)
          {
-            if (mapIter.second[i].type == ObsID::otIono)
+            if (mapIter.second[i].type == ObservationType::Iono)
             {
                if (addedIono.count(mapIter.second[i].band) > 0)
                   continue; // only write this pseudo-obs once
                addedIono.insert(mapIter.second[i].band);
             }
-            else if (mapIter.second[i].type == ObsID::otChannel)
+            else if (mapIter.second[i].type == ObservationType::Channel)
             {
                if (addedChannel)
                   continue; // only write this pseudo-obs once

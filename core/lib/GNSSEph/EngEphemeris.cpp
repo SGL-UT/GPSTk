@@ -314,7 +314,7 @@ namespace gpstk
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
+      ObsID obsID(ObservationType::NavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
 
       bool healthy = false;
       if (health==0)
@@ -1055,7 +1055,7 @@ namespace gpstk
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
+      ObsID obsID(ObservationType::NavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
       try
       {
          CommonTime toeCT = GPSWeekSecond(weeknum, toe, TimeSystem::GPS);
@@ -1141,7 +1141,7 @@ namespace gpstk
             // The observation ID has a type of navigation, but the
             // carrier and code types are undefined.  They could be
             // L1/L2 C/A, P, Y,.....
-         ObsID obsID(ObsID::otNavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
+         ObsID obsID(ObservationType::NavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
 
          bcClock.loadData( satSys, obsID, PRNID, tocCT,
                            accFlagTmp, healthy, Af0, Af1, Af2);
@@ -1187,7 +1187,7 @@ namespace gpstk
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
+      ObsID obsID(ObservationType::NavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
 
       short accFlag = accFlagTmp;   // accFlagTmp set in setSF1( )
          //local variables in SF3 that are needed to load SF2
@@ -1270,7 +1270,7 @@ namespace gpstk
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
+      ObsID obsID(ObservationType::NavMsg, CarrierBand::Undefined, TrackingCode::Undefined);
 
       short accFlag = 0;
       double toe = 0.0;

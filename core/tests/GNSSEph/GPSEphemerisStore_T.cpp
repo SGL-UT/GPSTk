@@ -97,7 +97,7 @@ public:
 */
 
          gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
-         gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
+         gpstk::ObsID obsID(gpstk::ObservationType::NavMsg,
                             gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
 

@@ -636,13 +636,13 @@ void dumpAllRinex3ObsTypes(ostream& os)
       {
          for (TrackingCode k : TrackingCodeIterator())
          {
-            for (int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
+            for (ObservationType i : ObservationTypeIterator())
             {
                try
                {
                   string tag(
                      string(1,syss[s]) +
-                     string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
+                     string(1,ObsID::ot2char[i]) +
                      string(1,ObsID::cb2char[j]) +
                      string(1,ObsID::tc2char[k]));
                   ObsID obs(tag, Rinex3ObsBase::currentVersion);
@@ -659,7 +659,7 @@ void dumpAllRinex3ObsTypes(ostream& os)
                   {
                      goodtags.push_back(tag);
                      string sys(RinexSatID(string(1,tag[0])).systemString3());
-                     char type(ObsID::ot2char[ObsID::ObservationType(i)]);
+                     char type(ObsID::ot2char[i]);
                      string id(tag); // TD keep sys char ? id(tag.substr(1));
                      string desc(
                         asString(ObsID(tag, Rinex3ObsBase::currentVersion)));
@@ -673,7 +673,7 @@ void dumpAllRinex3ObsTypes(ostream& os)
                {
                   continue;
                }
-            } // for (int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
+            } // for (ObservationType i : ObservationTypeIterator())
          } // for (TrackingCode k : TrackingCodeIterator())
       } // for (CarrierBand j : CarrierBandIterator())
    } // for (size_t s=0; s<syss.size(); s++)

@@ -46,9 +46,9 @@ namespace gpstk
       // define some stream operators so that test failures involving
       // enums are a bit more readable.
 
-   std::ostream& operator<<(std::ostream& s, ObsID::ObservationType e)
+   std::ostream& operator<<(std::ostream& s, gpstk::ObservationType e)
    {
-      s << (long)e << " (" << ObsID::asString(e) << ")";
+      s << (long)e << " (" << StringUtils::asString(e) << ")";
       return s;
    }
    std::ostream& operator<<(std::ostream& s, CarrierBand e)
@@ -70,14 +70,14 @@ namespace gpstk
 #define CONTEST(RINEXCODE, CARRIERBAND, TRACKINGCODE) {               \
       TUCSM("ObsID(\"" RINEXCODE "\")");                              \
       gpstk::ObsID obs(RINEXCODE, gpstk::Rinex3ObsBase::currentVersion); \
-      TUASSERTE(gpstk::ObsID::ObservationType,                        \
-                gpstk::ObsID::otPhase,                                \
+      TUASSERTE(gpstk::ObservationType,                        \
+                gpstk::ObservationType::Phase,                                \
                 obs.type);                                            \
       TUASSERTE(gpstk::CarrierBand,                            \
                 CARRIERBAND, obs.band);                               \
       TUASSERTE(gpstk::TrackingCode,                           \
                 TRACKINGCODE, obs.code);                              \
-      gpstk::RinexObsID obs2(gpstk::ObsID::otPhase, CARRIERBAND,      \
+      gpstk::RinexObsID obs2(gpstk::ObservationType::Phase, CARRIERBAND,      \
                              TRACKINGCODE);                           \
       TUASSERTE(std::string, std::string(RINEXCODE).substr(1),        \
                 obs2.asString());                                     \
@@ -98,18 +98,18 @@ public:
       std::string failMesg;
 
       gpstk::ObsID empty;
-      TUASSERTE(gpstk::ObsID::ObservationType,
-                gpstk::ObsID::otUnknown, empty.type);
+      TUASSERTE(gpstk::ObservationType,
+                gpstk::ObservationType::Unknown, empty.type);
       TUASSERTE(gpstk::CarrierBand,
                 gpstk::CarrierBand::Unknown, empty.band);
       TUASSERTE(gpstk::TrackingCode,
                 gpstk::TrackingCode::Unknown, empty.code);
 
       TUCSM("ObsID(ObservationType,CarrierBand,TrackingCode)");
-      gpstk::ObsID compare(gpstk::ObsID::otRange, gpstk::CarrierBand::L1,
+      gpstk::ObsID compare(gpstk::ObservationType::Range, gpstk::CarrierBand::L1,
                            gpstk::TrackingCode::CA);
-      TUASSERTE(gpstk::ObsID::ObservationType,
-                gpstk::ObsID::otRange, compare.type);
+      TUASSERTE(gpstk::ObservationType,
+                gpstk::ObservationType::Range, compare.type);
       TUASSERTE(gpstk::CarrierBand,
                 gpstk::CarrierBand::L1, compare.band);
       TUASSERTE(gpstk::TrackingCode,
@@ -123,7 +123,7 @@ public:
    {
       TUDEF("ObsID", "dump");
       std::string failMesg;
-      gpstk::ObsID compare(gpstk::ObsID::otDoppler, gpstk::CarrierBand::L2,
+      gpstk::ObsID compare(gpstk::ObservationType::Doppler, gpstk::CarrierBand::L2,
                            gpstk::TrackingCode::Y);
 
       std::string outputString, referenceString;
@@ -144,7 +144,7 @@ public:
    {
       TUDEF("ObsID", "asString");
       std::string failMesg;
-      gpstk::ObsID compare(gpstk::ObsID::otPhase, gpstk::CarrierBand::E5b,
+      gpstk::ObsID compare(gpstk::ObservationType::Phase, gpstk::CarrierBand::E5b,
                            gpstk::TrackingCode::IE5);
 
       std::string outputString, referenceString;
@@ -167,16 +167,15 @@ public:
          // representations aren't duplicated, since if two enums
          // translated to string "XXX", the attempt to reverse the
          // translation would fail.
-      for (unsigned i = 0; i < gpstk::ObsID::otLast; i++)
+      for (gpstk::ObservationType ot : gpstk::ObservationTypeIterator())
       {
-         gpstk::ObsID::ObservationType ot = (gpstk::ObsID::ObservationType)i;
          std::string s;
-         TUCATCH(s = gpstk::ObsID::asString(ot));
+         TUCATCH(s = gpstk::StringUtils::asString(ot));
          TUASSERT(!s.empty());
          TUASSERT(s != "???");
-         gpstk::ObsID::ObservationType ot2;
-         TUCATCH(ot2 = gpstk::ObsID::asObservationType(s));
-         TUASSERTE(gpstk::ObsID::ObservationType, ot, ot2);
+         gpstk::ObservationType ot2;
+         TUCATCH(ot2 = gpstk::StringUtils::asObservationType(s));
+         TUASSERTE(gpstk::ObservationType, ot, ot2);
       }
       for (gpstk::CarrierBand cb : gpstk::CarrierBandIterator())
       {
@@ -233,22 +232,22 @@ public:
          //testing base assign w/out using any of the reused codes
          // GPS L1 C/A PseudoRange
       gpstk::ObsID obs1("GC1C",gpstk::Rinex3ObsBase::currentVersion);
-      TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otRange,obs1.type);
+      TUASSERTE(gpstk::ObservationType,gpstk::ObservationType::Range,obs1.type);
       TUASSERTE(gpstk::CarrierBand,gpstk::CarrierBand::L1,obs1.band);
       TUASSERTE(gpstk::TrackingCode,gpstk::TrackingCode::CA,obs1.code);
 
          //testing only case of reassinged codes for GPS
          // GPS L5 IQ Doppler
       gpstk::ObsID obs2("GD5X",gpstk::Rinex3ObsBase::currentVersion);
-      TUASSERTE(gpstk::ObsID::ObservationType,
-                gpstk::ObsID::otDoppler, obs2.type);
+      TUASSERTE(gpstk::ObservationType,
+                gpstk::ObservationType::Doppler, obs2.type);
       TUASSERTE(gpstk::CarrierBand,gpstk::CarrierBand::L5,obs2.band);
       TUASSERTE(gpstk::TrackingCode,gpstk::TrackingCode::IQ5,obs2.code);
 
          //testing completely random case
          // QZSS E6 L Carrier Phase
       gpstk::ObsID obs3("JL6L",gpstk::Rinex3ObsBase::currentVersion);
-      TUASSERTE(gpstk::ObsID::ObservationType,gpstk::ObsID::otPhase,obs3.type);
+      TUASSERTE(gpstk::ObservationType,gpstk::ObservationType::Phase,obs3.type);
       TUASSERTE(gpstk::CarrierBand,gpstk::CarrierBand::E6,obs3.band);
       TUASSERTE(gpstk::TrackingCode,gpstk::TrackingCode::JQ6,obs3.code);
 
@@ -372,7 +371,7 @@ public:
       CONTEST("SL5X", gpstk::CarrierBand::L5, gpstk::TrackingCode::SIQ5);
 
       gpstk::ObsID wild("****", gpstk::Rinex3ObsBase::currentVersion);
-      TUASSERTE(gpstk::ObsID::ObservationType, gpstk::ObsID::otAny, wild.type);
+      TUASSERTE(gpstk::ObservationType, gpstk::ObservationType::Any, wild.type);
       TUASSERTE(gpstk::CarrierBand, gpstk::CarrierBand::Any, wild.band);
       TUASSERTE(gpstk::TrackingCode, gpstk::TrackingCode::Any, wild.code);
 
@@ -384,11 +383,11 @@ public:
       TUDEF("ObsID", "operator==");
       std::string failMesg;
 
-      gpstk::ObsID compare1(gpstk::ObsID::otRange, gpstk::CarrierBand::L1,
+      gpstk::ObsID compare1(gpstk::ObservationType::Range, gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
-      gpstk::ObsID compare2(gpstk::ObsID::otRange, gpstk::CarrierBand::L1,
+      gpstk::ObsID compare2(gpstk::ObservationType::Range, gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
-      gpstk::ObsID compare3(gpstk::ObsID::otDoppler, gpstk::CarrierBand::L1,
+      gpstk::ObsID compare3(gpstk::ObservationType::Doppler, gpstk::CarrierBand::L1,
                             gpstk::TrackingCode::CA);
 
       TUASSERTE(gpstk::ObsID, compare1, compare2);
@@ -422,7 +421,7 @@ public:
       TUASSERT(gpstk::ObsID::char2ot.count('T') > 0);
       TUASSERT(gpstk::ObsID::char2cb.count('9') > 0);
       TUASSERT(gpstk::ObsID::char2tc.count('W') > 0);
-      TUASSERTE(gpstk::ObsID::ObservationType,
+      TUASSERTE(gpstk::ObservationType,
                 fic.type, gpstk::ObsID::char2ot['T']);
       TUASSERTE(gpstk::CarrierBand,
                 fic.band, gpstk::ObsID::char2cb['9']);

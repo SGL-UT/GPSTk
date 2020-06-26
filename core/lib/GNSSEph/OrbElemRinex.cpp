@@ -145,7 +145,7 @@ namespace gpstk
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      obsID.type = ObsID::otNavMsg;
+      obsID.type = ObservationType::NavMsg;
       obsID.band = CarrierBand::Undefined;
       obsID.code = TrackingCode::Undefined;
 
@@ -297,7 +297,7 @@ namespace gpstk
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      obsID.type = ObsID::otNavMsg;
+      obsID.type = ObservationType::NavMsg;
       obsID.band = CarrierBand::Undefined;
       obsID.code = TrackingCode::Undefined;
 
