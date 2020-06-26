@@ -241,25 +241,6 @@ namespace gpstk
       GPSTK_THROW(fse);
    }
 
-   bool FileSpec::hasField(const FileSpecType fst) const
-   {
-      vector<FileSpecElement>::const_iterator itr = fileSpecList.begin();
-      while (itr != fileSpecList.end())
-      {
-            // stupidity check - is it a valid FST?
-         if (((*itr).type <= unknown) || ((*itr).type >= end))
-         {
-            FileSpecException fse("Unknown FileSpecType: " + 
-                                  convertFileSpecType((*itr).type));
-            GPSTK_THROW(fse);
-         }
-         if ((*itr).type == fst)
-            return true;
-         itr++;
-      }
-      return false;
-   }
-
 
    CommonTime FileSpec::extractCommonTime(const string& filename) const
    {
@@ -310,10 +291,15 @@ namespace gpstk
             // the file spec. otherwise, just put the fixed field in.
          if (fstsItr != fstsMap.end())
          {
-               // special case for 'text': just print it
             if ((*fstsItr).first == text)
             {
-               toReturn += (*fstsItr).second;
+                  // Don't fill text fields with "0".  Filling with
+                  // space isn't the best idea either but it's better
+                  // than the original implementation which simply
+                  // didn't set the field width even if one was
+                  // specified (which would cause RTT failures).
+               toReturn += 
+                  rightJustify((*fstsItr).second, (*fslItr).numCh);
             }
             else
             {
@@ -499,6 +485,7 @@ namespace gpstk
                
                FileSpecElement fse(numChs, offset, fst, atom);
                fileSpecList.push_back(fse);
+               fileSpecSet.insert(fst);
                offset += numChs;
             }
             

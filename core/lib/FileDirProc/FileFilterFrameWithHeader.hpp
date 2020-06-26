@@ -36,7 +36,7 @@
 
 /**
  * @file FileFilterFrameWithHeader.hpp
- * Wrapper for gpstk::FileHunter and gpstk::FileFilter that also
+ * Wrapper for gpstk::FileSpecFind and gpstk::FileFilter that also
  * handles header data
  */
 
@@ -111,21 +111,21 @@ namespace gpstk
       {init();}
 
          /** Uses the FileSpec to retrieve files.  Use filter like you would
-          * in FileHunter, to filter FOR stations, receivers, etc.
+          * in FileSpecFind, to filter FOR stations, receivers, etc.
           * @throw Exception when there's a file error. */
       FileFilterFrameWithHeader(const FileSpec& spec, 
                                 const gpstk::CommonTime& start = 
                                 gpstk::CommonTime::BEGINNING_OF_TIME,
                                 const gpstk::CommonTime& end = 
                                 gpstk::CommonTime::END_OF_TIME,
-                                const std::vector<FileHunter::FilterPair>& filter = 
-                                std::vector<FileHunter::FilterPair>())
+                                const FileSpecFind::Filter& filter =
+                                FileSpecFind::Filter())
             : FileFilterFrame<FileStream, FileData>(spec, start, end, filter)
       {init(filter);}
 
          /** Gets the files from the file spec and the time, then adds
           * the data to the filter. Use filter like you would
-          * in FileHunter, to filter FOR stations, receivers, etc.
+          * in FileSpecFind, to filter FOR stations, receivers, etc.
           * @throw Exception */
       FileFilterFrameWithHeader& 
       newSource(const FileSpec& filespec, 
@@ -133,8 +133,8 @@ namespace gpstk
                 gpstk::CommonTime::BEGINNING_OF_TIME,
                 const gpstk::CommonTime& end = 
                 gpstk::CommonTime::END_OF_TIME,
-                const std::vector<FileHunter::FilterPair>& filter = 
-                std::vector<FileHunter::FilterPair>())
+                const FileSpecFind::Filter& filter =
+                FileSpecFind::Filter())
       {
          FileFilterFrame<FileStream, FileData>::newSource(filespec, start,
                                                           end, filter);
@@ -301,8 +301,7 @@ namespace gpstk
    protected:
          /**  Run init() to load the data into the filter.
           * @throw Exception */
-      void init(const std::vector<FileHunter::FilterPair>& filter= 
-                std::vector<FileHunter::FilterPair>());
+      void init(const FileSpecFind::Filter& filter = FileSpecFind::Filter());
 
          /** Check to make sure headerList is empty
           * @throw InvalidRequest if headerList is empty */
@@ -435,27 +434,16 @@ namespace gpstk
    template <class FileStream, class FileData, class FileHeader>
    void
    FileFilterFrameWithHeader<FileStream,FileData,FileHeader> :: 
-   init(const std::vector<FileHunter::FilterPair>& filter)
+   init(const FileSpecFind::Filter& filter)
    {
          // find the files
-      FileHunter fh(this->fs);
-   
-      typename std::vector<FileHunter::FilterPair>::const_iterator itr = 
-         filter.begin();
-      while (itr != filter.end())
-      {
-         fh.setFilter((*itr).first, (*itr).second);
-         itr++;
-      }
-
-      std::vector<std::string> listOfFiles = 
-         fh.find(this->startTime, this->endTime, FileSpec::ascending);
+      std::list<std::string> listOfFiles = 
+         FileSpecFind::find(this->fs, this->startTime, this->endTime, filter);
 
          // for each file, just read the header
-      typename std::vector<std::string>::iterator i;
-      for(i = listOfFiles.begin(); i != listOfFiles.end(); i++)
+      for (const auto& i : listOfFiles)
       {
-         FileStream s((*i).c_str());
+         FileStream s(i.c_str());
 
          if (s.good())
          {

@@ -10,22 +10,13 @@ class FileSpecFind_T;
 
 namespace gpstk
 {
-      /** Replacement for the gpstk FileHunter class, which is slow.
-       * Searches for files in a time range using FileSpec metadata.
+      /** Find existing files matching specified criteria.
        *
-       * This differs from FileHunter in the following ways:
-       *   \li FileHunter returns files matching [start, end] while FileSpecFind
-       *       returns files matching [start, end).
-       *   \li FileSpecFind is a utility class while FileHunter is instantiated.
+       *   \li FileSpecFind returns files matching [start, end).
+       *   \li FileSpecFind is a utility class not requiring instantiation.
        *   \li FileSpecFind works in the context of automounter.
        *   \li FileSpecFind works with relative paths.
-       *   \li FileSpecFind is a great deal faster.
-       *
-       * @note This code will not build under windows as it uses a
-       * POSIX function glob() that is not supported by visual studio,
-       * as well as globbing patterns that would not work under
-       * windows.  As such, it will not be integrated into the gpstk
-       * or sgltk.
+       *   \li FileSpecFind is designed to be fairly fast.
        *
        * Example with text spec token (%x):
        * @code{.cpp}
@@ -51,36 +42,79 @@ namespace gpstk
    class FileSpecFind
    {
    public:
+         /// Data type for storing desired FileSpec values.
+      using Filter = std::multimap<FileSpec::FileSpecType, std::string>;
+
          /** Search for existing files matching a given file spec and
-          * time range.
-          * @param[in] fileSpecString The FileSpec (gpstk) that the
-          *   files should match.
+          * time range.  May be used for file spec strings that
+          * contain (non-time) tokens with no width specified,
+          * provided specific values are added to fsts to fix the
+          * width.
+          * @param[in] fileSpec The FileSpec that the files should
+          *   match.
           * @param[in] start Files/directories that precede this time
           *   will be ignored.
           * @param[in] end Files/directories that are after this time
           *   will be ignored.
-          * @param[in] fsts Any FileSpec (not time) token values you
-          *   wish to specifically match.  Note that "text" tokens in
-          *   particular should be specified here, if fileSpecString
-          *   contains one.
+          * @param[in] fsts Filler values for fileSpec that have no
+          *   fixed width.  For example, "text" tokens may have no
+          *   width specified in fileSpec, e.g. "%x", in which case a
+          *   value should be added here to derive a length from.
           * @warning You will not get any matches for file names that
-          *   contain %x if you do not specify a text value in fsts.
+          *   contain tokens with no width (e.g. "%x") if you do not
+          *   specify a text value in fsts.
           * @return A list of matching file names.
           */
       static std::list<std::string> find(
-         const std::string& fileSpecString,
-         const gpstk::CommonTime& start,
-         const gpstk::CommonTime& end,
-         const gpstk::FileSpec::FSTStringMap& fsts);
+         const std::string& fileSpec,
+         const CommonTime& start,
+         const CommonTime& end,
+         const FileSpec::FSTStringMap& fsts = FileSpec::FSTStringMap());
+
+         /// @copydoc find(const std::string&,const CommonTime&,const CommonTime&,const FileSpec::FSTStringMap&)
+      static std::list<std::string> find(
+         const FileSpec& fileSpec,
+         const CommonTime& start,
+         const CommonTime& end,
+         const FileSpec::FSTStringMap& fsts = FileSpec::FSTStringMap())
+      { return find(fileSpec.getSpecString(), start, end, fsts); }
+
+         /** Search for existing files matching a given file spec,
+          * time range, and set of allowed FileSpec token values.
+          * @param[in] fileSpec The FileSpec that the files should
+          *   match.
+          * @param[in] start Files/directories that precede this time
+          *   will be ignored.
+          * @param[in] end Files/directories that are after this time
+          *   will be ignored.
+          * @param[in] filter Set of allowable values for tokens
+          *   present in fileSpec (values for tokens not present will
+          *   be ignored).
+          * @return A list of matching file names.
+          */
+      static std::list<std::string> find(
+         const std::string& fileSpec,
+         const CommonTime& start,
+         const CommonTime& end,
+         const Filter& filter);
+
+         /// @copydoc find(const std::string&,const CommonTime&,const CommonTime&,const Filter&)
+      static std::list<std::string> find(
+         const FileSpec& fileSpec,
+         const CommonTime& start,
+         const CommonTime& end,
+         const Filter& filter)
+      { return find(fileSpec.getSpecString(), start, end, filter); }
 
    private:
-         /** Translates gpstk FileSpec formatting tokens into glob expressions.
-          * @param[in] token A string containing gpstk FileSpec formatting
+         /** Translates FileSpec formatting tokens into glob expressions.
+          * @param[in] token A string containing FileSpec formatting
           *   tokens e.g. %04Y.
-          * @return a string with all of the known gpstk formatting tokens
-          *   replaced with glob patterns that have a reasonable chance of
-          *   matching names of existing files generated using the FileSpec.
-          *   For example, %04Y would become [0-9][0-9][0-9][0-9] */
+          * @return a string with all of the known formatting tokens
+          *   replaced with glob patterns that have a reasonable
+          *   chance of matching names of existing files generated
+          *   using the FileSpec.  For example, %04Y would become
+          *   [0-9][0-9][0-9][0-9] */
       static std::string transToken(const std::string& token);
 
          /** Recursive (into subdirectories) function for find that
@@ -91,7 +125,7 @@ namespace gpstk
           * @param[in] end Files/directories that are after this time
           *   will be ignored.
           * @param[in] spec The string representation of the FileSpec
-          *   (gpstk) that the files should match.
+          *   that the files should match.
           * @param[in] dummyFSTS Filler values for the file spec when
           *   creating dummy file names to get appropriate time ranges.
           * @param[in] matched A string containing already-matched
@@ -103,10 +137,11 @@ namespace gpstk
           * @return A list of matching file names.
           */
       static std::list<std::string> findGlob(
-         const gpstk::CommonTime& start,
-         const gpstk::CommonTime& end,
+         const CommonTime& start,
+         const CommonTime& end,
          const std::string& spec,
-         const gpstk::FileSpec::FSTStringMap& dummyFSTS,
+         const FileSpec::FSTStringMap& dummyFSTS,
+         const Filter& filter,
          const std::string& matched = "",
          std::string::size_type pos = 0);
 
