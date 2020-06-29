@@ -92,9 +92,9 @@ namespace gpstk
       {
          unsigned long dt = UID/10000;
          if (dt==1)
-            navtype = NavID(NavID::ntBeiDou_D1);
+            navtype = NavID(NavType::BeiDou_D1);
          else
-            navtype = NavID(NavID::ntBeiDou_D2);
+            navtype = NavID(NavType::BeiDou_D2);
       }
 
       //default return value
@@ -503,9 +503,9 @@ namespace gpstk
        unsigned long uid = 0;
        switch (nidr.navType)
        {
-          case NavID::ntGPSLNAV:   { uid = 56; break; }
-          case NavID::ntGPSCNAVL2: { uid = 33; break; }
-          case NavID::ntGPSCNAVL5: { uid = 33; break; }
+          case NavType::GPSLNAV:   { uid = 56; break; }
+          case NavType::GPSCNAVL2: { uid = 33; break; }
+          case NavType::GPSCNAVL5: { uid = 33; break; }
           // ADD OTHER NAVIGATION MESSAGES HERE.
        }
 
@@ -520,9 +520,9 @@ namespace gpstk
               {
                     // Cast the return as an OrbDataUTC* so the user can
                     // access the data via this interface.
-                 case NavID::ntGPSLNAV:   { const OrbSysGpsL_56* retVal = dynamic_cast<const OrbSysGpsL_56*>(ods); return retVal; break; }
-                 case NavID::ntGPSCNAVL2: { const OrbSysGpsC_33* retVal = dynamic_cast<const OrbSysGpsC_33*>(ods); return retVal; break; }
-                 case NavID::ntGPSCNAVL5: { const OrbSysGpsC_33* retVal = dynamic_cast<const OrbSysGpsC_33*>(ods); return retVal; break; }
+                 case NavType::GPSLNAV:   { const OrbSysGpsL_56* retVal = dynamic_cast<const OrbSysGpsL_56*>(ods); return retVal; break; }
+                 case NavType::GPSCNAVL2: { const OrbSysGpsC_33* retVal = dynamic_cast<const OrbSysGpsC_33*>(ods); return retVal; break; }
+                 case NavType::GPSCNAVL5: { const OrbSysGpsC_33* retVal = dynamic_cast<const OrbSysGpsC_33*>(ods); return retVal; break; }
               }
           }
        }
@@ -553,7 +553,7 @@ namespace gpstk
       bool allNM = false;
       bool allUID = false;
       if (sidr.id==0) allSats = true;
-      if (navtype.navType==NavID::ntUnknown) allNM = true;
+      if (navtype.navType==NavType::Unknown) allNM = true;
       if (UID==0) allUID = true;
 
       SAT_NM_UID_MSG_MAP::const_iterator cit1;
@@ -1229,7 +1229,7 @@ namespace gpstk
          GPSTK_THROW(ir);
       }
 
-      NavID nid(NavID::ntGPSLNAV);
+      NavID nid(NavType::GPSLNAV);
 
       unsigned long UID = 63;   // Unique ID for subframe 4, page 25.
       try

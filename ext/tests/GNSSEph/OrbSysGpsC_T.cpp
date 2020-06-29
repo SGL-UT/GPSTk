@@ -101,7 +101,7 @@ public:
 };
 
 OrbSysGpsC_T::
-OrbSysGpsC_T(): nid(NavID::ntGPSCNAVL2)
+OrbSysGpsC_T(): nid(NavType::GPSCNAVL2)
 {
    debugLevel = 0; 
    init();

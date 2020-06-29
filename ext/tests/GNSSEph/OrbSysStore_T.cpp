@@ -222,7 +222,7 @@ createAndDump_LNAV()
    currMethod = typeDesc + " OrbSysStore.find() ";
    TUCSM(currMethod);
    SatID sidTest(1,SatelliteSystem::GPS);
-   NavID nidTest(NavID::ntGPSLNAV);
+   NavID nidTest(NavType::GPSLNAV);
    unsigned long UID = 56;
 
       // TOO EARLY
@@ -412,7 +412,7 @@ createAndDump_LNAV()
    list<NavID> navIDList = oss.getNavIDList();
    TUASSERTE(int,1,navIDList.size());
    NavID nid = navIDList.front();
-   NavID expNid = NavID(NavID::ntGPSLNAV);
+   NavID expNid = NavID(NavType::GPSLNAV);
    TUASSERTE(NavID,nid,expNid);
 
       // Test getSatSysList()
@@ -608,7 +608,7 @@ createAndDump_LNAV()
    CommonTime totAssumed = CivilTime(2016,1,2,19,50,24,TimeSystem::GPS);
    double assumedOffset = A0Assumed + A1Assumed * (ctUtc - totAssumed);
 
-   NavID nidUtc(NavID::ntGPSLNAV);
+   NavID nidUtc(NavType::GPSLNAV);
    try
    {
       const OrbDataUTC* odu = oss.findUtcData(nidUtc,ctUtc);
@@ -735,7 +735,7 @@ createAndDump_CNAV()
    CommonTime totAssumed = CivilTime(2016,3,6,12,45,04,TimeSystem::GPS);
    double assumedOffset = A0Assumed + A1Assumed * (ctUtc - totAssumed);
 
-   NavID nidUtcL2(NavID::ntGPSCNAVL2);
+   NavID nidUtcL2(NavType::GPSCNAVL2);
    try
    {
       const OrbDataUTC* odu = oss.findUtcData(nidUtcL2,ctUtc);
@@ -753,7 +753,7 @@ createAndDump_CNAV()
    }
 
         //L5 check
-   NavID nidUtcL5(NavID::ntGPSCNAVL5);
+   NavID nidUtcL5(NavType::GPSCNAVL5);
    try
    {
       const OrbDataUTC* odu = oss.findUtcData(nidUtcL5,ctUtc);

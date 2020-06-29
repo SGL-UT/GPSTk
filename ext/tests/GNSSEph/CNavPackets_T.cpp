@@ -100,7 +100,7 @@ public:
 
 //-------------------------------------------------------------------
 CNavPackets_T::
-CNavPackets_T(): nid(NavID::ntGPSCNAV2)
+CNavPackets_T(): nid(NavType::GPSCNAV2)
 {
    debugLevel = 0; 
    init();

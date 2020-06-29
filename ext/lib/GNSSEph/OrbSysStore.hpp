@@ -113,7 +113,7 @@ namespace gpstk
                                 const gpstk::SatID& sidr =
                                       gpstk::SatID(0,gpstk::SatelliteSystem::Unknown),
                                 const gpstk::NavID& navtype =
-                                      gpstk::NavID(gpstk::NavID::ntUnknown),
+                                      gpstk::NavID(gpstk::NavType::Unknown),
                                 const unsigned long UID = 0)
          const throw();
 

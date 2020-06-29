@@ -44,7 +44,7 @@ namespace gpstk
        * @see convertSatelliteSystemToString
        * @param[in] s The GNSS name to convert to enumeration.
        * @return An enumeration equivalent of the given string.
-       *   systemUnknown is returned for any names that do not
+       *   Unknown is returned for any names that do not
        *   exactly match known values.
        */
    inline SatelliteSystem convertStringToSatelliteSystem(

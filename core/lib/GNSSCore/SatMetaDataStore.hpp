@@ -21,7 +21,7 @@ namespace gpstk
       {
          CarrierBand carrier; ///< Carrier frequency.
          gpstk::TrackingCode code;   ///< Tracking code.
-         NavID::NavType nav;         ///< Navigation code.
+         gpstk::NavType nav;         ///< Navigation code.
       };
          /// Set of signals that may be transmitted by a satellite.
       using SignalSet = std::set<Signal>;
