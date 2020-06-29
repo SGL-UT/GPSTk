@@ -135,7 +135,7 @@ namespace gpstk
 
       /** Define an iterator so C++11 can do things like
        * for (TrackingCode tc : TrackingCodeIterator()) */
-   typedef EnumIterator<TrackingCode, TrackingCode::Unknown, TrackingCode::Undefined> TrackingCodeIterator;
+   typedef EnumIterator<TrackingCode, TrackingCode::Unknown, TrackingCode::Last> TrackingCodeIterator;
 
    namespace StringUtils
    {

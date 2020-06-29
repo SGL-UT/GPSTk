@@ -19,3 +19,7 @@ add_test(Utilities_Stl_helpers Stl_helpers_T)
 add_executable(ValidType_T ValidType_T.cpp)
 target_link_libraries(ValidType_T gpstk)
 add_test(Utilities_ValidType ValidType_T)
+
+add_executable(EnumIterator_T EnumIterator_T.cpp)
+target_link_libraries(EnumIterator_T gpstk)
+add_test(Utilities_EnumIterator EnumIterator_T)

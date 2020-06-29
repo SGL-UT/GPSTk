@@ -32,7 +32,7 @@ namespace gpstk
 
       /** Define an iterator so C++11 can do things like
        * for (CarrierBand cb : CarrierBandIterator()) */
-   typedef EnumIterator<CarrierBand, CarrierBand::Unknown, CarrierBand::Undefined> CarrierBandIterator;
+   typedef EnumIterator<CarrierBand, CarrierBand::Unknown, CarrierBand::Last> CarrierBandIterator;
 
    namespace StringUtils
    {

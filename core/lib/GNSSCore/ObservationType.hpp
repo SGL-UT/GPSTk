@@ -31,7 +31,7 @@ namespace gpstk
 
       /** Define an iterator so C++11 can do things like
        * for (ObservationType ot : ObservationTypeIterator()) */
-   typedef EnumIterator<ObservationType, ObservationType::Unknown, ObservationType::Undefined> ObservationTypeIterator;
+   typedef EnumIterator<ObservationType, ObservationType::Unknown, ObservationType::Last> ObservationTypeIterator;
 
    namespace StringUtils
    {

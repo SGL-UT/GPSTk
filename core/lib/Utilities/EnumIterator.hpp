@@ -13,7 +13,17 @@ namespace gpstk
        *   typedef EnumIterator<enum, enum::firstVal, enum::lastVal> Iterator;
        *   for (enum x : Iterator()) { ... }
        * Typically, the iterator will be defined in the include file
-       * that defines the enum.
+       * that defines the enum.  The endVal value should be first
+       * value that will NOT be processed in a loop.  This means
+       * defining a final "Last" enumeration value in the enum that
+       * won't be iterated over.  This is done to facilitate adding
+       * additional enumeration values without having to change the
+       * code that defines the iterator.
+       *
+       * @warning Do not attempt to use this on enumerations that have
+       * assigned values resulting in gaps.  This will result in
+       * iterating over invalid enumeration values.
+       *
        * @see CarrierBand.hpp
        */
    template <typename C, C beginVal, C endVal>
@@ -35,8 +45,9 @@ namespace gpstk
       {}
          /** Increment the iterator to the next enum
           * @note This assumes that there are no gaps between enum
-          * values, otherwise it could not have a valid
-          * enumeration. */
+          *   values, otherwise it could not have a valid
+          *   enumeration.
+          * @note This is the prefix operator. */
       EnumIterator& operator++()
       {
          val++;
@@ -52,7 +63,7 @@ namespace gpstk
          /// Iterator end value.
       EnumIterator end()
       {
-         static const EnumIterator endIter = ++EnumIterator(endVal);
+         static const EnumIterator endIter = EnumIterator(endVal);
          return endIter;
       }
          /// Comparison to assist in iteration.
