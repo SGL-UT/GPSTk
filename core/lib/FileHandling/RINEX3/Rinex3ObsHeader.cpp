@@ -2170,7 +2170,7 @@ namespace gpstk
             string R2ot, lab(mit->second[i].asString(version));
                // the list of all tracking code characters for this sys, freq
             string allCodes(
-               ObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
+               RinexObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
 
             if (lab == string("C1C"))
                R2ot = string("C1");

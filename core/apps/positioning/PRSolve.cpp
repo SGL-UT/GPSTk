@@ -286,7 +286,7 @@ public:
    SolutionData(const string& desc)
    {
       vector<string> fields = split(desc,':');
-      sfcodes = ObsID::map3to1sys[fields[0]];   // first char of sfcodes
+      sfcodes = RinexObsID::map3to1sys[fields[0]];   // first char of sfcodes
       // const char csys(sfcodes[0]);
       sfcodes += fields[1];                     // 1 or 2 freq chars
       sfcodes += fields[2];
@@ -320,7 +320,7 @@ public:
       size_t i,j;
       ostringstream oss;
       oss << "(" << sfcodes << ")";
-      oss << " " << ObsID::map1to3sys[sfcodes.substr(0,1)];
+      oss << " " << RinexObsID::map1to3sys[sfcodes.substr(0,1)];
       for(i=0; i<consts.size(); i++) {
          oss << " [c=" << fixed << setprecision(3) << consts[i];
          for(j=0; j<obsids[i].size(); j++)
@@ -1176,12 +1176,12 @@ try {
          if(C.pEph == &C.SP3EphStore) n = C.SP3EphStore.ndata(sat.system);
          if(n == 0) {
             LOG(WARNING) << "Warning - no ephemeris found for system "
-               << ObsID::map1to3sys[SObj.sysChars[k]] << ", in solution descriptor "
+               << RinexObsID::map1to3sys[SObj.sysChars[k]] << ", in solution descriptor "
                << C.inSolDesc[i] << " => invalidate.";
             ok = false;
          }
          else {
-            LOG(INFO) << " Found system " << ObsID::map1to3sys[SObj.sysChars[k]]
+            LOG(INFO) << " Found system " << RinexObsID::map1to3sys[SObj.sysChars[k]]
                         << " with " << n << " ephemeris data.";
          }
       }
@@ -1656,8 +1656,8 @@ void Configuration::SetDefaults(void) throw()
 void Configuration::SolDescHelp(void)
 {
    // build the table
-   string systs(ObsID::validRinexSystems);
-   string freqs(ObsID::validRinexFrequencies);
+   string systs(RinexObsID::validRinexSystems);
+   string freqs(RinexObsID::validRinexFrequencies);
    string codes;
    string space("   ");
    size_t i,j, k;
@@ -1666,7 +1666,7 @@ void Configuration::SolDescHelp(void)
    map<char,int> syslen;
    for(i=0; i<systs.size(); i++) {
       for(k=0, j=0; j<freqs.size(); j++) {
-         codes = ObsID::validRinexTrackingCodes[systs[i]][freqs[j]];
+         codes = RinexObsID::validRinexTrackingCodes[systs[i]][freqs[j]];
          strip(codes,' '); strip(codes,'*');
          // GPS C1N and C2N are not allowed
          if(systs[i] == 'G' && (freqs[j] == '1' || freqs[j] == '2')) strip(codes,'N');
@@ -1679,7 +1679,7 @@ void Configuration::SolDescHelp(void)
    string head;
    for(i=0; i<systs.size(); i++) {
       head += (i==0 ? space+string("freq| ") : string(" | "));
-      codes = ObsID::map1to3sys[string(1,systs[i])];
+      codes = RinexObsID::map1to3sys[string(1,systs[i])];
       head += center(codes,syslen[systs[i]]);
    }
    //head += string("\n") + space + string(head.size()-space.size()+1,'-');
@@ -1687,7 +1687,7 @@ void Configuration::SolDescHelp(void)
    for(i=0; i<freqs.size(); i++) {
       table += space + string("  ") + string(1,freqs[i]);
       for(j=0; j<systs.size(); j++) {
-         codes = ObsID::validRinexTrackingCodes[systs[j]][freqs[i]];
+         codes = RinexObsID::validRinexTrackingCodes[systs[j]][freqs[i]];
          strip(codes,' '); strip(codes,'*');
          // GPS C1N and C2N are not allowed
          if(systs[i] == 'G' && (freqs[j] == '1' || freqs[j] == '2')) strip(codes,'N');
@@ -1704,7 +1704,7 @@ void Configuration::SolDescHelp(void)
       << " Solution descriptors are of the form S:F:C where\n"
       << "   S is a system, one of:";
    for(i=0; i<systs.size(); i++)
-      os << " " << ObsID::map1to3sys[string(1,systs[i])];
+      os << " " << RinexObsID::map1to3sys[string(1,systs[i])];
    os << endl;
    os << "   F is a frequency, one or two of:";
    for(i=0; i<freqs.size(); i++)
@@ -2199,8 +2199,8 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
 
    // test system
    string sys(fields[0]);
-   string sys1(ObsID::map3to1sys[sys]);
-   if(!sys1.size() || ObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
+   string sys1(RinexObsID::map3to1sys[sys]);
+   if(!sys1.size() || RinexObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
       msg = desc + " : invalid system /" + sys + "/";
       return false;
    }
@@ -2213,13 +2213,13 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    }
 
    for(i=0; i<fields[1].size(); i++) {
-      if(ObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
-         ObsID::validRinexTrackingCodes[csys].end())
+      if(RinexObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
+         RinexObsID::validRinexTrackingCodes[csys].end())
       {
          msg = desc + string(" : invalid frequency /") + fields[1][i] + string("/");
          return false;
       }
-      string codes = ObsID::validRinexTrackingCodes[csys][fields[1][i]];
+      string codes = RinexObsID::validRinexTrackingCodes[csys][fields[1][i]];
       // GPS C1N and C2N are not allowed
       if(csys == 'G' && (fields[1][i] == '1'||fields[1][i] == '2')) strip(codes,'N');
       for(j=0; j<fields[2].size(); j++) {
@@ -2252,7 +2252,7 @@ void SolutionObject::ParseDescriptor(void) throw()
       SolutionData sd(descs[i]);
       LOG(DEBUG) << "Parser(" << i << "): " << sd.asString();
 
-      string sys1(sd.getSys()), sys3(ObsID::map3to1sys[sys1]), frs(sd.getFreq());
+      string sys1(sd.getSys()), sys3(RinexObsID::map3to1sys[sys1]), frs(sd.getFreq());
 
       // systems allowed in the PRSolution estimation
       if(find(sysChars.begin(),sysChars.end(),sys1) == sysChars.end()) {

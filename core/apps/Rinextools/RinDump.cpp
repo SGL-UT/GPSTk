@@ -836,7 +836,7 @@ void Configuration::SetDefaults(void)
    InputSyss.push_back("GLO");
 
    //map<string,string> mapSysCodes;   // map of system, default codes e.g. GLO,PC
-   // don't use ObsID::validRinexTrackingCodes b/c order is important
+   // don't use RinexObsID::validRinexTrackingCodes b/c order is important
    mapSysCodes.insert(make_pair(string("GPS"),string("PYWLMIQSXCN")));
    mapSysCodes.insert(make_pair(string("GLO"),string("PCIQXAB")));
    mapSysCodes.insert(make_pair(string("GAL"),string("ABCIQXZ")));
@@ -854,7 +854,7 @@ void Configuration::SetDefaults(void)
    map1to3Sys["J"] = "QZS";   map3to1Sys["QZS"] = "J";
    map1to3Sys["I"] = "IRN";   map3to1Sys["IRN"] = "I";
 
-   string validSys(ObsID::validRinexSystems);
+   string validSys(RinexObsID::validRinexSystems);
    for(size_t i=0; i<validSys.size(); i++) {
       if(map1to3Sys.count(string(1,validSys[i])) == 0) {
          LOG(WARNING) << "Warning - system \"" << validSys[i]
@@ -936,7 +936,7 @@ int Configuration::ProcessUserInput(int argc, char **argv)
    if(typehelp)
    {
       vector<string> goodtags;
-      string syss(ObsID::validRinexSystems);
+      string syss(RinexObsID::validRinexSystems);
       // build a table
       map<string, map<string, map<string, map<char,string> > > > table;
       for(size_t s=0; s<syss.size(); s++)
@@ -978,10 +978,10 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                   {
                      string tag(
                         string(1,syss[s]) +
-                        string(1,ObsID::ot2char[obsType]) +
-                        string(1,ObsID::cb2char[carrierBand]) +
-                        string(1,ObsID::tc2char[trackCode]));
-                     ObsID obs(tag, useVersion);
+                        string(1,RinexObsID::ot2char[obsType]) +
+                        string(1,RinexObsID::cb2char[carrierBand]) +
+                        string(1,RinexObsID::tc2char[trackCode]));
+                     RinexObsID obs(tag, useVersion);
                      string name(asString(obs));
                      if (name.find("Unknown") != string::npos ||
                          name.find("undefined") != string::npos ||
@@ -997,10 +997,10 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                         goodtags.push_back(tag);
                         string sys(
                            RinexSatID(string(1,tag[0])).systemString3());
-                        char type(ObsID::ot2char[obsType]);
+                        char type(RinexObsID::ot2char[obsType]);
                            /// @todo keep sys char ? id(tag.substr(1));
                         string id(tag);
-                        string desc(asString(ObsID(tag, useVersion)));
+                        string desc(asString(RinexObsID(tag, useVersion)));
                         vector<string> fld(split(desc,' '));
                         string codedesc = fld[1];
                         if ((codedesc.find("GPS") == 0) ||

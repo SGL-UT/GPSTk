@@ -126,7 +126,6 @@ using namespace gpstk;
 %include "gps_constants.hpp"
 %include "SatID.hpp"
 %include "SatID.i"
-%include "ObsIDInitializer.hpp"
 %include "ObsID.hpp"
 %include "ObsID.i"
 %ignore gpstk::SV_ACCURACY_GLO_INDEX;  // wrapper added in GPS_URA.i
