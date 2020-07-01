@@ -72,32 +72,50 @@ namespace gpstk
    const string AntexData::endOfAntennaString = "END OF ANTENNA";
 
    // NB. this dimension must be updated with the list
+   //  in IGS file rcvr_ant.tab.   See that file for 
+   //  additional information.
    /// Number of types that are used for satellites
-   const int Nsattype=19;
-   string sattype[Nsattype] =
-   { 
-      string("BLOCK I"),         // 1
-      string("BLOCK II"),        // 2
-      string("BLOCK IIA"),       // 3
-      string("BLOCK IIR"),       // 4
-      string("BLOCK IIR-A"),     // 5
-      string("BLOCK IIR-B"),     // 6
-      string("BLOCK IIR-M"),     // 7
-      string("BLOCK IIF"),       // 8
-      string("BLOCK IIIA"),      // 9
-      string("GLONASS"),         // 10
-      string("GLONASS-M"),       // 11
-      string("GLONASS-K1"),      // 12
-      string("BEIDOU-2G"),       // 13
-      string("BEIDOU-2I"),       // 14
-      string("BEIDOU-2M"),       // 15
-      string("GALILEO-1"),       // 16
-      string("GALILEO-2"),       // 17
-      string("GALILEO-0A"),      // 18
-      string("GALILEO-0B")       // 19
-   };
+
    /// vector of type strings that identify satellites; must be kept updated.
-   const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);
+   /** @note This list should be maintained parallel with the list
+       in IGS file rcvr_ant.tab.   See that file for additional information.
+   */
+   const vector<string> AntexData::SatelliteTypes =
+   { 
+      "BEIDOU-2G",
+      "BEIDOU-2I",
+      "BEIDOU-2M",
+      "BEIDOU-3I",
+      "BEIDOU-3SI-CAST",
+      "BEIDOU-3SI-SECM",
+      "BEIDOU-3SM-CAST",
+      "BEIDOU-3SM-SECM",
+      "BEIDOU-3M-CAST",
+      "BEIDOU-3M-SECM",
+      "BEIDOU-3G-CAST",
+      "BLOCK I",
+      "BLOCK II",
+      "BLOCK IIA",
+      "BLOCK IIR-A",
+      "BLOCK IIR-B",
+      "BLOCK IIR-M",
+      "BLOCK IIF",
+      "BLOCK IIIA",
+      "GALILEO-0A",
+      "GALILEO-0B",
+      "GALILEO-1",
+      "GALILEO-2",
+      "GLONASS",
+      "GLONASS-M",
+      "GLONASS-M+",
+      "GLONASS-K1",
+      "GLONASS-K2",
+      "IRNSS-1GEO",
+      "IRNSS-1IGSO",
+      "QZSS",
+      "QZSS-2I",
+      "QZSS-2G"
+   };
 
    // ----------------------------------------------------------------------------
    bool AntexData::isValid(CommonTime& time) const throw()
