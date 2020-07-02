@@ -63,7 +63,6 @@ namespace gpstk
 
    std::istream& operator>>(std::istream& s, FormattedDouble& d)
    {
-      std::cerr << "d.totalLen=" << d.totalLen << std::endl;
       if (d.totalLen)
          s >> std::setw(d.totalLen);
       if ((d.exponentChar != 'e') && (d.exponentChar != 'E'))
@@ -73,8 +72,6 @@ namespace gpstk
          std::string str;
          s >> str;
          std::string::size_type pos = str.find(d.exponentChar);
-         std::cerr << "  str=\"" << str << "\"" << std::endl
-                   << "  pos=" << pos << std::endl;
          if (pos != std::string::npos)
          {
             str[pos] = 'e'; // change exponent character to a readable one
@@ -90,5 +87,15 @@ namespace gpstk
          s >> d.val;
       }
       return s;
+   }
+
+
+   void FormattedDouble ::
+   dump(std::ostream& s) const
+   {
+      s << "FormattedDouble(" << val << "," << static_cast<int>(leadChar) << ","
+        << mantissaLen << "," << exponentLen << "," << totalLen << ","
+        << exponentChar << "," << static_cast<int>(leadSign) << ","
+        << static_cast<int>(alignment) << ")" << std::endl;
    }
 } // namespace gpstk

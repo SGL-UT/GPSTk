@@ -81,12 +81,27 @@ namespace gpstk
       operator double() const
       { return val; }
 
+         /// Cast this object to a double for math and such.
+      operator double&()
+      { return val; }
+
+         /** Divide val by a scalar.  This ensures that you can scale
+          * FormattedDouble objects and retain the formatting. */
+      inline FormattedDouble operator/(double d) const;
+
+         /** Multiply val by a scalar.  This ensures that you can scale
+          * FormattedDouble objects and retain the formatting. */
+      inline FormattedDouble operator*(double d) const;
+
          /// Assign a value without affecting formatting.
       FormattedDouble& operator=(double d)
       { val = d; return *this; }
 
          /// Assign a value by decoding a string using existing formatting.
       FormattedDouble& operator=(const std::string& s);
+
+         /// debug output all data members
+      void dump(std::ostream& s) const;
 
       double val;                     ///< The value as read or to be formatted.
       StringUtils::FFLead leadChar;   ///< Leading non-space character.
@@ -113,6 +128,21 @@ namespace gpstk
        *   work around this limitation, you should probably process
        *   substrings instead. */
    std::istream& operator>>(std::istream& s, FormattedDouble& d);
+
+
+   FormattedDouble FormattedDouble :: operator/(double d) const
+   {
+      FormattedDouble rv(*this);
+      rv.val /= d;
+      return rv;
+   }
+
+   FormattedDouble FormattedDouble :: operator*(double d) const
+   {
+      FormattedDouble rv(*this);
+      rv.val *= d;
+      return rv;
+   }
 } // namespace gpstk
 
 #endif // FORMATTEDDOUBLE_HPP

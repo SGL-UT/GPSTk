@@ -53,92 +53,71 @@
 using namespace std;
 using namespace gpstk;
 
-int main( int argc, char * argv[] )
+class SEM_T
 {
-   TUDEF("SEM_T","readData");
+public:
+   unsigned roundTripTest();
+};
 
-   string origFile("test_input_sem387.txt");
-   string testFile("test_output_sem387.out");
-   string testFile2("test_output_SEM_T.out");
-
-   std::list<OrbAlmGen> oagList;
-
-      // Read an existing SEM almanac file and write it back out.
+unsigned SEM_T :: roundTripTest()
+{
+   TUDEF("SEMData", "operator<<");
    try
    {
-      string fs = getFileSep();
-      string df(getPathData()+fs);
-      string inFile = df + origFile;
-
-      string tf(getPathTestTemp()+fs);
-      string outFile1 = tf + testFile; 
-
-      SEMStream In(inFile.c_str());
-      if (!In)
+         // read infn, write what should be identical output to outfn
+         // write almanac data to almfn, which should be the same as almexp
+      string infn(getPathData() + getFileSep() + "test_input_sem387.txt");
+      string outfn(getPathTestTemp() + getFileSep() + "test_output_sem387.out");
+      string almfn(getPathTestTemp() + getFileSep() + "test_output_SEM_T.out");
+      string almexp(getPathData() + getFileSep() + "test_output_SEM_T.exp");
+      SEMStream instr(infn.c_str());
+      SEMStream outstr(outfn.c_str(), ios::out);
+      SEMStream almstr(almfn.c_str(), ios::out);
+      SEMHeader hdr;
+      SEMData data;
+      TUASSERT(static_cast<bool>(instr));
+      TUASSERT(static_cast<bool>(outstr));
+      TUCATCH(instr >> hdr);
+      TUCATCH(outstr << hdr);
+      while (instr >> data)
       {
-         stringstream ss;
-         ss << "Input stream could not be opened." << endl;
-         TUFAIL(ss.str());
-         TURETURN();
+         outstr << data;
+         OrbAlmGen oag = OrbAlmGen(data);
+         oag.dump(almstr);
       }
-      SEMStream Out(outFile1.c_str(), ios::out);
-      SEMHeader Header;
-      SEMData Data;
-
-      string outFile2 = tf + testFile2; 
-      ofstream outAlmDmp;
-      outAlmDmp.open(outFile2.c_str(),ios::out);
-
-      In >> Header;
-      Out << Header;
-      while (In >> Data)
-      {
-         Out << Data;
-
-         OrbAlmGen oag = OrbAlmGen(Data);
-         oag.dump(outAlmDmp);
-         oagList.push_back(oag);
-      }
-      In.close();
-      Out.close();
-
-      TUCSM("RereadData");
-      SEMStream In2(outFile1.c_str(), ios::in);
-      if (!In2)
-      {
-         stringstream ss;
-         ss << "Test file " << outFile1 << " could not be re-opened." << endl;
-         TUFAIL(ss.str());
-         TURETURN();
-      }
-      SEMHeader Header2;
-      In2 >> Header2;
-      std::list<OrbAlmGen>::const_iterator cit = oagList.begin(); 
-      int index = 0; 
-      while (In2 >> Data)
-      {
-         OrbAlmGen oag2 = OrbAlmGen(Data);
-         const OrbAlmGen& oagRef = *cit;
-         bool test = oag2.isSameData(&(oagRef));
-         TUASSERTE(bool,test,true);
-         index++;
-         cit++;
-      }
-      outAlmDmp.close();
+      instr.close();
+      outstr.close();
+      almstr.close();
+      TUCMPFILE(infn, outfn, 0);
+      TUCMPFILE(almexp, almfn, 0);
    }
-   catch(gpstk::Exception& e)
+   catch (gpstk::Exception& exc)
    {
-      stringstream ss;
-      ss << e;
-      TUFAIL(ss.str());
-      cout << ss.str() << endl;
+      cerr << exc << endl;
+      TUFAIL("Unexpected exception");
+   }
+   catch (std::exception& exc)
+   {
+      TUFAIL("Unexpected exception: " + string(exc.what()));
    }
    catch (...)
    {
-      stringstream ss;
-      ss << "unknown error.  Done.";
-      TUFAIL(ss.str());
-      cout << ss.str() << endl;
+      TUFAIL("Unknown exception");
    }
+
    TURETURN();
+}
+
+
+int main( int argc, char * argv[] )
+{
+   unsigned errorTotal = 0;
+   SEM_T testClass;
+
+   errorTotal += testClass.roundTripTest();
+
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
+             << std::endl;
+
+   return errorTotal;
 }

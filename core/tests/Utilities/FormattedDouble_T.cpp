@@ -13,6 +13,11 @@ namespace std
       s << static_cast<int>(v);
       return s;
    }
+   std::ostream& operator<<(std::ostream& s, gpstk::StringUtils::FFAlign v)
+   {
+      s << static_cast<int>(v);
+      return s;
+   }
 }
 
 // EXP = expected value
@@ -25,19 +30,80 @@ namespace std
       std::ostringstream oss;                                           \
       oss << FD;                                                        \
       std::string formatted = oss.str();                                \
+      TUCSM("operator<<");                                              \
       TUASSERTE(std::string, EXP, formatted);                           \
       std::istringstream iss(formatted);                                \
       gpstk::FormattedDouble fdin(FD.totalLen, FD.exponentChar);        \
       iss >> fdin;                                                      \
+      TUCSM("operator>>");                                              \
       TUASSERTFE(VAL, fdin.val);                                        \
+      gpstk::FormattedDouble fdin2(FD);                                 \
+      fdin2 = formatted;                                                \
+      TUCSM("operator=(string)");                                       \
+      TUASSERTFE(VAL, fdin2.val);                                       \
    }
 
 class FormattedDouble_T
 {
 public:
+   unsigned constructorTest();
    unsigned streamTest();
    unsigned castTest();
+   unsigned scaleTest();
 };
+
+
+unsigned FormattedDouble_T ::
+constructorTest()
+{
+   TUDEF("FormattedDouble", "");
+      // please don't mess with defaults...
+   double d(1.234);
+   gpstk::FormattedDouble t1(d,gpstk::StringUtils::FFLead::Zero);
+   gpstk::FormattedDouble t2(d,gpstk::StringUtils::FFLead::Decimal, 99, 12, 128,
+                             'F', gpstk::StringUtils::FFSign::NegPos,
+                             gpstk::StringUtils::FFAlign::Right);
+   gpstk::FormattedDouble t3;
+
+   TUCSM("FormattedDouble(double,...)");
+   TUASSERTFE(d, t1.val);
+   TUASSERTE(gpstk::StringUtils::FFLead,
+             gpstk::StringUtils::FFLead::Zero, t1.leadChar);
+   TUASSERTE(unsigned, 0, t1.mantissaLen);
+   TUASSERTE(unsigned, 2, t1.exponentLen);
+   TUASSERTE(unsigned, 0, t1.totalLen);
+   TUASSERTE(char, 'e', t1.exponentChar);
+   TUASSERTE(gpstk::StringUtils::FFSign,
+             gpstk::StringUtils::FFSign::NegOnly, t1.leadSign);
+   TUASSERTE(gpstk::StringUtils::FFAlign,
+             gpstk::StringUtils::FFAlign::Left, t1.alignment);
+
+   TUASSERTFE(d, t2.val);
+   TUASSERTE(gpstk::StringUtils::FFLead,
+             gpstk::StringUtils::FFLead::Decimal, t2.leadChar);
+   TUASSERTE(unsigned, 99, t2.mantissaLen);
+   TUASSERTE(unsigned, 12, t2.exponentLen);
+   TUASSERTE(unsigned, 128, t2.totalLen);
+   TUASSERTE(char, 'F', t2.exponentChar);
+   TUASSERTE(gpstk::StringUtils::FFSign,
+             gpstk::StringUtils::FFSign::NegPos, t2.leadSign);
+   TUASSERTE(gpstk::StringUtils::FFAlign,
+             gpstk::StringUtils::FFAlign::Right, t2.alignment);
+
+   TUCSM("FormattedDouble(unsigned,char)");
+   TUASSERTFE(0., t3.val);
+   TUASSERTE(gpstk::StringUtils::FFLead,
+             gpstk::StringUtils::FFLead::NonZero, t3.leadChar);
+   TUASSERTE(unsigned, 0, t3.mantissaLen);
+   TUASSERTE(unsigned, 2, t3.exponentLen);
+   TUASSERTE(unsigned, 0, t3.totalLen);
+   TUASSERTE(char, 'e', t3.exponentChar);
+   TUASSERTE(gpstk::StringUtils::FFSign,
+             gpstk::StringUtils::FFSign::NegOnly, t3.leadSign);
+   TUASSERTE(gpstk::StringUtils::FFAlign,
+             gpstk::StringUtils::FFAlign::Left, t3.alignment);
+   TURETURN();
+}
 
 
 unsigned FormattedDouble_T ::
@@ -105,16 +171,19 @@ streamTest()
 unsigned FormattedDouble_T ::
 castTest()
 {
-   TUDEF("FormattedDouble", "operator double");
+   TUDEF("FormattedDouble", "operator=(double)");
 
    gpstk::FormattedDouble t1;
-   t1 = 9.0;
+   gpstk::FormattedDouble &t1ref(t1 = 9.0);
    TUASSERTFE(9.0, t1.val);
+   TUASSERTE(gpstk::FormattedDouble*, &t1, &t1ref);
    double foo = t1 * 123.0;
+   TUCSM("operator double()");
    TUASSERTFE(1107.0, foo);
    double bar = t1;
    TUASSERTFE(9.0, bar);
 
+   TUCSM("operator=(double)");
    gpstk::FormattedDouble t2(123.0, gpstk::StringUtils::FFLead::Zero, 10, 3, 0,
                              'x', gpstk::StringUtils::FFSign::NegPos);
    t2 = 9.0;
@@ -142,12 +211,55 @@ castTest()
 }
 
 
+unsigned FormattedDouble_T ::
+scaleTest()
+{
+   TUDEF("FormattedDouble", "");
+   double d(100.0);
+   gpstk::FormattedDouble t1(d,gpstk::StringUtils::FFLead::Decimal, 99, 12, 128,
+                             'F', gpstk::StringUtils::FFSign::NegPos,
+                             gpstk::StringUtils::FFAlign::Right);
+   gpstk::FormattedDouble t2 = t1 / 2.0;
+   gpstk::FormattedDouble t3 = t1 * 0.5;
+
+   TUCSM("operator/(double)");
+   TUASSERTFE(50.0, t2.val);
+   TUASSERTE(gpstk::StringUtils::FFLead,
+             gpstk::StringUtils::FFLead::Decimal, t2.leadChar);
+   TUASSERTE(unsigned, 99, t2.mantissaLen);
+   TUASSERTE(unsigned, 12, t2.exponentLen);
+   TUASSERTE(unsigned, 128, t2.totalLen);
+   TUASSERTE(char, 'F', t2.exponentChar);
+   TUASSERTE(gpstk::StringUtils::FFSign,
+             gpstk::StringUtils::FFSign::NegPos, t2.leadSign);
+   TUASSERTE(gpstk::StringUtils::FFAlign,
+             gpstk::StringUtils::FFAlign::Right, t2.alignment);
+
+   TUCSM("operator*(double)");
+   TUASSERTFE(50.0, t3.val);
+   TUASSERTE(gpstk::StringUtils::FFLead,
+             gpstk::StringUtils::FFLead::Decimal, t3.leadChar);
+   TUASSERTE(unsigned, 99, t3.mantissaLen);
+   TUASSERTE(unsigned, 12, t3.exponentLen);
+   TUASSERTE(unsigned, 128, t3.totalLen);
+   TUASSERTE(char, 'F', t3.exponentChar);
+   TUASSERTE(gpstk::StringUtils::FFSign,
+             gpstk::StringUtils::FFSign::NegPos, t3.leadSign);
+   TUASSERTE(gpstk::StringUtils::FFAlign,
+             gpstk::StringUtils::FFAlign::Right, t3.alignment);
+
+   TURETURN();
+}
+
+
 int main()
 {
    unsigned errorTotal = 0;
    FormattedDouble_T testClass;
+   errorTotal += testClass.constructorTest();
    errorTotal += testClass.streamTest();
    errorTotal += testClass.castTest();
+   errorTotal += testClass.scaleTest();
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
              << std::endl;
    return errorTotal;
