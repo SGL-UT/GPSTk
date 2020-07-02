@@ -1189,6 +1189,58 @@ public:
 
       TURETURN();
    }
+
+   unsigned floatFormatTest()
+   {
+      TUDEF("StringUtils", "floatFormat");
+
+      double p1 = 1.2345;  // positive test value
+      double n1 = -1.2345; // negative test value
+      TUASSERTE(string, "0.1234e+01", floatFormat(p1,FFLead::Zero,5,2));
+      TUASSERTE(string, ".12345e+01", floatFormat(p1,FFLead::Decimal,5,2));
+      TUASSERTE(string, "1.2345e+00", floatFormat(p1,FFLead::NonZero,5,2));
+      TUASSERTE(string, "0.1234d+01", floatFormat(p1,FFLead::Zero,5,2,0,'d'));
+      TUASSERTE(string, "0.1234D+01", floatFormat(p1,FFLead::Zero,5,2,0,'D'));
+      TUASSERTE(string, "0.1234x+01", floatFormat(p1,FFLead::Zero,5,2,0,'x'));
+      TUASSERTE(string, "0.1234E+01", floatFormat(p1,FFLead::Zero,5,2,0,'E',
+                                                   FFSign::NegOnly));
+      TUASSERTE(string, " 0.1234E+01", floatFormat(p1,FFLead::Zero,5,2,0,'E',
+                                                   FFSign::NegSpace));
+      TUASSERTE(string, "+0.1234E+01", floatFormat(p1,FFLead::Zero,5,2,0,'E',
+                                                   FFSign::NegPos));
+      TUASSERTE(string, "+0.1234E+0001", floatFormat(p1,FFLead::Zero,5,4,0,'E',
+                                                     FFSign::NegPos));
+
+      TUASSERTE(string, ".1234e+01", floatFormat(p1,FFLead::Decimal,4,2));
+
+      TUASSERTE(string, "-0.1234e+01", floatFormat(n1,FFLead::Zero,5,2));
+      TUASSERTE(string, "-.12345e+01", floatFormat(n1,FFLead::Decimal,5,2,0));
+      TUASSERTE(string, "-1.2345e+00", floatFormat(n1,FFLead::NonZero,5,2,0));
+      TUASSERTE(string, "-0.1234d+01", floatFormat(n1,FFLead::Zero,5,2,0,'d'));
+      TUASSERTE(string, "-0.1234D+01", floatFormat(n1,FFLead::Zero,5,2,0,'D'));
+      TUASSERTE(string, "-0.1234x+01", floatFormat(n1,FFLead::Zero,5,2,0,'x'));
+      TUASSERTE(string, "-0.1234E+01", floatFormat(n1,FFLead::Zero,5,2,0,'E',
+                                                   FFSign::NegOnly));
+      TUASSERTE(string, "-0.1234E+01", floatFormat(n1,FFLead::Zero,5,2,0,'E',
+                                                   FFSign::NegSpace));
+      TUASSERTE(string, "-0.1234E+01", floatFormat(n1,FFLead::Zero,5,2,0,'E',
+                                                   FFSign::NegPos));
+      TUASSERTE(string, "-0.1234E+0001", floatFormat(n1,FFLead::Zero,5,4,0,'E',
+                                                     FFSign::NegPos));
+
+      TUASSERTE(string, "0.000000000000000e+000",
+                floatFormat(0, FFLead::Zero, 16, 3));
+      TUASSERTE(string, "-0.1234E+0001      ",
+                floatFormat(n1,FFLead::Zero,5,4,19,'E',FFSign::NegPos));
+      TUASSERTE(string, "-0.1234E+0001      ",
+                floatFormat(n1,FFLead::Zero,5,4,19,'E',FFSign::NegPos,
+                            FFAlign::Left));
+      TUASSERTE(string, "      -0.1234E+0001",
+                floatFormat(n1,FFLead::Zero,5,4,19,'E',FFSign::NegPos,
+                            FFAlign::Right));
+
+      TURETURN();
+   }
 };
 
 int main() // Main function to initialize and run all tests above
@@ -1213,6 +1265,7 @@ int main() // Main function to initialize and run all tests above
    errorTotal += testClass.hexDumpDataStreamFlagTest();
    errorTotal += testClass.hexDumpDataConfigTest();
    errorTotal += testClass.hexToAsciiTest();
+   errorTotal += testClass.floatFormatTest();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
              << std::endl;

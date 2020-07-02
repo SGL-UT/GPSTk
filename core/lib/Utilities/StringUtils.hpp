@@ -103,6 +103,29 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(StringException, Exception);
 
+         /// Leading character for floatFormat(), after any whitespace or sign.
+      enum class FFLead
+      {
+         Zero,    ///< Start with zero, e.g. 0.12345
+         Decimal, ///< Start with decimal, e.g. .12345
+         NonZero  ///< Start with the first non-zero digit, e.g. 1.2345
+      };
+
+         /// How to handle sign in floatFormat()
+      enum class FFSign
+      {
+         NegOnly,  ///< Prefix output with a minus sign (neg) or nothing (pos)
+         NegSpace, ///< Prefix output with a minus sign (neg) or space (pos)
+         NegPos    ///< Prefix output with a minus sign (neg) or plus sign (pos)
+      };
+
+         /// Alignment of data for floatFormat()
+      enum class FFAlign
+      {
+         Left,  ///< Formatted output will be left-aligned.
+         Right  ///< Formatted output will be right-aligned.
+      };
+
          /**
           * Perform a formatted hex-dump of the (potentially) binary
           * data to the given stream.
@@ -1141,6 +1164,7 @@ namespace gpstk
           * @param checkSwitch if true, keeps the exponential sanity check for
           * exponentials above three characters in length.  If false, it removes
           * that check.
+          * @deprecated This method is being replaced by FormattedDouble.
           */
       inline std::string doub2sci(const double& d,
                                   const std::string::size_type length,
@@ -1155,6 +1179,7 @@ namespace gpstk
           * @param precision = number of digits after the decimal and before the 'e'
           * @param explen = length of exponent, this must = 1, 2 or 3
           * NB. length is increased if precision, explen and showPlus require it.
+          * @deprecated This method is being replaced by FormattedDouble.
           */
       inline std::string doubleToScientific(const double& d,
                                             const std::string::size_type length,
@@ -1179,6 +1204,7 @@ namespace gpstk
           *   -0.1234E00005.
           * @throw StringException if the string is not a number in
           *   scientific notation
+          * @deprecated This method is being replaced by FormattedDouble.
           */
       inline std::string& sci2for(std::string& aStr,
                                   const std::string::size_type startPos = 0,
@@ -1198,6 +1224,8 @@ namespace gpstk
           * that check.
           * @return a string containing \a d in FORTRAN notation.
           * @throw StringException
+          * @bug The rendered width is not correct if checkSwitch=false
+          * @deprecated This method is being replaced by FormattedDouble.
           */
       inline std::string doub2for(const double& d,
                                   const std::string::size_type length,
@@ -1212,10 +1240,43 @@ namespace gpstk
           * @param startPos beginning of number in string.
           * @param length length (in characters) of number, including exponent.
           * @return value of the number.
+          * @deprecated This method is being replaced by FormattedDouble.
           */
       inline double for2doub(const std::string& aStr,
                              const std::string::size_type startPos = 0,
                              const std::string::size_type length = std::string::npos);
+
+         /** Format a floating point value according to rules not
+          * directly supported by C++ stream I/O.
+          * @see FormattedDouble which should generally be used rather
+          *   than using this function directly.
+          * @param[in] d The value that is to be formatted in an ostream.
+          * @param[in] lead How the lead-in to the value is to be formatted.
+          * @param[in] mantissa How many digits of precision should be
+          *   in the mantissa, e.g. mantissa=5 could result in
+          *   something like 1.2345e+00.
+          * @param[in] exponent How many digits of precision should be
+          *   in the exponent, e.g. exponent=3 could result in
+          *   something like 1.2345e+000.  Exponents will always be at
+          *   least 2 characters in length.
+          * @param[in] width The total number of characters in the
+          *   formatted value.  If the length of the formatted value
+          *   including mantissa, exponent, sign, etc. is >= width, no
+          *   additional formatting will take place.  If the length of
+          *   the formatted value is < width, it will be padded with
+          *   spaces according to align.
+          * @param[in] expChar The character used to designate the
+          *   exponent, e.g. "e" or "E" or "D".
+          * @param[in] sign How numerical sign is to be handled in formatting.
+          * @param[in] align How to pad the formatted value according
+          *   to width.  Left adds space to the end of the formatted
+          *   value while Right inserts space at the beginning.
+          */
+      std::string floatFormat(double d, FFLead lead, unsigned mantissa,
+                              unsigned exponent, unsigned width = 0,
+                              char expChar = 'e',
+                              FFSign sign = FFSign::NegOnly,
+                              FFAlign align = FFAlign::Left);
 
          /**
           * Change a string into printable characters.  Control

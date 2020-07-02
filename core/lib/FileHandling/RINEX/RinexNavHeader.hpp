@@ -44,6 +44,7 @@
 
 #include "FFStream.hpp"
 #include "RinexNavBase.hpp"
+#include "FormattedDouble.hpp"
 
 namespace gpstk
 {
@@ -60,13 +61,13 @@ namespace gpstk
    {
    public:
          /// Constructor
-      RinexNavHeader(void) : valid(0), version(2.1) {}
+      RinexNavHeader();
       
          /// Destructor
       virtual ~RinexNavHeader() {}
 
          /// RinexNavHeader is a "header" so this function always returns true.
-      virtual bool isHeader(void) const {return true;}
+      virtual bool isHeader() const {return true;}
 
          /// This function dumps the contents of the header.
       virtual void dump(std::ostream& s) const;
@@ -104,10 +105,10 @@ namespace gpstk
       std::string fileAgency;
       std::string date;
       std::vector<std::string> commentList;
-      double ionAlpha[4];
-      double ionBeta[4];
-      double A0;
-      double A1;
+      FormattedDouble ionAlpha[4];
+      FormattedDouble ionBeta[4];
+      FormattedDouble A0;
+      FormattedDouble A1;
       long UTCRefTime;
       long UTCRefWeek;
       long leapSeconds;

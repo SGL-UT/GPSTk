@@ -203,5 +203,80 @@ namespace gpstk
          }
          s.copyfmt(oldState);
       }
+
+
+      std::string floatFormat(double d, FFLead lead, unsigned mantissa,
+                              unsigned exponent, unsigned width, char expChar,
+                              FFSign sign, FFAlign align)
+      {
+         std::ostringstream oss;
+         std::string rv;
+         std::string::size_type pos;
+         switch (sign)
+         {
+            case FFSign::NegOnly:
+                  // default behavior for iostream
+               break;
+            case FFSign::NegSpace:
+               if (d >= 0)
+                  oss << " ";
+               break;
+            case FFSign::NegPos:
+               oss << std::showpos;
+               break;
+         }
+         switch (lead)
+         {
+            case FFLead::Zero:
+                  // because we're shifting the decimal point, we multiply by 10
+                  // mantissa-2 because we're adding a digit that
+                  // isn't present in std c++ iostream.
+               oss << std::scientific << std::setprecision(mantissa-2)
+                   << (d*10);
+               rv = oss.str();
+                  // move the decimal
+               pos = rv.find('.');
+               rv[pos] = rv[pos-1];
+               rv[pos-1] = '.';
+               rv.insert(pos-1, 1, '0');
+               break;
+            case FFLead::Decimal:
+                  // because we're shifting the decimal point, we multiply by 10
+               oss << std::scientific << std::setprecision(mantissa-1)
+                   << (d*10);
+               rv = oss.str();
+                  // move the decimal
+               pos = rv.find('.');
+               rv[pos] = rv[pos-1];
+               rv[pos-1] = '.';
+               break;
+            case FFLead::NonZero:
+                  // This is the default behavior for C++ iostream.
+               oss << std::scientific << std::setprecision(mantissa-1) << d;
+               rv = oss.str();
+               break;
+         }
+            // change the exponent size if needed
+         pos = rv.find('e');
+         unsigned currentExpSize = rv.length() - (pos+2);
+         if (currentExpSize < exponent)
+            rv.insert(pos+2, exponent - currentExpSize, '0');
+            // change exponent character
+         rv[pos] = expChar;
+            // fill according to alignment request
+         if (rv.length() < width)
+         {
+            switch (align)
+            {
+               case FFAlign::Left:
+                  rv.append(width-rv.length(), ' ');
+                  break;
+               case FFAlign::Right:
+                  rv.insert(0, width-rv.length(), ' ');
+                  break;
+            }
+         }
+         return rv;
+      }
    } // namespace StringUtils
 } // namespace gpstk
