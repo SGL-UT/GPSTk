@@ -67,62 +67,39 @@ namespace gpstk
    }
 
    RinexNavData::RinexNavData(const EngEphemeris& ee)
+         : time(ee.getEpochTime()), PRNID(ee.getPRNID()), sf1XmitTime(0),
+           toeWeek(0), codeflgs(ee.getCodeFlags()), accuracy(ee.getAccuracy()),
+           health(ee.getHealth()), L2Pdata(ee.getL2Pdata()), IODC(ee.getIODC()),
+           IODE(ee.getIODE()), af0(ee.getAf0()), af1(ee.getAf1()),
+           af2(ee.getAf2()), Tgd(ee.getTgd()), Cuc(ee.getCuc()),
+           Cus(ee.getCus()), Crc(ee.getCrc()), Crs(ee.getCrs()),
+           Cic(ee.getCic()), Cis(ee.getCis()), Toe(ee.getToe()), M0(ee.getM0()),
+           dn(ee.getDn()), ecc(ee.getEcc()), Ahalf(ee.getAhalf()),
+           OMEGA0(ee.getOmega0()), i0(ee.getI0()), w(ee.getW()),
+           OMEGAdot(ee.getOmegaDot()), idot(ee.getIDot()),
+           fitint(ee.getFitInterval())
    {
-      time = ee.getEpochTime();
-      PRNID = ee.getPRNID();
-      codeflgs = ee.getCodeFlags();
-      accuracy = ee.getAccuracy();
-      health = ee.getHealth();
-      L2Pdata = ee.getL2Pdata();
-      IODC = ee.getIODC();
-      IODE = ee.getIODE();
-
-      af0 = ee.getAf0();
-      af1 = ee.getAf1();
-      af2 = ee.getAf2();
-      Tgd = ee.getTgd();
-
-      Cuc = ee.getCuc();
-      Cus = ee.getCus();
-      Crc = ee.getCrc();
-      Crs = ee.getCrs();
-      Cic = ee.getCic();
-      Cis = ee.getCis();
-
-      Toe = ee.getToe();
       setXmitTime(ee.getFullWeek(), ee.getHOWTime(1));
-      M0 = ee.getM0();
-      dn = ee.getDn();
-      ecc = ee.getEcc();
-      Ahalf = ee.getAhalf();
-      OMEGA0 = ee.getOmega0();
-      i0 = ee.getI0();
-      w = ee.getW();
-      OMEGAdot = ee.getOmegaDot();
-      idot = ee.getIDot();
-      fitint = ee.getFitInterval();
    }
 
    void RinexNavData::reallyPutRecord(FFStream& ffs) const
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
 
-      strm << putPRNEpoch() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit1() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit2() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit3() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit4() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit5() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit6() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit7(strm.header.version) << endl;
-      strm.lineNumber++;
+      strm << setw(2) << right << PRNID
+           << printTime(time, " %02y %2m %2d %2H %2M%5.1f")
+           << af0 << af1 << af2 << endlpp
+           << "   " << IODE << Crs << dn << M0 << endlpp
+           << "   " << Cuc << ecc << Cus << Ahalf << endlpp
+           << "   " << Toe << Cic << OMEGA0 << Cis << endlpp
+           << "   " << i0 << Crc << w << OMEGAdot << endlpp
+           << "   " << idot << RNDouble(codeflgs) << RNDouble(toeWeek)
+           << RNDouble(L2Pdata) << endlpp
+           << "   " << accuracy << RNDouble(health) << Tgd << IODC << endlpp
+           << "   " << RNDouble(sf1XmitTime);
+      if (strm.header.version >= 2.1)
+         strm << fitint;
+      strm << endlpp;
    }
 
    void RinexNavData::reallyGetRecord(FFStream& ffs)
@@ -283,159 +260,35 @@ namespace gpstk
       l.push_back(howws.sow);
       l.push_back(howws.week);
       l.push_back(codeflgs);
-      l.push_back(accuracy);
+      l.push_back(accuracy.val);
       l.push_back(health);
       l.push_back(L2Pdata);
-      l.push_back(IODC);
-      l.push_back(IODE);
+      l.push_back(IODC.val);
+      l.push_back(IODE.val);
       l.push_back(getTocWS().sow);
-      l.push_back(af0);
-      l.push_back(af1);
-      l.push_back(af2);
-      l.push_back(Tgd);
-      l.push_back(Cuc);
-      l.push_back(Cus);
-      l.push_back(Crc);
-      l.push_back(Crs);
-      l.push_back(Cic);
-      l.push_back(Cis);
-      l.push_back(Toe);
-      l.push_back(M0);
-      l.push_back(dn);
-      l.push_back(ecc);
-      l.push_back(Ahalf);
-      l.push_back(OMEGA0);
-      l.push_back(i0);
-      l.push_back(w);
-      l.push_back(OMEGAdot);
-      l.push_back(idot);
-      l.push_back(fitint);
+      l.push_back(af0.val);
+      l.push_back(af1.val);
+      l.push_back(af2.val);
+      l.push_back(Tgd.val);
+      l.push_back(Cuc.val);
+      l.push_back(Cus.val);
+      l.push_back(Crc.val);
+      l.push_back(Crs.val);
+      l.push_back(Cic.val);
+      l.push_back(Cis.val);
+      l.push_back(Toe.val);
+      l.push_back(M0.val);
+      l.push_back(dn.val);
+      l.push_back(ecc.val);
+      l.push_back(Ahalf.val);
+      l.push_back(OMEGA0.val);
+      l.push_back(i0.val);
+      l.push_back(w.val);
+      l.push_back(OMEGAdot.val);
+      l.push_back(idot.val);
+      l.push_back(fitint.val);
 
       return l;
-   }
-
-   string RinexNavData::putPRNEpoch(void) const
-   {
-      string line;
-      line += rightJustify(asString(PRNID), 2);
-      line += writeTime(time);
-      line += string(1, ' ');
-      line += doub2for(af0, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(af1, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(af2, 18, 2);
-      return line;
-   }
-
-   string RinexNavData::writeTime(const CommonTime& dt) const
-   {
-      return printTime(dt, " %02y %2m %2d %2H %2M%5.1f");
-   }
-
-   string RinexNavData::putBroadcastOrbit1(void) const
-   {
-      string line;
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(IODE, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Crs, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(dn, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(M0, 18, 2);
-      return line;
-   }
-
-   string RinexNavData::putBroadcastOrbit2(void) const
-   {
-      string line;
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(Cuc, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(ecc, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Cus, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Ahalf, 18, 2);
-      return line;
-   }
-
-   string RinexNavData::putBroadcastOrbit3(void) const
-   {
-      string line;
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(Toe, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Cic, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(OMEGA0, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Cis, 18, 2);
-      return line;
-   }
-
-   string RinexNavData::putBroadcastOrbit4(void) const
-   {
-      string line;
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(i0, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Crc, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(w, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(OMEGAdot, 18, 2);
-      return line;
-   }
-
-   string RinexNavData::putBroadcastOrbit5(void) const
-   {
-      string line;
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(idot, 18, 2);
-      line += string(1, ' ');
-      line += doub2for((double)codeflgs, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(toeWeek, 18, 2);
-      line += string(1, ' ');
-      line += doub2for((double)L2Pdata, 18, 2);
-      return line;
-   }
-
-   string RinexNavData::putBroadcastOrbit6(void) const
-   {
-      string line;
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(accuracy, 18, 2);
-      line += string(1, ' ');
-      line += doub2for((double)health, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Tgd, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(IODC, 18, 2);
-      return line;
-   }
-
-   string RinexNavData::putBroadcastOrbit7(const double ver) const
-   {
-      string line;
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(sf1XmitTime, 18, 2);
-
-      if (ver >= 2.1)
-      {
-         line += string(1, ' ');
-         line += doub2for(fitint, 18, 2);
-      }
-      return line;
    }
 
    void RinexNavData::getPRNEpoch(const string& currentLine)
@@ -473,9 +326,9 @@ namespace gpstk
          time = CivilTime(yr,mo,day,hr,min,sec,gpstk::TimeSystem::GPS).convertToCommonTime();
          if(ds != 0) time += ds;
 
-         af0 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         af1 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         af2 = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         af0 = currentLine.substr(22,19);
+         af1 = currentLine.substr(41,19);
+         af2 = currentLine.substr(60,19);
       }
       catch (std::exception &e)
       {
@@ -489,10 +342,10 @@ namespace gpstk
    {
       try
       {
-         IODE = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
-         Crs = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         dn = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         M0 = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         IODE = currentLine.substr(3,19);
+         Crs = currentLine.substr(22,19);
+         dn = currentLine.substr(41,19);
+         M0 = currentLine.substr(60,19);
       }
       catch (std::exception &e)
       {
@@ -506,10 +359,10 @@ namespace gpstk
    {
       try
       {
-         Cuc = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
-         ecc = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         Cus = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         Ahalf = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         Cuc = currentLine.substr(3,19);
+         ecc = currentLine.substr(22,19);
+         Cus = currentLine.substr(41,19);
+         Ahalf = currentLine.substr(60,19);
       }
       catch (std::exception &e)
       {
@@ -523,10 +376,10 @@ namespace gpstk
    {
       try
       {
-         Toe = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
-         Cic = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         OMEGA0 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         Cis = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         Toe = currentLine.substr(3,19);
+         Cic = currentLine.substr(22,19);
+         OMEGA0 = currentLine.substr(41,19);
+         Cis = currentLine.substr(60,19);
       }
       catch (std::exception &e)
       {
@@ -540,10 +393,10 @@ namespace gpstk
    {
       try
       {
-         i0 = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
-         Crc = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         w = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         OMEGAdot = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         i0 = currentLine.substr(3,19);
+         Crc = currentLine.substr(22,19);
+         w = currentLine.substr(41,19);
+         OMEGAdot = currentLine.substr(60,19);
       }
       catch (std::exception &e)
       {
@@ -557,12 +410,12 @@ namespace gpstk
    {
       try
       {
-         double codeL2, L2P, toe_wn;
+         RNDouble codeL2(0), L2P(0), toe_wn(0);
 
-         idot = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
-         codeL2 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         toe_wn = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         L2P = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         idot = currentLine.substr(3,19);
+         codeL2 = currentLine.substr(22,19);
+         toe_wn = currentLine.substr(41,19);
+         L2P = currentLine.substr(60,19);
 
          codeflgs = (short) codeL2;
          L2Pdata = (short) L2P;
@@ -580,12 +433,12 @@ namespace gpstk
    {
       try
       {
-         double SV_health;
+         RNDouble SV_health(0);
 
-         accuracy = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
-         SV_health = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         Tgd = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         IODC = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         accuracy = currentLine.substr(3,19);
+         SV_health = currentLine.substr(22,19);
+         Tgd = currentLine.substr(41,19);
+         IODC = currentLine.substr(60,19);
 
 
          health = (short) SV_health;
@@ -602,16 +455,16 @@ namespace gpstk
    {
       try
       {
-         double HOW_sec;
+         RNDouble HOW_sec(0);
 
-         HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         HOW_sec = currentLine.substr(3,19);
             // leave it alone so round-trips are possible
             // (even though we're storing a double as a long, which
             //could lead to failures in round-trip testing, though if
             //that happens your transmit time is messed).
             //setXmitTime(HOW_sec);
          sf1XmitTime = HOW_sec;
-         fitint = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         fitint = currentLine.substr(22,19);
       }
       catch (std::exception &e)
       {

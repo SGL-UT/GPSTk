@@ -326,19 +326,27 @@ namespace gpstk
    void Rinex3NavData::reallyGetRecord(FFStream& ffs)
    {
 
-      try {
+      try
+      {
          Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
          // If the header hasn't been read, read it...
-         if(!strm.headerRead) {
-            try {
+         if (!strm.headerRead)
+         {
+            try
+            {
                strm >> strm.header;
             }
-            catch(std::exception& e) {
-               FFStreamError fse(string("std::exception reading header ") + e.what());
+            catch(std::exception& e)
+            {
+               FFStreamError fse(string("std::exception reading header ") +
+                                 e.what());
                GPSTK_THROW(fse);
             }
-            catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
+            catch(FFStreamError& fse)
+            {
+               GPSTK_RETHROW(fse);
+            }
          }
 
          // get the first line, the epoch line
@@ -348,18 +356,31 @@ namespace gpstk
          for(int i=1; i<=3; i++) getRecord(i, strm);
 
          // SBAS and GLO only have 3 records
-         if(satSys == "S" || satSys == "R") return;
+         if (satSys == "S" || satSys == "R") return;
 
          // GPS GAL QZSS BDS have 7 records, get 4-7
-         if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C" || satSys == "I")
-            for(int i=4; i<=7; i++) getRecord(i, strm);
+         if (satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C" ||
+             satSys == "I")
+         {
+            for(int i=4; i<=7; i++)
+            {
+               getRecord(i, strm);
+            }
+         }
       }
-      catch(std::exception& e) {
+      catch(std::exception& e)
+      {
          FFStreamError fse(string("std::exception: ") + e.what());
          GPSTK_THROW(fse);
       }
-      catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
-      catch(StringException& se) { GPSTK_RETHROW(se); }
+      catch(FFStreamError& fse)
+      {
+         GPSTK_RETHROW(fse);
+      }
+      catch(StringException& se)
+      {
+         GPSTK_RETHROW(se);
+      }
 
    }  // End of method 'Rinex3NavData::reallyGetRecord(FFStream& ffs)'
 
@@ -367,28 +388,46 @@ namespace gpstk
       // Outputs the record to the FFStream \a s.
    void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
    {
-
-      try {
+      try
+      {
          Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
          putPRNEpoch(strm);
 
          // put 3 data records
-         for(int i=1; i<=3; i++) putRecord(i, strm);
+         for(int i=1; i<=3; i++)
+         {
+            putRecord(i, strm);
+         }
 
          // SBAS and GLO only have 3 records
-         if(satSys == "S" || satSys == "R") return;
+         if (satSys == "S" || satSys == "R")
+         {
+            return;
+         }
 
          // GPS QZS BDS and GAL have 7 records, put 4-7
-         if(satSys == "G" || satSys == "C" || satSys == "E" || satSys == "J")
-            for(int i=4; i<=7; i++) putRecord(i, strm);
+         if (satSys == "G" || satSys == "C" || satSys == "E" || satSys == "J")
+         {
+            for(int i=4; i<=7; i++)
+            {
+               putRecord(i, strm);
+            }
+         }
       }
-      catch(std::exception& e) {
+      catch(std::exception& e)
+      {
          FFStreamError fse(string("std::exception: ") + e.what());
          GPSTK_THROW(fse);
       }
-      catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
-      catch(StringException& se) { GPSTK_RETHROW(se); }
+      catch(FFStreamError& fse)
+      {
+         GPSTK_RETHROW(fse);
+      }
+      catch(StringException& se)
+      {
+         GPSTK_RETHROW(se);
+      }
 
    }  // End of method 'Rinex3NavData::reallyPutRecord(FFStream& ffs)'
 
@@ -398,27 +437,34 @@ namespace gpstk
    {
       s << "Rinex3NavData dump: "
          << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
-         << static_cast<CivilTime>(time).printf(" TOC %Y/%02m/%02d %02H:%02M:%02S")
+         << printTime(time, " TOC %Y/%02m/%02d %02H:%02M:%02S")
          << fixed << setprecision(3)
          << " wk " << weeknum << " xmit " << xmitTime << " Toe " << Toe << endl;
       s << " Toc " << Toc << scientific << setprecision(12)
          << " af0 " << af0 << " af1 " << af1 << " af2 " << af2
          << " Tgd " << Tgd << " Tgd2 " << Tgd2 << endl;
-      s << " M0 " << M0 << " Ecc " << ecc << " sqrtA " << Ahalf << " OM " << OMEGA0
-         << endl;
-      s << " i0 " << i0 << " om " << w << " dOMdt " << OMEGAdot << " didt " << idot
-         << endl;
+                                                  
+      s << " M0 " << M0 << " Ecc " << ecc << " sqrtA " << Ahalf << " OM "
+        << OMEGA0 << endl;
+      s << " i0 " << i0 << " om " << w << " dOMdt " << OMEGAdot << " didt "
+        << idot << endl;
       s << " Cuc " << Cuc << " Cus " << Cus << " Crc " << Crc << " Crs " << Crs
-         << " Cic " << Cic << " Cis " << Cis << endl;
+        << " Cic " << Cic << " Cis " << Cis << endl;
 
-      if(satSys == "G" || satSys == "J")          // GPS QZSS
+      if (satSys == "G" || satSys == "J")
+      {
+            // GPS QZSS
          s << " health " << health << " acc " << accuracy << " fit " << fitint
-            << " IODE " << IODE << " IODC " << IODC
-            << " codeflags " << codeflgs << " L2P " << L2Pdata << endl;
-      //else if(satSys == "R")     // GLONASS
-      else if(satSys == "E")     // Galileo
+           << " IODE " << IODE << " IODC " << IODC
+           << " codeflags " << codeflgs << " L2P " << L2Pdata << endl;
+      }
+      //else if (satSys == "R")     // GLONASS
+      else if (satSys == "E")
+      {
+            // Galileo
          s << " IODnav " << IODnav << " datasources " << datasources << endl;
-      //else if(satSys == "C")     // BeiDou
+      }
+      //else if (satSys == "C")     // BeiDou
    }
 
    string Rinex3NavData::dumpString(void) const
@@ -426,48 +472,67 @@ namespace gpstk
       ostringstream s;
       s << "RND " << satSys
          << setfill('0') << setw(2) << PRNID << setfill(' ');
-      if(satSys == "G" || satSys == "J")          // GPS or QZSS
+      if (satSys == "G" || satSys == "J")
+      {
+            // GPS or QZSS
          s << " TOE: " << setw(4) << weeknum
-           << " " << fixed << setw(10) << setprecision(3) << Toe
+           << " " << fixed << setw(10) << setprecision(3) << Toe.val
            << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
            << " xmitTime: " << setw(6) << xmitTime
-           << " IODE/C: " << int(IODE) << "/" << int(IODC) << " hlth: " << health
+           << " IODE/C: " << int(IODE) << "/" << int(IODC)
+           << " hlth: " << health
            << " cflgs: " << codeflgs << " L2P: " << L2Pdata
-           << " fit: " << fitint;
-      else if(satSys == "R")     // GLONASS
+           << " fit: " << fitint.val;
+      }
+      else if (satSys == "R")
+      {
+            // GLONASS
          s << " freq: " << setw(2) << freqNum
            << " hlth: " << setw(2) << health
            << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
            << " MFtime: " << setw(6) << MFtime
-           << " TauN: " << scientific << setw(19) << setprecision(12) << TauN
-           << " GammaN: " << setw(19) << GammaN
-           << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo;
-      else if(satSys == "S")     // Geosync (SBAS)
+           << " TauN: " << scientific << setw(19) << setprecision(12)
+           << TauN.val
+           << " GammaN: " << setw(19) << GammaN.val
+           << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo.val;
+      }
+      else if (satSys == "S")
+      {
+            // Geosync (SBAS)
          s << " URAm: " << setw(2) << freqNum
            << " hlth: " << setw(2) << health
            << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
            << " MFtime: " << setw(6) << MFtime
-           << " aGf0: " << scientific << setw(19) << setprecision(12) << TauN
-           << " aGf1: " << setw(19) << GammaN
-           << " IODN " << fixed << setprecision(2) << setw(4) << ageOfInfo;
-      else if(satSys == "E")   // Galileo
+           << " aGf0: " << scientific << setw(19) << setprecision(12)
+           << TauN.val
+           << " aGf1: " << setw(19) << GammaN.val
+           << " IODN " << fixed << setprecision(2) << setw(4) << ageOfInfo.val;
+      }
+      else if (satSys == "E")
+      {
+            // Galileo
          s << " TOE: " << setw(4) << weeknum
-           << " " << fixed << setw(10) << setprecision(3) << Toe
+           << " " << fixed << setw(10) << setprecision(3) << Toe.val
            << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
            << " xmitTime: " << setw(6) << xmitTime
            << " IODnav: " << int(IODnav) << " hlth: " << health
            << " datasources " << datasources;
-      else if(satSys == "C")   // BeiDou
+      }
+      else if (satSys == "C")
+      {
+            // BeiDou
          s << " TOE: " << setw(4) << weeknum
-           << " " << fixed << setw(10) << setprecision(3) << Toe
+           << " " << fixed << setw(10) << setprecision(3) << Toe.val
            << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
            << " xmitTime: " << setw(6) << xmitTime
            << " IODE/C: " << int(IODE) << "/" << int(IODC);
+      }
       else
+      {
          s << " (unknown system: " << satSys << ")";
+      }
 
       return s.str();
-
    }  // End of method 'Rinex3NavData::asString
 
       // Deprecated; use GPSEphemeris.
@@ -541,7 +606,8 @@ namespace gpstk
          beginFitSOW += FULLWEEK;
          beginFitWk--;
       }
-      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW,
+                                          TimeSystem::GPS);
       if (endFitSOW >= FULLWEEK)
       {
          endFitSOW += FULLWEEK;
@@ -569,9 +635,11 @@ namespace gpstk
    // Private helper routine for casts from this to OrbitEph-based Ephemerides
    void Rinex3NavData::castTo(OrbitEph *oeptr) const
    {
-      try {
+      try
+      {
          // Glonass and Geosync do not have a orbit-based ephemeris
-         if(satSys == "R" || satSys == "S") {
+         if (satSys == "R" || satSys == "S")
+         {
             oeptr->dataLoadedFlag = false;
             return;
          }
@@ -612,7 +680,10 @@ namespace gpstk
    
          oeptr->dataLoadedFlag = true;
       }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
+      catch(Exception& e)
+      {
+         GPSTK_RETHROW(e);
+      }
    }
 
       // Casts Rinex3NavData to a GPSEphemeris object.
@@ -625,10 +696,10 @@ namespace gpstk
       castTo(ptr);                                 //sets dataLoadedFlag
 
       // is it right?
-      if(gpse.satID.system != SatID::systemGPS)
+      if (gpse.satID.system != SatID::systemGPS)
          gpse.dataLoadedFlag = false;
 
-      if(!gpse.dataLoadedFlag)
+      if (!gpse.dataLoadedFlag)
          return gpse;          // throw?
 
       // now load the GPS-specific parts
@@ -716,13 +787,13 @@ namespace gpstk
 
       // fill the OrbitEph parts
       OrbitEph *ptr = dynamic_cast<OrbitEph*>(&gale);
-      castTo(ptr);                                          // sets dataLoadedFlag
+      castTo(ptr);  // sets dataLoadedFlag
 
       // is it right?
-      if(gale.satID.system != SatID::systemGalileo)
+      if (gale.satID.system != SatID::systemGalileo)
          gale.dataLoadedFlag = false;
 
-      if(!gale.dataLoadedFlag)
+      if (!gale.dataLoadedFlag)
          return gale;          // throw?
 
       // get the epochs right
@@ -732,7 +803,7 @@ namespace gpstk
       // Get week for clock, to build Toc
       double dt = Toc - xmitTime;
       int week = weeknum;
-      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+      if (dt < -HALFWEEK) week++; else if (dt > HALFWEEK) week--;
       //MGEX NB MGEX data has GPS week numbers in all systems except BeiDou,
       //MGEX so must implement temporary fixes: use GPS Toc for GAL and QZSS
       //MGEX GALWeekSecond galws = GALWeekSecond(week, Toc, TimeSystem::GAL);
@@ -770,10 +841,10 @@ namespace gpstk
       castTo(ptr);                                    // set dataLoadedFlag
 
       // is it right?
-      if(bdse.satID.system != SatID::systemBeiDou)
+      if (bdse.satID.system != SatID::systemBeiDou)
          bdse.dataLoadedFlag = false;
 
-      if(!bdse.dataLoadedFlag)
+      if (!bdse.dataLoadedFlag)
          return bdse;          // throw?
 
       // get the epochs right
@@ -783,7 +854,7 @@ namespace gpstk
       // Get week for clock, to build Toc
       double dt = Toc - xmitTime;
       int week = weeknum;
-      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+      if (dt < -HALFWEEK) week++; else if (dt > HALFWEEK) week--;
       BDSWeekSecond bdsws = BDSWeekSecond(week, Toc, TimeSystem::BDT);
       bdsws.adjustToYear(year);
       bdse.ctToc = CommonTime(bdsws);
@@ -815,10 +886,10 @@ namespace gpstk
       castTo(dynamic_cast<OrbitEph*>(&qzse));
 
       // is it right?
-      if(qzse.satID.system != SatID::systemQZSS)
+      if (qzse.satID.system != SatID::systemQZSS)
          qzse.dataLoadedFlag = false;
 
-      if(!qzse.dataLoadedFlag)
+      if (!qzse.dataLoadedFlag)
          return qzse;          // throw?
 
       // get the epochs right
@@ -828,7 +899,7 @@ namespace gpstk
       // Get week for clock, to build Toc
       double dt = Toc - xmitTime;
       int week = weeknum;
-      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+      if (dt < -HALFWEEK) week++; else if (dt > HALFWEEK) week--;
       QZSWeekSecond qzsws = QZSWeekSecond(week, Toc, TimeSystem::QZS);
       qzsws.adjustToYear(year);
       qzse.ctToc = CommonTime(qzsws);
@@ -876,33 +947,33 @@ namespace gpstk
       l.push_back(xmitTime);
       l.push_back(weeknum);
       l.push_back(codeflgs);
-      l.push_back(accuracy);
+      l.push_back(accuracy.val);
       l.push_back(health);
       l.push_back(L2Pdata);
-      l.push_back(IODC);
-      l.push_back(IODE);
-      l.push_back(Toe);
-      l.push_back(af0);
-      l.push_back(af1);
-      l.push_back(af2);
-      l.push_back(Tgd);
-      l.push_back(Cuc);
-      l.push_back(Cus);
-      l.push_back(Crc);
-      l.push_back(Crs);
-      l.push_back(Cic);
-      l.push_back(Cis);
+      l.push_back(IODC.val);
+      l.push_back(IODE.val);
+      l.push_back(Toe.val);
+      l.push_back(af0.val);
+      l.push_back(af1.val);
+      l.push_back(af2.val);
+      l.push_back(Tgd.val);
+      l.push_back(Cuc.val);
+      l.push_back(Cus.val);
+      l.push_back(Crc.val);
+      l.push_back(Crs.val);
+      l.push_back(Cic.val);
+      l.push_back(Cis.val);
       l.push_back(Toc);
-      l.push_back(M0);
-      l.push_back(dn);
-      l.push_back(ecc);
-      l.push_back(Ahalf);
-      l.push_back(OMEGA0);
-      l.push_back(i0);
-      l.push_back(w);
-      l.push_back(OMEGAdot);
-      l.push_back(idot);
-      l.push_back(fitint);
+      l.push_back(M0.val);
+      l.push_back(dn.val);
+      l.push_back(ecc.val);
+      l.push_back(Ahalf.val);
+      l.push_back(OMEGA0.val);
+      l.push_back(i0.val);
+      l.push_back(w.val);
+      l.push_back(OMEGAdot.val);
+      l.push_back(idot.val);
+      l.push_back(fitint.val);
 
       return l;
 
@@ -917,51 +988,30 @@ namespace gpstk
       string line;
       CivilTime civtime(time);
 
-      if(strm.header.version >= 3) {                                 // version 3
-         line = sat.toString();
-         line += " ";
-         line += rightJustify(asString<short>(civtime.year), 4);
-         line += " ";
-         line += rightJustify(asString<short>(civtime.month), 2, '0');
-         line += " ";
-         line += rightJustify(asString<short>(civtime.day), 2, '0');
-         line += " ";
-         line += rightJustify(asString<short>(civtime.hour), 2, '0');
-         line += " ";
-         line += rightJustify(asString<short>(civtime.minute), 2, '0');
-         line += " ";
-         line += rightJustify(asString<short>(civtime.second), 2, '0');
+      if (strm.header.version >= 3)
+      {
+            // version 3
+         strm << sat.toString() << ' '
+              << printTime(civtime, "%4Y %02m %02d %02H %02M %02S");
       }
-      else {                                                         // version 2
-         line = rightJustify(asString<short>(PRNID), 2);
-         line += " ";
-         line += rightJustify(asString<short>(civtime.year), 2, '0');
-         line += " ";
-         line += rightJustify(asString<short>(civtime.month), 2);
-         line += " ";
-         line += rightJustify(asString<short>(civtime.day), 2);
-         line += " ";
-         line += rightJustify(asString<short>(civtime.hour), 2);
-         line += " ";
-         line += rightJustify(asString<short>(civtime.minute), 2);
-         line += " ";
-         line += rightJustify(asString(civtime.second,1), 4);
+      else
+      {
+            // version 2
+         strm << setw(2) << PRNID << ' '
+              << printTime(civtime, "%02y %2m %2d %2H %2M %4.1f");
       }
 
-      if(satSys == "R" || satSys == "S") {
-         line += doubleToScientific(TauN,19,12,2);
-         line += doubleToScientific(GammaN,19,12,2);
-         line += doubleToScientific((double)MFtime,19,12,2);
+      if (satSys == "R" || satSys == "S")
+      {
+         strm << TauN << GammaN << RNDouble(MFtime);
       }
-      else if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C") {
-         line += doubleToScientific(af0,19,12,2);
-         line += doubleToScientific(af1,19,12,2);
-         line += doubleToScientific(af2,19,12,2);
+      else if (satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C")
+      {
+         strm << af0 << af1 << af2;
       }
 
-      strm << stripTrailing(line) << endl;
+      strm << endl;
       strm.lineNumber++;
-
    }  // End of 'Rinex3NavData::putPRNEpoch(Rinex3NavStream& strm)'
 
 
@@ -972,151 +1022,157 @@ namespace gpstk
    void Rinex3NavData::putRecord(const int& nline, Rinex3NavStream& strm) const
    {
 
-      if(nline < 1 || nline > 7) {
+      if (nline < 1 || nline > 7)
+      {
          FFStreamError fse(string("Invalid line number ") + asString(nline));
          GPSTK_THROW(fse);
       }
 
-      try {
-         string line;
-
-         if(strm.header.version < 3) line += string(3, ' ');
-         else                        line += string(4, ' ');
+      try
+      {
+         if (strm.header.version < 3)
+         {
+            strm << "   ";
+         }
+         else
+         {
+            strm << "    ";
+         }
 
 
          // Internally (Rinex3NavData), weeknum=week of HOW
          // In RINEX 3 *files*, weeknum is the week of TOE.
-         double wk = double(weeknum);
+         RNDouble wk(weeknum);
          long xmit = xmitTime;
-         if(xmit - Toe > HALFWEEK)
+         if (xmit - Toe > HALFWEEK)
          {
             xmit -= FULLWEEK;
             wk++;
          }
-         else if(xmit - Toe < -(HALFWEEK))
+         else if (xmit - Toe < -(HALFWEEK))
          {
             xmit += FULLWEEK;
             wk--;
          }
 
-         if(nline == 1) {
-            if(satSys == "R" || satSys == "S") {     // GLO and GEO
-               line += doubleToScientific(px,19,12,2);
-               line += doubleToScientific(vx,19,12,2);
-               line += doubleToScientific(ax,19,12,2);
-               line += doubleToScientific((double)health,19,12,2);
+         if (nline == 1)
+         {
+            if (satSys == "R" || satSys == "S")
+            {
+                  // GLO and GEO
+               strm << px << vx << ax << RNDouble(health);
             }
-            else if(satSys == "G" || satSys == "C" || satSys == "J") {// GPS,BDS,QZS
-               line += doubleToScientific(IODE,19,12,2);
-               line += doubleToScientific(Crs,19,12,2);
-               line += doubleToScientific(dn,19,12,2);
-               line += doubleToScientific(M0,19,12,2);
+            else if (satSys == "G" || satSys == "C" || satSys == "J")
+            {
+                  // GPS,BDS,QZS
+               strm << IODE << Crs << dn << M0;
             }
-            else if(satSys == "E") {                  // GAL
-               line += doubleToScientific(IODnav,19,12,2);
-               line += doubleToScientific(Crs,19,12,2);
-               line += doubleToScientific(dn,19,12,2);
-               line += doubleToScientific(M0,19,12,2);
+            else if (satSys == "E")
+            {
+                  // GAL
+               strm << IODnav << Crs << dn << M0;
             }
          }
-
-         else if(nline == 2) {
-            if(satSys == "R" || satSys == "S") {      // GLO and GEO
-               line += doubleToScientific(py,19,12,2);
-               line += doubleToScientific(vy,19,12,2);
-               line += doubleToScientific(ay,19,12,2);
-               if(satSys == "R")
-                  line += doubleToScientific((double)freqNum,19,12,2);
+         else if (nline == 2)
+         {
+            if (satSys == "R" || satSys == "S")
+            {
+                  // GLO and GEO
+               strm << py << vy << ay;
+               if (satSys == "R")
+                  strm << RNDouble(freqNum);
                else
-                  line += doubleToScientific(accCode,19,12,2);
+                  strm << accCode;
             }
-            else {                                    // GPS,GAL,BDS,QZS
-               line += doubleToScientific(Cuc,19,12,2);
-               line += doubleToScientific(ecc,19,12,2);
-               line += doubleToScientific(Cus,19,12,2);
-               line += doubleToScientific(Ahalf,19,12,2);
+            else
+            {
+                  // GPS,GAL,BDS,QZS
+               strm << Cuc << ecc << Cus << Ahalf;
             }
          }
-
-         else if(nline == 3) {
-            if(satSys == "R" || satSys == "S") {      // GLO GEO
-               line += doubleToScientific(pz,19,12,2);
-               line += doubleToScientific(vz,19,12,2);
-               line += doubleToScientific(az,19,12,2);
-               if(satSys == "R")
-                  line += doubleToScientific(ageOfInfo,19,12,2);
+         else if (nline == 3)
+         {
+            if (satSys == "R" || satSys == "S")
+            {
+                  // GLO GEO
+               strm << pz << vz << az;
+               if (satSys == "R")
+                  strm << ageOfInfo;
                else                             // GEO
-                  line += doubleToScientific(IODN,19,12,2);
+                  strm << IODN;
             }
-            else {                                    // GPS,GAL,BDS,QZS
-               line += doubleToScientific(Toe,19,12,2);
-               line += doubleToScientific(Cic,19,12,2);
-               line += doubleToScientific(OMEGA0,19,12,2);
-               line += doubleToScientific(Cis,19,12,2);
+            else
+            {
+                  // GPS,GAL,BDS,QZS
+               strm << Toe << Cic << OMEGA0 << Cis;
             }
          }
 
          // SBAS and GLO end here
 
-         else if(nline == 4) {                        // GPS,GAL,BDS,QZS
-            line += doubleToScientific(i0,19,12,2);
-            line += doubleToScientific(Crc,19,12,2);
-            line += doubleToScientific(w,19,12,2);
-            line += doubleToScientific(OMEGAdot,19,12,2);
+         else if (nline == 4)
+         {
+               // GPS,GAL,BDS,QZS
+            strm << i0 << Crc << w << OMEGAdot;
          }
 
-         else if(nline == 5) {
-            if(satSys == "G" || satSys == "J") {      // GPS QZS
-               line += doubleToScientific(idot,19,12,2);
-               line += doubleToScientific((double)codeflgs,19,12,2);
-               line += doubleToScientific(wk,19,12,2);
-               line += doubleToScientific((double)L2Pdata,19,12,2);
+         else if (nline == 5)
+         {
+            if (satSys == "G" || satSys == "J")
+            {
+                  // GPS QZS
+               strm << idot << RNDouble(codeflgs) << wk << RNDouble(L2Pdata);
             }
-            else if(satSys == "E") {                  // GAL
-               line += doubleToScientific(idot,19,12,2);
-               line += doubleToScientific((double)datasources,19,12,2);
-               line += doubleToScientific(wk,19,12,2);
-               line += doubleToScientific((double) 0,19,12,2);
+            else if (satSys == "E")
+            {
+                  // GAL
+               strm << idot << RNDouble(datasources) << wk << RNDouble(0);
             }
-            else if(satSys == "C") {                  // BDS
-               line += doubleToScientific(idot,19,12,2);
-               line += doubleToScientific((double) 0,19,12,2);
-               line += doubleToScientific(wk,19,12,2);
-               line += doubleToScientific((double) 0,19,12,2);
+            else if (satSys == "C")
+            {
+                  // BDS
+               strm << idot << RNDouble(0) << wk << RNDouble(0);
             }
          }
 
-         else if(nline == 6) {
-            line += doubleToScientific(accuracy,19,12,2);
-            line += doubleToScientific((double)health,19,12,2);
+         else if (nline == 6)
+         {
+            strm << accuracy << RNDouble(health);
 
-            if(satSys == "G" || satSys == "J") {       // GPS, QZS
-               line += doubleToScientific(Tgd,19,12,2);
-               line += doubleToScientific(IODC,19,12,2);
+            if (satSys == "G" || satSys == "J")
+            {
+                  // GPS, QZS
+               strm << Tgd << IODC;
             }
-            else if(satSys == "E" || satSys == "C") {  // GAL, BDS
-               line += doubleToScientific(Tgd,19,12,2);
-               line += doubleToScientific(Tgd2,19,12,2);
+            else if (satSys == "E" || satSys == "C")
+            {
+                  // GAL, BDS
+               strm << Tgd << Tgd2;
             }
          }
 
-         else if(nline == 7) {
-            line += doubleToScientific((xmit),19,12,2);
-            if(satSys == "G" || satSys == "J") {
-               line += doubleToScientific(fitint,19,12,2);
+         else if (nline == 7)
+         {
+            strm << RNDouble(xmit);
+            if (satSys == "G" || satSys == "J")
+            {
+               strm << fitint;
             }
-            else if(satSys == "E") {
+            else if (satSys == "E")
+            {
                ;
             }
-            else if(satSys == "C") {
-               line += doubleToScientific(IODC,19,12,2);
+            else if (satSys == "C")
+            {
+               strm << IODC;
             }
          }
 
-         strm << stripTrailing(line) << endl;
+         strm << endl;
          strm.lineNumber++;
       }
-      catch (std::exception &e) {
+      catch (std::exception &e)
+      {
          FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
@@ -1126,22 +1182,28 @@ namespace gpstk
 
    void Rinex3NavData::getPRNEpoch(Rinex3NavStream& strm)
    {
-      try {
+      try
+      {
          int i;
          short yr,mo,day,hr,min;
          double dsec;
 
          string line;
-         while(line.empty())        // ignore blank lines in place of epoch lines
+         while(line.empty()) // ignore blank lines in place of epoch lines
             strm.formattedGetLine(line, true);
 
-         if(strm.header.version >= 3) {
+         if (strm.header.version >= 3)
+         {
             // check for spaces in the right spots...
-            if(line[3] != ' ')
+            if (line[3] != ' ')
                GPSTK_THROW(FFStreamError("Badly formatted epoch line"));
             for(i = 8; i <= 20; i += 3)
-               if(line[i] != ' ')
+            {
+               if (line[i] != ' ')
+               {
                   GPSTK_THROW(FFStreamError("Badly formatted epoch line"));
+               }
+            }
 
             satSys = line.substr(0,1);
             PRNID = asInt(line.substr(1,2));
@@ -1154,18 +1216,24 @@ namespace gpstk
             min = asInt(line.substr(18,2));
             dsec = asDouble(line.substr(21,2));
          }
-         else {                  // RINEX 2
+         else
+         {
+               // RINEX 2
             for(i=2; i <= 17; i+=3)
-               if(line[i] != ' ') {
+            {
+               if (line[i] != ' ')
+               {
                   GPSTK_THROW(FFStreamError("Badly formatted epoch line"));
                }
+            }
 
             satSys = string(1,strm.header.fileSys[0]);
             PRNID = asInt(line.substr(0,2));
             sat.fromString(satSys + line.substr(0,2));
 
             yr  = asInt(line.substr( 2,3));
-            if(yr < 80) yr += 100;     // rollover is at 1980
+            if (yr < 80)
+               yr += 100;     // rollover is at 1980
             yr += 1900;
             mo  = asInt(line.substr( 5,3));
             day = asInt(line.substr( 8,3));
@@ -1176,47 +1244,61 @@ namespace gpstk
 
          // Fix RINEX epochs of the form 'yy mm dd hr 59 60.0'
          short ds = 0;
-         if(dsec >= 60.) { ds = dsec; dsec = 0; }
+         if (dsec >= 60.)
+         {
+            ds = dsec;
+            dsec = 0;
+         }
          time = CivilTime(yr,mo,day,hr,min,dsec).convertToCommonTime();
-         if(ds != 0) time += ds;
+         if (ds != 0)
+            time += ds;
 
          // specify the time system based on satellite system
          time.setTimeSystem(TimeSystem::Any);
-         if(satSys == "G") time.setTimeSystem(TimeSystem::GPS);
-         if(satSys == "R") time.setTimeSystem(TimeSystem::GLO);
-         if(satSys == "E") time.setTimeSystem(TimeSystem::GAL);
-         if(satSys == "C") time.setTimeSystem(TimeSystem::BDT);
-         if(satSys == "J") time.setTimeSystem(TimeSystem::QZS);
-         if(satSys == "S") time.setTimeSystem(TimeSystem::GPS);
+         if (satSys == "G") time.setTimeSystem(TimeSystem::GPS);
+         if (satSys == "R") time.setTimeSystem(TimeSystem::GLO);
+         if (satSys == "E") time.setTimeSystem(TimeSystem::GAL);
+         if (satSys == "C") time.setTimeSystem(TimeSystem::BDT);
+         if (satSys == "J") time.setTimeSystem(TimeSystem::QZS);
+         if (satSys == "S") time.setTimeSystem(TimeSystem::GPS);
 
          // TOC is the clock time
          GPSWeekSecond gws(time);         // sow is system-independent
          Toc = gws.sow;
 
-         if(strm.header.version < 3) {    // Rinex 2.*
-            if(satSys == "G") {
-               af0 = StringUtils::for2doub(line.substr(22,19));
-               af1 = StringUtils::for2doub(line.substr(41,19));
-               af2 = StringUtils::for2doub(line.substr(60,19));
+         if (strm.header.version < 3)
+         {
+               // Rinex 2.*
+            if (satSys == "G")
+            {
+               af0 = line.substr(22,19);
+               af1 = line.substr(41,19);
+               af2 = line.substr(60,19);
             }
-            else if(satSys == "R" || satSys == "S") {
-               TauN   =      StringUtils::for2doub(line.substr(22,19));
-               GammaN =      StringUtils::for2doub(line.substr(41,19));
-               MFtime =(long)StringUtils::for2doub(line.substr(60,19));
-               if(satSys == "R") {     // make MFtime consistent with R3.02
+            else if (satSys == "R" || satSys == "S")
+            {
+               TauN   =      line.substr(22,19);
+               GammaN =      line.substr(41,19);
+               MFtime =      RNDouble(line.substr(60,19));
+               if (satSys == "R")
+               {
+                     // make MFtime consistent with R3.02
                   MFtime += int(Toc/86400) * 86400;
                }
             }
          }
-         else if(satSys == "G" || satSys == "E" || satSys == "C" || satSys == "J") {
-            af0 = StringUtils::for2doub(line.substr(23,19));
-            af1 = StringUtils::for2doub(line.substr(42,19));
-            af2 = StringUtils::for2doub(line.substr(61,19));
+         else if (satSys == "G" || satSys == "E" || satSys == "C" ||
+                  satSys == "J")
+         {
+            af0 = line.substr(23,19);
+            af1 = line.substr(42,19);
+            af2 = line.substr(61,19);
          }
-         else if(satSys == "R" || satSys == "S") {
-            TauN   =      StringUtils::for2doub(line.substr(23,19));
-            GammaN =      StringUtils::for2doub(line.substr(42,19));
-            MFtime =(long)StringUtils::for2doub(line.substr(61,19));
+         else if (satSys == "R" || satSys == "S")
+         {
+            TauN   =      line.substr(23,19);
+            GammaN =      line.substr(42,19);
+            MFtime =      RNDouble(line.substr(61,19));
          }
       }
       catch (std::exception &e)
@@ -1229,139 +1311,174 @@ namespace gpstk
 
    void Rinex3NavData::getRecord(const int& nline, Rinex3NavStream& strm)
    {
-      if(nline < 1 || nline > 7) {
+      if (nline < 1 || nline > 7)
+      {
          FFStreamError fse(string("Invalid line number ") + asString(nline));
          GPSTK_THROW(fse);
       }
 
-      try {
+      try
+      {
          int n(strm.header.version < 3 ? 3 : 4);
          string line;
          strm.formattedGetLine(line);
 
-         if(nline == 1) {
-            if(satSys == "G" || satSys == "J" || satSys == "C") {
-               IODE = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Crs  = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               dn   = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               M0   = StringUtils::for2doub(line.substr(n,19));
+         if (nline == 1)
+         {
+            if (satSys == "G" || satSys == "J" || satSys == "C")
+            {
+               IODE = line.substr(n,19); n+=19;
+               Crs  = line.substr(n,19); n+=19;
+               dn   = line.substr(n,19); n+=19;
+               M0   = line.substr(n,19);
             }
-            else if(satSys == "E") {
-               IODnav = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Crs    = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               dn     = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               M0     = StringUtils::for2doub(line.substr(n,19));
+            else if (satSys == "E")
+            {
+               IODnav = line.substr(n,19); n+=19;
+               Crs    = line.substr(n,19); n+=19;
+               dn     = line.substr(n,19); n+=19;
+               M0     = line.substr(n,19);
             }
-            else if(satSys == "R" || satSys == "S") {
-               px     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
-               vx     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
-               ax     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
-               health = (short)StringUtils::for2doub(line.substr(n,19));
+            else if (satSys == "R" || satSys == "S")
+            {
+               px     =        line.substr(n,19); n+=19;
+               vx     =        line.substr(n,19); n+=19;
+               ax     =        line.substr(n,19); n+=19;
+               health =        RNDouble(line.substr(n,19));
             }
          }
 
-         else if(nline == 2) {
-            if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C") {
-               Cuc   = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               ecc   = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Cus   = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Ahalf = StringUtils::for2doub(line.substr(n,19));
+         else if (nline == 2)
+         {
+            if (satSys == "G" || satSys == "E" || satSys == "J" ||
+                satSys == "C")
+            {
+               Cuc   = line.substr(n,19); n+=19;
+               ecc   = line.substr(n,19); n+=19;
+               Cus   = line.substr(n,19); n+=19;
+               Ahalf = line.substr(n,19);
             }
-            else if(satSys == "R" || satSys == "S") {
-               py      =        StringUtils::for2doub(line.substr(n,19)); n+=19;
-               vy      =        StringUtils::for2doub(line.substr(n,19)); n+=19;
-               ay      =        StringUtils::for2doub(line.substr(n,19)); n+=19;
-               if(satSys == "R")
-                  freqNum = (short)StringUtils::for2doub(line.substr(n,19));
+            else if (satSys == "R" || satSys == "S")
+            {
+               py      =        line.substr(n,19); n+=19;
+               vy      =        line.substr(n,19); n+=19;
+               ay      =        line.substr(n,19); n+=19;
+               if (satSys == "R")
+               {
+                  freqNum = RNDouble(line.substr(n,19));
+               }
                else                       // GEO
-                  accCode = StringUtils::for2doub(line.substr(n,19));
+               {
+                  accCode = line.substr(n,19);
+               }
             }
          }
 
-         else if(nline == 3) {
-            if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C") {
-               Toe    = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Cic    = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               OMEGA0 = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Cis    = StringUtils::for2doub(line.substr(n,19));
+         else if (nline == 3)
+         {
+            if (satSys == "G" || satSys == "E" || satSys == "J" ||
+                satSys == "C")
+            {
+               Toe    = line.substr(n,19); n+=19;
+               Cic    = line.substr(n,19); n+=19;
+               OMEGA0 = line.substr(n,19); n+=19;
+               Cis    = line.substr(n,19);
             }
-            else if(satSys == "R" || satSys == "S") {
-               pz        = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               vz        = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               az        = StringUtils::for2doub(line.substr(n,19)); n+=19;
-               if(satSys == "R")
-                  ageOfInfo = StringUtils::for2doub(line.substr(n,19));
+            else if (satSys == "R" || satSys == "S")
+            {
+               pz        = line.substr(n,19); n+=19;
+               vz        = line.substr(n,19); n+=19;
+               az        = line.substr(n,19); n+=19;
+               if (satSys == "R")
+               {
+                  ageOfInfo = line.substr(n,19);
+               }
                else                       // GEO
-                  IODN = StringUtils::for2doub(line.substr(n,19));
+               {
+                  IODN = line.substr(n,19);
+               }
             }
          }
 
-         else if(nline == 4) {
-            i0       = StringUtils::for2doub(line.substr(n,19)); n+=19;
-            Crc      = StringUtils::for2doub(line.substr(n,19)); n+=19;
-            w        = StringUtils::for2doub(line.substr(n,19)); n+=19;
-            OMEGAdot = StringUtils::for2doub(line.substr(n,19));
+         else if (nline == 4)
+         {
+            i0       = line.substr(n,19); n+=19;
+            Crc      = line.substr(n,19); n+=19;
+            w        = line.substr(n,19); n+=19;
+            OMEGAdot = line.substr(n,19);
          }
 
-         else if(nline == 5) {
-            if(satSys == "G" || satSys == "J" || satSys == "C") {
-               idot     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
-               codeflgs = (short)StringUtils::for2doub(line.substr(n,19)); n+=19;
-               weeknum  = (short)StringUtils::for2doub(line.substr(n,19)); n+=19;
-               L2Pdata  = (short)StringUtils::for2doub(line.substr(n,19));
+         else if (nline == 5)
+         {
+            if (satSys == "G" || satSys == "J" || satSys == "C")
+            {
+               idot     =        line.substr(n,19); n+=19;
+               codeflgs = RNDouble(line.substr(n,19)); n+=19;
+               weeknum  = RNDouble(line.substr(n,19)); n+=19;
+               L2Pdata  = RNDouble(line.substr(n,19));
             }
-            else if(satSys == "E") {
-               idot        =       StringUtils::for2doub(line.substr(n,19)); n+=19;
-               datasources =(short)StringUtils::for2doub(line.substr(n,19)); n+=19;
-               weeknum     =(short)StringUtils::for2doub(line.substr(n,19)); n+=19;
+            else if (satSys == "E")
+            {
+               idot        =       line.substr(n,19); n+=19;
+               datasources =RNDouble(line.substr(n,19)); n+=19;
+               weeknum     =RNDouble(line.substr(n,19)); n+=19;
             }
          }
 
-         else if(nline == 6) {
+         else if (nline == 6)
+         {
             Tgd2 = 0.0;
-            if(satSys == "G" || satSys == "J") {
-               accuracy =       StringUtils::for2doub(line.substr(n,19)); n+=19;
-               health   = short(StringUtils::for2doub(line.substr(n,19))); n+=19;
-               Tgd      =       StringUtils::for2doub(line.substr(n,19)); n+=19;
-               IODC     =       StringUtils::for2doub(line.substr(n,19));
+            if (satSys == "G" || satSys == "J")
+            {
+               accuracy =       line.substr(n,19); n+=19;
+               health   = RNDouble(line.substr(n,19)); n+=19;
+               Tgd      =       line.substr(n,19); n+=19;
+               IODC     =       line.substr(n,19);
             }
-            else if(satSys == "E") {
-               accuracy =       StringUtils::for2doub(line.substr(n,19)); n+=19;
-               health   = short(StringUtils::for2doub(line.substr(n,19))); n+=19;
-               Tgd      =       StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Tgd2     =       StringUtils::for2doub(line.substr(n,19));
+            else if (satSys == "E")
+            {
+               accuracy =       line.substr(n,19); n+=19;
+               health   = RNDouble(line.substr(n,19)); n+=19;
+               Tgd      =       line.substr(n,19); n+=19;
+               Tgd2     =       line.substr(n,19);
             }
-            else if(satSys == "C") {
-               accuracy =       StringUtils::for2doub(line.substr(n,19)); n+=19;
-               health   = short(StringUtils::for2doub(line.substr(n,19))); n+=19;
-               Tgd      =       StringUtils::for2doub(line.substr(n,19)); n+=19;
-               Tgd2     =       StringUtils::for2doub(line.substr(n,19));
+            else if (satSys == "C")
+            {
+               accuracy =       line.substr(n,19); n+=19;
+               health   = RNDouble(line.substr(n,19)); n+=19;
+               Tgd      =       line.substr(n,19); n+=19;
+               Tgd2     =       line.substr(n,19);
             }
          }
 
-         else if(nline == 7) {
-            xmitTime = long(StringUtils::for2doub(line.substr(n,19))); n+=19;
-            if(satSys == "C") {
-               IODC    =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+         else if (nline == 7)
+         {
+            xmitTime = RNDouble(line.substr(n,19)); n+=19;
+            if (satSys == "C")
+            {
+               IODC    =        line.substr(n,19); n+=19;
             }
-            else {
-               fitint  =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+            else
+            {
+               fitint  =        line.substr(n,19); n+=19;
             }
    
             // Some RINEX files have xmitTime < 0.
-            while(xmitTime < 0) {
+            while(xmitTime < 0)
+            {
                xmitTime += (long)FULLWEEK;
             }
    
             // In RINEX *files*, weeknum is the week of TOE.
             // Internally (Rinex3NavData), weeknum is week of transmission
-            if(xmitTime - Toe > HALFWEEK)
+            if (xmitTime - Toe > HALFWEEK)
                weeknum--;
-            else if(xmitTime - Toe < -HALFWEEK)
+            else if (xmitTime - Toe < -HALFWEEK)
                weeknum++;
          }
       }
-      catch (std::exception &e) {
+      catch (std::exception &e)
+      {
          FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }

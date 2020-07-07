@@ -201,7 +201,7 @@ namespace gpstk
           * @param acc the new value of SV accuracy in meters.
           * @throw InvalidParameter if the given accuracy value is invalid.
           */
-      void setAccuracy(const double& acc);
+      void setAccuracy(double acc);
 
          /**
           * This computes and returns the fit interval for the

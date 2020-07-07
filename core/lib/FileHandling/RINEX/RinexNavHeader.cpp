@@ -80,11 +80,7 @@ namespace gpstk
                                     FFSign::NegOnly, FFAlign::Right),
                     FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
                                     FFSign::NegOnly, FFAlign::Right) },
-           A0(0., StringUtils::FFLead::Decimal, 12, 2, 19, 'D',
-              FFSign::NegOnly, FFAlign::Right),
-           A1(0., StringUtils::FFLead::Decimal, 12, 2, 19, 'D',
-              FFSign::NegOnly, FFAlign::Right),
-           UTCRefTime(0), UTCRefWeek(0), leapSeconds(0)
+           A0(0), A1(0), UTCRefTime(0), UTCRefWeek(0), leapSeconds(0)
    {}
 
    void RinexNavHeader::reallyPutRecord(FFStream& ffs) const 

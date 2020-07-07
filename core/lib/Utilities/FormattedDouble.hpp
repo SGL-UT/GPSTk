@@ -1,5 +1,5 @@
-#ifndef FORMATTEDDOUBLE_HPP
-#define FORMATTEDDOUBLE_HPP
+#ifndef GPSTK_FORMATTEDDOUBLE_HPP
+#define GPSTK_FORMATTEDDOUBLE_HPP
 
 #include <iostream>
 #include "StringUtils.hpp"
@@ -77,6 +77,24 @@ namespace gpstk
           */
       explicit FormattedDouble(unsigned width = 0, char expChar = 'e');
 
+         /** Decode a string containing a double-precision floating
+          * point number with the given formatting options.
+          * @param[in] str The string to decode.
+          * @param[in] width The total number of characters in the
+          *   formatted value.  If the length of the formatted value
+          *   including mantissa, exponent, sign, etc. is >= width, no
+          *   additional formatting will take place.  If the length of
+          *   the formatted value is < width, it will be padded with
+          *   spaces according to align.
+          * @param[in] expChar The character used to designate the
+          *   exponent, e.g. "e" or "E" or "D".
+          * @note All other formatting values are quietly ignored on
+          *   input.  Only the exponent character is needed to
+          *   properly read a formatted value.
+          */
+      explicit FormattedDouble(const std::string& str, unsigned width = 0,
+                               char expChar = 'e');
+
          /// Cast this object to a double for math and such.
       operator double() const
       { return val; }
@@ -85,6 +103,9 @@ namespace gpstk
       operator double&()
       { return val; }
 
+         /// Cast this object to a string using formatting configuration.
+      inline operator std::string();
+
          /** Divide val by a scalar.  This ensures that you can scale
           * FormattedDouble objects and retain the formatting. */
       inline FormattedDouble operator/(double d) const;
@@ -92,6 +113,9 @@ namespace gpstk
          /** Multiply val by a scalar.  This ensures that you can scale
           * FormattedDouble objects and retain the formatting. */
       inline FormattedDouble operator*(double d) const;
+
+         /// Copy assignment
+      FormattedDouble& operator=(const FormattedDouble& right) = default;
 
          /// Assign a value without affecting formatting.
       FormattedDouble& operator=(double d)
@@ -130,6 +154,13 @@ namespace gpstk
    std::istream& operator>>(std::istream& s, FormattedDouble& d);
 
 
+   FormattedDouble :: operator std::string()
+   {
+      std::ostringstream s;
+      s << *this;
+      return s.str();
+   }
+
    FormattedDouble FormattedDouble :: operator/(double d) const
    {
       FormattedDouble rv(*this);
@@ -143,6 +174,7 @@ namespace gpstk
       rv.val *= d;
       return rv;
    }
+
 } // namespace gpstk
 
 #endif // FORMATTEDDOUBLE_HPP

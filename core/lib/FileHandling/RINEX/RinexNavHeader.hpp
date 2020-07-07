@@ -44,7 +44,7 @@
 
 #include "FFStream.hpp"
 #include "RinexNavBase.hpp"
-#include "FormattedDouble.hpp"
+#include "RNDouble.hpp"
 
 namespace gpstk
 {
@@ -107,8 +107,8 @@ namespace gpstk
       std::vector<std::string> commentList;
       FormattedDouble ionAlpha[4];
       FormattedDouble ionBeta[4];
-      FormattedDouble A0;
-      FormattedDouble A1;
+      RNDouble A0;
+      RNDouble A1;
       long UTCRefTime;
       long UTCRefWeek;
       long leapSeconds;

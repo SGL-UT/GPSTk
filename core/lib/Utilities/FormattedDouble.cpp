@@ -23,6 +23,17 @@ namespace gpstk
    }
 
 
+   FormattedDouble ::
+   FormattedDouble(const std::string& str, unsigned width, char expChar)
+         : val(0), leadChar(StringUtils::FFLead::NonZero), mantissaLen(0),
+           exponentLen(2), totalLen(width), exponentChar(expChar),
+           leadSign(StringUtils::FFSign::NegOnly),
+           alignment(StringUtils::FFAlign::Left)
+   {
+      this->operator=(str);
+   }
+
+
    FormattedDouble& FormattedDouble ::
    operator=(const std::string& s)
    {

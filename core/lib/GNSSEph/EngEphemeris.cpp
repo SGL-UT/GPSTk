@@ -412,7 +412,7 @@ namespace gpstk
       return false;
    }
 
-   void EngEphemeris::setAccuracy(const double& acc)
+   void EngEphemeris::setAccuracy(double acc)
    {
       if( acc < 0 )
       {

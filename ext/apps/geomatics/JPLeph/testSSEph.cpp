@@ -59,6 +59,7 @@
 #include "SystemTime.hpp"
 #include "SolarSystemEphemeris.hpp"
 #include "logstream.hpp"
+#include "FormattedDouble.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -204,12 +205,12 @@ try {
       else {
          word = stripFirstWord(line);     // DEPHEM
          word = stripFirstWord(line);     // date in YYYY.MM.DD form
-         JD = for2doub(stripFirstWord(line));
+         JD = FormattedDouble(stripFirstWord(line),26,'D');
          target = asInt(stripFirstWord(line));
          center = asInt(stripFirstWord(line));
          coord = asInt(stripFirstWord(line)) - 1;  // my coords are 0-5, theirs 1-6
          word = stripFirstWord(line);
-         value = for2doub(word);
+         value = FormattedDouble(word,26,'D');
          word = rightJustify(word,25);
 
          Target = SolarSystemEphemeris::Planet(target);

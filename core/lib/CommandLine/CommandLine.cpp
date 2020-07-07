@@ -417,9 +417,14 @@ try {
             break;
          case typeDouble:
             d = *((double *)(options[i].p_output));
-            if(d == 0 || fabs(d) >= 0.1)  deflt = asString(d,2);
-            else if(fabs(d) >= 0.01)      deflt = asString(d,3);
-            else                          deflt = doub2sci(d, 9, 2);
+            if(d == 0 || fabs(d) >= 0.1)
+               deflt = asString(d,2);
+            else if(fabs(d) >= 0.01)
+               deflt = asString(d,3);
+            else
+            {
+               deflt = floatFormat(d, FFLead::NonZero, 3, 2);
+            }
             break;
          case typeString:
             deflt = *(string *)(options[i].p_output);
