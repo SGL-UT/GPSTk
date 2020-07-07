@@ -114,6 +114,19 @@ namespace gpstk
           * FormattedDouble objects and retain the formatting. */
       inline FormattedDouble operator*(double d) const;
 
+         /// Increment the value (prefix).
+      FormattedDouble& operator++()
+      { val++; return *this; }
+         /// Increment the value (postfix).
+      FormattedDouble operator++(int)
+      { val++; return *this; }
+         /// Decrement the value (prefix).
+      FormattedDouble& operator--()
+      { val--; return *this; }
+         /// Decrement the value (postfix).
+      FormattedDouble operator--(int)
+      { val--; return *this; }
+
          /// Copy assignment
       FormattedDouble& operator=(const FormattedDouble& right) = default;
 
