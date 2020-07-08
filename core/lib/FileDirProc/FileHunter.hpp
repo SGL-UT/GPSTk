@@ -90,6 +90,11 @@ namespace gpstk
        * will be returned.  You can either use extractField() on the
        * returned files to determine the latest version or select the
        * version you want returned by using setFilter().
+       *
+       * @deprecated This class has been scheduled for removal in the
+       * first numbered release of Q4 2020.  Please migrate all use of
+       * this class to FileSpecFind instead.  New code should not use
+       * this class.
        */
    class FileHunter
    {
