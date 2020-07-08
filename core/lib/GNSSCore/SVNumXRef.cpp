@@ -462,9 +462,11 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 59, XRefNode( 19, 
                                        CivilTime( 2004,  3, 20,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
+   // NANU 2020012 DECOM (3/11/20)
+   // Last transmission observed on 6/9/2020 between 1600-1800
    NtoPMap.insert( std::pair<const int, XRefNode>( 60, XRefNode( 23, 
                                        CivilTime( 2004,  6, 23,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2020,  6,  9, 17, 59, 59.9, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 61, XRefNode(  2, 
                                        CivilTime( 2004,  6,  6,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
