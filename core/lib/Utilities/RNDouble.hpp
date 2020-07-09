@@ -6,7 +6,7 @@
 namespace gpstk
 {
       /** This class specializes FormattedDouble to cover the data
-       * that is presnet in RINEX NAV data files.  The formatting of
+       * that is present in RINEX NAV data files.  The formatting of
        * individual data is the same between RINEX 2 and 3 so we put
        * the shared implementation here. */
    class RNDouble : public FormattedDouble
