@@ -1164,7 +1164,9 @@ namespace gpstk
           * @param checkSwitch if true, keeps the exponential sanity check for
           * exponentials above three characters in length.  If false, it removes
           * that check.
-          * @deprecated This method is being replaced by FormattedDouble.
+          * @deprecated This method is being replaced by
+          * FormattedDouble and is scheduled for removal in the first
+          * tagged release of Q4 2020.
           */
       inline std::string doub2sci(const double& d,
                                   const std::string::size_type length,
@@ -1179,7 +1181,9 @@ namespace gpstk
           * @param precision = number of digits after the decimal and before the 'e'
           * @param explen = length of exponent, this must = 1, 2 or 3
           * NB. length is increased if precision, explen and showPlus require it.
-          * @deprecated This method is being replaced by FormattedDouble.
+          * @deprecated This method is being replaced by
+          * FormattedDouble and is scheduled for removal in the first
+          * tagged release of Q4 2020.
           */
       inline std::string doubleToScientific(const double& d,
                                             const std::string::size_type length,
@@ -1204,7 +1208,9 @@ namespace gpstk
           *   -0.1234E00005.
           * @throw StringException if the string is not a number in
           *   scientific notation
-          * @deprecated This method is being replaced by FormattedDouble.
+          * @deprecated This method is being replaced by
+          * FormattedDouble and is scheduled for removal in the first
+          * tagged release of Q4 2020.
           */
       inline std::string& sci2for(std::string& aStr,
                                   const std::string::size_type startPos = 0,
@@ -1225,7 +1231,9 @@ namespace gpstk
           * @return a string containing \a d in FORTRAN notation.
           * @throw StringException
           * @bug The rendered width is not correct if checkSwitch=false
-          * @deprecated This method is being replaced by FormattedDouble.
+          * @deprecated This method is being replaced by
+          * FormattedDouble and is scheduled for removal in the first
+          * tagged release of Q4 2020.
           */
       inline std::string doub2for(const double& d,
                                   const std::string::size_type length,
@@ -1240,7 +1248,9 @@ namespace gpstk
           * @param startPos beginning of number in string.
           * @param length length (in characters) of number, including exponent.
           * @return value of the number.
-          * @deprecated This method is being replaced by FormattedDouble.
+          * @deprecated This method is being replaced by
+          * FormattedDouble and is scheduled for removal in the first
+          * tagged release of Q4 2020.
           */
       inline double for2doub(const std::string& aStr,
                              const std::string::size_type startPos = 0,
