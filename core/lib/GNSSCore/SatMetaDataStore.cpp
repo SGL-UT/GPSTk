@@ -7,48 +7,131 @@ using namespace std;
 
 namespace gpstk
 {
+   SatMetaDataStore::SVNID ::
+   SVNID()
+         : system(SatID::SatelliteSystem::systemUnknown)
+   {
+   }
+
+
+   SatMetaDataStore::SVNID ::
+   SVNID(SatID::SatelliteSystem sys, const std::string& svn)
+         : system(sys), id(svn)
+   {
+   }
+
+
+   bool SatMetaDataStore::SVNID ::
+   operator<(const SVNID& right) const
+   {
+      if (static_cast<int>(system) < static_cast<int>(right.system))
+      {
+         return true;
+      }
+      if (static_cast<int>(system) > static_cast<int>(right.system))
+      {
+         return false;
+      }
+      return id < right.id;
+   }
+
+
    bool SatMetaDataStore ::
    loadData(const std::string& sourceName)
    {
       bool rv = true;
       std::ifstream ins(sourceName);
+      unsigned long lineNo = 0;
       if (!ins)
       {
-         // std::cerr << "Couldn't open " << sourceName << std::endl;
+            // std::cerr << "Couldn't open " << sourceName << std::endl;
          return false;
       }
       while (ins)
       {
          std::string txt;
          std::getline(ins, txt);
+         lineNo++;
             // skip comments and blank lines
          if ((txt[0] == '#') || txt.empty())
             continue;
          std::vector<std::string> vals = StringUtils::split(txt, ',');
-         for (unsigned i = 0; i < vals.size(); i++)
+         try
          {
-            gpstk::StringUtils::strip(vals[i]);
+            for (unsigned i = 0; i < vals.size(); i++)
+            {
+               gpstk::StringUtils::strip(vals[i]);
+            }
+            if (vals.size() == 0)
+            {
+                  // this could still happen if there are lines with no commas
+               continue;
+            }
+            string key = gpstk::StringUtils::upperCase(vals[0]);
+            if (key == "SAT")
+            {
+               if (!addSat(vals, lineNo))
+               {
+                  rv = false;
+                  continue;
+               }
+            }
+            else if (key == "SIG")
+            {
+               if (!addSignal(vals, lineNo))
+               {
+                  rv = false;
+                  continue;
+               }
+            }
+            else if (key == "CLOCK")
+            {
+               if (!addClock(vals, lineNo))
+               {
+                  rv = false;
+                  continue;
+               }
+            }
+            else if (key == "LAUNCH")
+            {
+               if (!addLaunch(vals, lineNo))
+               {
+                  rv = false;
+                  continue;
+               }
+            }
+            else if (key == "NORAD")
+            {
+               if (!addNORAD(vals, lineNo))
+               {
+                  rv = false;
+                  continue;
+               }
+            }
+            else
+            {
+               cerr << "Invalid record type: " << vals[0] << " on line "
+                    << lineNo << endl;
+               rv = false;
+               continue;
+            }
          }
-         if (vals.size() == 0)
+         catch (gpstk::Exception& exc)
          {
-               // this could still happen if there are lines with no commas
-            continue;
-         }
-         if (gpstk::StringUtils::upperCase(vals[0]) == "SAT")
-         {
-            if (!addSat(vals))
-               return false;
-         }
-         else if (gpstk::StringUtils::upperCase(vals[0]) == "SIG")
-         {
-            if (!addSignal(vals))
-               return false;
-         }
-         else
-         {
-            cerr << "Invalid record type: " << vals[0] << endl;
+            cerr << "Exception while processing line " << lineNo << ":" << endl
+                 << exc << endl;
             rv = false;
-            continue;
+         }
+         catch (std::exception& exc)
+         {
+            cerr << "Exception while processing line " << lineNo << ": "
+                 << exc.what() << endl;
+            rv = false;
+         }
+         catch (...)
+         {
+            cerr << "Unknown exception processing line " << lineNo << endl;
+            rv = false;
          }
       }
       return rv;
@@ -56,36 +139,47 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   addSat(const std::vector<std::string>& vals)
+   addSat(const std::vector<std::string>& vals, unsigned long lineNo)
    {
-      if (vals.size() != 27)
-      {
-         return false;
-      }
-      SatMetaData sat;
          // simple way to index the columns without having to change
          // all the numbers with every little change.
       unsigned i = 1;
+      if (vals.size() != 17)
+      {
+         cerr << "Invalid SAT record on line " << lineNo << " size!=17" << endl;
+         return false;
+      }
+      SatMetaData sat;
       sat.sys = SatID::convertStringToSatelliteSystem(vals[i++]);
       sat.svn = vals[i++];
       if (StringUtils::isDigitString(vals[i]))
       {
          sat.prn = StringUtils::asUnsigned(vals[i]);
       }
-      i++;
-      if (StringUtils::isDigitString(vals[i]))
+      else
       {
-         sat.norad = StringUtils::asInt(vals[i]);
+         cerr << "Invalid PRN on line " << lineNo << endl;
+         return false;
       }
       i++;
       if (StringUtils::isDigitString(vals[i]))
       {
          sat.chl = StringUtils::asInt(vals[i]);
       }
+      else
+      {
+         cerr << "Invalid FDMA channel on line " << lineNo << endl;
+         return false;
+      }
       i++;
       if (StringUtils::isDigitString(vals[i]))
       {
          sat.slotID = StringUtils::asUnsigned(vals[i]);
+      }
+      else
+      {
+         cerr << "Invalid FDMA slot on line " << lineNo << endl;
+         return false;
       }
       i++;
       unsigned long y,doy;
@@ -96,42 +190,83 @@ namespace gpstk
       y = StringUtils::asUnsigned(vals[i++]);
       doy = StringUtils::asUnsigned(vals[i++]);
       sod = StringUtils::asDouble(vals[i++]);
-      sat.launchTime = YDSTime(y,doy,sod,gpstk::TimeSystem::Any);
+      try
+      {
+         sat.startTime = YDSTime(y,doy,sod,gpstk::TimeSystem::Any);
+      }
+      catch (gpstk::Exception& exc)
+      {
+         exc.addText("Processing startTime");
+         GPSTK_RETHROW(exc);
+      }
       y = StringUtils::asUnsigned(vals[i++]);
       doy = StringUtils::asUnsigned(vals[i++]);
       sod = StringUtils::asDouble(vals[i++]);
-      sat.startTime = YDSTime(y,doy,sod,gpstk::TimeSystem::Any);
-      y = StringUtils::asUnsigned(vals[i++]);
-      doy = StringUtils::asUnsigned(vals[i++]);
-      sod = StringUtils::asDouble(vals[i++]);
-      sat.endTime = YDSTime(y,doy,sod,gpstk::TimeSystem::Any);
+      try
+      {
+         sat.endTime = YDSTime(y,doy,sod,gpstk::TimeSystem::Any);
+      }
+      catch (gpstk::Exception& exc)
+      {
+         exc.addText("Processing endTime");
+         GPSTK_RETHROW(exc);
+      }
       sat.plane = vals[i++];
       sat.slot = vals[i++];
-      sat.type = vals[i++];
       sat.signals = vals[i++];
-      sat.mission = vals[i++];
       sat.status = SatMetaData::asStatus(vals[i++]);
-      for (unsigned j = 0; j < SatMetaData::NUMCLOCKS; j++)
-      {
-         sat.clocks[j] = SatMetaData::asClockType(vals[i++]);
-      }
       sat.activeClock = StringUtils::asUnsigned(vals[i]);
+         // cross-reference check and fill
+      SVNID svn(sat.sys, sat.svn);
+      if (noradMap.find(svn) == noradMap.end())
+      {
+         cerr << "Missing NORAD mapping for SVN " << svn << " on line "
+              << lineNo << endl;
+         return false;
+      }
+      sat.norad = noradMap[svn];
+      if (launchMap.find(svn) == launchMap.end())
+      {
+         cerr << "Missing LAUNCH record for SVN " << svn << " on line "
+              << lineNo << endl;
+         return false;
+      }
+      sat.launchTime = launchMap[svn].launchTime;
+      sat.type = launchMap[svn].type;
+      sat.mission = launchMap[svn].mission;
+      SystemBlock sysBlock;
+      sysBlock.sys = sat.sys;
+      sysBlock.blk = launchMap[svn].type;
+      if (clkMap.find(sysBlock) == clkMap.end())
+      {
+         cerr << "Missing CLOCK record for " << sysBlock << " on line "
+              << lineNo << endl;
+         return false;
+      }
+         // note: no checks for clock vector size!
+      const ClockVec& cv(clkMap[sysBlock]);
+      for (unsigned cn = 0; cn < SatMetaData::NUMCLOCKS; cn++)
+      {
+         sat.clocks[cn] = cv[cn];
+      }
+         // add the complete record
       satMap[sat.sys].insert(sat);
       return true;
    }
 
 
    bool SatMetaDataStore ::
-   addSignal(const std::vector<std::string>& vals)
+   addSignal(const std::vector<std::string>& vals, unsigned long lineNo)
    {
-      if (vals.size() != 5)
-      {
-         return false;
-      }
-      Signal sig;
          // simple way to index the columns without having to change
          // all the numbers with every little change.
       unsigned i = 1;
+      if (vals.size() != 5)
+      {
+         cerr << "Invalid SIG record on line " << lineNo << " size!=5" << endl;
+         return false;
+      }
+      Signal sig;
       std::string name = vals[i++];
       std::string carrier = vals[i++];
       std::string code = vals[i++];
@@ -139,6 +274,105 @@ namespace gpstk
          /** @todo implement the rest of this when we have some
           * from/to string translation methods for the enumerations
           * used in Signal. */
+      return true;
+   }
+
+
+   bool SatMetaDataStore ::
+   addClock(const std::vector<std::string>& vals, unsigned long lineNo)
+   {
+         // simple way to index the columns without having to change
+         // all the numbers with every little change.
+      unsigned i = 1;
+      if (vals.size() != 7)
+      {
+         cerr << "Invalid CLOCK record on line " << lineNo << " size!=7"
+              << endl;
+         return false;
+      }
+      SystemBlock key;
+      key.sys = SatID::convertStringToSatelliteSystem(vals[i++]);
+      key.blk = vals[i++];
+      if (clkMap.find(key) != clkMap.end())
+      {
+            // enforce no duplicates
+         cerr << "Duplicate CLOCK " << key.sys << " " << key.blk << " on line "
+              << lineNo << endl;
+         return false;
+      }
+         // currently support up to four clocks.
+      clkMap[key].resize(SatMetaData::NUMCLOCKS);
+      for (unsigned j = 0; j < SatMetaData::NUMCLOCKS; j++)
+      {
+         clkMap[key][j] = SatMetaData::asClockType(vals[i++]);
+      }
+      return true;
+   }
+
+
+   bool SatMetaDataStore ::
+   addLaunch(const std::vector<std::string>& vals, unsigned long lineNo)
+   {
+         // simple way to index the columns without having to change
+         // all the numbers with every little change.
+      unsigned i = 1;
+      if (vals.size() != 8)
+      {
+         cerr << "Invalid LAUNCH record on line " << lineNo << " size!=8"
+              << endl;
+         return false;
+      }
+      SVNID svn;
+      svn.system = SatID::convertStringToSatelliteSystem(vals[i++]);
+      svn.id = vals[i++];
+      if (launchMap.find(svn) != launchMap.end())
+      {
+            // enforce no duplicates
+         cerr << "Duplicate LAUNCH " << svn << " on line " << lineNo << endl;
+         return false;
+      }
+      launchMap[svn].svn = svn;
+      unsigned y = StringUtils::asUnsigned(vals[i++]);
+      unsigned doy = StringUtils::asUnsigned(vals[i++]);
+      double sod = StringUtils::asDouble(vals[i++]);
+      try
+      {
+         launchMap[svn].launchTime = YDSTime(y,doy,sod,gpstk::TimeSystem::Any);
+      }
+      catch (gpstk::Exception& exc)
+      {
+         exc.addText("Processing launchTime");
+         GPSTK_RETHROW(exc);
+      }
+      launchMap[svn].type = vals[i++];
+      launchMap[svn].mission = vals[i++];
+      return true;
+   }
+
+
+   bool SatMetaDataStore ::
+   addNORAD(const std::vector<std::string>& vals, unsigned long lineNo)
+   {
+         // simple way to index the columns without having to change
+         // all the numbers with every little change.
+      unsigned i = 1;
+      if (vals.size() != 4)
+      {
+         cerr << "Invalid NORAD record on line " << lineNo << " size!=4"
+              << endl;
+         return false;
+      }
+      SVNID svn;
+      svn.system = SatID::convertStringToSatelliteSystem(vals[i++]);
+      svn.id = vals[i++];
+      if (noradMap.find(svn) != noradMap.end())
+      {
+            // enforce no duplicates
+         cerr << "Duplicate NORAD " << svn << " on line " << lineNo << endl;
+         return false;
+      }
+      unsigned long noradID = StringUtils::asUnsigned(vals[i++]);
+      noradMap[svn] = noradID;
       return true;
    }
 

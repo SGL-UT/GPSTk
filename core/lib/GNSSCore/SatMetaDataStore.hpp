@@ -23,6 +23,33 @@ namespace gpstk
          ObsID::TrackingCode code;   ///< Tracking code.
          NavID::NavType nav;         ///< Navigation code.
       };
+         /// Key of GNSS and satellite block
+      class SystemBlock
+      {
+      public:
+         inline bool operator<(const SystemBlock& right) const;
+         SatID::SatelliteSystem sys;
+         std::string blk;
+      };
+         /// Like SatID but for SVN which is a string
+      class SVNID
+      {
+      public:
+         SVNID();
+         SVNID(SatID::SatelliteSystem sys, const std::string& svn);
+         SatID::SatelliteSystem system;
+         std::string id;
+         bool operator<(const SVNID& right) const;
+      };
+         /// Launch configuration
+      class LaunchConfig
+      {
+      public:
+         SVNID svn;
+         gpstk::CommonTime launchTime;
+         std::string type;             ///< Typically block number.
+         std::string mission;          ///< Mission number.
+      };
          /// Set of signals that may be transmitted by a satellite.
       using SignalSet = std::set<Signal>;
          /// Map of signal set name to signal set.
@@ -31,6 +58,14 @@ namespace gpstk
       using SatSet = std::multiset<SatMetaData, SatMetaDataSort>;
          /// Satellites grouped by system.
       using SatMetaMap = std::map<SatID::SatelliteSystem, SatSet>;
+         /// Types of clocks on a satellite (hardware-specific positional idx).
+      using ClockVec = std::vector<SatMetaData::ClockType>;
+         /// Clock configuration information
+      using ClockConfigMap = std::map<SystemBlock, ClockVec>;
+         /// Map SVN to launch time.
+      using LaunchMap = std::map<SVNID, LaunchConfig>;
+         /// Map SVN to NORAD ID.
+      using NORADMap = std::map<SVNID, unsigned long>;
 
          /// Nothin doin.
       SatMetaDataStore() = default;
@@ -38,32 +73,47 @@ namespace gpstk
          /** Attempt to load satellite metadata from the store.
           * The format of the input file is CSV, the values being
           *   \li SAT (literal)
-          *   \li prn
-          *   \li svn
-          *   \li NORAD ID
-          *   \li FDMA channel
-          *   \li slot ID
           *   \li GNSS name
-          *   \li launch time year
-          *   \li launch time day of year
-          *   \li launch time seconds of day
+          *   \li svn
+          *   \li prn
+          *   \li FDMA channel (0 if n/a)
+          *   \li FDMA slot ID (0 if n/a)
           *   \li start time year
           *   \li start time day of year
           *   \li start time seconds of day
           *   \li end time year
           *   \li end time day of year
           *   \li end time seconds of day
-          *   \li plane
-          *   \li slot
-          *   \li type/block
+          *   \li orbital plane
+          *   \li orbital slot
           *   \li signal set name
-          *   \li mission number
           *   \li satellite status
+          *   \li active clock number
+          *
+          * Mapping system satellite number to NORAD identifier:
+          *   \li NORAD (literal)
+          *   \li GNSS name
+          *   \li svn
+          *   \li NORAD ID
+          *
+          * Satellite launch time:
+          *   \li LAUNCH (literal)
+          *   \li GNSS name
+          *   \li svn
+          *   \li launch time year
+          *   \li launch time day of year
+          *   \li launch time seconds of day
+          *   \li satellite block/type
+          *   \li mission number
+          *
+          * Clock configuration:
+          *   \li CLOCK (literal)
+          *   \li GNSS name
+          *   \li satellite type/block
           *   \li clock type 1
           *   \li clock type 2
           *   \li clock type 3
           *   \li clock type 4
-          *   \li active clock number
           *
           * Signal sets are defined using multiple SIG records as follows
           *   \li SIG (literal)
@@ -160,19 +210,75 @@ namespace gpstk
       SatMetaMap satMap;
          /// Map signal set name to the actual signals.
       SignalMap sigMap;
+         /// Map satellite block to clock types.
+      ClockConfigMap clkMap;
+         /// Launch time of satellites.
+      LaunchMap launchMap;
+         /// Map SVN to NORAD ID.
+      NORADMap noradMap;
 
    protected:
          /** Convert a SAT record to a SatMetaData record and store it.
           * @param[in] vals SAT record in the form of an array of columns.
+          * @param[in] lineNo The line number of the input file being processed.
           * @return true if successful, false on error.
           */
-      bool addSat(const std::vector<std::string>& vals);
+      bool addSat(const std::vector<std::string>& vals, unsigned long lineNo);
          /** Convert a SIG record to a Signal object and store it.
           * @param[in] vals SIG record in the form of an array of columns.
+          * @param[in] lineNo The line number of the input file being processed.
           * @return true if successful, false on error.
           */
-      bool addSignal(const std::vector<std::string>& vals);
+      bool addSignal(const std::vector<std::string>& vals,
+                     unsigned long lineNo);
+         /** Add a CLOCK record to clkMap.
+          * @param[in] vals CLOCK record in the form of an array of columns.
+          * @param[in] lineNo The line number of the input file being processed.
+          * @return true if successful, false on error.
+          */
+      bool addClock(const std::vector<std::string>& vals, unsigned long lineNo);
+         /** Add a LAUNCH record to launchMap.
+          * @param[in] vals LAUNCH record in the form of an array of columns.
+          * @param[in] lineNo The line number of the input file being processed.
+          * @return true if successful, false on error.
+          */
+      bool addLaunch(const std::vector<std::string>& vals,
+                     unsigned long lineNo);
+         /** Add a NORAD record to noradMap.
+          * @param[in] vals NORAD record in the form of an array of columns.
+          * @param[in] lineNo The line number of the input file being processed.
+          * @return true if successful, false on error.
+          */
+      bool addNORAD(const std::vector<std::string>& vals, unsigned long lineNo);
    }; // class SatMetaDataStore
+
+
+   bool SatMetaDataStore::SystemBlock ::
+   operator<(const SatMetaDataStore::SystemBlock& right)
+      const
+   {
+      if (static_cast<int>(sys) < static_cast<int>(right.sys))
+         return true;
+      if (static_cast<int>(sys) > static_cast<int>(right.sys))
+         return false;
+      return blk < right.blk;
+   }
+
+
+   inline std::ostream& operator<<(std::ostream& s,
+                                   const SatMetaDataStore::SystemBlock& sblk)
+   {
+      s << gpstk::StringUtils::asString(sblk.sys) << " " << sblk.blk;
+      return s;
+   }
+
+
+   inline std::ostream& operator<<(std::ostream& s,
+                                   const SatMetaDataStore::SVNID& svn)
+   {
+      s << gpstk::StringUtils::asString(svn.system) << " " << svn.id;
+      return s;
+   }
 
 } // namespace gpstk
 
