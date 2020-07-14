@@ -618,6 +618,7 @@ std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
        case IIR: return("Block IIR"); break;
        case IIR_M: return("Block IIR_M"); break;
        case IIF: return("Block IIF"); break;
+       case III: return("GPS III"); break;
      }
    }
    return "unknown";
