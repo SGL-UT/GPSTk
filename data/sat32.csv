@@ -1,5 +1,19 @@
 # used by SatMetaDataStore_T test
-# SAT, system, svn, prn, norad, FDMA channel, FDMA slot, launch year, launch DOY, launch SOD, start year, start DOY, start SOD, end year, end DOY, end SOD, orbital plane, orbital slot, satellite block/type, signal set name, mission number/ID, status, clock 1 type, clock 2 type, clock 3 type, clock 4 type, active clock
+# CLOCK, system, block, clock 1 type, clock 2 type, clock 3 type, clock 4 type
+# LAUNCH, system, svn, launch year, launch DOY, launch SOD, satellite block/type, mission number/ID
+# SAT, system, svn, prn, FDMA channel, FDMA slot, start year, start DOY, start SOD, end year, end DOY, end SOD, orbital plane, orbital slot, signal set name, status, active clock
 # SIG, signal set name, carrier frequency, tracking code, nav code
-SAT,GPS,23,32,28361,0,0,1990,330,0,1990,344,0,2016,25,79199,E,5,IIA,GPS IIA,10,Operational,Rubidium,Rubidium,Rubidium,Cesium,255
-SAT,GPS,70,32,41328,0,0,2016,34,49620,2016,34,49620,2132,244,0,F,1,IIF,GPS IIF,12,Operational,Rubidium,Rubidium,Rubidium,Unknown,255
+# NORAD, system, SVN, norad ID
+CLOCK,GPS,IIA,Rubidium,Rubidium,Rubidium,Cesium
+CLOCK,GPS,IIF,Rubidium,Rubidium,Rubidium,Unknown
+CLOCK,GPS,III,Rubidium,Rubidium,Rubidium,Unknown
+CLOCK,GPS,IIR-M,Rubidium,Rubidium,Rubidium,Unknown
+CLOCK,GPS,IIR,Rubidium,Rubidium,Rubidium,Unknown
+CLOCK,GPS,II,Rubidium,Rubidium,Rubidium,Cesium
+CLOCK,GPS,I,Rubidium,Rubidium,Rubidium,Unknown
+LAUNCH,GPS,23,1990,330,0,IIA,10
+LAUNCH,GPS,70,2016,34,49620,IIF,12
+NORAD,GPS,23,28361
+NORAD,GPS,70,41328
+SAT,GPS,23,32,0,0,1990,344,0,2016,25,79199,E,5,GPS IIA,Operational,255
+SAT,GPS,70,32,0,0,2016,34,49620,2132,244,0,F,1,GPS IIF,Operational,255
