@@ -14,6 +14,7 @@ variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
   # this is usually set to master, unless there are downstream dependencies
   SGLTK_BRANCH: issue_327
+  DOCKER_REGISTRY: "modisdev:5000/sgl_ci"
 # this can be used for incremental builds
 #  GIT_CLEAN_FLAGS: none
 
@@ -33,7 +34,7 @@ static_analysis:
   stage: check
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - ./lint_test.sh
   # Allow failures here to prevent blocking the rest of the pipeline.
@@ -44,7 +45,7 @@ build_debian_7:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian7_fai_ish
+  image: $DOCKER_REGISTRY/debian7_fai_ish
   script:
     - mkdir build
     - cd build
@@ -60,7 +61,7 @@ build_debian_8:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian8_fai_ish
+  image: $DOCKER_REGISTRY/debian8_fai_ish
   script:
     - mkdir build
     - cd build
@@ -75,7 +76,7 @@ build_debian_9:
   stage: build
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - mkdir build
     - cd build
@@ -91,7 +92,7 @@ build_debian_10:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian10_fai_ish
+  image: $DOCKER_REGISTRY/debian10_fai_ish
   script:
     - mkdir build
     - cd build
@@ -106,7 +107,7 @@ build_conda_py27:
   stage: build
   tags:
     - docker-executor
-  image: deb9_conda_py27
+  image: $DOCKER_REGISTRY/deb9_conda_py27
   script:
     - conda activate py27
     - mkdir build
@@ -122,7 +123,7 @@ build_conda_py36:
   stage: build
   tags:
     - docker-executor
-  image: deb9_conda_py36
+  image: $DOCKER_REGISTRY/deb9_conda_py36
   script:
     - conda activate py36
     - mkdir build
@@ -138,7 +139,7 @@ build_redhat:
   stage: build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - sudo yum -y remove swig
     - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm
@@ -198,7 +199,7 @@ test_debian_7:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian7_fai_ish
+  image: $DOCKER_REGISTRY/debian7_fai_ish
   script:
     - cd build
     - ctest -j 4
@@ -226,7 +227,7 @@ test_debian_8:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian8_fai_ish
+  image: $DOCKER_REGISTRY/debian8_fai_ish
   script:
     - cd build
     - ctest -j 4
@@ -251,7 +252,7 @@ test_debian_9:
   stage: test
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd build
     - ctest -j 4
@@ -277,7 +278,7 @@ test_debian_10:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian10_fai_ish
+  image: $DOCKER_REGISTRY/debian10_fai_ish
   script:
     - cd build
     - ctest -j 4
@@ -302,7 +303,7 @@ test_conda_py27:
   stage: test
   tags:
     - docker-executor
-  image: deb9_conda_py27
+  image: $DOCKER_REGISTRY/deb9_conda_py27
   script:
     - conda activate py27
     - cd build
@@ -328,7 +329,7 @@ test_conda_py36:
   stage: test
   tags:
     - docker-executor
-  image: deb9_conda_py36
+  image: $DOCKER_REGISTRY/deb9_conda_py36
   script:
     - conda activate py36
     - cd build
@@ -354,7 +355,7 @@ test_redhat:
   stage: test
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - sudo yum -y install python-enum34
     - cd build
@@ -424,7 +425,7 @@ user_install_debian_9:
   stage: install
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd build
     - export gpstk=`pwd`/install
@@ -442,7 +443,7 @@ user_install_redhat:
   stage: install
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - sudo yum -y remove swig
     - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm
@@ -497,7 +498,7 @@ system_install_debian_9:
   stage: install
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd build
     - export gpstk=/usr/local
@@ -513,7 +514,7 @@ system_install_redhat:
   stage: install
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - sudo yum -y remove swig
     - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm
@@ -548,7 +549,7 @@ package_debian_9:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - rm -rf ../*.deb
     - dpkg-buildpackage -us -uc -d
@@ -569,7 +570,7 @@ package_conda:
   extends: .big_build
   tags:
     - docker-executor
-  image: deb9_conda_py36
+  image: $DOCKER_REGISTRY/deb9_conda_py36
   script:
     - conda activate conda_builder
     - export GIT_COMMIT=$CI_COMMIT_REF_NAME
@@ -586,7 +587,7 @@ package_debian_9_wheel:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -602,7 +603,7 @@ package_redhat:
   extends: .big_build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix gpstk-master/ -o rpm_files/SOURCES/gpstk-master.tar.gz HEAD
@@ -619,7 +620,7 @@ package_redhat_py36:
   extends: .big_build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix python3-gpstk-master/ -o rpm_files/SOURCES/python3-gpstk-master.tar.gz HEAD
@@ -636,7 +637,7 @@ package_redhat_py27:
   extends: .big_build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix python-gpstk-master/ -o rpm_files/SOURCES/python-gpstk-master.tar.gz HEAD
@@ -653,7 +654,7 @@ package_redhat_wheel:
   extends: .big_build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - mkdir dist
     - mv build/swig/module/dist/* dist
@@ -671,7 +672,7 @@ deploy_debian_9:
   extends: .big_build
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd debs
     - sudo apt-get -y install ./*.deb
@@ -685,7 +686,7 @@ deploy_redhat:
   extends: .big_build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - cd rpm_files/RPMS/x86_64/
     - sudo yum install gpstk-*.rpm -y
@@ -698,7 +699,7 @@ deploy_redhat_py27:
   extends: .big_build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - sudo yum -y install python-enum34
     - cd rpm_files/RPMS/x86_64/
@@ -715,7 +716,7 @@ deploy_redhat_py36:
   extends: .big_build
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - sudo yum -y install python-enum34
     - cd rpm_files/RPMS/x86_64/
@@ -744,7 +745,7 @@ sgltk_debian:
   stage: downstream
   tags:
     - docker-executor
-  image: debian9_fai_ish
+  image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd build
     - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
@@ -762,7 +763,7 @@ sgltk_redhat:
   stage: downstream
   tags:
     - docker-executor
-  image: centos7_sgl
+  image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - sudo yum -y remove swig
     - sudo wget http://mirror.arlut.utexas.edu/redhat/channels/rhel-8-for-x86_64-appstream-rpms/Packages/s/swig-3.0.12-18.module%2Bel8%2B2480%2B72897362.x86_64.rpm

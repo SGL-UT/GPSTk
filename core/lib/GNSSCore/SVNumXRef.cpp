@@ -127,7 +127,7 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 73,IIF ));
    NtoBMap.insert( make_pair( 74,III ));
    NtoBMap.insert( make_pair( 75,III ));
-
+   NtoBMap.insert( make_pair( 76,III ));
 
       // Note: This table start with Block I values
       // Set up NAVSTAR -> PRN ID relationship
@@ -462,9 +462,11 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 59, XRefNode( 19, 
                                        CivilTime( 2004,  3, 20,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
+   // NANU 2020012 DECOM (3/11/20)
+   // Last transmission observed on 6/9/2020 between 1600-1800
    NtoPMap.insert( std::pair<const int, XRefNode>( 60, XRefNode( 23, 
                                        CivilTime( 2004,  6, 23,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2020,  6,  9, 17, 59, 59.9, TimeSystem::GPS))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 61, XRefNode(  2, 
                                        CivilTime( 2004,  6,  6,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
@@ -523,10 +525,15 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 74, XRefNode(   4,
                                        CivilTime( 2019, 10, 21, 20, 00, 0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));                                        
-   //NANU 2030011 LAUNCH
+   //NANU 2020011 LAUNCH
    // First transmission observed on 3/12 at 2236Z
    NtoPMap.insert( std::pair<const int, XRefNode>( 75, XRefNode(  18,
                                        CivilTime( 2020,  3, 12, 22, 30, 0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
+   //NANU 2020033 LAUNCH
+   // First transmission observed on 7/14
+   NtoPMap.insert( std::pair<const int, XRefNode>( 76, XRefNode(  23,
+                                       CivilTime( 2020,  7, 14,  0,  0, 0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
                                        
       //Iterate through the data to produce the PtoNMap
@@ -611,6 +618,7 @@ std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
        case IIR: return("Block IIR"); break;
        case IIR_M: return("Block IIR_M"); break;
        case IIF: return("Block IIF"); break;
+       case III: return("GPS III"); break;
      }
    }
    return "unknown";
