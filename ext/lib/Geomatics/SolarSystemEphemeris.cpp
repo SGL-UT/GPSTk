@@ -49,12 +49,34 @@
 #include "StringUtils.hpp"
 #include "TimeConverters.hpp"
 #include "logstream.hpp"
+#include "FormattedDouble.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk::StringUtils;
 
-namespace gpstk {
+
+namespace gpstk
+{
+      /// Class for the format used in this code.
+   class SSEDouble : public FormattedDouble
+   {
+   public:
+      SSEDouble(double d = 0)
+            : FormattedDouble(d, StringUtils::FFLead::Decimal, 18, 2, 26,
+                              'D', StringUtils::FFSign::NegOnly,
+                              StringUtils::FFAlign::Right)
+      {}
+         /// Decode a string.
+      SSEDouble(const std::string& str)
+            : FormattedDouble(str, 26, 'D')
+      {}
+
+         /// Assign a value by decoding a string using existing formatting.
+      SSEDouble& operator=(const std::string& s)
+      { FormattedDouble::operator=(s); return *this; }
+   };
+
 //------------------------------------------------------------------------------------
 void SolarSystemEphemeris::readASCIIheader(string filename)
 {
@@ -131,10 +153,10 @@ try {
          // start and stop times. These are meaningless here, because they will be
          // determined by the data that follows this header, and so are meaningful
          // only in the binary file.
-         startJD = for2doub(stripFirstWord(line));
-         endJD = for2doub(stripFirstWord(line));
+         startJD = SSEDouble(stripFirstWord(line));
+         endJD = SSEDouble(stripFirstWord(line));
          // interval in days covered by each block of coefficients
-         interval = for2doub(stripFirstWord(line));
+         interval = SSEDouble(stripFirstWord(line));
          LOG(VERBOSE) << "Times JD " << fixed << setprecision(3)
             << startJD << " to JD " << endJD << " = " << interval << " days";
       }
@@ -166,7 +188,7 @@ try {
                LOG(DEBUG) << "Nconst matches: " << Nconst << " = " << word;
             }
             else
-               constants[const_names[n-2]] = for2doub(word);
+               constants[const_names[n-2]] = SSEDouble(word);
          }
          else if(group == 1050) {
             if(n < 13) {
@@ -316,7 +338,7 @@ try {
       }
       else {
          for(int j=0; j<3; j++) {
-            double coeff = for2doub(stripFirstWord(line));
+            double coeff = SSEDouble(stripFirstWord(line));
             nc++;
             data_vector.push_back(coeff);
             if(nc >= Ncoeff) {
@@ -395,17 +417,24 @@ try {
    oss << setw(6) << Nconst << blank;
    os << leftJustify(oss.str(),81) << endl; oss.seekp(ios_base::beg);
 
-   for(i=0,it=constants.begin(); it != constants.end(); it++,i++) {
-      oss << leftJustify("  " + doub2for(it->second,24,2),26);
-      if((i+1)%3 == 0) {
+   for(i=0,it=constants.begin(); it != constants.end(); it++,i++)
+   {
+      oss << SSEDouble(it->second);
+      if((i+1)%3 == 0)
+      {
          oss << blank;
          os << leftJustify(oss.str(),81) << endl;
          oss.seekp(ios_base::beg);
       }
    }
-   if(Nconst%3 != 0) {
+   if(Nconst%3 != 0)
+   {
       i--;
-      while((i+1)%3 != 0) { oss << leftJustify("  " + doub2for(0.0,24,2),26); i++; }
+      while((i+1)%3 != 0)
+      {
+         oss << SSEDouble(0.0);
+         i++;
+      }
       oss << blank;
       os << leftJustify(oss.str(),81) << endl;
       oss.seekp(ios_base::beg);
@@ -445,7 +474,7 @@ try {
    for(nrec=1,jt=store.begin(); jt != store.end(); jt++,nrec++) {
       os << setw(6) << nrec << setw(6) << Ncoeff << " " << endl;
       for(i=0; i<Ncoeff; i++) {
-         oss << leftJustify("  " + doub2for(jt->second[i],24,2),26);
+         oss << SSEDouble(jt->second[i]);
          if((i+1)%3 == 0) {
             oss << blank;
             os << leftJustify(oss.str(),81) << endl;
@@ -455,7 +484,7 @@ try {
       if(Ncoeff % 3 != 0) {
          i--;
          while((i+1)%3 != 0) {
-            oss << leftJustify("  " + doub2for(0.0,24,2),26);
+            oss << SSEDouble(0.0);
             i++;
          }
          oss << blank;

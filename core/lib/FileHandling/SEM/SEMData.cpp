@@ -51,6 +51,20 @@ using namespace std;
 
 namespace gpstk
 {
+   SEMData::SEMData()
+         : ecc(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           i_offset(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           OMEGAdot(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           Ahalf(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           OMEGA0(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           w(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           M0(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           AF0(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace),
+           AF1(0, FFLead::Zero, 15, 4, 0, 'E', FFSign::NegSpace)
+   {
+   }
+
+
    void SEMData::reallyPutRecord(FFStream& ffs) const
    {
       string line;
@@ -70,25 +84,15 @@ namespace gpstk
       strm << asString<short>(URAnum) << endl;
 
       //Ecc, i_offset, OMEGAdot
-      line += rightJustify(asString(doub2for(ecc,22,4,false)),23);
-      line += rightJustify(asString(doub2for(i_offset/gpstk::PI,22,4,false)),24);
-      line += rightJustify(asString(doub2for((OMEGAdot/gpstk::PI),22,4,false)),24);
-      strm << line << endl;
-      line.erase();
+      strm << ecc << " " << (i_offset / gpstk::PI) << " "
+           << (OMEGAdot / gpstk::PI) << endl;
 
       //Ahalf, OMEGA0, w
-      line += rightJustify(asString(doub2for(Ahalf,22,4,false)),23);
-      line += rightJustify(asString(doub2for((OMEGA0/gpstk::PI),22,4,false)),24);
-      line += rightJustify(asString(doub2for((w/gpstk::PI),22,4,false)),24);
-      strm << line << endl;
-      line.erase();
+      strm << Ahalf << " " << (OMEGA0/gpstk::PI) << " " << (w/gpstk::PI)
+           << endl;
 
       //M0, AF0, AF1
-      line += rightJustify(asString(doub2for((M0/gpstk::PI),22,4,false)),23);
-      line += rightJustify(asString(doub2for(AF0,22,4,false)),24);
-      line += rightJustify(asString(doub2for(AF1,22,4,false)),24);
-      strm << line << endl;
-      line.erase();
+      strm << (M0/gpstk::PI) << " " << AF0 << " " << AF1 << endl;
 
       //SV_health
       strm << asString<short>(SV_health) << endl;
@@ -134,17 +138,17 @@ namespace gpstk
       string::size_type front = line.find_first_not_of(whitespace);
       string::size_type end = line.find_first_of(whitespace,front);
       string::size_type length = end - front;
-      ecc = asDouble(line.substr(front,length));
+      ecc = line.substr(front,length);
 
       front = line.find_first_not_of(whitespace,end);
       end = line.find_first_of(whitespace,front);
       length = end - front;
-      i_offset = asDouble(line.substr(front,length));
+      i_offset = line.substr(front,length);
       i_total = i_offset + 54.0 * (gpstk::PI / 180.0);
 
       front = line.find_first_not_of(whitespace,end);
       length = line.length() - front;
-      OMEGAdot = asDouble(line.substr(front,length));
+      OMEGAdot = line.substr(front,length);
       i_offset *= gpstk::PI;
       OMEGAdot *= gpstk::PI;
 
@@ -154,17 +158,17 @@ namespace gpstk
       front = line.find_first_not_of(whitespace);
       end = line.find_first_of(whitespace,front);
       length = end - front;
-      Ahalf = asDouble(line.substr(front,length));
+      Ahalf = line.substr(front,length);
 
       front = line.find_first_not_of(whitespace,end);
       end = line.find_first_of(whitespace,front);
       length = end - front;
-      OMEGA0 = asDouble(line.substr(front,length));
+      OMEGA0 = line.substr(front,length);
 
       front = line.find_first_not_of(whitespace,end);
       length = line.length() - front;
       OMEGA0 *= gpstk::PI;
-      w = asDouble(line.substr(front,length));
+      w = line.substr(front,length);
       w *= gpstk::PI;
 
       // Seventh Line - M0, AF0, AF1
@@ -173,17 +177,17 @@ namespace gpstk
       front = line.find_first_not_of(whitespace);
       end = line.find_first_of(whitespace,front);
       length = end - front;
-      M0 = asDouble(line.substr(front,length));
+      M0 = line.substr(front,length);
       M0 *= gpstk::PI;
 
       front = line.find_first_not_of(whitespace,end);
       end = line.find_first_of(whitespace,front);
       length = end - front;
-      AF0 = asDouble(line.substr(front,length));
+      AF0 = line.substr(front,length);
 
       front = line.find_first_not_of(whitespace,end);
       length = line.length() - front;
-      AF1 = asDouble(line.substr(front,length));
+      AF1 = line.substr(front,length);
 
       // Eigth line - Satellite Health
       strm.formattedGetLine(line, true);

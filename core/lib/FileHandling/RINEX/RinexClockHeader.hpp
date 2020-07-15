@@ -113,6 +113,9 @@ namespace gpstk
 
       struct RefClk
       {
+         RefClk()
+               : clkConstraint(0)
+         {}
             /// name of the reciever or satellite used as a fixed reference 
             /// in data analysis
          std::string name;
@@ -120,7 +123,7 @@ namespace gpstk
             /// preferably the DOMES number for fixed stations
          std::string number;
             /// Optional non-zero value for the apriori clock constraint
-         double clkConstraint;
+         RCDouble clkConstraint;
       };
       
 

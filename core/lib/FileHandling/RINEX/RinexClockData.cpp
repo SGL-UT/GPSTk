@@ -68,7 +68,7 @@ namespace gpstk
               << "   ";
          }
          
-         s << asString(clockData[i], 12)
+         s << clockData[i]
            << "  ";
       }
       
@@ -95,35 +95,35 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      s << leftJustify(type.type, 2) << string(1, ' ')
-        << leftJustify(name, 4) << string(1, ' ')
+      s << setw(2) << type.type << ' '
+        << setw(4) << name << ' '
         << writeTime(epochTime) 
-        << rightJustify(asString(dvCount), 3) << string(3, ' ')
-        << rightJustify(doub2for(clockData[0], 18, 2, false), 19) 
-        << string(1, ' ');
+        << right << setw(3) << dvCount << left << "   "
+        << clockData[0]
+        << ' ';
       
       if (dvCount >= 2)
       {
-         s << rightJustify(doub2for(clockData[1], 18, 2, false), 19)
-           << endl;
+         s << clockData[1]
+           << endlpp;
       }
       else // dvCount == 1
       {
-         s << endl;
+         s << endlpp;
       }
       
       if (dvCount > 2)
       {
          for (int i = 2; i < dvCount; i++)
          {
-            s << rightJustify(doub2for(clockData[i], 18, 2, false), 19);
+            s << clockData[i];
 
             if ( i < 5 )
             {
-               s << string(1, ' ');
+               s << ' ';
             }
          }
-         s << endl;
+         s << endlpp;
       }
       
    }  // reallyPutRecord
@@ -189,11 +189,11 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      clockData[0] = asDouble(line.substr(40,19));
+      clockData[0] = line.substr(40,19);
       
       if (dvCount >= 2)
       {
-         clockData[1] = asDouble(line.substr(60,19));
+         clockData[1] = line.substr(60,19);
       }
 
       if (dvCount > 2)
@@ -211,7 +211,7 @@ namespace gpstk
          
          for (int i = 2; i < dvCount; i++)
          {
-            clockData[i] = asDouble(line.substr( (i-2)*20, 19 ));
+            clockData[i] = line.substr( (i-2)*20, 19 );
          }
       }
 

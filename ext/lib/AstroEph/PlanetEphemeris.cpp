@@ -45,11 +45,31 @@
 #include "TimeString.hpp"
 #include "Matrix.hpp"
 #include "Exception.hpp"
+#include "FormattedDouble.hpp"
 
 namespace gpstk
 {
    using namespace std;
    using namespace StringUtils;
+
+      /// Class for the format used in this code.
+   class PEDouble : public FormattedDouble
+   {
+   public:
+      PEDouble(double d = 0)
+            : FormattedDouble(d, StringUtils::FFLead::Decimal, 18, 2, 26,
+                              'D', StringUtils::FFSign::NegOnly,
+                              StringUtils::FFAlign::Right)
+      {}
+         /// Decode a string.
+      PEDouble(const std::string& str)
+            : FormattedDouble(str, 26, 'D')
+      {}
+
+         /// Assign a value by decoding a string using existing formatting.
+      PEDouble& operator=(const std::string& s)
+      { FormattedDouble::operator=(s); return *this; }
+   };
 
    void PlanetEphemeris::readASCIIheader(string filename) 
    {
@@ -132,10 +152,10 @@ namespace gpstk
                // start and stop times. These are meaningless here, because they will be
                // determined by the data that follows this header, and so are meaningful
                // only in the binary file.
-               startJD = for2doub(stripFirstWord(line));
-               endJD = for2doub(stripFirstWord(line));
+               startJD = PEDouble(stripFirstWord(line));
+               endJD = PEDouble(stripFirstWord(line));
                // interval in days covered by each block of coefficients
-               interval = for2doub(stripFirstWord(line));
+               interval = PEDouble(stripFirstWord(line));
             }
             // GROUP 1070 - end-of-header
             else if(group == 1070) 
@@ -171,7 +191,7 @@ namespace gpstk
                      }
                   }
                   else
-                     constants[const_names[n-2]] = for2doub(word);
+                     constants[const_names[n-2]] = PEDouble(word);
                }
                else if(group == 1050) 
                {
@@ -322,7 +342,7 @@ namespace gpstk
             {
                for(int j=0; j<3; j++) 
                {
-                  double coeff = for2doub(stripFirstWord(line));
+                  double coeff = PEDouble(stripFirstWord(line));
                   nc++;
                   data_vector.push_back(coeff);
                   if(nc >= Ncoeff) 
@@ -409,7 +429,7 @@ namespace gpstk
 
          for(i=0,it=constants.begin(); it != constants.end(); it++,i++) 
          {
-            oss << leftJustify("  " + doub2for(it->second,24,2),26);
+            oss << PEDouble(it->second);
             if((i+1)%3 == 0) 
             {
                oss << blank;
@@ -420,7 +440,11 @@ namespace gpstk
          if(Nconst%3 != 0) 
          {
             i--;
-            while((i+1)%3 != 0) { oss << leftJustify("  " + doub2for(0.0,24,2),26); i++; }
+            while((i+1)%3 != 0)
+            {
+               oss << PEDouble(0);
+               i++;
+            }
             oss << blank;
             os << leftJustify(oss.str(),81) << endl;
             oss.seekp(ios_base::beg);
@@ -464,7 +488,7 @@ namespace gpstk
             os << setw(6) << nrec << setw(6) << Ncoeff << " " << endl;
             for(i=0; i<Ncoeff; i++) 
             {
-               oss << leftJustify("  " + doub2for(jt->second[i],24,2),26);
+               oss << PEDouble(jt->second[i]);
                if((i+1)%3 == 0) 
                {
                   oss << blank;
@@ -477,7 +501,7 @@ namespace gpstk
                i--;
                while((i+1)%3 != 0) 
                {
-                  oss << leftJustify("  " + doub2for(0.0,24,2),26);
+                  oss << PEDouble(0.0);
                   i++;
                }
                oss << blank;

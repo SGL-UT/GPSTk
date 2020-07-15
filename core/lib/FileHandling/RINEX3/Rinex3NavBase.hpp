@@ -43,6 +43,7 @@
 #define GPSTK_RINEX3NAVBASE_HPP
 
 #include "FFData.hpp"
+#include "FormattedDouble.hpp"
 
 namespace gpstk
 {

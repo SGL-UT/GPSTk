@@ -50,6 +50,7 @@
 #include "RinexNavBase.hpp"
 #include "EngEphemeris.hpp"
 #include "GPSEphemeris.hpp"
+#include "RNDouble.hpp"
 
 namespace gpstk
 {
@@ -206,54 +207,50 @@ namespace gpstk
          // orbit" lines in the file.
       short toeWeek;          ///< The full GPS week associated with Toe.
       short codeflgs;         ///< L2 codes.
-      double accuracy;        ///< SV accuracy (m).
+      RNDouble accuracy;      ///< SV accuracy (m).
       short health;           ///< SV health.
       short L2Pdata;          ///< L2 P data flag.
-      double IODC;            ///< Index of data-clock.
-      double IODE;            ///< Index of data-eph.
+      RNDouble IODC;          ///< Index of data-clock.
+      RNDouble IODE;          ///< Index of data-eph.
          //@}
 
          /** @name Clock Information
           */
          //@{
-      double   af0;           ///< SV clock error (sec).
-      double   af1;           ///< SV clock drift (sec/sec).
-      double   af2;           ///< SV clock drift rate (sec/sec**2).
-      double   Tgd;           ///< Group delay differential (sec).
+      RNDouble   af0;         ///< SV clock error (sec).
+      RNDouble   af1;         ///< SV clock drift (sec/sec).
+      RNDouble   af2;         ///< SV clock drift rate (sec/sec**2).
+      RNDouble   Tgd;         ///< Group delay differential (sec).
          //@}
 
          /** @name Harmonic Perturbations
           */
          //@{
-      double   Cuc;           ///< Cosine latitude (rad).
-      double   Cus;           ///< Sine latitude (rad).
-      double   Crc;           ///< Cosine radius (m).
-      double   Crs;           ///< Sine radius (m).
-      double   Cic;           ///< Cosine inclination (rad).
-      double   Cis;           ///< Sine inclination (rad).
+      RNDouble   Cuc;         ///< Cosine latitude (rad).
+      RNDouble   Cus;         ///< Sine latitude (rad).
+      RNDouble   Crc;         ///< Cosine radius (m).
+      RNDouble   Crs;         ///< Sine radius (m).
+      RNDouble   Cic;         ///< Cosine inclination (rad).
+      RNDouble   Cis;         ///< Sine inclination (rad).
          //@}
 
          /**  @name Major Ephemeris Parameters
           */
          //@{
-      double   Toe;           ///< Ephemeris epoch (sec of week).
-      double   M0;            ///< Mean anomaly (rad).
-      double   dn;            ///< Correction to mean motion (rad/sec).
-      double   ecc;           ///< Eccentricity.
-      double   Ahalf;         ///< SQRT of semi-major axis (m**1/2).
-      double   OMEGA0;        ///< Rt ascension of ascending node (rad).
-      double   i0;            ///< Inclination (rad).
-      double   w;             ///< Argument of perigee (rad).
-      double   OMEGAdot;      ///< Rate of Rt ascension (rad/sec).
-      double   idot;          ///< Rate of inclination angle (rad/sec).
-      double   fitint;        ///< Fit interval.
+      RNDouble   Toe;         ///< Ephemeris epoch (sec of week).
+      RNDouble   M0;          ///< Mean anomaly (rad).
+      RNDouble   dn;          ///< Correction to mean motion (rad/sec).
+      RNDouble   ecc;         ///< Eccentricity.
+      RNDouble   Ahalf;       ///< SQRT of semi-major axis (m**1/2).
+      RNDouble   OMEGA0;      ///< Rt ascension of ascending node (rad).
+      RNDouble   i0;          ///< Inclination (rad).
+      RNDouble   w;           ///< Argument of perigee (rad).
+      RNDouble   OMEGAdot;    ///< Rate of Rt ascension (rad/sec).
+      RNDouble   idot;        ///< Rate of inclination angle (rad/sec).
+      RNDouble   fitint;      ///< Fit interval.
          //@}
 
    private:
-         /** Writes the CommonTime object into RINEX format.
-          * @throw StringUtils::StringException
-          */
-      std::string writeTime(const CommonTime& dt) const;
          /** Parses string \a currentLine to obtain PRN id and epoch.
           * @throw StringUtils::StringException
           */
@@ -294,14 +291,6 @@ namespace gpstk
           */
       void getBroadcastOrbit7(const std::string& currentLine);
 
-         /** generates a line to be output to a file for the PRN/epoch line
-          * @throw StringUtils::StringException
-          */
-      std::string putPRNEpoch() const;
-         /** Writes line 7 of the Nav Data record
-          * @throw StringUtils::StringException
-          */
-      std::string putBroadcastOrbit1() const;
          /** Writes line 7 of the Nav Data record
           * @throw StringUtils::StringException
           */

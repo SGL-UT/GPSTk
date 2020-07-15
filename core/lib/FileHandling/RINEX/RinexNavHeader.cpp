@@ -62,6 +62,27 @@ namespace gpstk
    const string RinexNavHeader::runByString = "PGM / RUN BY / DATE";
    const string RinexNavHeader::versionString = "RINEX VERSION / TYPE";
 
+   RinexNavHeader::RinexNavHeader()
+         : valid(0), version(2.1),
+           ionAlpha{FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right),
+                    FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right),
+                    FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right),
+                    FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right) },
+           ionBeta {FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right),
+                    FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right),
+                    FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right),
+                    FormattedDouble(0., FFLead::Decimal, 4, 2, 12, 'D',
+                                    FFSign::NegOnly, FFAlign::Right) },
+           A0(0), A1(0), UTCRefTime(0), UTCRefWeek(0), leapSeconds(0)
+   {}
+
    void RinexNavHeader::reallyPutRecord(FFStream& ffs) const 
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
@@ -123,39 +144,29 @@ namespace gpstk
       }
       if (valid & ionAlphaValid)
       {
-         line  = string(2, ' ');
+         strm << "  ";
          for (int i = 0; i < 4; i++)
          {
-            line += rightJustify(doub2for(ionAlpha[i], 12, 2),12);  // should be 12.4
+            strm << ionAlpha[i];
          }
-         line += string(10, ' ');
-         line += ionAlphaString;
-         strm << line << endl;
+         strm << setw(10) << " " << ionAlphaString << endl;
          strm.lineNumber++;
       }
       if (valid & ionBetaValid)
       {
-         line  = string(2, ' ');
+         strm << "  ";
          for (int i = 0; i < 4; i++)
          {
-            line += rightJustify(doub2for(ionBeta[i], 12, 2),12);
+            strm << ionBeta[i];
          }
-         line += string(10, ' ');
-         line += ionBetaString;
-         strm << line << endl;
+         strm << setw(10) << " " << ionBetaString << endl;
          strm.lineNumber++;
       }
       if (valid & deltaUTCValid)
       {
-         line  = string(3, ' ');
-         //line += string(2, ' ');
-         line += doub2for(A0, 19, 2);
-         line += doub2for(A1, 19, 2);
-         line += rightJustify(asString(UTCRefTime),9);
-         line += rightJustify(asString(UTCRefWeek),9);               
-         line += string(1, ' ');
-         line += deltaUTCString;
-         strm << line << endl;
+         strm << "   " << A0 << A1 << setw(9) << right << UTCRefTime
+              << setw(9) << right << UTCRefWeek << " " << deltaUTCString
+              << endl;
          strm.lineNumber++;
       }
       if (valid & leapSecondsValid)
@@ -231,19 +242,19 @@ namespace gpstk
          else if (thisLabel == ionAlphaString)
          {
             for(int i = 0; i < 4; i++)
-               ionAlpha[i] = gpstk::StringUtils::for2doub(line.substr(2 + 12 * i,12));
+               ionAlpha[i] = line.substr(2 + 12 * i,12);
             valid |= ionAlphaValid;
          }
          else if (thisLabel == ionBetaString)
          {
             for(int i = 0; i < 4; i++)
-               ionBeta[i] = gpstk::StringUtils::for2doub(line.substr(2 + 12 * i,12));
+               ionBeta[i] = line.substr(2 + 12 * i,12);
             valid |= ionBetaValid;
          }
          else if (thisLabel == deltaUTCString)
          {
-            A0 = gpstk::StringUtils::for2doub(line.substr(3,19));
-            A1 = gpstk::StringUtils::for2doub(line.substr(22,19));
+            A0 = line.substr(3,19);
+            A1 = line.substr(22,19);
             UTCRefTime = asInt(line.substr(41,9));
             UTCRefWeek = asInt(line.substr(50,9));
             valid |= deltaUTCValid;

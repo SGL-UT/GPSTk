@@ -67,21 +67,21 @@ public:
       init();
    }
       // destructor
-   ~Rinex3Nav_T( ) {}
+   ~Rinex3Nav_T() {}
 
-   void init( void );
+   void init();
 
-   void toRinex3(void);
+   void toRinex3();
 
       // return values indicate number of failures, i.e., 0=PASS, 0!=FAIL
-   int hardCodeTest( void );
-   int headerExceptionTest( void );
-   int streamReadWriteTest( void );
-   int filterOperatorsTest( void );
+   unsigned hardCodeTest();
+   unsigned headerExceptionTest();
+   unsigned streamReadWriteTest();
+   unsigned filterOperatorsTest();
 
-   void toConversionTest(void);
-   int version2ToVersion3Test( void );
-   int version3ToVersion2Test( void );
+   void toConversionTest();
+   unsigned version2ToVersion3Test();
+   unsigned version3ToVersion2Test();
 
 private:
 
@@ -126,10 +126,9 @@ private:
 // Initialize Test Data Filenames
 //============================================================
 
-void Rinex3Nav_T :: init( void )
+void Rinex3Nav_T :: init()
 {
 
-   TestUtil test0;
    dataFilePath = gpstk::getPathData();
    tempFilePath = gpstk::getPathTestTemp();
 
@@ -183,7 +182,7 @@ void Rinex3Nav_T :: init( void )
 // Change input and output file names for Rinex v.3 types
 //============================================================
 
-void Rinex3Nav_T :: toRinex3(void)
+void Rinex3Nav_T :: toRinex3()
 {
 
    std::cout<<"Running tests for Rinex version 3.0"<<std::endl;
@@ -237,7 +236,7 @@ void Rinex3Nav_T :: toRinex3(void)
 // Change input and output file names for Rinex Conversion test
 //=============================================================
 
-void Rinex3Nav_T :: toConversionTest(void)
+void Rinex3Nav_T :: toConversionTest()
 {
    inputRinex3Nav  = dataFilePath + file_sep +
                      "test_input_rinex3_nav_RinexNavExample.15n";
@@ -265,115 +264,108 @@ void Rinex3Nav_T :: toConversionTest(void)
 // Also, output was put into input three times over to make sure
 // there were no small errors which blow up into big errors
 //------------------------------------------------------------
-int Rinex3Nav_T :: hardCodeTest( void )
+unsigned Rinex3Nav_T :: hardCodeTest()
 {
-   double CompareVersion;
-   std::string CompareFileProgram;
-   std::string CompareFileAgency;
-   std::string CompareDate;
-   std::string CompareComment;
+   double compareVersion;
+   std::string compareFileProgram;
+   std::string compareFileAgency;
+   std::string compareDate;
+   std::string compareComment;
 
-   TestUtil test1( "Rinex3NavStream", "out", __FILE__, __LINE__ );
+   TUDEF("Rinex3NavStream", "ostream<<");
 
    try
    {
-      gpstk::Rinex3NavStream Rinex3NavStream( inputRinexNavExample.c_str() );
-      gpstk::Rinex3NavStream out( outputTestOutput.c_str(), std::ios::out );
-      gpstk::Rinex3NavStream dmp( outputRinexDump.c_str(), std::ios::out );
-      gpstk::Rinex3NavHeader Rinex3NavHeader;
-      gpstk::Rinex3NavData Rinex3NavData;
+      gpstk::Rinex3NavStream rinex3NavStream(inputRinexNavExample.c_str());
+      gpstk::Rinex3NavStream out(outputTestOutput.c_str(), std::ios::out);
+      gpstk::Rinex3NavStream dmp(outputRinexDump.c_str(), std::ios::out);
+      gpstk::Rinex3NavHeader rinex3NavHeader;
+      gpstk::Rinex3NavData rinex3NavData;
 
-      Rinex3NavStream >> Rinex3NavHeader;
-      out << Rinex3NavHeader;
+      rinex3NavStream >> rinex3NavHeader;
+      out << rinex3NavHeader;
 
-      while( Rinex3NavStream >> Rinex3NavData )
+      while (rinex3NavStream >> rinex3NavData)
       {
-         out << Rinex3NavData;
+         out << rinex3NavData;
       }
 
-      if (Rinex3NavHeader.version == 2.1)
+      if (rinex3NavHeader.version == 2.1)
       {
-         CompareVersion = 2.1;
-         CompareFileProgram = (std::string)"XXRINEXN V3";
-         CompareFileAgency = (std::string)"AIUB";
-         CompareDate = (std::string)"1999-09-02 19:22:36";
-         CompareComment = (std::string)"THIS IS ONE COMMENT";
+         compareVersion = 2.1;
+         compareFileProgram = (std::string)"XXRINEXN V3";
+         compareFileAgency = (std::string)"AIUB";
+         compareDate = (std::string)"1999-09-02 19:22:36";
+         compareComment = (std::string)"THIS IS ONE COMMENT";
       }
-
-      else if (Rinex3NavHeader.version == 3.02)
+      else if (rinex3NavHeader.version == 3.02)
       {
-         CompareVersion = 3.02;
-         CompareFileProgram = (std::string)"cnvtToRINEX 2.25.0";
-         CompareFileAgency = (std::string)"convertToRINEX OPR";
-         CompareDate = (std::string)"23-Jan-15 22:34 UTC";
-         CompareComment = (std::string)
+         compareVersion = 3.02;
+         compareFileProgram = (std::string)"cnvtToRINEX 2.25.0";
+         compareFileAgency = (std::string)"convertToRINEX OPR";
+         compareDate = (std::string)"23-Jan-15 22:34 UTC";
+         compareComment = (std::string)
                           "-----------------------------------------------------------";
       }
 
-      test1.assert( Rinex3NavHeader.version == CompareVersion,
-                    "RinexNav Header version comparison",      __LINE__ );
-      test1.assert( Rinex3NavHeader.fileProgram == CompareFileProgram,
-                    "RinexNav Header file program comparison", __LINE__ );
-      test1.assert( Rinex3NavHeader.fileAgency == CompareFileAgency,
-                    "RinexNav Header file agency comparison",  __LINE__ );
-      test1.assert( Rinex3NavHeader.date == CompareDate,
-                    "RinexNav Header date comparison",         __LINE__ );
+      TUCSM("operator>>");
+      TUASSERTFE(compareVersion, rinex3NavHeader.version);
+      TUASSERTE(std::string, compareFileProgram, rinex3NavHeader.fileProgram);
+      TUASSERTE(std::string, compareFileAgency, rinex3NavHeader.fileAgency);
+      TUASSERTE(std::string, compareDate, rinex3NavHeader.date);
 
       std::vector<std::string>::const_iterator itr1 =
-         Rinex3NavHeader.commentList.begin();
-      test1.assert( (*itr1) == CompareComment, "RinexNav Header Comment comparison",
-                    __LINE__ );
+         rinex3NavHeader.commentList.begin();
+      TUASSERTE(std::string, compareComment, *itr1);
 
-
-      test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput, 2 ),
-                    "RinexNav file read and then write, the two should be equal", __LINE__  );
+      TUCSM("operator<<");
+      TUCMPFILE(inputRinexNavExample, outputTestOutput, 2);
 
          //------------------------------------------------------------
-      gpstk::Rinex3NavStream Rinex3NavStream2( outputTestOutput.c_str() );
-      gpstk::Rinex3NavStream out2( outputTestOutput2.c_str(), std::ios::out );
-      gpstk::Rinex3NavHeader Rinex3NavHeader2;
-      gpstk::Rinex3NavData Rinex3NavData2;
+      gpstk::Rinex3NavStream rinex3NavStream2(outputTestOutput.c_str());
+      gpstk::Rinex3NavStream out2(outputTestOutput2.c_str(), std::ios::out);
+      gpstk::Rinex3NavHeader rinex3NavHeader2;
+      gpstk::Rinex3NavData rinex3NavData2;
 
-      Rinex3NavStream2 >> Rinex3NavHeader2;
-      out2 << Rinex3NavHeader2;
+      rinex3NavStream2 >> rinex3NavHeader2;
+      out2 << rinex3NavHeader2;
 
-      while (Rinex3NavStream2 >> Rinex3NavData2)
+      while (rinex3NavStream2 >> rinex3NavData2)
       {
-         out2 << Rinex3NavData2;
+         out2 << rinex3NavData2;
       }
 
-      gpstk::Rinex3NavStream Rinex3NavStream3( outputTestOutput2.c_str() );
-      gpstk::Rinex3NavStream out3( outputTestOutput3.c_str() , std::ios::out );
-      gpstk::Rinex3NavHeader Rinex3NavHeader3;
-      gpstk::Rinex3NavData Rinex3NavData3;
+      gpstk::Rinex3NavStream rinex3NavStream3(outputTestOutput2.c_str());
+      gpstk::Rinex3NavStream out3(outputTestOutput3.c_str() , std::ios::out);
+      gpstk::Rinex3NavHeader rinex3NavHeader3;
+      gpstk::Rinex3NavData rinex3NavData3;
 
-      Rinex3NavStream3 >> Rinex3NavHeader3;
-      out3 << Rinex3NavHeader3;
+      rinex3NavStream3 >> rinex3NavHeader3;
+      out3 << rinex3NavHeader3;
 
-      while (Rinex3NavStream3 >> Rinex3NavData3)
+      while (rinex3NavStream3 >> rinex3NavData3)
       {
-         out3 << Rinex3NavData3;
+         out3 << rinex3NavData3;
       }
-      Rinex3NavHeader.dump( dmp );
-      Rinex3NavData.dump( dmp );
+      rinex3NavHeader.dump(dmp);
+      rinex3NavData.dump(dmp);
 
-      test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput3,
-                                         2 ), "test read TestOutput2", __LINE__ );
+      TUCMPFILE(inputRinexNavExample, outputTestOutput3, 2);
    }
    catch(...)
    {
-      test1.assert( false, "test read TestOutput2, unexpected exception", __LINE__ );
+      TUFAIL("test read TestOutput2, unexpected exception");
    }
 
-   return( test1.countFails() );
+   TURETURN();
 }
 
 //------------------------------------------------------------
 //   This test check that Rinex Header exceptions are thrown
 //------------------------------------------------------------
-int Rinex3Nav_T :: headerExceptionTest( void )
+unsigned Rinex3Nav_T :: headerExceptionTest()
 {
-   TestUtil test2( "Rinex3NavStream", "exceptions", __FILE__, __LINE__ );
+   TUDEF("rinex3NavStream", "");
 
    std::string msg_test_desc       = " ";
    std::string msg_expected    = ", should throw a gpstk::Exception";
@@ -382,121 +374,117 @@ int Rinex3Nav_T :: headerExceptionTest( void )
 
    try
    {
-      gpstk::Rinex3NavStream InvalidLineLength( inputInvalidLineLength.c_str() );
-      gpstk::Rinex3NavStream NotaNavFile( inputNotaNavFile.c_str() );
-      gpstk::Rinex3NavStream UnknownHeaderLabel( inputUnknownHeaderLabel.c_str() );
-      gpstk::Rinex3NavStream IncompleteHeader( inputIncompleteHeader.c_str() );
-      gpstk::Rinex3NavStream UnsupportedRinex( inputUnsupportedRinex.c_str() );
-      gpstk::Rinex3NavStream BadHeader( inputBadHeader.c_str() );
-      gpstk::Rinex3NavStream out( outputTestOutputHeader.c_str(), std::ios::out );
-      gpstk::Rinex3NavHeader Header;
+      gpstk::Rinex3NavStream invalidLineLength(inputInvalidLineLength.c_str());
+      gpstk::Rinex3NavStream notaNavFile(inputNotaNavFile.c_str());
+      gpstk::Rinex3NavStream unknownHeaderLabel(inputUnknownHeaderLabel.c_str());
+      gpstk::Rinex3NavStream incompleteHeader(inputIncompleteHeader.c_str());
+      gpstk::Rinex3NavStream unsupportedRinex(inputUnsupportedRinex.c_str());
+      gpstk::Rinex3NavStream badHeader(inputBadHeader.c_str());
+      gpstk::Rinex3NavStream out(outputTestOutputHeader.c_str(), std::ios::out);
+      gpstk::Rinex3NavHeader header;
 
-      InvalidLineLength.exceptions(  std::fstream::failbit );
-      NotaNavFile.exceptions(        std::fstream::failbit );
-      UnknownHeaderLabel.exceptions( std::fstream::failbit );
-      IncompleteHeader.exceptions(   std::fstream::failbit );
-      UnsupportedRinex.exceptions(   std::fstream::failbit );
-      BadHeader.exceptions(          std::fstream::failbit );
+      invalidLineLength.exceptions( std::fstream::failbit);
+      notaNavFile.exceptions(       std::fstream::failbit);
+      unknownHeaderLabel.exceptions(std::fstream::failbit);
+      incompleteHeader.exceptions(  std::fstream::failbit);
+      unsupportedRinex.exceptions(  std::fstream::failbit);
+      badHeader.exceptions(         std::fstream::failbit);
 
 
          //------------------------------------------------------------
       msg_test_desc = "InvalidLineLength test";
       try
       {
-         InvalidLineLength >> Header;
-         test2.assert( false, msg_test_desc + msg_expected + msg_false_pass ,
-                       __LINE__ );
+         invalidLineLength >> header;
+         TUFAIL(msg_test_desc + msg_expected + msg_false_pass);
       }
-      catch( gpstk::Exception e )
+      catch(gpstk::Exception e)
       {
-         test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+         TUPASS(msg_test_desc + msg_expected);
       }
       catch(...)
       {
-         test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+         TUFAIL( msg_test_desc + msg_expected + msg_true_fail);
       }
 
          //------------------------------------------------------------
       msg_test_desc = "NotaNavFile test";
       try
       {
-         NotaNavFile >> Header;
-         test2.assert( false, msg_test_desc + msg_expected + msg_false_pass ,
-                       __LINE__ );
+         notaNavFile >> header;
+         TUFAIL(msg_test_desc + msg_expected + msg_false_pass);
       }
-      catch( gpstk::Exception e )
+      catch(gpstk::Exception e)
       {
-         test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+         TUPASS(msg_test_desc + msg_expected);
       }
       catch(...)
       {
-         test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+         TUFAIL(msg_test_desc + msg_expected + msg_true_fail);
       }
 
          //------------------------------------------------------------
       msg_test_desc = "UnknownHeaderLabel test";
       try
       {
-         UnknownHeaderLabel >> Header;
-         test2.assert( false, msg_test_desc + msg_expected + msg_false_pass ,
-                       __LINE__ );
+         unknownHeaderLabel >> header;
+         TUFAIL(msg_test_desc + msg_expected + msg_false_pass);
       }
-      catch( gpstk::Exception e )
+      catch(gpstk::Exception e)
       {
-         test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+         TUPASS(msg_test_desc + msg_expected);
       }
       catch(...)
       {
-         test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+         TUFAIL(msg_test_desc + msg_expected + msg_true_fail);
       }
 
          //------------------------------------------------------------
       msg_test_desc = "IncompleteHeader test";
       try
       {
-         IncompleteHeader >> Header;
-         test2.assert( false, msg_test_desc + msg_expected + msg_false_pass ,
-                       __LINE__ );
+         incompleteHeader >> header;
+         TUFAIL(msg_test_desc + msg_expected + msg_false_pass);
       }
-      catch( gpstk::Exception e )
+      catch(gpstk::Exception e)
       {
-         test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+         TUPASS(msg_test_desc + msg_expected);
       }
       catch(...)
       {
-         test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+         TUFAIL(msg_test_desc + msg_expected + msg_true_fail);
       }
 
          //------------------------------------------------------------
          // msg_test_desc = "UnsupportedRinex test"; Rinex version 3.33 is marked supported
          /*          try
                    {
-                       UnsupportedRinex >> Header;
-                       test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+                       UnsupportedRinex >> header;
+                       test2.assert(false, msg_test_desc + msg_expected + msg_false_pass , __LINE__);
                    }
-                   catch( gpstk::Exception e )
+                   catch(gpstk::Exception e)
                    {
-                       test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+                       test2.assert(true, msg_test_desc + msg_expected, __LINE__);
                    }
                    catch(...)
                    {
-                       test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+                       test2.assert(false, msg_test_desc + msg_expected + msg_true_fail, __LINE__);
                    }
          */
          //------------------------------------------------------------
          // msg_test_desc = "BadHeader test"; Rinex version 3.33 is marked supported, is header only bad b/c v. 3.33?
          /*          try
                    {
-                       BadHeader >> Header;
-                       test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+                       BadHeader >> header;
+                       test2.assert(false, msg_test_desc + msg_expected + msg_false_pass , __LINE__);
                    }
-                   catch( gpstk::Exception e )
+                   catch(gpstk::Exception e)
                    {
-                       test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+                       test2.assert(true, msg_test_desc + msg_expected, __LINE__);
                    }
                    catch(...)
                    {
-                       test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+                       test2.assert(false, msg_test_desc + msg_expected + msg_true_fail, __LINE__);
                    }
          */
          //------------------------------------------------------------
@@ -504,22 +492,20 @@ int Rinex3Nav_T :: headerExceptionTest( void )
    }
    catch(...)
    {
-      test2.assert( false, "test failure message", __LINE__ );
+      TUFAIL("Unknown exception");
    }
-
-   return( test2.countFails() );
-
+   TURETURN();
 }
 
 //------------------------------------------------------------
-//   Test Rinex3NavData File read/write with streams
+//   Test rinex3NavData File read/write with streams
 //   * Read Rinex Nav file directly into a RinexEphemerisStore
 //   * Write contents of RinexEphemerisStore back out to a new file
 //   * Diff the old file and the new file
 //------------------------------------------------------------
-int Rinex3Nav_T :: streamReadWriteTest( void )
+unsigned Rinex3Nav_T :: streamReadWriteTest()
 {
-   TestUtil test3( "Rinex3NavData", "Redirect", __FILE__, __LINE__ );
+   TUDEF("rinex3NavData", "Redirect");
 
    std::string msg_test_desc   = "streamReadWriteTest test";
    std::string msg_expected    = ", compares the output file with the input file";
@@ -528,43 +514,39 @@ int Rinex3Nav_T :: streamReadWriteTest( void )
 
    try
    {
-      Rinex3NavStream rinexInputStream( inputRinexNavExample.c_str()  );
-      Rinex3NavStream rinexOutputStream( outputRinexStore.c_str(), std::ios::out );
+      Rinex3NavStream rinexInputStream(inputRinexNavExample.c_str() );
+      Rinex3NavStream rinexOutputStream(outputRinexStore.c_str(),std::ios::out);
       Rinex3NavHeader streamTool;
-      rinexInputStream >>
-                       streamTool; // used to set rinexInputStream.header to a valid object
+         // used to set rinexInputStream.header to a valid object
+      rinexInputStream >> streamTool;
       rinexOutputStream.header = rinexInputStream.header;
       rinexOutputStream << rinexOutputStream.header;
 
       Rinex3NavData data;
-      while( rinexInputStream >> data )
+      while (rinexInputStream >> data)
       {
          rinexOutputStream << data;
       }
-      test3.assert( test3.fileEqualTest( inputRinexNavExample, outputRinexStore, 9),
-                    msg_test_desc + msg_expected + msg_fail_equal, __LINE__ );
+      TUCMPFILE(inputRinexNavExample, outputRinexStore, 9);
    }
    catch(...)
    {
-      test3.assert( false, msg_test_desc + msg_expected + msg_fail_except,
-                    __LINE__ );
+      TUFAIL(msg_test_desc + msg_expected + msg_fail_except);
    }
-
-   return( test3.countFails() );
-
+   TURETURN();
 }
 
 //------------------------------------------------------------
 // Test for several of the members within RinexNavFilterOperators
 //  including merge, EqualsFull, LessThanSimple, LessThanFull, and FilterPRN
 //------------------------------------------------------------
-int Rinex3Nav_T :: filterOperatorsTest( void )
+unsigned Rinex3Nav_T :: filterOperatorsTest()
 {
       // todo: This is a brokent test as of 4/25/16. In some environments
       // this test is returning a false pass and on others its failing.
    return 0;
-
-   TestUtil test4( "Rinex3NavStream", "open", __FILE__, __LINE__ );
+#if 0
+   TestUtil test4("rinex3NavStream", "open", __FILE__, __LINE__);
 
    std::string msg_test_desc = "";
    std::string msg_expected  = ", ";
@@ -573,11 +555,11 @@ int Rinex3Nav_T :: filterOperatorsTest( void )
    try
    {
 
-      gpstk::Rinex3NavStream FilterStream1( inputFilterStream1.c_str() );
-      FilterStream1.open( inputFilterStream1.c_str(), std::ios::in );
-      gpstk::Rinex3NavStream FilterStream2( inputFilterStream2.c_str() );
-      gpstk::Rinex3NavStream FilterStream3( inputFilterStream3.c_str() );
-      gpstk::Rinex3NavStream out( outputFilterOutput.c_str(), std::ios::out );
+      gpstk::Rinex3NavStream FilterStream1(inputFilterStream1.c_str());
+      FilterStream1.open(inputFilterStream1.c_str(), std::ios::in);
+      gpstk::Rinex3NavStream FilterStream2(inputFilterStream2.c_str());
+      gpstk::Rinex3NavStream FilterStream3(inputFilterStream3.c_str());
+      gpstk::Rinex3NavStream out(outputFilterOutput.c_str(), std::ios::out);
 
       gpstk::Rinex3NavHeader FilterHeader1;
       gpstk::Rinex3NavHeader FilterHeader2;
@@ -602,81 +584,78 @@ int Rinex3Nav_T :: filterOperatorsTest( void )
       }
 
       gpstk::Rinex3NavHeaderTouchHeaderMerge merged;
-      merged( FilterHeader1 );
-      merged( FilterHeader2 );
+      merged(FilterHeader1);
+      merged(FilterHeader2);
       out << merged.theHeader;
 
       gpstk::Rinex3NavDataOperatorEqualsFull EqualsFull;
 
       msg_test_desc =
-         "Rinex3NavDataOperatorEqualsFull, EqualsFUll FilterData1 FilterData2, fail";
-      test4.assert( EqualsFull( FilterData1, FilterData2 ), msg_test_desc,
-                    __LINE__ );
+         "rinex3NavDataOperatorEqualsFull, EqualsFUll FilterData1 FilterData2, fail";
+      test4.assert(EqualsFull(FilterData1, FilterData2), msg_test_desc,
+                    __LINE__);
       msg_test_desc =
-         "Rinex3NavDataOperatorEqualsFull, FilterData1 not equal FilterData3, fail";
-      test4.assert( !EqualsFull( FilterData1, FilterData3 ), msg_test_desc,
-                    __LINE__ );
+         "rinex3NavDataOperatorEqualsFull, FilterData1 not equal FilterData3, fail";
+      test4.assert(!EqualsFull(FilterData1, FilterData3), msg_test_desc,
+                    __LINE__);
 
       gpstk::Rinex3NavDataOperatorLessThanSimple LessThanSimple;
 
       msg_test_desc =
-         "Rinex3NavDataOperatorLessThanSimple, not LessThanSimple FilterData1 FilterData3, fail";
-      test4.assert( !LessThanSimple(FilterData1, FilterData2), msg_test_desc,
-                    __LINE__ );
+         "rinex3NavDataOperatorLessThanSimple, not LessThanSimple FilterData1 FilterData3, fail";
+      test4.assert(!LessThanSimple(FilterData1, FilterData2), msg_test_desc,
+                    __LINE__);
 
       gpstk::Rinex3NavDataOperatorLessThanFull LessThanFull;
 
       msg_test_desc =
-         "Rinex3NavDataOperatorLessThanFull, not LessThanFull FilterData1 FilterData1, fail";
-      test4.assert( !LessThanFull(FilterData1, FilterData1), msg_test_desc,
-                    __LINE__ );
+         "rinex3NavDataOperatorLessThanFull, not LessThanFull FilterData1 FilterData1, fail";
+      test4.assert(!LessThanFull(FilterData1, FilterData1), msg_test_desc,
+                    __LINE__);
 
       std::list<long> list;
       list.push_front(6);
       gpstk::Rinex3NavDataFilterPRN FilterPRN(list);
-      msg_test_desc = "Rinex3NavDataFilterPRN, FilterPRN FilterData3, fail";
-      test4.assert( FilterPRN( FilterData3 ), msg_test_desc, __LINE__ );
+      msg_test_desc = "rinex3NavDataFilterPRN, FilterPRN FilterData3, fail";
+      test4.assert(FilterPRN(FilterData3), msg_test_desc, __LINE__);
    }
    catch(...)
    {
       msg_test_desc = "filterOperatorsTest, threw unexpected exception, fail";
-      test4.assert( false, msg_test_desc, __LINE__ );
+      test4.assert(false, msg_test_desc, __LINE__);
    }
 
-   return( test4.countFails() );
-
+   return(test4.countFails());
+#endif
 }
 
 //------------------------------------------------------------
 // Tests if a input Rinex 3 file can be output as a version 2 file
 //------------------------------------------------------------
 
-int Rinex3Nav_T :: version3ToVersion2Test(void)
+unsigned Rinex3Nav_T :: version3ToVersion2Test()
 {
-   TestUtil testFramework("Rinex3Nav", "Convert v.3 to v.2", __FILE__, __LINE__ );
+   TUDEF("Rinex3Nav", "Convert v.3 to v.2");
 
    gpstk::Rinex3NavStream inputStream(inputRinex3Nav.c_str());
    gpstk::Rinex3NavStream outputStream(outputRinex2Nav.c_str(), std::ios::out);
-   gpstk::Rinex3NavHeader NavHeader;
-   gpstk::Rinex3NavData NavData;
+   gpstk::Rinex3NavHeader navHeader;
+   gpstk::Rinex3NavData navData;
 
-   inputStream >> NavHeader;
+   inputStream >> navHeader;
 
-   NavHeader.version = 2.11;
+   navHeader.version = 2.11;
 
-   outputStream << NavHeader;
-   while(inputStream >> NavData)
+   outputStream << navHeader;
+   while (inputStream >> navData)
    {
-      outputStream << NavData;
+      outputStream << navData;
    }
 
       //skip first 2 lines, not expected to match
-   fileCompare = testFramework.fileEqualTest(inputRinex2Nav, outputRinex2Nav, 2);
+   TUCMPFILE(inputRinex2Nav, outputRinex2Nav, 2);
 
-   failDescriptionString = "Version 2.11 output does not match expected file";
-   testFramework.assert(fileCompare, failDescriptionString, __LINE__);
-
-   return testFramework.countFails();
+   TURETURN();
 }
 
 //------------------------------------------------------------
@@ -684,32 +663,29 @@ int Rinex3Nav_T :: version3ToVersion2Test(void)
 //------------------------------------------------------------
 
 
-int Rinex3Nav_T :: version2ToVersion3Test(void)
+unsigned Rinex3Nav_T :: version2ToVersion3Test()
 {
-   TestUtil testFramework("Rinex3Nav", "Convert v.2 to v.3", __FILE__, __LINE__ );
+   TUDEF("Rinex3Nav", "Convert v.2 to v.3");
 
    gpstk::Rinex3NavStream inputStream(inputRinex2Nav.c_str());
    gpstk::Rinex3NavStream outputStream(outputRinex3Nav.c_str(), std::ios::out);
-   gpstk::Rinex3NavHeader NavHeader;
-   gpstk::Rinex3NavData NavData;
+   gpstk::Rinex3NavHeader navHeader;
+   gpstk::Rinex3NavData navData;
 
-   inputStream >> NavHeader;
+   inputStream >> navHeader;
 
-   NavHeader.version = 3.02;
+   navHeader.version = 3.02;
 
-   outputStream << NavHeader;
-   while(inputStream >> NavData)
+   outputStream << navHeader;
+   while (inputStream >> navData)
    {
-      outputStream << NavData;
+      outputStream << navData;
    }
 
       //skip first 2 lines, not expected to match
-   fileCompare = testFramework.fileEqualTest(inputRinex3Nav, outputRinex3Nav, 2);
+   TUCMPFILE(inputRinex3Nav, outputRinex3Nav, 2);
 
-   failDescriptionString = "Version 3.02 output does not match expected file";
-   testFramework.assert(fileCompare, failDescriptionString, __LINE__);
-
-   return testFramework.countFails();
+   TURETURN();
 }
 
 
@@ -719,9 +695,7 @@ int Rinex3Nav_T :: version2ToVersion3Test(void)
 
 int main()
 {
-
-   int errorCount = 0;
-   int errorTotal = 0;
+   unsigned errorTotal = 0;
    Rinex3Nav_T testClass;
 
    std::cout << "Running tests for Rinex version 2.1" << std::endl;
@@ -744,8 +718,8 @@ int main()
       //errorTotal += testClass.version2ToVersion3Test();
       //errorTotal += testClass.version3ToVersion2Test();
 
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal <<
-             std::endl;
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
+             << std::endl;
 
-   return( errorTotal );
+   return(errorTotal);
 }

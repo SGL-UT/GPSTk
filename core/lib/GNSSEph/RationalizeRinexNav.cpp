@@ -186,7 +186,7 @@ namespace gpstk
                // will be Toc/Toe minus 1/2 of the fit interval. 
             if (sowToc%3600==0)
             {
-               r3nd.xmitTime = sowToc - (r3nd.fitint/2 * 3600);
+               r3nd.xmitTime = sowToc - (r3nd.fitint/2.0 * 3600.0);
                r3nd.weeknum = static_cast<GPSWeekSecond>(r3nd.time).week;
                if (r3nd.xmitTime<0)
                {
@@ -585,7 +585,7 @@ namespace gpstk
       ss << "!" << setw(6) << r3nd.xmitTime << "  " << setw(4) << xmitWeek << " " ;
       ss << printTime(xmitCT,tform) << " ! ";
       ss << printTime(r3nd.time,tform) << " ! ";
-      ss << setw(3) << r3nd.fitint << " ! "; 
+      ss << setw(3) << r3nd.fitint.val << " ! "; 
       return(ss.str());
    }
 
