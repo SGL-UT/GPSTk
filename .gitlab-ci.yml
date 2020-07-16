@@ -152,7 +152,7 @@ build_redhat_swig3:
   stage: build
   tags:
     - docker-executor
-  image: $DOCKER_REGISTRYcentos7_swig3_sgl
+  image: $DOCKER_REGISTRY/centos7_swig3_sgl
   script:
     - mkdir build
     - cd build
