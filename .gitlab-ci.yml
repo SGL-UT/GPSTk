@@ -43,6 +43,8 @@ build_debian_7:
   extends: .big_build
   tags:
     - docker-executor
+    # Not all docker runners support debian 7
+    - deb7-support
   image: $DOCKER_REGISTRY/debian7_fai_ish
   script:
     - mkdir build
@@ -194,6 +196,8 @@ test_debian_7:
   extends: .big_build
   tags:
     - docker-executor
+    # Not all docker runners support debian 7
+    - deb7-support
   image: $DOCKER_REGISTRY/debian7_fai_ish
   script:
     - cd build
