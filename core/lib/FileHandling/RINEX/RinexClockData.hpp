@@ -60,11 +60,11 @@ namespace gpstk
    class RinexClockData : public RinexClockBase
    {
    public:
-      
-
          /// Constructor
-      RinexClockData(): epochTime(CommonTime::BEGINNING_OF_TIME),
-                        dvCount(0), clockData(6,0) {}
+      RinexClockData()
+            : epochTime(CommonTime::BEGINNING_OF_TIME),
+              dvCount(0), clockData(6,RCDouble(0))
+      {}
       
          /// Destructor
       virtual ~RinexClockData() {}
@@ -91,7 +91,7 @@ namespace gpstk
          /// [3] Clock rate sigma [optional] (dimensionless).
          /// [4] Clock acceleration [optional] (per second).
          /// [5] Clock acceleration sigma [optional] (per second).
-      std::vector<double> clockData;
+      std::vector<RCDouble> clockData;
 
          /// RinexClockData is a "data", so this function always returns 
          /// true.

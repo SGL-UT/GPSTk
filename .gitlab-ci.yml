@@ -157,7 +157,7 @@ build_redhat_swig3:
   stage: build
   tags:
     - docker-executor
-  image: centos7_swig3_sgl
+  image: $DOCKER_REGISTRY/centos7_swig3_sgl
   script:
     - mkdir build
     - cd build
@@ -381,7 +381,7 @@ test_redhat_swig3:
   stage: test
   tags:
     - docker-executor
-  image: centos7_swig3_sgl
+  image: $DOCKER_REGISTRY/centos7_swig3_sgl
   script:
     - cd build
     - ctest -j 4
@@ -465,7 +465,7 @@ user_install_redhat_swig3:
   stage: install
   tags:
     - docker-executor
-  image: centos7_swig3_sgl
+  image: $DOCKER_REGISTRY/centos7_swig3_sgl
   script:
     - cd build
     - export gpstk=`pwd`/install
@@ -532,7 +532,7 @@ system_install_redhat_swig3:
   stage: install
   tags:
     - docker-executor
-  image: centos7_swig3_sgl
+  image: $DOCKER_REGISTRY/centos7_swig3_sgl
   script:
     - cd build
     - export gpstk=/usr/local
@@ -785,7 +785,7 @@ sgltk_redhat_swig3:
   stage: downstream
   tags:
     - docker-executor
-  image: centos7_swig3_sgl
+  image: $DOCKER_REGISTRY/centos7_swig3_sgl
   script:
     - cd build
     - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git

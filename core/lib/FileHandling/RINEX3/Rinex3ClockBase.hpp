@@ -43,6 +43,7 @@
 #define RINEX3CLOCKBASE_HPP
 
 #include "FFData.hpp"
+#include "FormattedDouble.hpp"
 
 namespace gpstk
 {
@@ -53,6 +54,21 @@ namespace gpstk
    class Rinex3ClockBase : public FFData
    {
    public:
+      class RCDouble : public FormattedDouble
+      {
+      public:
+            /// Constructor for a value, with all defaults for format.
+         RCDouble(double d)
+               : FormattedDouble(d, StringUtils::FFLead::Zero, 13, 2, 19, 'E',
+                                 StringUtils::FFSign::NegOnly,
+                                 StringUtils::FFAlign::Right)
+         {}
+
+            /// Assign a value by decoding a string using existing formatting.
+         RCDouble& operator=(const std::string& s)
+         { FormattedDouble::operator=(s); return *this; }
+      };
+
          /// Destructor per the coding standards
       virtual ~Rinex3ClockBase() {}
    };

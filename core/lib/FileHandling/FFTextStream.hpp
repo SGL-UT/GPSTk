@@ -140,4 +140,16 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
+
+
+inline std::ostream& endlpp(std::ostream& os)
+{
+   gpstk::FFTextStream *tos = dynamic_cast<gpstk::FFTextStream*>(&os);
+   if (tos != nullptr)
+   {
+      tos->lineNumber++;
+   }
+   return flush(os.put(os.widen('\n')));
+}
+
 #endif   // GPSTK_FFTEXTSTREAM_HPP

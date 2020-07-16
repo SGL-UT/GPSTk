@@ -42,6 +42,7 @@
 
 #include "SinexBase.hpp"
 #include "YDSTime.hpp"
+#include "FormattedDouble.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -222,10 +223,9 @@ namespace Sinex
    std::string
    formatFor(double value, size_t width, size_t expLen)
    {
-      string s = gpstk::StringUtils::doub2for(value, width, expLen);
-      std::string::size_type idx = s.find('D', 0);
-      s[idx] = 'E';
-      return s;
+      FormattedDouble fd(value, StringUtils::FFLead::Zero, width-6, expLen,
+                         width, 'E');
+      return static_cast<std::string>(fd);
    }
 
    std::string

@@ -52,6 +52,7 @@
 #include "SEMBase.hpp"
 #include "StringUtils.hpp"
 #include "SEMHeader.hpp"
+#include "FormattedDouble.hpp"
 
 namespace gpstk
 {
@@ -73,25 +74,25 @@ namespace gpstk
    public:
    
          /// Constructor.
-      SEMData() {}
+      SEMData();
 
          /// Destructor
       virtual ~SEMData() {}
       
          
       short PRN;
-      short SVNnum;          // SVN
-      short URAnum;          // "Avg" URA index over unknown period
-      double ecc;            // no units
-      double i_offset;       // redians
-      double i_total;        // radians
-      double OMEGAdot;       // redians
-      double Ahalf;          // m**0.5
-      double OMEGA0;         // radians
-      double w;              // radians
-      double M0;             // radians
-      double AF0;            // sec
-      double AF1;            // sec/sec 
+      short SVNnum;             ///< SVN
+      short URAnum;             ///< "Avg" URA index over unknown period
+      FormattedDouble ecc;      ///< no units
+      FormattedDouble i_offset; ///< redians
+      double i_total;           ///< radians
+      FormattedDouble OMEGAdot; ///< redians
+      FormattedDouble Ahalf;    ///< m**0.5
+      FormattedDouble OMEGA0;   ///< radians
+      FormattedDouble w;        ///< radians
+      FormattedDouble M0;       ///< radians
+      FormattedDouble AF0;      ///< sec
+      FormattedDouble AF1;      ///< sec/sec 
       short SV_health;
       short satConfig;
       

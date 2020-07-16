@@ -85,7 +85,7 @@ namespace gpstk
    {
    public:
          /// Constructor.
-      Rinex3ClockData() { clear(); }
+      Rinex3ClockData();
      
          /// Destructor
       virtual ~Rinex3ClockData() {}
@@ -101,16 +101,16 @@ namespace gpstk
       RinexSatID sat;         ///< Satellite ID        (if AS)
       std::string site;       ///< Site label (4-char) (if AR)
       CommonTime time;        ///< Time of epoch for this record
-      double bias;            ///< Clock bias in seconds
-      double sig_bias;        ///< Clock bias sigma in seconds
-      double drift;           ///< Clock drift in sec/sec
-      double sig_drift;       ///< Clock drift sigma in sec/sec
-      double accel;           ///< Clock acceleration in 1/sec
-      double sig_accel;       ///< Clock acceleration sigma in 1/sec
+      RCDouble bias;          ///< Clock bias in seconds
+      RCDouble sig_bias;      ///< Clock bias sigma in seconds
+      RCDouble drift;         ///< Clock drift in sec/sec
+      RCDouble sig_drift;     ///< Clock drift sigma in sec/sec
+      RCDouble accel;         ///< Clock acceleration in 1/sec
+      RCDouble sig_accel;     ///< Clock acceleration sigma in 1/sec
       
    protected:
 
-      void clear(void) throw()
+      void clear() throw()
       {
          datatype = std::string();
          sat = RinexSatID(-1,SatelliteSystem::GPS);

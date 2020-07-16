@@ -158,11 +158,11 @@ namespace gpstk
       std::string satSys;  ///< Satellite system of Epoch: G,R,E,S,C
       short PRNID;         ///< SV PRN ID
       RinexSatID sat;      ///< RinexSatID (from PRNID & satSys)
-      long xmitTime;        ///< Time of subframe 1-3 (sec of week)
+      long xmitTime;       ///< Time of subframe 1-3 (sec of week)
       short weeknum;       ///< GPS full week corresponding to HOWtime of SF1
                            ///< (N.B.:in RINEX files, week number corresponds
                            /// >to ToE, not GLO)
-      double accuracy;     ///< SV accuracy (m)
+      RNDouble accuracy;   ///< SV accuracy (m)
       short health;        ///< SV health
          //@}
 
@@ -170,74 +170,74 @@ namespace gpstk
          //@{
       short   codeflgs;    ///< L2 codes
       short   L2Pdata;     ///< L2 P data flag 
-      double  IODC;        ///< Index of data-clock
-      double  IODE;        ///< Index of data-eph
+      RNDouble  IODC;      ///< Index of data-clock
+      RNDouble  IODE;      ///< Index of data-eph
          //@}
 
          /** @name GLO Data */
          //@{
-      double  TauN;        ///< SV clock bias (sec)
-      double  GammaN;      ///< SV relative frequency bias
+      RNDouble  TauN;      ///< SV clock bias (sec)
+      RNDouble  GammaN;    ///< SV relative frequency bias
       double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
       long    MFtime;      ///< Message frame time (sec of UTC week) <long>
       short   freqNum;     ///< Frequency number (-7..+12)
-      double  ageOfInfo;   ///< Age of oper. information (days)
+      RNDouble  ageOfInfo; ///< Age of oper. information (days)
          //@}
 
          /** @name GAL Data */
          //@{
       short   datasources; ///< Data sources
-      double  IODnav;      ///< Index of data-eph
+      RNDouble  IODnav;    ///< Index of data-eph
          //@}
 
          /** @name GEO Data */
          //@{
-      double  accCode;     ///< Accuracy code (URA, meters)
-      double  IODN;        ///< Issue of data navigation, DO229,
+      RNDouble  accCode;   ///< Accuracy code (URA, meters)
+      RNDouble  IODN;      ///< Issue of data navigation, DO229,
                            ///< 8 first bits after Message type if MT9
          //@}
 
          /** @name Clock Information */
          //@{
       double  Toc;         ///< Time of clock (sec of week)
-      double  af0;         ///< SV clock error (sec)
-      double  af1;         ///< SV clock drift (sec/sec)
-      double  af2;         ///< SV clock drift rate (sec/sec**2)
-      double  Tgd;         ///< Group delay diff. (sec) (GPS, BDS:B1/B3 GAL:E5a/E1)
-      double  Tgd2;        ///< Group delay differential (sec) (BDS:B2/B3 GAL:E5b/E1)
+      RNDouble  af0;       ///< SV clock error (sec)
+      RNDouble  af1;       ///< SV clock drift (sec/sec)
+      RNDouble  af2;       ///< SV clock drift rate (sec/sec**2)
+      RNDouble  Tgd;       ///< Group delay diff. (sec) (GPS, BDS:B1/B3 GAL:E5a/E1)
+      RNDouble  Tgd2;      ///< Group delay differential (sec) (BDS:B2/B3 GAL:E5b/E1)
          //@}
 
          /** @name Harmonic Perturbations */
          //@{
-      double  Cuc;         ///< Cosine latitude (rad)
-      double  Cus;         ///< Sine latitude (rad)
-      double  Crc;         ///< Cosine radius (m)
-      double  Crs;         ///< Sine radius (m)
-      double  Cic;         ///< Cosine inclination (rad)
-      double  Cis;         ///< Sine inclination (rad)
+      RNDouble  Cuc;       ///< Cosine latitude (rad)
+      RNDouble  Cus;       ///< Sine latitude (rad)
+      RNDouble  Crc;       ///< Cosine radius (m)
+      RNDouble  Crs;       ///< Sine radius (m)
+      RNDouble  Cic;       ///< Cosine inclination (rad)
+      RNDouble  Cis;       ///< Sine inclination (rad)
          //@}
 
          /** @name Major Ephemeris Parameters */
          //@{
-      double  Toe;         ///< Ephemeris epoch (sec of week)
-      double  M0;          ///< Mean anomaly (rad)
-      double  dn;          ///< Correction to mean motion (rad/sec)
-      double  ecc;         ///< Eccentricity
-      double  Ahalf;       ///< SQRT of semi-major axis (m**1/2)
-      double  OMEGA0;      ///< Rt ascension of ascending node (rad)
-      double  i0;          ///< Inclination (rad)
-      double  w;           ///< Argument of perigee (rad)
-      double  OMEGAdot;    ///< Rate of Rt ascension (rad/sec)
-      double  idot;        ///< Rate of inclination angle (rad/sec)
-      double  fitint;      ///< Fit interval
+      RNDouble  Toe;       ///< Ephemeris epoch (sec of week)
+      RNDouble  M0;        ///< Mean anomaly (rad)
+      RNDouble  dn;        ///< Correction to mean motion (rad/sec)
+      RNDouble  ecc;       ///< Eccentricity
+      RNDouble  Ahalf;     ///< SQRT of semi-major axis (m**1/2)
+      RNDouble  OMEGA0;    ///< Rt ascension of ascending node (rad)
+      RNDouble  i0;        ///< Inclination (rad)
+      RNDouble  w;         ///< Argument of perigee (rad)
+      RNDouble  OMEGAdot;  ///< Rate of Rt ascension (rad/sec)
+      RNDouble  idot;      ///< Rate of inclination angle (rad/sec)
+      RNDouble  fitint;    ///< Fit interval
 
          //@}
 
          /** @name Tabular Ephemeris Parameters */
          //@{
-      double  px, py, pz;  ///< SV position
-      double  vx, vy, vz;  ///< SV velocity
-      double  ax, ay, az;  ///< SV acceleration
+      RNDouble px, py, pz; ///< SV position
+      RNDouble vx, vy, vz; ///< SV velocity
+      RNDouble ax, ay, az; ///< SV acceleration
          //@}
 
 

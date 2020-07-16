@@ -50,74 +50,77 @@ using namespace std;
 
 namespace gpstk
 {
+   Rinex3ClockData::Rinex3ClockData()
+         : sat(-1,SatelliteSystem::GPS), time(CommonTime::BEGINNING_OF_TIME),
+           bias(0), sig_bias(0), drift(0), sig_drift(0), accel(0), sig_accel(0)
+   {
+   }
+
+
    void Rinex3ClockData::reallyPutRecord(FFStream& ffs) const 
    {
-      // cast the stream to be an Rinex3ClockStream
+         // cast the stream to be an Rinex3ClockStream
       Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
 
-      string line;
+      strm << datatype << ' ';
 
-      line = datatype;
-      line += string(1,' ');
-
-      if(datatype == string("AR")) {
-         line += rightJustify(site,4);
+      if (datatype == string("AR"))
+      {
+         strm << setw(4) << right << site;
       }
-      else if(datatype == string("AS")) {
-         line += string(1,sat.systemChar());
-         line += rightJustify(asString(sat.id),2);
-         if(line[4] == ' ') line[4] = '0';
-         line += string(1,' ');
+      else if (datatype == string("AS"))
+      {
+         strm << sat.systemChar() << setw(2) << right << setfill('0') << sat.id
+              << setfill(' ') << ' ';
       }
-      else {
+      else
+      {
          FFStreamError e("Unknown data type: " + datatype);
          GPSTK_THROW(e);
       }
-      line += string(1,' ');
+      strm << ' ' << printTime(time,"%4Y %02m %02d %02H %02M %9.6f");
 
-      line += printTime(time,"%4Y %02m %02d %02H %02M %9.6f");
-
-      // must count the data to output
+         // must count the data to output
       int n(2);
-      if(drift != 0.0) n=3;
-      if(sig_drift != 0.0) n=4;
-      if(accel != 0.0) n=5;
-      if(sig_accel != 0.0) n=6;
-      line += rightJustify(asString(n),3);
-      line += string(3,' ');
+      if (drift != 0.0)
+         n=3;
+      if (sig_drift != 0.0)
+         n=4;
+      if (accel != 0.0)
+         n=5;
+      if (sig_accel != 0.0)
+         n=6;
+      strm << setw(3) << n << "   " << bias << ' ' << sig_bias << endl;
 
-      line += doubleToScientific(bias, 19, 12, 2);
-      line += string(1,' ');
-      line += doubleToScientific(sig_bias, 19, 12, 2);
-
-      strm << line << endl;
       strm.lineNumber++;
 
-      // continuation line
-      if(n > 2) {
-         line = doubleToScientific(drift, 19, 12, 2);
-         line += string(1,' ');
-         if(n > 3) {
-            line += doubleToScientific(sig_drift, 19, 12, 2);
-            line += string(1,' ');
+         // continuation line
+                                                    
+      if (n > 2)
+      {
+         strm << drift << ' ';
+         if (n > 3)
+         {
+            strm << sig_drift << ' ';
          }
-         if(n > 4) {
-            line += doubleToScientific(accel, 19, 12, 2);
-            line += string(1,' ');
+         if (n > 4)
+         {
+            strm << accel << ' ';
          }
-         if(n > 5) {
-            line += doubleToScientific(sig_accel, 19, 12, 2);
-            line += string(1,' ');
+         if (n > 5)
+         {
+            strm << sig_accel << ' ';
          }
-         strm << line << endl;
+         strm << endl;
          strm.lineNumber++;
       }
 
    }  // end reallyPutRecord()
 
+
    void Rinex3ClockData::reallyGetRecord(FFStream& ffs)
    {
-      // cast the stream to be an Rinex3ClockStream
+         // cast the stream to be an Rinex3ClockStream
       Rinex3ClockStream& strm = dynamic_cast<Rinex3ClockStream&>(ffs);
 
       clear();
@@ -125,15 +128,15 @@ namespace gpstk
       string line;
       strm.formattedGetLine(line,true);      // true means 'expect possible EOF'
       stripTrailing(line);
-      if(line.length() < 59) {
+      if (line.length() < 59) {
          FFStreamError e("Short line : " + line);
          GPSTK_THROW(e);
       }
 
-      //cout << "Data Line: /" << line << "/" << endl;
+         //cout << "Data Line: /" << line << "/" << endl;
       datatype = line.substr(0,2);
       site = line.substr(3,4);
-      if(datatype == string("AS"))
+      if (datatype == string("AS"))
       {
          strip(site);
          try
@@ -150,48 +153,53 @@ namespace gpstk
       }
 
       time = CivilTime(asInt(line.substr( 8,4)),
-                     asInt(line.substr(12,3)),
-                     asInt(line.substr(15,3)),
-                     asInt(line.substr(18,3)),
-                     asInt(line.substr(21,3)),
-                     asDouble(line.substr(24,10)),
-                     TimeSystem::Any);
+                       asInt(line.substr(12,3)),
+                       asInt(line.substr(15,3)),
+                       asInt(line.substr(18,3)),
+                       asInt(line.substr(21,3)),
+                       asDouble(line.substr(24,10)),
+                       TimeSystem::Any);
 
       int n(asInt(line.substr(34,3)));
-      bias = asDouble(line.substr(40,19));
-      if(n > 1 && line.length() >= 59) sig_bias = asDouble(line.substr(60,19));
+      bias = line.substr(40,19);
+      if (n > 1 && line.length() >= 59)
+         sig_bias = line.substr(60,19);
 
-      if(n > 2) {
+      if (n > 2)
+      {
          strm.formattedGetLine(line,true);
          stripTrailing(line);
-         if(int(line.length()) < (n-2)*20-1) {
+         if (int(line.length()) < (n-2)*20-1)
+         {
             FFStreamError e("Short line : " + line);
             GPSTK_THROW(e);
          }
-         drift =     asDouble(line.substr( 0,19));
-         if(n > 3) sig_drift = asDouble(line.substr(20,19));
-         if(n > 4) accel     = asDouble(line.substr(40,19));
-         if(n > 5) sig_accel = asDouble(line.substr(60,19));
+         drift =     line.substr( 0,19);
+         if (n > 3)
+            sig_drift = line.substr(20,19);
+         if (n > 4)
+            accel     = line.substr(40,19);
+         if (n > 5)
+            sig_accel = line.substr(60,19);
       }
 
    }   // end reallyGetRecord()
 
    void Rinex3ClockData::dump(ostream& s) const throw()
    {
-      // dump record type, sat id / site, current epoch, and data
+         // dump record type, sat id / site, current epoch, and data
       s << " " << datatype;
-      if(datatype == string("AR")) s << " " << site;
-      else s << " " << sat.toString();
-      s << " " << printTime(time,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g %P");
-      s << scientific << setprecision(12)
-         << " " << setw(19) << bias
-         << " " << setw(19) << sig_bias;
-      if(drift != 0.0) s << " " << setw(19) << drift; else s << " 0.0";
-      if(sig_drift != 0.0) s << " " << setw(19) << sig_drift; else s << " 0.0";
-      if(accel != 0.0) s << " " << setw(19) << accel; else s << " 0.0";
-      if(sig_accel != 0.0) s << " " << setw(19) << sig_accel; else s << " 0.0";
-      s << endl;
-
+      if (datatype == string("AR"))
+      {
+         s << " " << site;
+      }
+      else
+      {
+         s << " " << sat.toString();
+      }
+      s << " " << printTime(time,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g %P")
+        << " " << bias << " " << sig_bias << " " << drift << " " << sig_drift
+        << " " << accel << " " << sig_accel << endl;
    }  // end dump()
 
 } // namespace

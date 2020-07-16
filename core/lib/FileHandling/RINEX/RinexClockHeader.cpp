@@ -164,7 +164,7 @@ namespace gpstk
       for(dataTypeListItr = dataTypeList.begin();
           dataTypeListItr != dataTypeList.end(); dataTypeListItr++)
       {
-         s << leftJustify(dataTypeListItr->type, 2) <<  " ";
+         s << leftJustify(dataTypeListItr->type, 2) <<  ' ';
          if      (*dataTypeListItr == AS) as = true;
          else if (*dataTypeListItr == AR) ar = true;
          else if (*dataTypeListItr == CR) cr = true;
@@ -176,7 +176,7 @@ namespace gpstk
       if ( cr || dr || (valid & stationNameValid) )
       {
          s << "Station/Reciever: " << stationName
-           << " " << stationNumber << endl;
+           << ' ' << stationNumber << endl;
       }
 
       if ( cr || (valid & calibrationClkValid) )
@@ -187,7 +187,7 @@ namespace gpstk
       if ( ar || as || ms || (valid & acNameValid) )
       {
          s << "Analysis Center: " << ac
-           << " " << acName << endl;
+           << ' ' << acName << endl;
       }
 
       if ( ar || as || (valid & numRefClkValid) )
@@ -247,7 +247,7 @@ namespace gpstk
          for (prnListItr = prnList.begin();
               prnListItr != prnList.end(); prnListItr++)
          {
-            s << " ";
+            s << ' ';
             string sat;
             switch(prnListItr->system)
             {
@@ -299,201 +299,136 @@ namespace gpstk
          GPSTK_THROW(err);
       }
 
-      string line;
-
       if (valid & versionValid)
       {
-         line = rightJustify(asString(version,2), 9);
-         line += string(11, ' ');
-         line += leftJustify(fileType, 40);
-         line += versionString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << right << setw(9) << setprecision(2) << fixed << version << left
+              << setw(11) << ' '
+              << setw(40) << fileType << versionString << endlpp;
       }
       if (valid & runByValid)
       {
-         line = leftJustify(fileProgram, 20);
-         line += leftJustify(fileAgency, 20);
-         line += leftJustify(date, 20);
-         line += runByString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << setw(20) << fileProgram
+              << setw(20) << fileAgency
+              << setw(20) << date
+              << runByString << endlpp;
       }
       if (valid & commentValid)
       {
          list<string>::const_iterator itr;
          for (itr = commentList.begin(); itr != commentList.end(); itr++)
          {
-            line  = leftJustify((*itr), 60);
-            line += commentString;
-            strm << line << endl;
-            strm.lineNumber++;
+            strm << setw(60) << (*itr) << commentString << endlpp;
          }
       }
       if (valid & leapSecondsValid)
       {
-         line  = rightJustify(asString(leapSeconds),6);
-         line += string(54, ' ');
-         line += leapSecondsString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << right << setw(6) << leapSeconds << left
+              << setw(54) << ' ' << leapSecondsString << endlpp;
       }
       if ( valid & dataTypesValid )
       {
-         line = rightJustify(asString<int>(numType), 6);
-
-         list<RinexClkType>::const_iterator itr;
-         for (itr = dataTypeList.begin(); itr != dataTypeList.end(); itr++)
+         strm << right << setw(6) << numType;
+         for (const auto& itr : dataTypeList)
          {
-            line += string(4, ' ');
-            line += rightJustify(itr->type, 2);
+            strm << "    " << right << setw(2) << itr.type;
          }
-         line += string(54 - ((dataTypeList.size())*6), ' ');
-         line += dataTypesString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << left << setw(54 - ((dataTypeList.size())*6)) << ' '
+              << dataTypesString << endlpp;
       }
       if ( valid & stationNameValid )
       {
-         line = leftJustify(stationName, 4);
-         line += string(1, ' ');
-         line += leftJustify(stationNumber, 20);
-         line += string(35, ' ');
-         line += stationNameString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << setw(4) << stationName
+              << ' ' << setw(20) << stationNumber
+              << setw(35) << ' ' << stationNameString << endlpp;
       }
       if ( valid & calibrationClkValid )
       {
-         line = leftJustify(stationClkRef, 60);
-         line += calibrationClkString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << setw(60) << stationClkRef << calibrationClkString << endlpp;
       }
       if ( valid & acNameValid )
       {
-         line = leftJustify(ac, 3);
-         line += string(2, ' ');
-         line += leftJustify(acName, 55);
-         line += acNameString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << setw(3) << ac << "  " << setw(55) << acName << acNameString
+              << endlpp;
       }
       if ( valid & numStationsValid )
       {
-         list<RefClkRecord>::const_iterator recItr;
-         for (recItr = refClkList.begin(); recItr != refClkList.end(); recItr++)
+         for (const auto& recItr : refClkList)
          {
-            line = rightJustify(asString(recItr->numClkRef), 6);
-            line += string(1, ' ');
-            line += writeTime(recItr->startEpoch);
-            line += string(1, ' ');
-            line += writeTime(recItr->stopEpoch);
-            line += numRefClkString;
-            strm << line << endl;
-            strm.lineNumber++;
+            strm << right << setw(6) << recItr.numClkRef << left
+                 << ' ' << writeTime(recItr.startEpoch)
+                 << ' ' << writeTime(recItr.stopEpoch)
+                 << numRefClkString << endlpp;
 
-            list<RefClk>::const_iterator clkItr;
-            for(clkItr = recItr->clocks.begin();
-                clkItr != recItr->clocks.end(); clkItr++)
+            for (const auto& clkItr : recItr.clocks)
             {
-               line = leftJustify(clkItr->name, 4);
-               line += string(1, ' ');
-               line += leftJustify(clkItr->number, 20);
-               line += string(15, ' ');
-               if (clkItr->clkConstraint != 0)
+               strm << setw(4) << clkItr.name
+                    << ' ' << setw(20) << clkItr.number
+                    << setw(15) << ' ';
+               if (clkItr.clkConstraint != 0)
                {
-                  line += rightJustify(doub2for(clkItr->clkConstraint, 18, 2, false), 19);
+                  strm << clkItr.clkConstraint;
                }
                else
                {
-                  line += string(19, ' ');
+                  strm << setw(19) << ' ';
                }
-               line += string(1, ' ');
-               line += analysisClkRefString;
-               strm << line << endl;
-               strm.lineNumber++;
+               strm << ' ' << analysisClkRefString << endlpp;
             }
          }
       }
       if ( valid & numStationsValid )
       {
-         line = rightJustify(asString(numSta), 6);
-         line += string(4, ' ');
-         line += leftJustify(trf, 50);
-         line += numStationsString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << right << setw(6) << numSta << left
+              << "    " << setw(50) << trf
+              << numStationsString << endlpp;
       }
       if ( valid & solnStaNameValid )
       {
-         list<SolnSta>::const_iterator itr;
-         for (itr = solnStaList.begin(); itr != solnStaList.end(); itr++)
+         for (const auto& itr : solnStaList)
          {
-            line = leftJustify(itr->name, 4);
-            line += string(1, ' ');
-            line += leftJustify(itr->number, 20);
-            line += rightJustify(asString(itr->posX), 11);
-            line += string(1, ' ');
-            line += rightJustify(asString(itr->posY), 11);
-            line += string(1, ' ');
-            line += rightJustify(asString(itr->posZ), 11);
-            line += solnStaNameString;
-            strm << line << endl;
-            strm.lineNumber++;
+            strm << setw(4) << itr.name
+                 << ' ' << setw(20) << itr.number
+                 << right << setw(11) << itr.posX << ' '
+                 << right << setw(11) << itr.posY << ' '
+                 << right << setw(11) << itr.posZ << left
+                 << solnStaNameString << endlpp;
          }
       }
       if ( valid & numSatsValid )
       {
-         line = rightJustify(asString<int>(numSats), 6);
-         line += string(54, ' ');
-         line += numSatsString;
-         strm << line << endl;
-         strm.lineNumber++;
+         strm << right << setw(6) << numSats << left << setw(54) << ' '
+              << numSatsString << endlpp;
       }
       if ( valid & prnListValid )
       {
-         line = "";
-         list<SatID>::const_iterator itr;
          int prnCount = 0;
-         for (itr = prnList.begin(); itr != prnList.end(); itr++)
+         for (const auto& itr : prnList)
          {
             prnCount++;
 
-            string sat;
-            if (itr->system == SatelliteSystem::GPS)
-               sat = "G";
-            else if (itr->system == SatelliteSystem::Glonass)
-               sat = "R";
+            if (itr.system == SatelliteSystem::GPS)
+               strm << "G";
+            else if (itr.system == SatelliteSystem::Glonass)
+               strm << "R";
             else
-               sat = " ";
-            sat += rightJustify(asString<int>(itr->id), 2, '0');
-
-            line += sat;
-            line += string(1, ' ');
-
+               strm << " ";
+            strm << right << setw(2) << setfill('0') << itr.id << setfill(' ')
+                 << ' ' << left;
             if ( (prnCount % 15) == 0 )
             {
-               line += prnListString;
-               strm << line << endl;
-               strm.lineNumber++;
-               line = "";
+               strm << prnListString << endlpp;
             }
          }
 
          if ( (prnCount % 15) != 0 )
          {
-            line += string(( (15-(prnCount % 15)) * 4), ' ');
-            line += prnListString;
-            strm << line << endl;
-            strm.lineNumber++;
+            strm << setw((15-(prnCount % 15)) * 4) << ' ' << prnListString
+                 << endlpp;
          }
       }
 
-      line = string(60, ' ');
-      line += endOfHeader;
-      strm << line << endl;
-      strm.lineNumber++;
+         
+      strm << setw(60) << ' ' << endOfHeader << endlpp;
 
    }  // reallyPutRecord
 
@@ -721,7 +656,7 @@ namespace gpstk
          RefClk refclk;
          refclk.name = line.substr(0,4);
          refclk.number = strip(line.substr(5,20));
-         refclk.clkConstraint = asDouble(line.substr(40,19));
+         refclk.clkConstraint = line.substr(40,19);
          itr->clocks.push_back(refclk);
 
       }

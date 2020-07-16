@@ -80,17 +80,39 @@ namespace gpstk
 
    IonoCorr ::
    IonoCorr()
-         : type(Unknown)
+         : type(Unknown),
+           param{ FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                                  'D', StringUtils::FFSign::NegOnly,
+                                  StringUtils::FFAlign::Right),
+         FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                         'D', StringUtils::FFSign::NegOnly,
+                         StringUtils::FFAlign::Right),
+         FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                         'D', StringUtils::FFSign::NegOnly,
+                         StringUtils::FFAlign::Right),
+         FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                         'D', StringUtils::FFSign::NegOnly,
+                         StringUtils::FFAlign::Right) }
    {
-      param[0] = param[1] = param[2] = param[3] = 0.;
    }
 
 
    IonoCorr ::
    IonoCorr(std::string str)
-         : type(Unknown) // just in case someone breaks fromString
+         : type(Unknown), // just in case someone breaks fromString
+           param{ FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                                  'D', StringUtils::FFSign::NegOnly,
+                                  StringUtils::FFAlign::Right),
+         FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                         'D', StringUtils::FFSign::NegOnly,
+                         StringUtils::FFAlign::Right),
+         FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                         'D', StringUtils::FFSign::NegOnly,
+                         StringUtils::FFAlign::Right),
+         FormattedDouble(0, StringUtils::FFLead::Decimal, 4, 2, 12,
+                         'D', StringUtils::FFSign::NegOnly,
+                         StringUtils::FFAlign::Right) }
    {
-      param[0] = param[1] = param[2] = param[3] = 0.;
       this->fromString(str);
    }
 
@@ -242,7 +264,7 @@ namespace gpstk
                // GPS alpha "ION ALPHA"  R2.11
             IonoCorr ic("GPSA");
             for(i=0; i < 4; i++)
-               ic.param[i] = for2doub(line.substr(2 + 12*i, 12));
+               ic.param[i] = line.substr(2 + 12*i, 12);
             mapIonoCorr[ic.asString()] = ic;
             if(mapIonoCorr.find("GPSB") != mapIonoCorr.end())
                valid |= validIonoCorrGPS;
@@ -252,7 +274,7 @@ namespace gpstk
                // GPS beta "ION BETA"  R2.11
             IonoCorr ic("GPSB");
             for(i=0; i < 4; i++)
-               ic.param[i] = for2doub(line.substr(2 + 12*i, 12));
+               ic.param[i] = line.substr(2 + 12*i, 12);
             mapIonoCorr[ic.asString()] = ic;
             if(mapIonoCorr.find("GPSA") != mapIonoCorr.end())
                valid |= validIonoCorrGPS;
@@ -271,7 +293,7 @@ namespace gpstk
                GPSTK_THROW(e);
             }
             for(i=0; i < 4; i++)
-               ic.param[i] = for2doub(line.substr(5 + 12*i, 12));
+               ic.param[i] = line.substr(5 + 12*i, 12);
 
             if(ic.type == IonoCorr::GAL)
             {
@@ -294,8 +316,8 @@ namespace gpstk
          {
                // "DELTA-UTC: A0,A1,T,W" R2.11 GPS
             TimeSystemCorrection tc("GPUT");
-            tc.A0 = for2doub(line.substr(3,19));
-            tc.A1 = for2doub(line.substr(22,19));
+            tc.A0 = RNDouble(line.substr(3,19));
+            tc.A1 = RNDouble(line.substr(22,19));
             tc.refSOW = asInt(line.substr(41,9));
             tc.refWeek = asInt(line.substr(50,9));
             tc.geoProvider = string("    ");
@@ -312,7 +334,7 @@ namespace gpstk
             tc.refYr = asInt(line.substr(0,6));
             tc.refMon = asInt(line.substr(6,6));
             tc.refDay = asInt(line.substr(12,6));
-            tc.A0 = -for2doub(line.substr(21,19));    // -TauC
+            tc.A0 = -RNDouble(line.substr(21,19));    // -TauC
 
                // convert to week,sow
             CivilTime ct(tc.refYr,tc.refMon,tc.refDay,0,0,0.0);
@@ -331,8 +353,8 @@ namespace gpstk
          {
                // "D-UTC A0,A1,T,W,S,U"  // R2.11 GEO
             TimeSystemCorrection tc("SBUT");
-            tc.A0 = for2doub(line.substr(0,19));
-            tc.A1 = for2doub(line.substr(19,19));
+            tc.A0 = RNDouble(line.substr(0,19));
+            tc.A1 = RNDouble(line.substr(19,19));
             tc.refSOW = asInt(line.substr(38,7));
             tc.refWeek = asInt(line.substr(45,5));
             tc.geoProvider = line.substr(51,5);
@@ -355,8 +377,8 @@ namespace gpstk
                GPSTK_THROW(e);
             }
 
-            tc.A0 = for2doub(line.substr(5,17));
-            tc.A1 = for2doub(line.substr(22,16));
+            tc.A0 = RNDouble(line.substr(5,17));
+            tc.A1 = RNDouble(line.substr(22,16));
             tc.refSOW = asInt(line.substr(38,7));
             tc.refWeek = asInt(line.substr(45,5));
             tc.geoProvider = strip(line.substr(51,6));
@@ -416,8 +438,8 @@ namespace gpstk
          else
          {
             GPSTK_THROW(FFStreamError("Unknown header label >" + thisLabel +
-                                "< at line " +
-                                asString<size_t>(strm.lineNumber)));
+                                      "< at line " +
+                                      asString<size_t>(strm.lineNumber)));
          }
       }
 
@@ -469,53 +491,45 @@ namespace gpstk
          GPSTK_THROW(err);
       }
 
-      string line;
       if(valid & validVersion)
       {
             // "RINEX VERSION / TYPE"
-         line = rightJustify(asString(version,2), 10);
-         line += string(10, ' ');
-         line += leftJustify(fileType, 20);
-         if(version >= 3) line += leftJustify(fileSys,20);
-         else             line += string(20,' ');
-         line += leftJustify(stringVersion,20);
-         strm << stripTrailing(line) << endl;
-         strm.lineNumber++;
+         ffs << right << setw(10) << setprecision(2) << fixed << version
+             << setw(10) << ' ' << left << setw(20) << fileType;
+
+         if (version >= 3)
+            ffs << left << setw(20) << fileSys;
+         else
+            ffs << setw(20) << ' ';
+         ffs << stringVersion << endlpp;
       }
 
       if(valid & validRunBy)
       {
             // "PGM / RUN BY / DATE"
-         line = leftJustify(fileProgram,20);
-         line += leftJustify(fileAgency ,20);
+         strm << left << setw(20) << fileProgram
+              << left << setw(20) << fileAgency;
          SystemTime sysTime;
-         string curDate;
          if(version < 3)
          {
-            curDate = printTime(sysTime,"%02m/%02d/%04Y %02H:%02M:%02S");
+            strm << left << setw(20)
+                 << printTime(sysTime,"%02m/%02d/%04Y %02H:%02M:%02S");
          }
          else
          {
-            curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S UTC");
+            strm << left << setw(20)
+                 << printTime(sysTime,"%04Y%02m%02d %02H%02M%02S UTC");
          }
-         line += leftJustify(curDate, 20);
-         line += leftJustify(stringRunBy,20);
-         strm << stripTrailing(line) << endl;
-         strm.lineNumber++;
+         strm << stringRunBy << endlpp;
       }
 
       if(valid & validComment)
       {
             // "COMMENT"
-         vector<string>::const_iterator itr = commentList.begin();
-         while (itr != commentList.end())
-
+         for (unsigned i = 0; i < commentList.size(); i++)
          {
-            line = leftJustify((*itr), 60);
-            line += leftJustify(stringComment,20);
-            strm << stripTrailing(line) << endl;
-            strm.lineNumber++;
-            itr++;
+            strm << left << setw(60) << commentList[i] << stringComment
+                 << endlpp;
          }
       }
 
@@ -528,59 +542,59 @@ namespace gpstk
             switch(it->second.type)
             {
                case IonoCorr::GAL:
-                  line = "GAL  ";
+                  strm << "GAL  ";
                   for(j=0; j<3; j++)
-                     line += doubleToScientific(it->second.param[j],12,4,2);
-                  line += doubleToScientific(0.0,12,4,2);
-                  line += string(7,' ');
-                  line += leftJustify(stringIonoCorr,20);
+                  {
+                     strm << it->second.param[j];
+                  }
+                  strm << "   .0000D+00" << setw(7) << ' ' << stringIonoCorr;
                   break;
                case IonoCorr::GPSA:
                   if(version >= 3)
                   {
-                     line = "GPSA ";
+                     strm << "GPSA ";
                      for(j=0; j<4; j++)
-                        line += doubleToScientific(it->second.param[j],12,4,2);
-                     line += string(7,' ');
-                     line += leftJustify(stringIonoCorr,20);
+                     {
+                        strm << it->second.param[j];
+                     }
+                     strm << setw(7) << ' ' << stringIonoCorr;
                   }
                   else
                   {
                         // "ION ALPHA" // R2.11
-                     line = "  ";
+                     strm << "  ";
                      for(j=0; j<4; j++)
-                        line += doubleToScientific(it->second.param[j],12,4,2);
-                     line += string(10,' ');
-                     line += leftJustify(stringIonAlpha,20);
+                     {
+                        strm << it->second.param[j];
+                     }
+                     strm << setw(10) << ' ' << stringIonAlpha;
                   }
                   break;
                case IonoCorr::GPSB:
                   if(version >= 3)
                   {
-                     line = "GPSB ";
+                     strm << "GPSB ";
                      for(j=0; j<4; j++)
-                        line += doubleToScientific(it->second.param[j],12,4,2);
-                     line += string(7,' ');
-                     line += leftJustify(stringIonoCorr,20);
+                        strm << it->second.param[j];
+                     strm << setw(7) << ' ' << stringIonoCorr;
                   }
                   else
                   {
                         // "ION BETA" // R2.11
-                     line = "  ";
+                     strm << "  ";
                      for(j=0; j<4; j++)
-                        line += doubleToScientific(it->second.param[j],12,4,2);
-                     line += string(10,' ');
-                     line += leftJustify(stringIonBeta,20);
+                        strm << it->second.param[j];
+                     strm << setw(10) << ' ' << stringIonBeta;
                   }
                   break;
                case IonoCorr::Unknown:
                default:
-                  FFStreamError err("Unknown IonoCorr type " + asString(it->second.type));
+                  FFStreamError err("Unknown IonoCorr type " +
+                                    asString(it->second.type));
                   GPSTK_THROW(err);
                   break;
             }
-            strm << stripTrailing(line) << endl;
-            strm.lineNumber++;
+            strm << endlpp;
          }
       }
 
@@ -593,98 +607,83 @@ namespace gpstk
             const TimeSystemCorrection& tc(it->second);
             if(version >= 3)
             {
-               line = tc.asString4() + " ";
-               line += doubleToScientific(tc.A0,17,10,2);
-                  //if(tc.type == TimeSystemCorrection::GLUT
-                  //            || tc.type == TimeSystemCorrection::GLGP)
-                  //   line += doubleToScientific(0.0,16,9,2);
-                  //else
-               line += doubleToScientific(tc.A1,16,9,2);
-
-               line += rightJustify(asString<long>(tc.refSOW),7);
-               line += rightJustify(asString<long>(tc.refWeek),5);
-
+               strm << tc.asString4() << " "
+                    << FormattedDouble(tc.A0, StringUtils::FFLead::Decimal, 10,
+                                       2, 17, 'D', StringUtils::FFSign::NegOnly,
+                                       StringUtils::FFAlign::Right)
+                    << FormattedDouble(tc.A1, StringUtils::FFLead::Decimal, 9,
+                                       2, 16, 'D', StringUtils::FFSign::NegOnly,
+                                       StringUtils::FFAlign::Right)
+                    << right << setw(7) << tc.refSOW
+                    << right << setw(5) << tc.refWeek;
                if(tc.type == TimeSystemCorrection::SBUT)
                {
-                  line += rightJustify(tc.geoProvider,6);
-                  line += " ";
+                  strm << right << setw(6) << tc.geoProvider << " ";
                }
                else
-                  line += string(7,' ');
-
-               line += rightJustify(asString<int>(tc.geoUTCid),2);
-               line += " ";
-
-               line += leftJustify(stringTimeSysCorr,20);
+               {
+                  strm << setw(7) << ' ';
+               }
+               strm << right << setw(2) << tc.geoUTCid << " "
+                    << stringTimeSysCorr;
             }
             else
             {
                if(tc.asString4() == "GPUT")
                {
                      // "DELTA-UTC: A0,A1,T,W" R2.11 GPS
-                  line = "   ";
-                  line += doubleToScientific(tc.A0,19,12,2);
-                  line += doubleToScientific(tc.A1,19,12,2);
-                  line += rightJustify(asString<long>(tc.refSOW),9);
-                  line += rightJustify(asString<long>(tc.refWeek),9);
-                  line += " ";
-                  line += leftJustify(stringDeltaUTC,20);
+                  strm << "   " << RNDouble(tc.A0) << RNDouble(tc.A1)
+                       << right << setw(9) << tc.refSOW
+                       << right << setw(9) << tc.refWeek << " "
+                       << stringDeltaUTC;
                }
                else if(tc.asString4() == "GLGP")
                {
                      // "CORR TO SYSTEM TIME" R2.10 GLO
-                  line = rightJustify(asString<long>(tc.refYr),6);
-                  line += rightJustify(asString<long>(tc.refMon),6);
-                  line += rightJustify(asString<long>(tc.refDay),6);
-                  line += doubleToScientific(tc.A0,19,12,2);
-                  line += string(23,' ');
-                  line += leftJustify(stringCorrSysTime,20);
+                  strm << right << setw(6) << tc.refYr
+                       << right << setw(6) << tc.refMon
+                       << right << setw(6) << tc.refDay
+                       << RNDouble(tc.A0) << setw(23) << ' '
+                       << stringCorrSysTime;
                }
                else if(tc.asString4() == "SBUT")
                {
                      // "D-UTC A0,A1,T,W,S,U" R2.11 GEO
-                  line = doubleToScientific(tc.A0,19,12,2);
-                  line += doubleToScientific(tc.A1,19,12,2);
-                  line += rightJustify(asString<long>(tc.refSOW),7);
-                  line += rightJustify(asString<long>(tc.refWeek),5);
-                  line += rightJustify(tc.geoProvider,6);
-                  line += " ";
-                  line += rightJustify(asString<int>(tc.geoUTCid),2);
-                  line += " ";
-                  line += leftJustify(stringDUTC,20);
+                  strm << RNDouble(tc.A0) << RNDouble(tc.A1)
+                       << right << setw(7) << tc.refSOW
+                       << right << setw(5) << tc.refWeek
+                       << right << setw(6) << tc.geoProvider << " "
+                       << right << setw(2) << tc.geoUTCid << " "
+                       << stringDUTC;
                }
             }
 
-            strm << stripTrailing(line) << endl;
-            strm.lineNumber++;
+            strm << endlpp;
          }
       }
 
       if(valid & validLeapSeconds)
       {
             // "LEAP SECONDS"
-         line = rightJustify(asString(leapSeconds),6);
+         strm << right << setw(6) << leapSeconds;
          if(version >= 3)
          {                                    // ver 3
-            line += rightJustify(asString(leapDelta),6);
-            line += rightJustify(asString(leapWeek),6);
-            line += rightJustify(asString(leapDay),6);
-            line += string(36, ' ');
+            strm << right << setw(6) << leapDelta
+                 << right << setw(6) << leapWeek
+                 << right << setw(6) << leapDay
+                 << setw(36) << ' ';
          }
          else // ver 2
-            line += string(54, ' ');
-         line += leftJustify(stringLeapSeconds,20);
-         strm << stripTrailing(line) << endl;
-         strm.lineNumber++;
+         {
+            strm << setw(54) << ' ';
+         }
+         strm << stringLeapSeconds << endlpp;
       }
 
       if(valid & validEoH)
       {
             // "END OF HEADER"
-         line = string(60,' ');
-         line += leftJustify(stringEoH,20);
-         strm << stripTrailing(line) << endl;
-         strm.lineNumber++;
+         strm << setw(60) << ' ' << stringEoH << endlpp;
       }
 
    } // end of reallyPutRecord
@@ -751,7 +750,8 @@ namespace gpstk
                break;
             case IonoCorr::Unknown:
             default:
-               FFStreamError err("Unknown IonoCorr type " + asString(icit->second.type));
+               FFStreamError err("Unknown IonoCorr type " +
+                                 asString(icit->second.type));
                GPSTK_THROW(err);
                break;
          }
@@ -881,7 +881,7 @@ namespace gpstk
 /** @todo compare stringCorrSysTime... not clear how to do this since
  * the exact same data structure is used to store stuff from
  * TimeSysCorr and CorrSysTime.
-*/
+ */
       if (((ltci = mapTimeCorr.find("SBUT")) != mapTimeCorr.end()) &&
           ((rtci = right.mapTimeCorr.find("SBUT")) != right.mapTimeCorr.end()))
       
