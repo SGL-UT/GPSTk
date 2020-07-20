@@ -54,6 +54,7 @@ class CNav2Filter_T
 {
 public:
    CNav2Filter_T();
+   ~CNav2Filter_T();
 
    unsigned loadData();
 
@@ -79,6 +80,17 @@ CNav2Filter_T()
 {
    // In the case of this test.  This method doesn't have to do anything.
 }
+
+
+CNav2Filter_T ::
+~CNav2Filter_T()
+{
+   for (auto& mli : messageList)
+   {
+      delete mli;
+   }
+}
+
 
 //-------------------------------------------------------------------
 // At the time of the original writing, all these examples are
@@ -226,6 +238,7 @@ testCNav2Sanity()
    rejectCount = filtSanity.rejected.size();
    TUASSERTE(unsigned long, 0, acceptCount);
    TUASSERTE(unsigned long, 1, rejectCount);
+   delete pnb;
 
       // There are 400 18s intervals in a two-hour period.
       // 0x190.
@@ -239,6 +252,7 @@ testCNav2Sanity()
    rejectCount = filtSanity.rejected.size();
    TUASSERTE(unsigned long, 0, acceptCount);
    TUASSERTE(unsigned long, 1, rejectCount);
+   delete pnb2;
 
       // The current week is 2000. Reset it to 1999
       // and verify a failure.
@@ -252,6 +266,7 @@ testCNav2Sanity()
    rejectCount = filtSanity.rejected.size();
    TUASSERTE(unsigned long, 0, acceptCount);
    TUASSERTE(unsigned long, 1, rejectCount);
+   delete pnb3;
 
       // A PRN of 0 doesn't match the test value.
    PackedNavBits* pnb4 = p->clone();
@@ -264,6 +279,7 @@ testCNav2Sanity()
    rejectCount = filtSanity.rejected.size();
    TUASSERTE(unsigned long, 0, acceptCount);
    TUASSERTE(unsigned long, 1, rejectCount);
+   delete pnb4;
 
       // A page number of 0 doesn't match the test value.
    PackedNavBits* pnb5 = p->clone();
@@ -275,6 +291,7 @@ testCNav2Sanity()
    rejectCount = filtSanity.rejected.size();
    TUASSERTE(unsigned long, 0, acceptCount);
    TUASSERTE(unsigned long, 1, rejectCount);
+   delete pnb5;
 
    TURETURN();
 }

@@ -810,7 +810,7 @@ template<class T> int WindowFilter<T>::analyze(void)
    }
    int curr(0);
    size_t i,j;
-   double tmp;
+   double tmp = 0.0;
 
    // ratio(step/sigma), its 1st diff, sigma, its 1st diff, future minus past sigma
    std::deque<double> rat,rat1d,sig,sig1d,fminusp;

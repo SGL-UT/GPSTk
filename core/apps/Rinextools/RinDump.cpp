@@ -154,6 +154,10 @@ public:
 
    // Default and only constructor
    Configuration() { SetDefaults(); }
+   virtual ~Configuration()
+   {
+      delete pTrop;
+   }
 
    // Create, parse and process command line options and user input
    int ProcessUserInput(int argc, char **argv);

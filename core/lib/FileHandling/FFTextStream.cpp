@@ -151,14 +151,17 @@ namespace gpstk
       {
          std::getline(*this, line);
             // Remove CR characters left over in the buffer from windows files
-         while (*line.rbegin() == '\r')
-            line.erase(line.end()-1);
+         size_t crpos = line.find_last_not_of('\r');
+         if ((crpos+1) < line.length())
+            line.erase(crpos+1);
          for (int i=0; i<line.length(); i++)
+         {
             if (!isprint(line[i]))
-               {
-                  FFStreamError err("Non-text data in file.");
-                  GPSTK_THROW(err);
-               }
+            {
+               FFStreamError err("Non-text data in file.");
+               GPSTK_THROW(err);
+            }
+         }
             
          lineNumber++;
          if(fail() && !eof())

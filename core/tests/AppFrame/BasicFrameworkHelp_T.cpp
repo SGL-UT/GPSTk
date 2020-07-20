@@ -77,20 +77,24 @@ class BasicFrameworkHelp_T : public gpstk::BasicFramework
 public:
    BasicFrameworkHelp_T(const std::string& applName) throw();
    bool initialize(int argc, char *argv[], bool pretty = true) throw();
+   virtual ~BasicFrameworkHelp_T()
+   { delete reqOpt; }
    CommandOptionHelpTest xOpt;
    CommandOptionHelpTestArg yOpt;
    gpstk::CommandOptionHelpSimple sOpt;
+   gpstk::CommandOptionNoArg *reqOpt;
    std::string execName;
 };
 
 
 BasicFrameworkHelp_T ::
 BasicFrameworkHelp_T(const std::string& applName)
-throw()
+      throw()
       : BasicFramework(applName, "Facilitate testing of help-like options"),
         sOpt('w', "whelp", "It was just a coincidence, I swear.",
              "Odd groups got left, even groups got right. That means 1, 3, 5,\n"
-             " 7 left; 2, 4, 6, 8 right. 7 & 8 are whelp groups.\n")
+             " 7 left; 2, 4, 6, 8 right. 7 & 8 are whelp groups.\n"),
+        reqOpt(nullptr)
 {
    execName = applName;
    std::string::size_type p = std::string::npos;
@@ -123,8 +127,8 @@ initialize(int argc, char *argv[], bool pretty)
    {
          // Add a required option to make sure behavior is appropriate
          // in that case
-      gpstk::CommandOptionNoArg *reqOpt = new gpstk::CommandOptionNoArg
-         ('z', "zreq", "Random required opt", true);
+      reqOpt = new gpstk::CommandOptionNoArg('z', "zreq", "Random required opt",
+                                             true);
    }
    else
    {
