@@ -70,7 +70,7 @@
 // See "Typemaps and Overloading" in Swig documentation
 %typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE_ARRAY) double[ANY] {
    $1 = PySequence_Check($input) ? 1 : 0;
-} 
+}
 
 // C arrays -> Python lists:
 //     [int] -> [PyInt]
