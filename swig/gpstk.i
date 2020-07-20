@@ -19,6 +19,7 @@ using namespace gpstk;
 %include "std_list.i"
 %include "std_set.i"
 %include "std_multimap.i"
+%include "stdint.i"
 
  // Several clases have specifc .i files that
  // may override this
@@ -117,6 +118,8 @@ using namespace gpstk;
 %include "ObsIDInitializer.hpp"
 %include "ObsID.hpp"
 %include "ObsID.i"
+%include "NavID.hpp"
+%include "NavID.i"
 %ignore gpstk::SV_ACCURACY_GLO_INDEX;  // wrapper added in GPS_URA.i
 %include "GNSSconstants.hpp"
 %include "DeprecatedConsts.hpp"
@@ -256,6 +259,7 @@ namespace std { class fstream {}; }
 %include "Rinex3NavStream.hpp"
 %include "Rinex3NavData.hpp"
 %include "OrbElemRinex.hpp"
+
 // RINEX 3 clock/obs:
 %include "RinexDatum.hpp"
 %include "Rinex3ClockBase.hpp"
@@ -332,9 +336,58 @@ namespace std { class fstream {}; }
 %include "Combinations.hpp"
 %include "PRSolution.hpp"
 
+// Ionosphere Model
+%include "IonoModel.hpp"
+
 // Geomatics:
 %include "Geomatics.i"
 %include "SunEarthSatGeometry.hpp"
+
+// OrbSysGPS
+%include "OrbSysStore.hpp"
+%include "OrbData.hpp"
+%include "OrbDataSys.hpp"
+%include "OrbSysGpsC.hpp"
+%include "OrbSysGpsC_30.hpp"
+// %include "OrbSysGpsC_32.hpp"
+// %include "OrbSysGpsC_33.hpp"
+%include "OrbSysGpsL.hpp"
+// %include "OrbSysGpsL_51.hpp"
+// %include "OrbSysGpsL_52.hpp"
+// %include "OrbSysGpsL_55.hpp"
+%include "OrbSysGpsL_56.hpp"
+// %include "OrbSysGpsL_63.hpp"
+%include "OrbSysGpsL_Reserved.hpp"
+%include "PackedNavBits.hpp"
+%include "OrbDataSysFactory.hpp"
+
+// v 2.0.12 required for KLOBUCHAR IONO MODEL
+#define KLOBUCHAR_SUPPORT (SWIG_VERSION >= 0x020012 ? True : False)
+#if SWIG_VERSION >= 0x020012
+%inline %{
+  gpstk::OrbSysGpsC_30* cast_to_OrbSysGpsC_30(gpstk::OrbDataSys* ods) {
+    return static_cast<gpstk::OrbSysGpsC_30*>(ods);
+  }
+  gpstk::OrbSysGpsL_56* cast_to_OrbSysGpsL_56(gpstk::OrbDataSys* ods) {
+    return static_cast<gpstk::OrbSysGpsL_56*>(ods);
+  }
+%}
+// Include to generate swig::trait::typename()
+%{
+  namespace swig {
+    template <> struct traits<gpstk::OrbDataSys> {
+        typedef pointer_category category;
+        static const char* type_name() {return "gpstk::OrbDataSys";}
+    };
+  }
+%}
+
+// SWIG out the msgMap in gpstk::OrbSysStore
+%template (TimeMsgMap) std::map<gpstk::CommonTime, gpstk::OrbDataSys* >;
+%template (UIDMsgMap) std::map<uint16_t, std::map<gpstk::CommonTime, gpstk::OrbDataSys* > >;
+%template (NavIDMsgMap) std::map<gpstk::NavID, std::map<uint16_t, std::map<gpstk::CommonTime, gpstk::OrbDataSys* > > >;
+%template (SatIDMsgMap) std::map<gpstk::SatID, std::map<gpstk::NavID, std::map<uint16_t, std::map<gpstk::CommonTime, gpstk::OrbDataSys* > > > >;
+#endif
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions

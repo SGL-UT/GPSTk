@@ -273,6 +273,8 @@ namespace gpstk
       typedef std::map<gpstk::NavID, UID_MSG_MAP> NM_UID_MSG_MAP;
       typedef std::map<gpstk::SatID,NM_UID_MSG_MAP> SAT_NM_UID_MSG_MAP;
 
+      const SAT_NM_UID_MSG_MAP& getMsgMap() const {return msgMap;}
+
       protected:
 
          // If storeAll is set, every message provided via addMessage()
