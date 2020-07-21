@@ -146,7 +146,7 @@ namespace gpstk
 
       strm.header = *this;
 
-      unsigned long allValid;
+      unsigned long allValid = 0;
       if (version == 2.0)        allValid = allValid20;
       else if (version == 2.1)   allValid = allValid21;
       else if (version == 2.11)  allValid = allValid211;

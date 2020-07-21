@@ -56,21 +56,14 @@ namespace gpstk
    {
    public:
          /// Default constuctor
-      BDSEphemeris(void) : fitDuration(4)
-      {
-         beginValid.setTimeSystem(TimeSystem::BDT);
-         endValid.setTimeSystem(TimeSystem::BDT);
-         ctToe.setTimeSystem(TimeSystem::BDT);
-         ctToc.setTimeSystem(TimeSystem::BDT);
-         transmitTime.setTimeSystem(TimeSystem::BDT);
-      }
+      BDSEphemeris();
 
          /// Destructor
-      virtual ~BDSEphemeris(void) {}
+      virtual ~BDSEphemeris() {}
 
          /** Create a copy of this object and return a pointer to
           * it. This function overrides that in the base class. */
-      virtual BDSEphemeris* clone(void) const
+      virtual BDSEphemeris* clone() const
       { return new BDSEphemeris(*this); }
 
          /** Returns true if the time, ct, is within the period of validity of
@@ -79,20 +72,20 @@ namespace gpstk
       virtual bool isValid(const CommonTime& ct) const;
 
          /// Return a string that will identify the derived class
-      virtual std::string getName(void) const
+      virtual std::string getName() const
       { return std::string("BDSEphemeris"); }
 
          /// This function returns the health status of the SV.
-      virtual bool isHealthy(void) const;
+      virtual bool isHealthy() const;
 
          /// Compute the accuracy in meters from the accuracy flag (URA).
-      double getAccuracy(void) const
+      double getAccuracy() const
       { return accuracy; }
 
          /** adjustBeginningValidity determines the beginValid and
           * endValid times.
           * @throw Invalid Request if the required data has not been stored. */
-      virtual void adjustValidity(void);
+      virtual void adjustValidity();
 
          /** Compute satellite position at the given time.
           * This is overriden from OrbitEph due to fact that BDS

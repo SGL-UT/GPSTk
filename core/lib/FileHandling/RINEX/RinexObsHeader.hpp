@@ -105,9 +105,12 @@ namespace gpstk
    public:
 
          /// A Simple Constructor.
-//      RinexObsHeader() : version(), valid()
       RinexObsHeader()
-      {}
+            : version(2.11), interval(0.0), receiverOffset(0), leapSeconds(0),
+              numSVs(0), valid(0), numObs(0)
+      {
+         clear();
+      }
 
          /// Clear (empty out) header
       inline void clear()
