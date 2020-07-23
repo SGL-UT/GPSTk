@@ -15,6 +15,14 @@ variables:
   DOCKER_REGISTRY: "modisdev:5000/sgl_ci"
 # this can be used for incremental builds
 #  GIT_CLEAN_FLAGS: none
+  # This can be set to True by Gitlab UI to only build/test packages.
+  RELEASE_ONLY: "False"
+
+# Template for all normal jobs.
+.normal_job:
+  only:
+    variables:
+      - $RELEASE_ONLY != "True"
 
 # Template for all "big" builds.
 .big_build:
@@ -23,8 +31,18 @@ variables:
       - master
       - /^ci_.*$/
       - /^version_.*_prep$/
-      - tags
+    variables:
+      - $RELEASE_ONLY != "True"
 
+# Template for all builds that should produce packages.
+.package_build:
+  only:
+    refs:
+      - master
+      - /^ci_.*$/
+      - /^version_.*_prep$/
+      - tags
+      - /^tag_.*$/
 
 # Check Stage
 # Runs static analysis on code.
@@ -74,6 +92,7 @@ build_debian_8:
 
 build_debian_9:
   stage: build
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -105,6 +124,7 @@ build_debian_10:
 
 build_conda_py27:
   stage: build
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/deb9_conda_py27
@@ -121,6 +141,7 @@ build_conda_py27:
 
 build_conda_py36:
   stage: build
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/deb9_conda_py36
@@ -137,6 +158,7 @@ build_conda_py36:
 
 build_redhat:
   stage: build
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -152,6 +174,7 @@ build_redhat:
 
 build_redhat_swig3:
   stage: build
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_swig3_sgl
@@ -167,6 +190,7 @@ build_redhat_swig3:
 
 build_windows:
   stage: build
+  extends: .normal_job
   tags:
     - win10
   script:
@@ -249,6 +273,7 @@ test_debian_8:
 
 test_debian_9:
   stage: test
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -300,6 +325,7 @@ test_debian_10:
 
 test_conda_py27:
   stage: test
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/deb9_conda_py27
@@ -326,6 +352,7 @@ test_conda_py27:
 
 test_conda_py36:
   stage: test
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/deb9_conda_py36
@@ -352,6 +379,7 @@ test_conda_py36:
 
 test_redhat:
   stage: test
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -377,6 +405,7 @@ test_redhat:
 
 test_redhat_swig3:
   stage: test
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_swig3_sgl
@@ -402,6 +431,7 @@ test_redhat_swig3:
 
 test_windows:
   stage: test
+  extends: .normal_job
   tags:
     - win10
   script:
@@ -421,6 +451,7 @@ test_windows:
 # Tests user install of GPSTk on each platform, saves artifacts for downstream builds.
 user_install_debian_9:
   stage: install
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -439,6 +470,7 @@ user_install_debian_9:
 
 user_install_redhat:
   stage: install
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -457,6 +489,7 @@ user_install_redhat:
 
 user_install_redhat_swig3:
   stage: install
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_swig3_sgl
@@ -475,6 +508,7 @@ user_install_redhat_swig3:
 
 user_install_windows:
   stage: install
+  extends: .normal_job
   tags:
     - win10
   script:
@@ -490,6 +524,7 @@ user_install_windows:
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 system_install_debian_9:
   stage: install
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -506,6 +541,7 @@ system_install_debian_9:
 
 system_install_redhat:
   stage: install
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -520,6 +556,7 @@ system_install_redhat:
 
 system_install_redhat_swig3:
   stage: install
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_swig3_sgl
@@ -534,15 +571,39 @@ system_install_redhat_swig3:
 
 # Package Stage
 # Tests packaging of GPSTk on all platforms
+package_debian_8:
+  stage: package
+  extends: .package_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/debian8_fai_ish
+  script:
+    - rm -rf ../*.deb
+    # Mark the debian log so that this package is a backport.
+    # Use the most recent Maintainer as current maintainer.
+    - export DEBEMAIL=$(dpkg-parsechangelog -S Maintainer)
+    - dch --bpo "No Changes"
+    - dpkg-buildpackage -us -uc -d --changes-option="-DDistribution=jessie-sgl"
+    - mkdir debs
+    - mv ../*.deb debs
+    - mv ../*.changes debs
+    - mv ../*.dsc debs
+    - mv ../*.git debs
+  artifacts:
+    paths:
+    - debs/
+  dependencies:
+    - build_debian_8
+
 package_debian_9:
   stage: package
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - rm -rf ../*.deb
-    - dpkg-buildpackage -us -uc -d
+    - dpkg-buildpackage -us -uc -d --changes-option="-DDistribution=stretch-sgl"
     - mkdir debs
     - mv ../*.deb debs
     - mv ../*.changes debs
@@ -551,13 +612,38 @@ package_debian_9:
     - mv ../*.buildinfo debs
   artifacts:
     paths:
-    - debs/
+      - debs/
   dependencies:
     - build_debian_9
 
+package_debian_10:
+  stage: package
+  extends: .package_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/debian10_fai_ish
+  script:
+    - rm -rf ../*.deb
+    # Mark the debian log so that this package is a backport.
+    # Use the most recent Maintainer as current maintainer.
+    - export DEBEMAIL=$(dpkg-parsechangelog -S Maintainer)
+    - dch --bpo "No Changes"
+    - dpkg-buildpackage -us -uc -d --changes-option="-DDistribution=buster-sgl"
+    - mkdir debs
+    - mv ../*.deb debs
+    - mv ../*.changes debs
+    - mv ../*.dsc debs
+    - mv ../*.git debs
+    - mv ../*.buildinfo debs
+  artifacts:
+    paths:
+      - debs/
+  dependencies:
+    - build_debian_10
+
 package_conda:
   stage: package
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/deb9_conda_py36
@@ -572,25 +658,9 @@ package_conda:
       - conda-bld/linux-64/
   dependencies: []
 
-package_debian_9_wheel:
-  stage: package
-  extends: .big_build
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/debian9_fai_ish
-  script:
-    - mkdir dist
-    - mv build/swig/module/dist/* dist
-    - echo "Saving wheel"
-  artifacts:
-    paths:
-      - dist/
-  dependencies:
-    - build_debian_9
-
 package_redhat:
   stage: package
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -607,7 +677,7 @@ package_redhat:
 
 package_redhat_py36:
   stage: package
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -624,7 +694,7 @@ package_redhat_py36:
 
 package_redhat_py27:
   stage: package
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -639,27 +709,25 @@ package_redhat_py27:
       - rpm_files/SRPMS/python-gpstk-*
   dependencies: []
 
-package_redhat_wheel:
-  stage: package
-  extends: .big_build
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_sgl
-  script:
-    - mkdir dist
-    - mv build/swig/module/dist/* dist
-    - echo "Saving wheel"
-  artifacts:
-    paths:
-      - dist/
-  dependencies:
-    - build_redhat
-
 # Deploy Stage
 # Tests install of GPSTk package on each platform, saves artifacts for downstream builds.
+deploy_debian_8:
+  stage: deploy
+  extends: .package_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/debian8_fai_ish
+  script:
+    - cd debs
+    - sudo dpkg -i ./*.deb
+    - python -c "import gpstk"
+    - timeconvert
+  dependencies:
+    - package_debian_8
+
 deploy_debian_9:
   stage: deploy
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -671,9 +739,23 @@ deploy_debian_9:
   dependencies:
     - package_debian_9
 
+deploy_debian_10:
+  stage: deploy
+  extends: .package_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/debian10_fai_ish
+  script:
+    - cd debs
+    - sudo apt-get -y install ./*.deb
+    - python -c "import gpstk"
+    - timeconvert
+  dependencies:
+    - package_debian_10
+
 deploy_redhat:
   stage: deploy
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -686,7 +768,7 @@ deploy_redhat:
 
 deploy_redhat_py27:
   stage: deploy
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -702,7 +784,7 @@ deploy_redhat_py27:
 
 deploy_redhat_py36:
   stage: deploy
-  extends: .big_build
+  extends: .package_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -731,6 +813,7 @@ deploy_redhat_py36:
 
 sgltk_debian:
   stage: downstream
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -749,6 +832,7 @@ sgltk_debian:
 
 sgltk_redhat:
   stage: downstream
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -767,6 +851,7 @@ sgltk_redhat:
 
 sgltk_redhat_swig3:
   stage: downstream
+  extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_swig3_sgl
