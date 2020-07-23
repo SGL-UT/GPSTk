@@ -133,7 +133,7 @@ namespace gpstk
 // Use a character buffer because typed data can have bad side effects
 // causing data corruption.
 #define FFBIN_GET_DATA(ITOH_FN,NTOH_FN)         \
-   char buf[sizeof(v)];                         \
+   char buf[sizeof(v)] = "";                    \
    getData(buf, sizeof(v));                     \
    if (isStreamLittleEndian())                  \
       BinUtils::ITOH_FN(buf, v);                \
