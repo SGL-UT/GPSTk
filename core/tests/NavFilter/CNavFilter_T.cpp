@@ -57,6 +57,7 @@ class CNavFilter_T
 {
 public:
    CNavFilter_T();
+   ~CNavFilter_T();
 
    unsigned loadData();
 
@@ -90,6 +91,17 @@ CNavFilter_T()
 {
    // In the case of this test.  This method doesn't have to do anything.
 }
+
+
+CNavFilter_T ::
+~CNavFilter_T()
+{
+   for (auto& mli : messageList)
+   {
+      delete mli;
+   }
+}
+
 
 //-------------------------------------------------------------------
 unsigned CNavFilter_T ::
@@ -249,6 +261,7 @@ testCNavCook()
       {
          count++;
       }
+      delete pnbInvert;
    }
    TUASSERTE(unsigned long, expected, count);
    TURETURN();
@@ -297,6 +310,7 @@ testCNavParity()
    rejectCount = filtParity.rejected.size();
    TUASSERTE(unsigned long, 0, acceptCount);
    TUASSERTE(unsigned long, 1, rejectCount);
+   delete pnb;
    TURETURN();
 }
 
@@ -370,6 +384,7 @@ testCNavEmpty()
    acceptCount += l.size();
    rejectCount += filtEmpty.rejected.size();
 */
+   delete pnbEmptyMsg;
 
       // Now build a message with zeroes in the payload
    PackedNavBits* pnbZeroMsg = p->clone();
@@ -393,6 +408,7 @@ testCNavEmpty()
    gpstk::NavFilter::NavMsgList l = mgr.validate(&fdZero);
    acceptCount += l.size();
    rejectCount += filtEmpty.rejected.size();
+   delete pnbZeroMsg;
 
       // Now build a 0/1 message (since the IS isn't totally 
       // specific on whether its 1/0 or 0/1)
@@ -414,7 +430,8 @@ testCNavEmpty()
    CNavFilterData fd01Msg(pnb01Msg);
    l = mgr.validate(&fd01Msg);
    acceptCount += l.size();
-   rejectCount += filtEmpty.rejected.size(); 
+   rejectCount += filtEmpty.rejected.size();
+   delete pnb01Msg;
 
    TUASSERTE(unsigned long, 0, acceptCount);
    TUASSERTE(unsigned long, 2, rejectCount);
@@ -490,6 +507,9 @@ testCNavTOW()
       rejectCount += filtTOW.rejected.size();
       acceptCount += l.size();
    }
+   delete pnbBadMT;
+   delete pnbBadTOWMsg;
+   delete pnbBadPreamble;
 
    unsigned long expReject = 2 + badMTCount; 
    TUASSERTE(unsigned long, 0, acceptCount);

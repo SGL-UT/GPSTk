@@ -91,14 +91,14 @@ namespace gpstk
          return false; 
 
          // Open a new Rinex 3 nav file and write the header
-      Rinex3NavStream *rns = new Rinex3NavStream(outFileName.c_str(), ios::out|ios::trunc);
+      Rinex3NavStream rns(outFileName.c_str(), ios::out|ios::trunc);
       Rinex3NavHeader rnh = cft->second;
       rnh.fileProgram = progName;
       rnh.fileAgency = agencyName;
       ostringstream ostr;
       ostr << CivilTime(SystemTime());
       rnh.date = ostr.str();
-      *rns << rnh; 
+      rns << rnh; 
 
       std::map<std::string,TOC_LIST>::const_iterator cft2;
       cft2 = listOfTocsByFile.find(inFileName);
@@ -120,13 +120,13 @@ namespace gpstk
             const Rinex3NavData& rnd = *cnt;
             if (rnd.time == cit->second)
             {
-               *rns << rnd;
+               rns << rnd;
                done = true;
             }
             cnt++;
          }
       }
-      rns->close();
+      rns.close();
       return true;
    }
 

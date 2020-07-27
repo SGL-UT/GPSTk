@@ -69,10 +69,14 @@ namespace gpstk
 
             // Factory methods for each message type
          /**
+          * @note It is up to the caller to free the memory pointed to
+          *   by the return value.
           * @throw InvalidParameter
           */
       OrbAlm* GPSLNAV(const gpstk::PackedNavBits& pnb);
          /**
+          * @note It is up to the caller to free the memory pointed to
+          *   by the return value.
           * @throw InvalidParameter
           */
       OrbAlm* GPSCNAV(const gpstk::PackedNavBits& pnb);

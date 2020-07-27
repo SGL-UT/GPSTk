@@ -73,12 +73,12 @@ namespace gpstk
 
    void YDSTime::convertFromCommonTime( const CommonTime& ct )
    {
-      long jday, secDay;
-      double fsecDay;
+      long jday = 0, secDay = 0;
+      double fsecDay = 0.0;
       ct.get( jday, secDay, fsecDay, timeSystem );
       sod = static_cast<double>( secDay ) + fsecDay;
 
-      int month, day;
+      int month = 0, day = 0;
       convertJDtoCalendar( jday, year, month, day );
       doy = jday - convertCalendarToJD( year, 1, 1 ) + 1;
    }

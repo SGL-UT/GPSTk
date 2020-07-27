@@ -55,7 +55,10 @@ namespace gpstk
    using namespace std;
    using namespace gpstk;
    OrbElem::OrbElem()
-         : ctToc(CommonTime::BEGINNING_OF_TIME)
+         : Cuc(0.0), Cus(0.0), Crc(0.0), Crs(0.0), Cic(0.0), Cis(0.0), M0(0.0),
+           dn(0.0), dndot(0.0), ecc(0.0), A(0.0), Adot(0.0), OMEGA0(0.0),
+           i0(0.0), w(0.0), OMEGAdot(0.0), idot(0.0), af0(0.0), af1(0.0),
+           af2(0.0), ctToc(CommonTime::BEGINNING_OF_TIME)
    {
       ctToc.setTimeSystem(TimeSystem::GPS);
       beginValid.setTimeSystem(TimeSystem::GPS);

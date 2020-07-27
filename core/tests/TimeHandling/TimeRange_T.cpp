@@ -961,7 +961,7 @@ public:
                // This checks if i is in the array of invalid
                // test cases; invalid+10 is the last address of the array
             int * it = std::find(invalid, invalid+10, i);
-            if (*it != *(invalid+10))
+            if (it != (invalid+10))
             {
                TUPASS("Received expected exception when trying to call setToString: "
                      + exc.what());
@@ -975,7 +975,7 @@ public:
          catch(TimeRange::TimeRangeException& exc)
          {
             int * it = std::find(invalid, invalid+10, i);
-            if (*it != *(invalid+10))
+            if (it != (invalid+10))
             {
                TUPASS("Received expected exception when trying to call setToString: "
                      + exc.what());

@@ -1138,6 +1138,7 @@ try {
    ostream *pout = new ofstream("rstats.out");
    if(GD.dostdout || pout->fail()) {
       if(!GD.dostdout) cout << "Unable to open file rstats.out - output to screen\n";
+      delete pout;
       pout = &cout;
    }
    else if(!GD.quiet) cout << "Output quantiles, data to file rstats.out\n";
@@ -1153,7 +1154,11 @@ try {
       *pout << qdata[i] << " " << GD.data[i]
             << " " << TSS.Intercept() + TSS.Slope()*qdata[i] << endl;
 
-   if(pout != &cout) ((ofstream *)pout)->close();
+   if(pout != &cout)
+   {
+      ((ofstream *)pout)->close();
+      delete pout;
+   }
 
    cout << "Data vs quantiles fit to line yields y-intercept (=mean) "
       << fixed << setprecision(GD.prec) << TSS.Intercept()
@@ -1395,6 +1400,7 @@ try {
       if(GD.dostdout || pout->fail()) {
          if(!GD.dostdout)
             cout << "Unable to open file rstats.out - output to screen\n";
+         delete pout;
          pout = &cout;
       }
       else if(!GD.quiet) {
@@ -1424,7 +1430,11 @@ try {
             << " Evaluate Fit(" << GD.xevalfit[i] << ") = " << eval << endl;
       }
 
-      if(pout != &cout) ((ofstream *)pout)->close();
+      if(pout != &cout)
+      {
+         ((ofstream *)pout)->close();
+         delete pout;
+      }
 
       //QSort(&robwts[0],robwts.size());
       //Robust::StemLeafPlot(cout, &robwts[0], robwts.size(), "weights");
@@ -1602,6 +1612,7 @@ try {
       if(GD.dostdout || pout->fail()) {
          if(!GD.dostdout)
             cout << "Unable to open file rstats.out - output to screen\n";
+         delete pout;
          pout = &cout;
       }
 
@@ -1609,7 +1620,11 @@ try {
          *pout << fixed << setprecision(GD.prec) << i
                << " " << (GD.xdata.size() ? GD.xdata[i] : (double)(i))
                << " " << GD.data[i] << " " << flags[i] << endl;
-      if(pout != &cout) ((ofstream *)pout)->close();
+      if(pout != &cout)
+      {
+         ((ofstream *)pout)->close();
+         delete pout;
+      }
    }
 
    return 0;
