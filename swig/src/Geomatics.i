@@ -2,7 +2,6 @@
 /**
  * specify typemaps for outputs passed as pointers...
  * @todo: modify docstrings for functions that have multiple outputs
- * @todo: fix Matrix<double> memory leak
  */
 
 %include "typemaps.i"

@@ -39,6 +39,7 @@ using namespace gpstk;
 %include "gpstk_typemaps.i"
 %include "STLTemplates.i"
 %include "STLHelpers.i"
+%include "gpstk_templates.i"
 
 %include "exception.i"
 %exceptionclass Exception;
