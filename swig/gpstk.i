@@ -18,6 +18,39 @@ using namespace gpstk;
 %include "TrackingCode.hpp"
 %include "ObservationType.hpp"
 %include "NavType.hpp"
+%include "TimeSystem.hpp"
+
+// This code allows us to turn C++ enums into Python enums while
+// maintaining compatibility in SWIG bindings.  We specifically use an
+// IntEnum class in Python to allow the implicit conversion to int
+// when calling C++ code from Python, as SWIG treats the enums as ints
+// when generating code.
+/** @note During the implementation of this code, Python would
+ * commonly issue an exception with the text "Wrong number or type of
+ * arguments for overloaded function".  This turned out to be caused
+ * by SWIG not having knowledge of the C++ enumeration's definition
+ * before generating code to use it, thus resulting in the enumeration
+ * being handled like an object.  To resolve this issue, we have
+ * inline forward declarations for the enums at the top of this
+ * file. */
+%pythoncode %{
+from enum import IntEnum
+def renameEnums(prefix):
+    tmpD = {k:v for k,v in globals().items() if k.startswith(prefix+'_')}
+    for k,v in tmpD.items():
+        del globals()[k]
+    tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()}
+    globals()[prefix] = IntEnum(prefix,tmpD)
+# Turn the gpstk.SatelliteSystem_* constants into a Python enum
+renameEnums('SatelliteSystem')
+renameEnums('CarrierBand')
+renameEnums('TrackingCode')
+renameEnums('ObservationType')
+renameEnums('NavType')
+renameEnums('TimeSystem')
+del renameEnums
+del IntEnum
+%}
 
 // =============================================================
 //  Section 1: C++ template containers & typedefs
@@ -67,7 +100,6 @@ using namespace gpstk;
 %rename(toCommonTime) *::convertToCommonTime() const;
 %ignore *::operator CommonTime() const;
 
-%include "TimeSystem.hpp"
 
 %include "TimeTag.hpp"
 %include "TimeConstants.hpp"
@@ -423,35 +455,3 @@ namespace std { class fstream {}; }
         del locals()['stuff']
         del locals()['to_remove']
     %}
-
-// This code allows us to turn C++ enums into Python enums while
-// maintaining compatibility in SWIG bindings.  We specifically use an
-// IntEnum class in Python to allow the implicit conversion to int
-// when calling C++ code from Python, as SWIG treats the enums as ints
-// when generating code.
-/** @note During the implementation of this code, Python would
- * commonly issue an exception with the text "Wrong number or type of
- * arguments for overloaded function".  This turned out to be caused
- * by SWIG not having knowledge of the C++ enumeration's definition
- * before generating code to use it, thus resulting in the enumeration
- * being handled like an object.  To resolve this issue, we have
- * inline forward declarations for the enums at the top of this
- * file. */
-%pythoncode %{
-from enum import IntEnum
-def renameEnums(prefix):
-    tmpD = {k:v for k,v in globals().items() if k.startswith(prefix+'_')}
-    for k,v in tmpD.items():
-        del globals()[k]
-    tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()}
-    globals()[prefix] = IntEnum(prefix,tmpD)
-# Turn the gpstk.SatelliteSystem_* constants into a Python enum
-renameEnums('SatelliteSystem')
-renameEnums('CarrierBand')
-renameEnums('TrackingCode')
-renameEnums('ObservationType')
-renameEnums('NavType')
-renameEnums('TimeSystem')
-del renameEnums
-del IntEnum
-%}
