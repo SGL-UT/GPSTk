@@ -135,12 +135,8 @@ namespace gpstk
                (*this)(i,j) = mat(topRow + i, topCol + j);
       }
 
-#ifndef SWIG
-      ~Matrix() override = default;
-#else
       virtual ~Matrix()
       {}
-#endif
 
          /// STL begin
       iterator begin() { return v.begin(); }
