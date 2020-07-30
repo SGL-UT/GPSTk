@@ -197,6 +197,8 @@ process()
       cerr << argv0 << ": Can't compare files of different formats" << endl;
       giveUp = true;
    }
+   delete header1;
+   delete header2;
    if (giveUp)
       return;
    if (exitCode)

@@ -93,7 +93,7 @@ namespace gpstk
       }
 
       virtual ~OrbAlmStore()
-      { clear();}
+      { clear(); }
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// satellite in ECEF coordinates (meters) at the indicated time.

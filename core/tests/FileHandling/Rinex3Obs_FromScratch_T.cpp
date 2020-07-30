@@ -115,56 +115,56 @@ public:
       data.clockOffset = 0;
       data.time = header.firstObs.convertToCommonTime();
 
-       std::vector<RinexObsID> newObsIds = setupObsIDs();
+      std::vector<RinexObsID> newObsIds = setupObsIDs();
 
 
-       RinexDatum datumL1_1;
-       datumL1_1.data = 1;
-       datumL1_1.lli = 0;
-       datumL1_1.ssi = 0;
-       RinexDatum datumL1_2;
-       datumL1_2.data = 2;
-       datumL1_2.lli = 0;
-       datumL1_2.ssi = 0;
+      RinexDatum datumL1_1;
+      datumL1_1.data = 1;
+      datumL1_1.lli = 0;
+      datumL1_1.ssi = 0;
+      RinexDatum datumL1_2;
+      datumL1_2.data = 2;
+      datumL1_2.lli = 0;
+      datumL1_2.ssi = 0;
 
 
-       RinexDatum datumP1_1;
-       datumP1_1.data = 3;
-       datumP1_1.lli = 0;
-       datumP1_1.ssi = 0;
-       RinexDatum datumP1_2;
-       datumP1_2.data = 4;
-       datumP1_2.lli = 0;
-       datumP1_2.ssi = 0;
+      RinexDatum datumP1_1;
+      datumP1_1.data = 3;
+      datumP1_1.lli = 0;
+      datumP1_1.ssi = 0;
+      RinexDatum datumP1_2;
+      datumP1_2.data = 4;
+      datumP1_2.lli = 0;
+      datumP1_2.ssi = 0;
 
 
-       RinexDatum datumC1_1;
-       datumC1_1.data = 5;
-       datumC1_1.lli = 0;
-       datumC1_1.ssi = 0;
-       RinexDatum datumC1_2;
-       datumC1_2.data = 6;
-       datumC1_2.lli = 0;
-       datumC1_2.ssi = 0;
+      RinexDatum datumC1_1;
+      datumC1_1.data = 5;
+      datumC1_1.lli = 0;
+      datumC1_1.ssi = 0;
+      RinexDatum datumC1_2;
+      datumC1_2.data = 6;
+      datumC1_2.lli = 0;
+      datumC1_2.ssi = 0;
 
 
-       RinexDatum datumL2_1;
-       datumL2_1.data = 7;
-       datumL2_1.lli = 0;
-       datumL2_1.ssi = 0;
-       RinexDatum datumL2_2;
-       datumL2_2.data = 8;
-       datumL2_2.lli = 0;
-       datumL2_2.ssi = 0;
+      RinexDatum datumL2_1;
+      datumL2_1.data = 7;
+      datumL2_1.lli = 0;
+      datumL2_1.ssi = 0;
+      RinexDatum datumL2_2;
+      datumL2_2.data = 8;
+      datumL2_2.lli = 0;
+      datumL2_2.ssi = 0;
 
-       RinexDatum datumP2_1;
-       datumP2_1.data = 9;
-       datumP2_1.lli = 0;
-       datumP2_1.ssi = 0;
-       RinexDatum datumP2_2;
-       datumP2_2.data = 10;
-       datumP2_2.lli = 0;
-       datumP2_2.ssi = 0;
+      RinexDatum datumP2_1;
+      datumP2_1.data = 9;
+      datumP2_1.lli = 0;
+      datumP2_1.ssi = 0;
+      RinexDatum datumP2_2;
+      datumP2_2.data = 10;
+      datumP2_2.lli = 0;
+      datumP2_2.ssi = 0;
 
       if(satString == "M")
       {
@@ -195,20 +195,21 @@ public:
 
       header.version = 3.02;
       header.valid |= Rinex3ObsHeader::validVersion;
-      Rinex3ObsStream *strm = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".out",
-                                    std::ios::out | std::ios::trunc);
+      Rinex3ObsStream strm(
+         tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".out",
+         std::ios::out | std::ios::trunc);
 
-      strm->exceptions(ifstream::failbit);
-      *strm << header;
-      *strm << data;
+      strm.exceptions(ifstream::failbit);
+      strm << header;
+      strm << data;
 
       header.prepareVer2Write();
-      Rinex3ObsStream *strm2 = new Rinex3ObsStream(tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".out",
-                                     std::ios::out | std::ios::trunc);
-      strm2->exceptions(ifstream::failbit);
-      *strm2 << header;
-      *strm2 << data;
-       delete strm, strm2;
+      Rinex3ObsStream strm2(
+         tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".out",
+         std::ios::out | std::ios::trunc);
+      strm2.exceptions(ifstream::failbit);
+      strm2 << header;
+      strm2 << data;
    }
 
     std::vector<RinexObsID> setupObsIDs(){
@@ -278,7 +279,7 @@ public:
       try
       {
          cerr << "starting mixed test" << endl;
-         //create a valid Rinex Obs file
+            //create a valid Rinex Obs file
          testID = "MixedTest";
          Rinex3ObsFromScratch("M",testID);
          TUASSERT( compareOutExp(testID) );

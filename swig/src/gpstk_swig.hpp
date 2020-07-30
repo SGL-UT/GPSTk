@@ -192,4 +192,22 @@
 // So the python examples can find the test data
 #include "build_config.h"
 
+// OrbSysGPS
+#include "OrbSysStore.hpp"
+#include "OrbData.hpp"
+#include "OrbDataSys.hpp"
+#include "OrbSysGpsC.hpp"
+#include "OrbSysGpsC_30.hpp"
+#include "OrbSysGpsC_32.hpp"
+#include "OrbSysGpsC_33.hpp"
+#include "OrbSysGpsL.hpp"
+#include "OrbSysGpsL_51.hpp"
+#include "OrbSysGpsL_52.hpp"
+#include "OrbSysGpsL_55.hpp"
+#include "OrbSysGpsL_56.hpp"
+#include "OrbSysGpsL_63.hpp"
+#include "OrbSysGpsL_Reserved.hpp"
+#include "PackedNavBits.hpp"
+#include "OrbDataSysFactory.hpp"
+
 #endif

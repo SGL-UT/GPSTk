@@ -674,6 +674,7 @@ int CommandOption_T::testCommandOptionNOf()
    delete cowaa1;
    delete cowaa2;
    defaultCommandOptionList.clear();
+   delete cmdOpt;
 
    TURETURN();
 }

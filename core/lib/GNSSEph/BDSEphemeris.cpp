@@ -53,6 +53,17 @@ using namespace std;
 
 namespace gpstk
 {
+   BDSEphemeris :: BDSEphemeris()
+         : HOWtime(0), IODE(0), IODC(0), health(1), accuracy(0.0), Tgd13(0.0),
+           Tgd23(0.0), fitDuration(4)
+   {
+      beginValid.setTimeSystem(TimeSystem::BDT);
+      endValid.setTimeSystem(TimeSystem::BDT);
+      ctToe.setTimeSystem(TimeSystem::BDT);
+      ctToc.setTimeSystem(TimeSystem::BDT);
+      transmitTime.setTimeSystem(TimeSystem::BDT);
+   }
+
    // Returns true if the time, ct, is within the period of validity of
    // this OrbitEph object.
    // @throw Invalid Request if the required data has not been stored.
@@ -66,7 +77,7 @@ namespace gpstk
    }
 
    // This function returns the health status of the SV.
-   bool BDSEphemeris::isHealthy(void) const
+   bool BDSEphemeris::isHealthy() const
    {
       try {
          OrbitEph::isHealthy();     // ignore the return value; for dataLoaded check
@@ -87,7 +98,7 @@ namespace gpstk
    //     in order to support SV position determination for 
    //     users that cannot collect navigation message continuously.
    // @throw Invalid Request if the required data has not been stored.
-   void BDSEphemeris::adjustValidity(void)
+   void BDSEphemeris::adjustValidity()
    {
       try {
          OrbitEph::adjustValidity();   // for dataLoaded check

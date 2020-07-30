@@ -282,6 +282,20 @@ namespace gpstk
       479001600, 6227020800, 87178291200, 1307674368000, 20922789888000,
       355687428096000, 6402373705728000 };
 
+   GlobalTropModel :: GlobalTropModel()
+         : validCoeff(false), validHeight(false), validLat(false),
+           validLon(false), validDay(false), height(0.0), latitude(0.0),
+           longitude(0.0), dayfactor(0.0), undul(0.0)
+   {
+         // yes setting everything to 0 is the same as IEEE 0.0
+      memset(P, 0, sizeof(P));
+      memset(aP, 0, sizeof(aP));
+      memset(bP, 0, sizeof(bP));
+      TropModel::humid = 50.0;
+      valid = false;
+   }
+
+
    // Compute and return the full tropospheric delay. The receiver height, 
    // latitude and time must has been set before using the appropriate
    // methods.
@@ -347,7 +361,7 @@ namespace gpstk
    // Compute and return the zenith delay for hydrostatic (dry) component of
    // the troposphere. Use the Saastamoinen value.
    // Ref. Davis etal 1985 and Leick, 3rd ed, pg 197.
-   double GlobalTropModel::dry_zenith_delay(void) const
+   double GlobalTropModel::dry_zenith_delay() const
    {
       try { testValidity(); } catch(InvalidTropModel& e) { GPSTK_RETHROW(e); }
       return SaasDryDelay(press,latitude,height);
@@ -356,7 +370,7 @@ namespace gpstk
 
    // Compute and return the zenith delay for wet component of
    // the troposphere. Ref. Leick, 3rd ed, pg 197, Leick, 4th ed, pg 482.
-   double GlobalTropModel::wet_zenith_delay(void) const
+   double GlobalTropModel::wet_zenith_delay() const
    {
       double T = temp + CELSIUS_TO_KELVIN;
       double pwv = 0.01 * humid * ::exp(-37.2465 + (0.213166-0.000256908*T)*T);
@@ -622,7 +636,7 @@ namespace gpstk
    }
 
    // Must update coeff when latitude or lon changes
-   void GlobalTropModel::updateGTMCoeff(void)
+   void GlobalTropModel::updateGTMCoeff()
    {
       if(!validLon || !validLat) return;
 
@@ -658,7 +672,7 @@ namespace gpstk
    }
 
    // Utility to test valid flags
-   void GlobalTropModel::testValidity(void) const
+   void GlobalTropModel::testValidity() const
    {
       if(!valid) {
          if(!validLat)

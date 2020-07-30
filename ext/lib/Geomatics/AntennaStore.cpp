@@ -292,8 +292,10 @@ namespace gpstk
          {
 
             // tracking, and future expansion. 
-            double fact1, fact2;
-            string freq1, freq2;
+            double fact1 = 1.0;
+            double fact2 = 1.0;
+            string freq1("");
+            string freq2("");
             switch (sys)
             {
                case 'G':
@@ -312,11 +314,24 @@ namespace gpstk
                   freq2 = "R02";
                   break;
                }
+               //
+               //  Design short-coming in that we are limited to ONE decision
+               //  per GNSS.   The BeiDou ICD says the Broadcast Orbits are aligned
+               //  to B3I phase center.  Generally, we are attempting to move the 
+               //  broadcast orbit from the APC to the COM.  Therefore, we only 
+               //  need B3 (C06)
                case 'C':
                {
+                  /*
+                  double alpha = ((1561.098 * 1561.098) / (1268.52 * 1268.52)) - 1.0;  // B1 and B3
+                  fact1 = (alpha+1.0) / alpha;   
+                  fact2 = -1.0 / alpha; 
+                  freq1 = "C02";
+                  freq2 = "C06";
+                  */
                   dualFrequency = false;
-                  fact1 = 1.00;
-                  freq1 = "C01";
+                  fact1 = 1.0;
+                  freq1 = "C06";
                   break;
                }
 

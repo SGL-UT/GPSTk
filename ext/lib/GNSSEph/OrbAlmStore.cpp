@@ -156,7 +156,7 @@ namespace gpstk
       }
       try
       {
-         // test for GPS satellite system in sat?
+            // test for GPS satellite system in sat?
          const OrbAlm* alm = find(subjID, t);
          
          retVal = alm->isHealthy();
@@ -183,21 +183,21 @@ namespace gpstk
 //  Detail 0 = Only cout of objects per satellite 
 //  Detail 1 = terse mode (one line)
 //  Datial 2 = full dump of each object. 
-void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjID) const
-{
+   void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjID) const
+   {
       SubjectAlmMap::const_iterator it;
       static const string fmt("%02m/%02d/%04Y %02H:%02M:%02S %P");
 
       if (detail==0)
       {
-          s << "Dump of OrbAlmStore by subject satellite:\n";
-          s << " Span is " << (initialTime == CommonTime::END_OF_TIME
-                                      ? "Beginning_of_time" : printTime(initialTime,fmt))
+         s << "Dump of OrbAlmStore by subject satellite:\n";
+         s << " Span is " << (initialTime == CommonTime::END_OF_TIME
+                              ? "Beginning_of_time" : printTime(initialTime,fmt))
            << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
-                                      ? "End_of_time" : printTime(finalTime,fmt))
+                         ? "End_of_time" : printTime(finalTime,fmt))
            << " with " << size(1) << " entries."
            << std::endl;
-           return;
+         return;
       } // end if-block
 
          // If the user specified a particular SV, simply say so and 
@@ -252,8 +252,8 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjI
 
                // Get header from system-specific descendent of this class.
             s << getTerseHeader() << endl;
-            //s << "          Epoch Time             " << endl;
-            //s << " PRN  mm/dd/yyyy DOY hh:mm:ss   Health" << endl; 
+               //s << "          Epoch Time             " << endl;
+               //s << " PRN  mm/dd/yyyy DOY hh:mm:ss   Health" << endl; 
             for (ei = em.begin(); ei != em.end(); ei++) 
             {
                const OrbAlm* oe = ei->second;
@@ -282,99 +282,88 @@ void OrbAlmStore::dumpSubjAlm( std::ostream& s, short detail, const SatID& subjI
 //  Dtaill 0 = Only cout of objects per satellite 
 //  Detail 1 = terse mode (one line)
 //  Detail 2 = full dump mode 
-void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjID ) const
-{
-   XmitAlmMap::const_iterator   it;
-   UniqueAlmMap::const_iterator it2;
-   OrbAlmMap::const_iterator   it3; 
-   static const string fmt("%02m/%02d/%4Y %02H:%02M:%02S %P");
+   void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjID ) const
+   {
+      XmitAlmMap::const_iterator   it;
+      UniqueAlmMap::const_iterator it2;
+      OrbAlmMap::const_iterator   it3; 
+      static const string fmt("%02m/%02d/%4Y %02H:%02M:%02S %P");
 
-   bool singleSubject = false;
-   if (subjID.id!=-1)
-   {
-      singleSubject = true;
-   }
-
-   s << "Dump of OrbAlmStore by transmitting satellite:\n";
-   if (detail==0)
-   {
-      s << " Span is " << (initialTime == CommonTime::END_OF_TIME
-                                       ? "Beginning_of_time" : printTime(initialTime,fmt))
-        << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
-                                      ? "End_of_time" : printTime(finalTime,fmt))
-        << " with " << size(2) << " entries."
-        << std::endl;
-   } // end if-block
-   else if (detail>=1)
-   {
-      for (it = xmitAlmMap.begin(); it != xmitAlmMap.end(); it++)
+      bool singleSubject = false;
+      if (subjID.id!=-1)
       {
-         const SatID xmitID = it->first;
-         s << endl;
-         s << " List of almanacs received from " << xmitID << endl;; 
-         const UniqueAlmMap& uam = it->second;
-         multimap<CommonTime,OrbAlm*> tempMap; 
+         singleSubject = true;
+      }
 
-            // Need to construct a multimap of all the alamancs received, 
-            // regardless of the satellite to which they are applicable.
-         for (it2=uam.begin();it2!=uam.end();it2++)
+      s << "Dump of OrbAlmStore by transmitting satellite:\n";
+      if (detail==0)
+      {
+         s << " Span is " << (initialTime == CommonTime::END_OF_TIME
+                              ? "Beginning_of_time" : printTime(initialTime,fmt))
+           << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
+                         ? "End_of_time" : printTime(finalTime,fmt))
+           << " with " << size(2) << " entries."
+           << std::endl;
+      } // end if-block
+      else if (detail>=1)
+      {
+         for (it = xmitAlmMap.begin(); it != xmitAlmMap.end(); it++)
          {
-            const SatID& sidr = it2->first;
-            if (singleSubject && sidr!=subjID) 
-               continue;
-            const OrbAlmMap& oem = it2->second;
-            for (it3=oem.begin();it3!=oem.end();it3++)
+            const SatID xmitID = it->first;
+            s << endl;
+            s << " List of almanacs received from " << xmitID << endl;; 
+            const UniqueAlmMap& uam = it->second;
+            OrbAlmMap tempMap; 
+
+               // Need to construct a multimap of all the alamancs received, 
+               // regardless of the satellite to which they are applicable.
+            for (it2=uam.begin();it2!=uam.end();it2++)
             {
-               const CommonTime ct = it3->first;
-               const OrbAlm* oeb = it3->second; 
-               OrbAlm* px = oeb->clone();
-               multimap<CommonTime,OrbAlm*>::value_type p(ct,px);
-               tempMap.insert(p);
+               const SatID& sidr = it2->first;
+               if (singleSubject && sidr!=subjID) 
+                  continue;
+               const OrbAlmMap& oem = it2->second;
+               for (it3=oem.begin();it3!=oem.end();it3++)
+               {
+                  CommonTime ct = it3->first;
+                  OrbAlm* oeb = it3->second; 
+                  OrbAlmMap::value_type p(ct,oeb);
+                  tempMap.insert(p);
+               }
             }
-         }
         
-            // Get header from system-specific descendent of this class.
-         if (detail==1) s << getTerseHeader() << endl;
+               // Get header from system-specific descendent of this class.
+            if (detail==1) s << getTerseHeader() << endl;
 
-            // The multimap was a convenient sorting method, but the 
-            // order of the elements is unspecified.  Therefore, 
-            // we are going to build a temporary map that allows
-            // the subset we just selected to be output in transmit-time 
-            // order.
-            // FIRST - create the temporary ordered map. 
-         OrbAlmMap tempMap2;
-         multimap<CommonTime,OrbAlm*>::const_iterator cit;
-         for (cit=tempMap.begin();cit!=tempMap.end();cit++)
-         {
-            const OrbAlm* oeb = cit->second; 
-            CommonTime ct = oeb->beginValid; 
-            OrbAlm* pxT = oeb->clone();
-            multimap<CommonTime,OrbAlm*>::value_type pT(ct,pxT);
-            tempMap2.insert(pT);
+               // The multimap was a convenient sorting method, but the 
+               // order of the elements is unspecified.  Therefore, 
+               // we are going to build a temporary map that allows
+               // the subset we just selected to be output in transmit-time 
+               // order.
+               // FIRST - create the temporary ordered map. 
+            OrbAlmMap tempMap2;
+            for (const auto& cit : tempMap)
+            {
+               OrbAlm* oeb = cit.second; 
+               CommonTime ct = oeb->beginValid; 
+               OrbAlmMap::value_type pT(ct,oeb);
+               tempMap2.insert(pT);
+            }
+               // SECOND - iterate over the tempoarary map. 
+            OrbAlmMap::const_iterator citT;
+            for (citT=tempMap2.begin();citT!=tempMap2.end();citT++)
+            {
+               const OrbAlm* oeb = citT->second; 
+               if (detail==2) oeb->dump(s);
+               else oeb->dumpTerse(s); 
+               s << std::endl;          
+            }
+               // Then clear the temp maps
+            tempMap2.clear();
+            tempMap.clear();
          }
-            // SECOND - iterate over the tempoarary map. 
-         OrbAlmMap::const_iterator citT;
-         for (citT=tempMap2.begin();citT!=tempMap2.end();citT++)
-         {
-            const OrbAlm* oeb = citT->second; 
-            if (detail==2) oeb->dump(s);
-             else oeb->dumpTerse(s); 
-            s << std::endl;          
-         }
-            // Then clear the temp maps
-            // We cloned all these objects and need to free up the
-            // memory. 
-         OrbAlmMap::iterator zit;
-         for (zit=tempMap2.begin();zit!=tempMap2.end();zit++)
-         {
-            OrbAlm* oeb = zit->second;
-            delete oeb; 
-         }
-         tempMap2.clear();
-         tempMap.clear();
       }
    }
-}
 
 //------------------------------------------------------------------------------------
       /// Convenience method.  Since 
@@ -387,7 +376,8 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
          if (p)
          {
             retVal = addOrbAlm(p);
-          }
+         }
+         delete p;
       }
       catch(InvalidParameter ip)
       {
@@ -398,7 +388,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
          GPSTK_RETHROW(exc);
       }
       return retVal;
-  }
+   }
 
 //------------------------------------------------------------------------------------
 // Keeps only one OrbAlm for a given satellite and epoch time.
@@ -412,7 +402,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
 // SatID of the subject satellite. 
 //------------------------------------------------------------------------------------ 
    unsigned short OrbAlmStore::addOrbAlm( const OrbAlm* alm, 
-                                const bool isXmitHealthy )
+                                          const bool isXmitHealthy )
    {
       unsigned short retVal = ADD_NEITHER; 
       bool test1 = false;
@@ -432,11 +422,11 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
             UniqueAlmMap& uam = xmitAlmMap[alm->satID];
             OrbAlmMap& oemX = uam[alm->subjectSV];
             test2 = addOrbAlmToOrbAlmMap(alm,oemX);
-         };
+         }
       }
       catch(Exception& e)
       {
-         GPSTK_RETHROW(e)
+         GPSTK_RETHROW(e);
       }
       if (test1 || test2)
       {
@@ -447,53 +437,55 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       return retVal; 
    }
 
-   //-----------------------------------------------------------------------------
+      //-----------------------------------------------------------------------------
       // This is a protected method.  In this case, the appropriate
       // OrbAlmMap has already been selected by satllite.  Now the
       // question is where to add this element into that map.  
    bool OrbAlmStore::addOrbAlmToOrbAlmMap( const OrbAlm* alm, 
                                            OrbAlmMap& oem)
    {
-   try
-   {
-      string ts = "%02m/%02d/%02y %02H:%02M:%02S";
-
-         // Get the epoch time of the object
-      const CommonTime& et = alm->ctToe;
-
-         // Find the set of items with this epoch time already in table.
-         // Several things to be checked for each candidate.
-         //   1. Do the data contents match?  If so, we want to retain
-         //      the earlier of the two.
-         //   2. If not, proceed to the next candidate.
-      //pair<OrbAlmMap::iterator,OrbAlmMap::iterator> p = oem.equal_range(et);
-      //for (OrbAlmMap::iterator it=p.first;it!=p.second;it++)
-      OrbAlmMap::iterator it;
-      for (it=oem.begin();it!=oem.end();it++)
+      try
       {
-         const OrbAlm* oe = it->second;
-         if (alm->isSameData(oe))
-         {
-            if (oe->beginValid <= alm->beginValid) return false;
-            oem.erase(it);
-            oem.insert(OrbAlmMap::value_type(alm->beginValid,alm->clone()));
-            updateInitialFinal(alm);
-            return true;
-         }
-      }
+         string ts = "%02m/%02d/%02y %02H:%02M:%02S";
 
-         // If the new almanac does not match any existing almanac, 
-         // it will be added to the map.
-      oem.insert(OrbAlmMap::value_type(alm->beginValid,alm->clone())); 
-   }
-   catch(Exception& e)
-   {
-      GPSTK_RETHROW(e)
-   }
-   return true;
+            // Get the epoch time of the object
+         const CommonTime& et = alm->ctToe;
+
+            // Find the set of items with this epoch time already in table.
+            // Several things to be checked for each candidate.
+            //   1. Do the data contents match?  If so, we want to retain
+            //      the earlier of the two.
+            //   2. If not, proceed to the next candidate.
+            //pair<OrbAlmMap::iterator,OrbAlmMap::iterator> p = oem.equal_range(et);
+            //for (OrbAlmMap::iterator it=p.first;it!=p.second;it++)
+         OrbAlmMap::iterator it;
+         for (it=oem.begin();it!=oem.end();it++)
+         {
+            const OrbAlm* oe = it->second;
+            if (alm->isSameData(oe))
+            {
+               if (oe->beginValid <= alm->beginValid)
+                  return false;
+               delete oe;
+               oem.erase(it);
+               oem.insert(OrbAlmMap::value_type(alm->beginValid,alm->clone()));
+               updateInitialFinal(alm);
+               return true;
+            }
+         }
+
+            // If the new almanac does not match any existing almanac, 
+            // it will be added to the map.
+         oem.insert(OrbAlmMap::value_type(alm->beginValid,alm->clone())); 
+      }
+      catch(Exception& e)
+      {
+         GPSTK_RETHROW(e);
+      }
+      return true;
    }
     
-   //-----------------------------------------------------------------------------
+      //-----------------------------------------------------------------------------
    void OrbAlmStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
@@ -548,51 +540,51 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       finalTime   = tmax;
    }
 
-   //-----------------------------------------------------------------------------
+      //-----------------------------------------------------------------------------
    void OrbAlmStore::clear()
-         throw()
+      throw()
    {
-        // First clear the subject almanac map
-     SubjectAlmMap::iterator it;
-     for (it=subjectAlmMap.begin();it!=subjectAlmMap.end();it++)
-     {
-        OrbAlmMap& oem = it->second;
-        OrbAlmMap::iterator it2;
-        for (it2=oem.begin();it2!=oem.end();it2++)
-        {
-           OrbAlm* oeb = it2->second;
-           delete oeb;
-        }
-        oem.clear();
-     }
-     subjectAlmMap.clear();
+         // First clear the subject almanac map
+      SubjectAlmMap::iterator it;
+      for (it=subjectAlmMap.begin();it!=subjectAlmMap.end();it++)
+      {
+         OrbAlmMap& oem = it->second;
+         OrbAlmMap::iterator it2;
+         for (it2=oem.begin();it2!=oem.end();it2++)
+         {
+            OrbAlm* oeb = it2->second;
+            delete oeb;
+         }
+         oem.clear();
+      }
+      subjectAlmMap.clear();
 
-        // Then clear the smit almanac map
-     XmitAlmMap::iterator xit;
-     for (xit=xmitAlmMap.begin();xit!=xmitAlmMap.end();xit++)
-     {
-        UniqueAlmMap& uam = xit->second;
-        UniqueAlmMap::iterator xit2;
-        for (xit2=uam.begin();xit2!=uam.end();xit2++)
-        {
-           OrbAlmMap& oem = xit2->second;
-           OrbAlmMap::iterator xit3;
-           for (xit3=oem.begin();xit3!=oem.end();xit3++)
-           {
-              OrbAlm* oeb = xit3->second;
-              delete oeb;
-           }
-           oem.clear();
-        }
-        uam.clear();
-     }
-     xmitAlmMap.clear();
-  }
+         // Then clear the smit almanac map
+      XmitAlmMap::iterator xit;
+      for (xit=xmitAlmMap.begin();xit!=xmitAlmMap.end();xit++)
+      {
+         UniqueAlmMap& uam = xit->second;
+         UniqueAlmMap::iterator xit2;
+         for (xit2=uam.begin();xit2!=uam.end();xit2++)
+         {
+            OrbAlmMap& oem = xit2->second;
+            OrbAlmMap::iterator xit3;
+            for (xit3=oem.begin();xit3!=oem.end();xit3++)
+            {
+               OrbAlm* oeb = xit3->second;
+               delete oeb;
+            }
+            oem.clear();
+         }
+         uam.clear();
+      }
+      xmitAlmMap.clear();
+   }
 
 
-   //-----------------------------------------------------------------------------
+      //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::size(unsigned short choice) const
-         throw()
+      throw()
    {
       unsigned counter = 0;
       if (choice==0 || choice==1)
@@ -605,20 +597,20 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       {
          for(XmitAlmMap::const_iterator i2 = xmitAlmMap.begin(); i2!=xmitAlmMap.end(); i2++)
          {
-             UniqueAlmMap::const_iterator i3;
-             const UniqueAlmMap& uam = i2->second;
-             for (i3=uam.begin();i3!=uam.end();i3++)
-             {
-                counter += i3->second.size(); 
-             }
+            UniqueAlmMap::const_iterator i3;
+            const UniqueAlmMap& uam = i2->second;
+            for (i3=uam.begin();i3!=uam.end();i3++)
+            {
+               counter += i3->second.size(); 
+            }
          }
       }
       return counter;      
    }
 
-   //-----------------------------------------------------------------------------
+      //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeSubjAlm(const SatID& subjID) const
-         throw()
+      throw()
    {
       unsigned counter = 0;
       SubjectAlmMap::const_iterator i = subjectAlmMap.find(subjID);
@@ -634,25 +626,25 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       return counter;
    }
 
-   //-----------------------------------------------------------------------------
+      //-----------------------------------------------------------------------------
    unsigned OrbAlmStore::sizeXmitAlm(const SatID& xmitID) const
-         throw()
+      throw()
    {
       unsigned counter = 0; 
       XmitAlmMap::const_iterator i2 = xmitAlmMap.find(xmitID);
       if (i2!=xmitAlmMap.end())
       {
-          UniqueAlmMap::const_iterator i3;
-          const UniqueAlmMap& uam = i2->second;
-          for (i3=uam.begin();i3!=uam.end();i3++)
-          {
-             counter += i3->second.size(); 
-          }
+         UniqueAlmMap::const_iterator i3;
+         const UniqueAlmMap& uam = i2->second;
+         for (i3=uam.begin();i3!=uam.end();i3++)
+         {
+            counter += i3->second.size(); 
+         }
       }
       return counter;
    } 
 
-   //-----------------------------------------------------------------------------
+      //-----------------------------------------------------------------------------
    std::list<SatID> OrbAlmStore::listOfSubjectSV() const
    {
       std::list<SatID> retList;
@@ -665,10 +657,10 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       return retList; 
    }
 
-   //-----------------------------------------------------------------------------
-   // Preceding method was written earlier, then this nearly-identical
-   // method was written when getIndexSet( ) was added to the XvtStoreSatID
-   // interface definition.
+      //-----------------------------------------------------------------------------
+      // Preceding method was written earlier, then this nearly-identical
+      // method was written when getIndexSet( ) was added to the XvtStoreSatID
+      // interface definition.
    std::set<SatID> OrbAlmStore::getIndexSet() const
    {
       std::set<SatID> retSet;
@@ -682,8 +674,8 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       return retSet;
    } 
 
-   //-----------------------------------------------------------------------------
-   // Added for parallelism with OrbElemStore
+      //-----------------------------------------------------------------------------
+      // Added for parallelism with OrbElemStore
    std::list<gpstk::SatID> OrbAlmStore::getSatIDList() const
    {
       return listOfSubjectSV();
@@ -763,7 +755,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
       if (useEffectivity)
       {
          bool inRange = (candidate->beginValid < t) &&
-                        (t <= candidate->endValid );
+            (t <= candidate->endValid );
          if (!inRange)
          {
             InvalidRequest e("No orbital elements for requested satellite ");
@@ -779,7 +771,7 @@ void OrbAlmStore::dumpXmitAlm( std::ostream& s, short detail, const SatID& subjI
                                     const CommonTime& t,
                                     const bool useEffectivity, 
                                     const SatID& xmitID )
-         const
+      const
    {
       const OrbAlm* oeb = 0;
       try

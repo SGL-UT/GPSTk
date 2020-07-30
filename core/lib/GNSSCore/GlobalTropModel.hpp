@@ -96,12 +96,7 @@ namespace gpstk
    {
    public:
       /// Default constructor
-      GlobalTropModel(void) : validCoeff(false), validHeight(false), validLat(false),
-                              validLon(false), validDay(false)
-      {
-         TropModel::humid = 50.0;
-         valid = false;
-      }
+      GlobalTropModel();
 
       /// Constructor to create a Global trop model providing the height of
       /// the receiver above mean sea level (as defined by ellipsoid
@@ -114,7 +109,8 @@ namespace gpstk
       GlobalTropModel(const double& ht, const double& lat, const double& lon,
                       const double& mjd)
       {
-         validCoeff = validHeight = validLat = validLon = validDay = valid = false;
+         validCoeff = validHeight = validLat = validLon = validDay = valid =
+            false;
          setReceiverHeight(ht);
          setReceiverLatitude(lat);
          setReceiverLongitude(lon);
@@ -135,7 +131,7 @@ namespace gpstk
       }
 
       /// Return the name of the model
-      virtual std::string name(void)
+      virtual std::string name()
       { return std::string("Global"); }
 
          /** Compute and return the full tropospheric delay. The receiver
@@ -190,13 +186,13 @@ namespace gpstk
           * Ref. Davis etal 1985 and Leick, 3rd ed, pg 197.
           * @throw InvalidTropModel
           */
-      virtual double dry_zenith_delay(void) const;
+      virtual double dry_zenith_delay() const;
 
          /** Compute and return the zenith delay for wet component of
           * the troposphere. Ref. Leick, 3rd ed, pg 197.
           * @throw InvalidTropModel
           */
-      virtual double wet_zenith_delay(void) const;
+      virtual double wet_zenith_delay() const;
 
          /** Compute and return the mapping function for hydrostatic (dry)
           * component of the troposphere.
@@ -323,18 +319,18 @@ namespace gpstk
       bool validHeight, validLat, validLon, validDay, validCoeff;
 
       /// Update coefficients when latitude and/or longitude changes
-      void updateGTMCoeff(void);
+      void updateGTMCoeff();
 
          /** Utility to test valid flags
           * @throw InvalidTropModel
           */
-      void testValidity(void) const;
+      void testValidity() const;
 
          /** Utility to set valid based on the other flags,
           * and update coefficients and press, temp as needed
           * @throw InvalidTropModel
           */
-      void setValid(void)
+      void setValid()
       {
          try{
             valid = validHeight && validLat && validLon && validDay;

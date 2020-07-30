@@ -68,10 +68,7 @@ namespace gpstk
    {
    public:
          /// Default constuctor
-      OrbitEph(void) : dataLoadedFlag(false), dndot(0.0), Adot(0.0),
-                       beginValid(CommonTime::END_OF_TIME),
-                       endValid(CommonTime::BEGINNING_OF_TIME)
-      { }
+      OrbitEph();
 
          /// Destructor
       virtual ~OrbitEph(void) {}

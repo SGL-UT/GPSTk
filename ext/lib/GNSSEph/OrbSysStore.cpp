@@ -72,19 +72,21 @@ namespace gpstk
 
       OrbDataSys* p = OrbDataSysFactory::convert(pnb);
       if (p==0) return false;
-      return addMessage(p);
+      bool rv = addMessage(p);
+      delete p;
+      return rv;
    }
 
 //------------------------------------------------------------------------------
-   bool OrbSysStore::addMessage(const OrbDataSys* p)
+   bool OrbSysStore::addMessage(const OrbDataSys* ods)
    {
       if (debugLevel) cout << "Entering addMessage(OrbDataSys*)" << endl;
 
          // Set up the indexing information for convenience
-      const CommonTime& ct = p->beginValid;
-      const unsigned long UID = p->UID;
-      const ObsID& oidr = p->obsID;
-      const SatID& sidr = p->satID;
+      const CommonTime& ct = ods->beginValid;
+      const unsigned long UID = ods->UID;
+      const ObsID& oidr = ods->obsID;
+      const SatID& sidr = ods->satID;
       NavID navtype = NavID(sidr,oidr);
 
          // Have to account for the fact that SatID/ObsID are ambiguous for BeiDou
@@ -117,13 +119,15 @@ namespace gpstk
       // Because of the return policy of map::lower_bound and map::upper_bound,
       // we only ever need to check to see if the lower bound is equal in time
       // to the input message.
-      pair<const OrbDataSys*, const OrbDataSys*> bounds = findBounds(sidr,navtype,UID,ct);
+      pair<const OrbDataSys*, const OrbDataSys*> bounds =
+         findBounds(sidr,navtype,UID,ct);
 
       // The following logic structure selects input states in order of
       // precedence, and acts accordingly. This structure is meant to emulate
       // the logic described above using a different set of input values
       // than the above cases were originally written for.
-      if((bounds.first != NULL) && !(bounds.first->isSameData(p)) && (bounds.first->beginValid == p->beginValid))
+      if((bounds.first != NULL) && !(bounds.first->isSameData(ods)) &&
+         (bounds.first->beginValid == ods->beginValid))
       {  // An invalid case, where the input matches the lower bound in time,
          // but does not match in payload data. This is a confusing request for
          // the user to make.
@@ -137,33 +141,37 @@ namespace gpstk
       else if(storeAll)
       {  // Case where the user does not care for uniqueness testing, all valid
          // messages will be added
-         insertToMsgMap(p);
+         insertToMsgMap(ods);
          itemWasAdded = true;
       }
       else if((bounds.first == NULL) && (bounds.second == NULL))
       {  // Case where the appropriate time-series is empty or does not exist
-         insertToMsgMap(p);
+         insertToMsgMap(ods);
          itemWasAdded = true;
       }
-      else if((bounds.first != NULL) && (bounds.first->isSameData(p)))
+      else if((bounds.first != NULL) && (bounds.first->isSameData(ods)))
       {  // Case where input matches the lower bound in payload. This block also
          // covers the case where a user has entered a message that is an exact
          // duplicate in time and payload of a message that is already stored.
          // Do nothing, no values need to change
          itemWasAdded = false;
       }
-      else if((bounds.second != NULL) && (bounds.second->isSameData(p)))
+      else if((bounds.second != NULL) && (bounds.second->isSameData(ods)))
       {  // Case where input matches the upper bound in payload
          deleteMessage(sidr, navtype, UID, bounds.second->beginValid);
-         insertToMsgMap(p);
+         insertToMsgMap(ods);
          itemWasAdded = true;
       }
-      else if(((bounds.first != NULL) && (bounds.second != NULL) && !(bounds.first->isSameData(p)) && !(bounds.second->isSameData(p)))
-           || ((bounds.first != NULL) && (bounds.second == NULL) && !(bounds.first->isSameData(p)))
-           || ((bounds.first == NULL) && (bounds.second != NULL) && !(bounds.second->isSameData(p))) )
+      else if(((bounds.first != NULL) && (bounds.second != NULL) &&
+               !(bounds.first->isSameData(ods)) &&
+               !(bounds.second->isSameData(ods)))
+              || ((bounds.first != NULL) && (bounds.second == NULL) &&
+                  !(bounds.first->isSameData(ods)))
+              || ((bounds.first == NULL) && (bounds.second != NULL) &&
+                  !(bounds.second->isSameData(ods))) )
       {  // Case where input matches neither bound in payload, including cases
          // where one bound is the end of the time-series
-         insertToMsgMap(p);
+         insertToMsgMap(ods);
          itemWasAdded = true;
       }
 
@@ -233,6 +241,7 @@ namespace gpstk
       it4 = mapr.find(t);
       if (it4==mapr.end()) return;
 
+      delete it4->second;
       mapr.erase(it4);
    }
 

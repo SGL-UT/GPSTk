@@ -1150,7 +1150,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 int Process(void)
 {
 try {
-   int iret,i,GLOn;
+   int iret=-666,i=-666,GLOn=-666;
    string msg;
    ostringstream oss;
    map<RinexSatID,int>::const_iterator gloit;

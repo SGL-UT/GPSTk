@@ -824,12 +824,13 @@ void gdc::recomputeArcs(void)
 // param which is either WL or GF
 void gdc::getArcStats(map<int,Arc>::iterator& ait, const unsigned which)
 {
-   try {
+   StatsFilterBase<double> *ptrStats = nullptr;
+   try
+   {
       bool isWL(which == WL);
       int i,index,npts;
       map<int,Arc>::iterator cit(ait);
          
-      StatsFilterBase<double> *ptrStats;
       if(isWL) ptrStats = new OneSampleStatsFilter<double>();
       else     ptrStats = new TwoSampleStatsFilter<double>();
       i = index = cit->second.index;
@@ -861,7 +862,12 @@ void gdc::getArcStats(map<int,Arc>::iterator& ait, const unsigned which)
       (isWL ? ait->second.WLinfo : ait->second.GFinfo).sig = ptrStats->StdDev();
 
    }
-   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(Exception& e)
+   {
+      delete ptrStats;
+      GPSTK_RETHROW(e);
+   }
+   delete ptrStats;
 }  // end void gdc::getArcStats()
 
 //------------------------------------------------------------------------------------
