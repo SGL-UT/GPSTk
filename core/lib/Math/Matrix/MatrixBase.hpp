@@ -66,12 +66,8 @@ namespace gpstk
          /// default constructor
       explicit ConstMatrixBase() {}
 
-#ifndef SWIG
-      virtual ~ConstMatrixBase() = default;
-#else
       virtual ~ConstMatrixBase()
       {}
-#endif
 
          /// the rows()*cols() size of the matrix.
       size_t size() const
@@ -222,12 +218,8 @@ namespace gpstk
          /// default constructor
       explicit RefMatrixBase() {}
 
-#ifndef SWIG
-      ~RefMatrixBase() override = default;
-#else
       virtual ~RefMatrixBase()
       {}
-#endif
 
          /// returns a reference to the (i,j) element of the matrix.
       T& operator() (size_t i, size_t j) 
