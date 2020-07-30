@@ -86,7 +86,7 @@ namespace gpstk
    CommonTime& CommonTime::set( long day,
                                 long sod,
                                 double fsod,
-                                const TimeSystem& timeSystem )
+                                TimeSystem timeSystem )
    {
          // Use temp variables so that we don't modify our
          // data members until we know these values are good.
@@ -129,7 +129,7 @@ namespace gpstk
    //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
    CommonTime& CommonTime::set( long day,
                                 double sod,
-                                const TimeSystem& timeSystem )
+                                TimeSystem timeSystem )
    {
          // separate whole and fractional seconds, then use set()
       long sec = static_cast<long>( sod );
@@ -140,7 +140,7 @@ namespace gpstk
 
    //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
   CommonTime& CommonTime::set( double day,
-                               const TimeSystem& timeSystem )
+                               TimeSystem timeSystem )
    {
          // separate whole and fractional days
       long lday = static_cast<long>( day );
@@ -152,7 +152,7 @@ namespace gpstk
    CommonTime& CommonTime::setInternal( long day,
                                         long msod,
                                         double fsod,
-                                        const TimeSystem& timeSystem )
+                                        TimeSystem timeSystem )
    {
       if( day < BEGIN_LIMIT_JDAY || day > END_LIMIT_JDAY )
       {
@@ -373,8 +373,10 @@ namespace gpstk
            right.m_timeSystem != TimeSystem::Any) &&
           m_timeSystem != right.m_timeSystem)
       {
-         InvalidRequest ir("CommonTime objects not in same time system, cannot be compared: " +
-                           m_timeSystem.asString() + " != " + right.m_timeSystem.asString());
+         InvalidRequest ir(
+            "CommonTime objects not in same time system, cannot be compared: " +
+            gpstk::StringUtils::asString(m_timeSystem) + " != " +
+            gpstk::StringUtils::asString(right.m_timeSystem));
          GPSTK_THROW( ir );
       }
 
@@ -417,7 +419,7 @@ namespace gpstk
           << setw(7) << m_day  << " "
           << setw(8) << m_msod << " "
           << fixed << setprecision(15) << setw(17) << m_fsod
-          << " " << m_timeSystem.asString() ;
+          << " " << gpstk::StringUtils::asString(m_timeSystem) ;
       return oss.str();
    }
 

@@ -698,8 +698,8 @@ namespace gpstk
             && ts != storeTimeSystem)
          {
             InvalidRequest ir("Conflicting time systems: " +
-                              ts.asString() + " - " +
-                              storeTimeSystem.asString());
+                              gpstk::StringUtils::asString(ts) + " - " +
+                              gpstk::StringUtils::asString(storeTimeSystem));
             GPSTK_THROW(ir);
          }
       }

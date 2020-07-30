@@ -75,7 +75,7 @@ namespace gpstk
 
       // TimeSystem for this stream
       TimeSystem timeSystem;
-      timeSystem.fromString(strm.header.timeSystemString());
+      timeSystem = gpstk::StringUtils::asTimeSystem(strm.header.timeSystemString());
 
       // loop until an error occurs, or until the entire record (which may consist
       // of two lines) is read.

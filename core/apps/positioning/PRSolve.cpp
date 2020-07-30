@@ -821,7 +821,7 @@ try {
       LOG(VERBOSE) << "\nSP3 Ephemeris Store time intervals for " << sat
          << " are " << dtp << " (pos), and " << dtc << " (clk)";
       LOG(VERBOSE) << "SP3 Ephemeris store time system "
-         << C.SP3EphStore.getTimeSystem().asString();
+                   << gpstk::StringUtils::asString(C.SP3EphStore.getTimeSystem());
 
       // set gap checking - don't b/c TimeStep may vary GPS/GLO
       // TD this is a problem
@@ -1278,7 +1278,7 @@ try {
          LOG(VERBOSE) << "Input header for RINEX file " << filename;
          Rhead.dump(LOGstrm);
          LOG(VERBOSE) << "Time system for RINEX file " << filename
-            << " is " << istrm.timesystem.asString();
+                      << " is " << gpstk::StringUtils::asString(istrm.timesystem);
       }
 
       // does header include C1C (for DCB correction)?

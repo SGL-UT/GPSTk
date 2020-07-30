@@ -222,7 +222,7 @@ namespace gpstk
 
             // time system
             string ts = upperCase(line.substr(9,3));
-            timeSystem.fromString(ts);
+            timeSystem = gpstk::StringUtils::asTimeSystem(ts);
          }
          else
          {
@@ -435,22 +435,25 @@ namespace gpstk
 
       // line 13
       string ft("cc");
-      if(!isVerA) {
+      if(!isVerA)
+      {
          ft[0] = system.systemChar();
          ft[1] = ' ';
       }
-      if(isVerB) {
-         TimeSystem::Systems tsys = timeSystem.getTimeSystem();
-         if(tsys != TimeSystem::GPS && tsys != TimeSystem::UTC) {
+      if(isVerB)
+      {
+         if(timeSystem != TimeSystem::GPS && timeSystem != TimeSystem::UTC)
+         {
             FFStreamError ffse("Time system must be GPS or UTC");
             GPSTK_THROW(ffse);
          }
       }
-      if(isVerC || isVerD) {
-         TimeSystem::Systems tsys = timeSystem.getTimeSystem();
-         if(   tsys != TimeSystem::GPS && tsys != TimeSystem::GLO
-            && tsys != TimeSystem::GAL && tsys != TimeSystem::TAI
-            && tsys != TimeSystem::UTC && tsys != TimeSystem::QZS ) {
+      if(isVerC || isVerD)
+      {
+         if(timeSystem != TimeSystem::GPS && timeSystem != TimeSystem::GLO &&
+            timeSystem != TimeSystem::GAL && timeSystem != TimeSystem::TAI &&
+            timeSystem != TimeSystem::UTC && timeSystem != TimeSystem::QZS )
+         {
             FFStreamError ffse("Time system must be GPS, GLO, GAL, TAI, UTC, or QZS");
             GPSTK_THROW(ffse);
          }

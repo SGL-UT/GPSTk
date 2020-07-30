@@ -2098,7 +2098,7 @@ namespace gpstk
       sec   = asDouble(line.substr(30, 13));
       tsys  =          line.substr(48,  3) ;
 
-      ts.fromString(tsys);
+      ts = gpstk::StringUtils::asTimeSystem(tsys);
 
       return CivilTime(year, month, day, hour, min, sec, ts);
    } // end parseTime
@@ -2107,7 +2107,7 @@ namespace gpstk
    string Rinex3ObsHeader::writeTime(const CivilTime& civtime) const
    {
       using gpstk::StringUtils::asString;
-      string line;
+      string line, tsStr(gpstk::StringUtils::asString(civtime.getTimeSystem()));
 
       line  = rightJustify(asString<short>(civtime.year    )   ,  6);
       line += rightJustify(asString<short>(civtime.month   )   ,  6);
@@ -2115,7 +2115,7 @@ namespace gpstk
       line += rightJustify(asString<short>(civtime.hour    )   ,  6);
       line += rightJustify(asString<short>(civtime.minute  )   ,  6);
       line += rightJustify(asString(       civtime.second,7)   , 13);
-      line += rightJustify((civtime.getTimeSystem()).asString(),  8);
+      line += rightJustify(tsStr,  8);
 
       return line;
    } // end writeTime

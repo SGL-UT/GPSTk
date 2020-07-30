@@ -190,8 +190,8 @@ namespace gpstk
    {
       string msg;
       ostringstream oss;
-      oss << "Convert from " << fromSys.asString()
-         << " to " << toSys.asString() << " : ";
+      oss << "Convert from " << gpstk::StringUtils::asString(fromSys)
+         << " to " << gpstk::StringUtils::asString(toSys) << " : ";
 
       if(toSys == fromSys) {
          oss << "time systems are the same";
@@ -227,7 +227,7 @@ namespace gpstk
 
       // first correct for leap seconds
       const CivilTime civt(ttag);
-      double dt = TimeSystem::Correction(fromSys, targetSys,
+      double dt = gpstk::getTimeSystemCorrection(fromSys, targetSys,
                               civt.year, civt.month, civt.day);
       toReturn += dt;
       // the corrected timetag: now only the system, not the value, matters

@@ -67,10 +67,7 @@ using namespace gpstk;
 %rename(toCommonTime) *::convertToCommonTime() const;
 %ignore *::operator CommonTime() const;
 
-%ignore gpstk::TimeSystem::TimeSystem(int i);
-%ignore gpstk::TimeSystem::getTimeSystem();
 %include "TimeSystem.hpp"
-%include "TimeSystem.i"
 
 %include "TimeTag.hpp"
 %include "TimeConstants.hpp"
@@ -454,6 +451,7 @@ renameEnums('CarrierBand')
 renameEnums('TrackingCode')
 renameEnums('ObservationType')
 renameEnums('NavType')
+renameEnums('TimeSystem')
 del renameEnums
 del IntEnum
 %}

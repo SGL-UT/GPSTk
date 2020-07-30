@@ -2,7 +2,7 @@
 //              Python stuff
 ///////////////////////////////////////////////
 %pythoncode %{
-def now(timeSystem=TimeSystem('UTC')):
+def now(timeSystem=gpstk.TimeSystem.UTC):
     """
     Returns the current time (defined by what SystemTime() returns)
     in a CommonTime format, in the given TimeSystem.

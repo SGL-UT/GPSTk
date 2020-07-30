@@ -208,15 +208,15 @@ public:
       const SatID sid32(PRN32,SatelliteSystem::GPS);
       const SatID sid33(PRN33,SatelliteSystem::GPS);
 
-      CivilTime Time(2006,1,31,11,45,0,2);
+      CivilTime Time(2006,1,31,11,45,0,TimeSystem::GPS);
          // Border Time (Time of Border test cases)
-      CivilTime bTime(2006,1,31,2,0,0,2);
+      CivilTime bTime(2006,1,31,2,0,0,TimeSystem::GPS);
       const CommonTime ComTime = Time.convertToCommonTime();
       const CommonTime CombTime = bTime.convertToCommonTime();
 
       try
       {
-         CivilTime crazy(1950,1,31,2,0,0,2);
+         CivilTime crazy(1950,1,31,2,0,0,TimeSystem::GPS);
          const CommonTime Comcrazy = (CommonTime)crazy;
 
             //--------------------------------------------------
@@ -387,9 +387,9 @@ public:
       SatID sid32(PRN32,SatelliteSystem::GPS);
       SatID sid33(PRN33,SatelliteSystem::GPS);
 
-      CivilTime Time(2006,1,31,11,45,0,1);
+      CivilTime Time(2006,1,31,11,45,0,TimeSystem::Any);
          // Border Time (Time of Border test cases)
-      CivilTime bTime(2006,1,31,2,0,0,1);
+      CivilTime bTime(2006,1,31,2,0,0,TimeSystem::Any);
       const CommonTime ComTime = (CommonTime)Time;
       const CommonTime CombTime = (CommonTime)bTime;
 
@@ -527,9 +527,9 @@ public:
          SatID sid32(PRN32,SatelliteSystem::GPS);
          SatID sid33(PRN33,SatelliteSystem::GPS);
 
-         CivilTime tTime(2006,1,31,11,45,0,1);
+         CivilTime tTime(2006,1,31,11,45,0,TimeSystem::Any);
             // Border Time (Time of Border test cases)
-         CivilTime bTime(2006,1,31,2,0,0,1);
+         CivilTime bTime(2006,1,31,2,0,0,TimeSystem::Any);
          const CommonTime comTime = (CommonTime)tTime;
          const CommonTime combTime = (CommonTime)bTime;
 
@@ -581,9 +581,9 @@ public:
          SatID sid32(PRN32,SatelliteSystem::GPS);
          SatID sid33(PRN33,SatelliteSystem::GPS);
 
-         CivilTime Time(2006,1,31,11,45,0,1);
+         CivilTime Time(2006,1,31,11,45,0,TimeSystem::Any);
             // Border Time (Time of Border test cases)
-         CivilTime bTime(2006,1,31,2,0,0,1);
+         CivilTime bTime(2006,1,31,2,0,0,TimeSystem::Any);
          const CommonTime comTime = (CommonTime)Time;
          const CommonTime combTime = (CommonTime)bTime;
 
@@ -670,8 +670,8 @@ public:
         short IODC32 = 441;
         short IODC33 = 392;
 
-        CivilTime Time(2006,1,31,11,45,0,2);
-        CivilTime bTime(2006,1,31,2,0,0,2); // Border Time (Time of Border test cases)
+        CivilTime Time(2006,1,31,11,45,0,TimeSystem::GPS);
+        CivilTime bTime(2006,1,31,2,0,0,TimeSystem::GPS); // Border Time (Time of Border test cases)
         const CommonTime ComTime = (CommonTime)Time;
         const CommonTime CombTime = (CommonTime)bTime;
 
@@ -882,13 +882,13 @@ public:
       short PRN = 1;
       SatID sid(PRN,SatelliteSystem::GPS);
 
-      CivilTime Time(2006,1,31,11,45,0,2);
-         // CivilTime TimeB(2006,1,31,9,59,44,2);
-         // CivilTime TimeE(2006,1,31,13,59,44,2);
-      CivilTime TimeBeginning(2006,1,31,10,0,0,2);
-      CivilTime TimeEnd(2006,1,31,14,0,0,2);
-      CivilTime defaultBeginning(4713, 1, 1, 0, 0, 0, 2);
-      CivilTime defaultEnd(-4713, 1, 1, 0, 0, 0, 2);
+      CivilTime Time(2006,1,31,11,45,0,TimeSystem::GPS);
+         // CivilTime TimeB(2006,1,31,9,59,44,TimeSystem::GPS);
+         // CivilTime TimeE(2006,1,31,13,59,44,TimeSystem::GPS);
+      CivilTime TimeBeginning(2006,1,31,10,0,0,TimeSystem::GPS);
+      CivilTime TimeEnd(2006,1,31,14,0,0,TimeSystem::GPS);
+      CivilTime defaultBeginning(4713, 1, 1, 0, 0, 0, TimeSystem::GPS);
+      CivilTime defaultEnd(-4713, 1, 1, 0, 0, 0, TimeSystem::GPS);
       CivilTime check;
       const CommonTime ComTime  = Time.convertToCommonTime();
       const CommonTime ComTimeB = TimeBeginning.convertToCommonTime();
@@ -976,8 +976,8 @@ public:
       RinexEphemerisStore rinEphStore;
       rinEphStore.loadFile(inputRinexNavData.c_str());
 
-      CivilTime TimeMax(2006,1,31,15,45,0,2);
-      CivilTime TimeMin(2006,1,31,3,0,0,2);
+      CivilTime TimeMax(2006,1,31,15,45,0,TimeSystem::GPS);
+      CivilTime TimeMin(2006,1,31,3,0,0,TimeSystem::GPS);
 
          // cout << "TimeMax: " << TimeMax << "\n" << "TimeMin: " << TimeMin << "\n";
 
@@ -1072,7 +1072,7 @@ public:
                       gpsEphStore.addEphemeris(GPSEphemeris(*it));
                       }
 
-                      CivilTime Time(2006,1,31,11,45,0,2);
+                      CivilTime Time(2006,1,31,11,45,0,TimeSystem::GPS);
                       const CommonTime ComTime = (CommonTime)Time;
 
                       try
@@ -1232,7 +1232,7 @@ public:
 
       OrbitEphStore orbEphStore; // Store for found ephemerides
 
-      CivilTime Time(2006,1,31,13,0,1,2);
+      CivilTime Time(2006,1,31,13,0,1,TimeSystem::GPS);
       const CommonTime ComTime = (CommonTime)Time;
 
       short PRN0 = 0;
@@ -1356,7 +1356,7 @@ public:
 
       OrbitEphStore orbEphStore; // Store for found ephemerides
 
-      CivilTime Time(2006,1,31,13,0,1,2);
+      CivilTime Time(2006,1,31,13,0,1,TimeSystem::GPS);
       const CommonTime ComTime = (CommonTime)Time;
 
       short PRN0 = 0;

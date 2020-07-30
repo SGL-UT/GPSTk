@@ -160,7 +160,7 @@ namespace gpstk
 
          /// return a string with time system name
       std::string timeSystemString() const throw()
-      { return timeSystem.asString(); };
+      { return gpstk::StringUtils::asString(timeSystem); };
 
          // The next four lines is our common interface
          /// SP3Header is a "header" so this function always returns true.
