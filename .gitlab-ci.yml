@@ -236,6 +236,7 @@ test_debian_7:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_debian_7
   after_script:
@@ -264,6 +265,7 @@ test_debian_8:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_debian_8
   after_script:
@@ -290,6 +292,7 @@ test_debian_9:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_debian_9
   after_script:
@@ -316,6 +319,7 @@ test_debian_10:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_debian_10
   after_script:
@@ -343,6 +347,7 @@ test_conda_py27:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_conda_py27
   after_script:
@@ -370,6 +375,7 @@ test_conda_py36:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_conda_py36
   after_script:
@@ -397,6 +403,7 @@ test_redhat:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_redhat
   after_script:
@@ -423,6 +430,7 @@ test_redhat_swig3:
     when: on_failure
     paths:
       - build/Testing/Temporary/
+      - build/swig/
   dependencies:
     - build_redhat_swig3
   after_script:
@@ -447,6 +455,7 @@ test_windows:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_windows
   allow_failure: true
