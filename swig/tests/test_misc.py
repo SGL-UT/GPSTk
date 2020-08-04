@@ -8,16 +8,16 @@ import gpstk
 
 class ReferenceFrame_test(unittest.TestCase):
     def test_unknown(self):
-        r = gpstk.ReferenceFrame()
-        self.assertEqual('Unknown', str(r))
+        r = gpstk.ReferenceFrame.Unknown
+        self.assertEqual('ReferenceFrame.Unknown', str(r))
 
     def test_string_input(self):
-        r = gpstk.ReferenceFrame('PZ90')
-        self.assertEqual('PZ90', str(r))
+        r = gpstk.ReferenceFrame.PZ90
+        self.assertEqual('ReferenceFrame.PZ90', str(r))
 
     def test_constant_input(self):
-        r = gpstk.ReferenceFrame(gpstk.ReferenceFrame.WGS84)
-        self.assertEqual('WGS84', str(r))
+        r = gpstk.ReferenceFrame.WGS84
+        self.assertEqual('ReferenceFrame.WGS84', str(r))
 
 
 class SatID_test(unittest.TestCase):
@@ -128,7 +128,7 @@ class Position_test(unittest.TestCase):
     def test_functions(self):
         system = gpstk.Position.Cartesian
         ell = gpstk.PZ90Ellipsoid()
-        frame = gpstk.ReferenceFrame(gpstk.ReferenceFrame.PZ90)
+        frame = gpstk.ReferenceFrame.PZ90
         p = gpstk.Position(10000.0, 150000.0, 200000.0, system, ell, frame)
         q = gpstk.Position(20000.0, 160000.0, 190000.0, system, ell, frame)
         self.assertAlmostEqual(1.32756277187, q.elevation(p))
@@ -141,7 +141,7 @@ class Position_test(unittest.TestCase):
         self.assertEqual(gpstk.Position.Cartesian, p.getCoordinateSystem())
         p = gpstk.spherical(45, 60, 100000, model=gpstk.PZ90Ellipsoid())
         self.assertEqual(gpstk.Position.Spherical, p.getCoordinateSystem())
-        p = gpstk.geodetic(frame=gpstk.ReferenceFrame('WGS84'))
+        p = gpstk.geodetic(frame=gpstk.ReferenceFrame.WGS84)
         self.assertEqual(gpstk.Position.Geodetic, p.getCoordinateSystem())
         p = gpstk.geocentric(latitude=60, radius=10000)
         self.assertEqual(gpstk.Position.Geocentric, p.getCoordinateSystem())
@@ -285,7 +285,7 @@ class Xvt_test(unittest.TestCase):
         data.clkbias = 0.0001
         data.clkdrift = 0.05
         data.relcorr = 0.83
-        data.frame = gpstk.ReferenceFrame(gpstk.ReferenceFrame.WGS84)
+        data.frame = gpstk.ReferenceFrame.WGS84
         self.assertAlmostEqual(0.0001, data.getClockBias())
 
         expected = 1.446445072869704e-11

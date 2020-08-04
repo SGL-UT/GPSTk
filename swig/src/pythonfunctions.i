@@ -79,25 +79,25 @@ def solidTides(time, position):
 
 
 def cartesian(x=0.0, y=0.0, z=0.0,
-              model=None, frame=ReferenceFrame('Unknown')):
+              model=None, frame=ReferenceFrame.Unknown):
     "Returns a Position in the Cartesian coordinate system."
     return Position(x, y, z, Position.Cartesian, model, frame)
 
 
 def geodetic(latitude=0.0, longitude=0.0, height=0.0,
-             model=None, frame=ReferenceFrame('Unknown')):
+             model=None, frame=ReferenceFrame.Unknown):
     "Returns a Position in the Geodetic coordinate system."
     return Position(latitude, longitude, height, Position.Geodetic, model, frame)
 
 
 def spherical(theta=0.0, phi=0.0, radius=0.0,
-              model=None, frame=ReferenceFrame('Unknown')):
+              model=None, frame=ReferenceFrame.Unknown):
     "Returns a Position in the Spherical coordinate system."
     return Position(theta, phi, radius, Position.Spherical, model, frame)
 
 
 def geocentric(latitude=0.0, longitude=0.0, radius=0.0,
-               model=None, frame=ReferenceFrame('Unknown')):
+               model=None, frame=ReferenceFrame.Unknown):
     "Returns a Position in the Geocentric coordinate system."
     return Position(latitude, longitude, radius, Position.Geocentric, model, frame)
 

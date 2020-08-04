@@ -19,6 +19,7 @@ using namespace gpstk;
 %include "ObservationType.hpp"
 %include "NavType.hpp"
 %include "TimeSystem.hpp"
+%include "ReferenceFrame.hpp"
 
 // This code allows us to turn C++ enums into Python enums while
 // maintaining compatibility in SWIG bindings.  We specifically use an
@@ -48,6 +49,7 @@ renameEnums('TrackingCode')
 renameEnums('ObservationType')
 renameEnums('NavType')
 renameEnums('TimeSystem')
+renameEnums('ReferenceFrame')
 del renameEnums
 del IntEnum
 %}
@@ -172,9 +174,6 @@ del IntEnum
 %include "Triple.hpp"
 %include "Triple.i"
 
-%ignore gpstk::ReferenceFrame::ReferenceFrame(int i);
-%rename(__str__) gpstk::ReferenceFrame::asString() const;
-%include "ReferenceFrame.hpp"
 %include "EllipsoidModel.hpp"
 %include "Xvt.hpp"
 

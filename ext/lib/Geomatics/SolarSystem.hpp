@@ -153,7 +153,7 @@ public:
    /// Empty and only constructor. The IERS convention should be consistent with the
    /// SolarSystemEphemeris file when initializeWithBinaryFile() is called, otherwise
    /// a warning is issued.
-   SolarSystem(IERSConvention inputiers=IERSConvention::NONE) throw()
+   SolarSystem(IERSConvention inputiers=IERSConvention::Unknown) throw()
       { iersconv = inputiers; }
 
    /// Choose an IERS Convention. If the input IERS convention is inconsistent with
@@ -178,7 +178,7 @@ public:
       int iret = SolarSystemEphemeris::initializeWithBinaryFile(filename);
 
       // if not defined, set IERS convention to the default; otherwise test it.
-      if(iersconv == IERSConvention::NONE) {
+      if(iersconv == IERSConvention::Unknown) {
          if(EphNumber() == 403)
             iersconv = IERSConvention::IERS1996;
          else if(EphNumber() == 405)
@@ -399,7 +399,7 @@ private:
          (ephno == 405 && conv != IERSConvention::IERS2003
                        && conv != IERSConvention::IERS2010)) {
 
-            LOG(WARNING) << "Warning - IERS convention (" << conv.asString()
+            LOG(WARNING) << "Warning - IERS convention (" << conv
                   << ") is inconsistent with SolarSystemEphemeris (" << ephno << ")";
          }
    }

@@ -64,8 +64,8 @@ namespace gpstk
       TAI,         ///< International Atomic Time
       TT,          ///< Terrestrial time (used in IERS conventions)
       TDB,         ///< Barycentric dynamical time (JPL ephemeris); very near TT
-         // count MUST BE LAST
-      count        ///< the number of systems - not a system
+         // Last MUST BE LAST
+      Last        ///< Used to verify that all items are described at compile time
    };
 
 
@@ -121,7 +121,9 @@ namespace gpstk
 
    namespace StringUtils
    {
+         /// Convert a TimeSystem enum to its string representation.
       std::string asString(TimeSystem ts);
+         /// Convert a string representation of TimeSystem to an enum.
       TimeSystem asTimeSystem(const std::string& s);
    }
 
