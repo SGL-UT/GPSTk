@@ -65,6 +65,7 @@ namespace gpstk
 
 #define CBDESCTEST(EXP, CARRIERBAND) TUASSERTE(std::string, EXP, gpstk::ObsID::cbDesc[CARRIERBAND])
 #define TCDESCTEST(EXP, TRACKINGCODE) TUASSERTE(std::string, EXP, gpstk::ObsID::tcDesc[TRACKINGCODE])
+#define OTDESCTEST(EXP, OBSTYPE) TUASSERTE(std::string, EXP, gpstk::ObsID::otDesc[OBSTYPE])
 
 class ObsID_T
 {
@@ -294,6 +295,30 @@ public:
       TCDESCTEST("SBASQ5", gpstk::TrackingCode::SQ5);
       TURETURN();
    }
+
+
+   unsigned otDescTest()
+   {
+      TUDEF("ObsID", "otDesc");
+      OTDESCTEST("UnknownType", gpstk::ObservationType::Unknown);
+      OTDESCTEST("AnyType", gpstk::ObservationType::Any);
+      OTDESCTEST("pseudorange", gpstk::ObservationType::Range);
+      OTDESCTEST("phase", gpstk::ObservationType::Phase);
+      OTDESCTEST("doppler", gpstk::ObservationType::Doppler);
+      OTDESCTEST("snr", gpstk::ObservationType::SNR);
+      OTDESCTEST("channel", gpstk::ObservationType::Channel);
+      OTDESCTEST("demodStatus", gpstk::ObservationType::DemodStat);
+      OTDESCTEST("iono", gpstk::ObservationType::Iono);
+      OTDESCTEST("ssi", gpstk::ObservationType::SSI);
+      OTDESCTEST("lli", gpstk::ObservationType::LLI);
+      OTDESCTEST("tlen", gpstk::ObservationType::TrackLen);
+      OTDESCTEST("navmsg", gpstk::ObservationType::NavMsg);
+      OTDESCTEST("rngSigma", gpstk::ObservationType::RngStdDev);
+      OTDESCTEST("phsSigma", gpstk::ObservationType::PhsStdDev);
+      OTDESCTEST("freqIndx", gpstk::ObservationType::FreqIndx);
+      OTDESCTEST("undefined", gpstk::ObservationType::Undefined);
+      TURETURN();
+   }
 };
 
 
@@ -309,6 +334,7 @@ int main()
    errorTotal += testClass.operatorTest();
    errorTotal += testClass.cbDescTest();
    errorTotal += testClass.tcDescTest();
+   errorTotal += testClass.otDescTest();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
              << std::endl;

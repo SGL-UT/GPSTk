@@ -258,7 +258,7 @@ decodeTest()
    TUCSM("RinexObsID(\"EI6 \")");
    gpstk::RinexObsID roidI6("EI6 ", gpstk::Rinex3ObsBase::currentVersion);
    TUASSERTE(gpstk::ObservationType, gpstk::ObservationType::Iono, roidI6.type);
-   TUASSERTE(gpstk::CarrierBand, gpstk::CarrierBand::E6, roidI6.band);
+   TUASSERTE(gpstk::CarrierBand, gpstk::CarrierBand::G2a, roidI6.band);
    TUASSERTE(gpstk::TrackingCode, gpstk::TrackingCode::Undefined,roidI6.code);
    TUCSM("RinexObsID(\"CI7 \")");
    gpstk::RinexObsID roidI7("CI7 ", gpstk::Rinex3ObsBase::currentVersion);

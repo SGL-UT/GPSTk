@@ -8,6 +8,8 @@ namespace gpstk
       {
          switch (e)
          {
+            case CarrierBand::Unknown:   return "Unknown";
+            case CarrierBand::Any:       return "Any";
             case CarrierBand::L1L2:      return "L1L2";
             case CarrierBand::L1:        return "L1";
             case CarrierBand::L2:        return "L2";
@@ -17,24 +19,25 @@ namespace gpstk
             case CarrierBand::G2a:       return "G2a";
             case CarrierBand::G2:        return "G2";
             case CarrierBand::G3:        return "G3";
-            case CarrierBand::E6:        return "E6";
             case CarrierBand::E5b:       return "E5b";
             case CarrierBand::E5ab:      return "E5ab";
+            case CarrierBand::E6:        return "E6";
             case CarrierBand::B1:        return "B1";
-            case CarrierBand::B3:        return "B3";
             case CarrierBand::B2:        return "B2";
+            case CarrierBand::B3:        return "B3";
             case CarrierBand::I9:        return "I9";
-            case CarrierBand::Unknown:   return "Unknown";
-            case CarrierBand::Any:       return "Any";
             case CarrierBand::Undefined: return "Undefined";
-            case CarrierBand::Last:      return "Last";
             default:                     return "???";
-         }
-      }
+         } // switch (e)
+      } // asString(CarrierBand)
 
 
       CarrierBand asCarrierBand(const std::string& s) throw()
       {
+         if (s == "Unknown")
+            return CarrierBand::Unknown;
+         if (s == "Any")
+            return CarrierBand::Any;
          if (s == "L1L2")
             return CarrierBand::L1L2;
          if (s == "L1")
@@ -53,29 +56,23 @@ namespace gpstk
             return CarrierBand::G2;
          if (s == "G3")
             return CarrierBand::G3;
-         if (s == "E6")
-            return CarrierBand::E6;
          if (s == "E5b")
             return CarrierBand::E5b;
          if (s == "E5ab")
             return CarrierBand::E5ab;
+         if (s == "E6")
+            return CarrierBand::E6;
          if (s == "B1")
             return CarrierBand::B1;
-         if (s == "B3")
-            return CarrierBand::B3;
          if (s == "B2")
             return CarrierBand::B2;
+         if (s == "B3")
+            return CarrierBand::B3;
          if (s == "I9")
             return CarrierBand::I9;
-         if (s == "Unknown")
-            return CarrierBand::Unknown;
-         if (s == "Any")
-            return CarrierBand::Any;
          if (s == "Undefined")
             return CarrierBand::Undefined;
-         if (s == "Last")
-            return CarrierBand::Last;
          return CarrierBand::Unknown;
-      }
+      } // asCarrierBand(string)
    } // namespace StringUtils
 } // namespace gpstk

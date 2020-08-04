@@ -1,3 +1,46 @@
+/** @warning This code is automatically generated.
+ *
+ *  DO NOT EDIT THIS CODE BY HAND.
+ *
+ *  Refer to the documenation in the toolkit_docs gitlab project.
+ */
+
+//==============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
+//
+//==============================================================================
+
+//==============================================================================
+//
+//  This software developed by Applied Research Laboratories at the University
+//  of Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
+//
+//  Pursuant to DoD Directive 523024 
+//
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
+//
+//==============================================================================
+
 #ifndef GPSTK_TRACKINGCODE_HPP
 #define GPSTK_TRACKINGCODE_HPP
 
@@ -36,7 +79,6 @@ namespace gpstk
       G1P,       ///< Modernized GPS L1C civil code tracking (pilot)
       G1D,       ///< Modernized GPS L1C civil code tracking (data)
       G1X,       ///< Modernized GPS L1C civil code tracking (pilot + data)
-
       GCA,       ///< Legacy Glonass civil signal
       GP,        ///< Legacy Glonass precise signal
       IR3,       ///< Glonass L3 I code
@@ -48,7 +90,6 @@ namespace gpstk
       L2CSIOCp,  ///< GLONASS L2 CSI+OCp combined tracking
       L2CSI,     ///< GLONASS L2 CSI code
       L2OCP,     ///< GLONASS L2 OCp code
-
       A,         ///< Galileo L1 PRS code
       B,         ///< Galileo E1-B signal, supporting OS/HAS/SoL
       C,         ///< Galileo E1 Dataless code
@@ -68,12 +109,10 @@ namespace gpstk
       C6,        ///< Galileo E6 Dataless code
       BC6,       ///< Galileo E6 B+C combined tracking
       ABC6,      ///< Galileo E6 A+B+C combined tracking
-
       SCA,       ///< SBAS civil code
       SI5,       ///< SBAS L5 I code
       SQ5,       ///< SBAS L5 Q code
       SIQ5,      ///< SBAS L5 I+Q code
-
       JCA,       ///< QZSS civil code
       JD1,       ///< QZSS L1C(D)
       JP1,       ///< QZSS L1C(P)
@@ -94,7 +133,6 @@ namespace gpstk
       JD6,       ///< QZSS L6 Block II D code
       JE6,       ///< QZSS L6 Block II E code
       JDE6,      ///< QZSS L6 Block II D+E combined tracking
-
       CI1,       ///< BeiDou B1 I code
       CQ1,       ///< BeiDou B1 Q code
       CIQ1,      ///< BeiDou B1 I+Q code
@@ -119,7 +157,6 @@ namespace gpstk
       CQ2b,      ///< BeiDou B2b Q code
       CodelessC, ///< BeiDou codeless tracking
       CIQ3A,     ///< BeiDou B3A I+Q code
-
       IA5,       ///< IRNSS L5 SPS
       IB5,       ///< IRNSS L5 RS(D)
       IC5,       ///< IRNSS L5 RS(P)
@@ -128,13 +165,12 @@ namespace gpstk
       IB9,       ///< IRNSS S-band RS(D)
       IC9,       ///< INRSS S-band RS(P)
       IX9,       ///< IRNSS S-band B+C
-
       Undefined, ///< Code is known to be undefined (as opposed to unknown)
       Last,      ///< Used to verify that all items are described at compile time
-   };
+   }; // enum class TrackingCode
 
       /** Define an iterator so C++11 can do things like
-       * for (TrackingCode tc : TrackingCodeIterator()) */
+       * for (TrackingCode i : TrackingCodeIterator()) */
    typedef EnumIterator<TrackingCode, TrackingCode::Unknown, TrackingCode::Last> TrackingCodeIterator;
 
    namespace StringUtils
@@ -144,7 +180,6 @@ namespace gpstk
          /// Convert a string name to an TrackingCode
       TrackingCode asTrackingCode(const std::string& s) throw();
    }
-
 } // namespace gpstk
 
 #endif // GPSTK_TRACKINGCODE_HPP

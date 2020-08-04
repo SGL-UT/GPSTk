@@ -26,11 +26,11 @@ namespace gpstk
             case ObservationType::FreqIndx:  return "FreqIndx";
             case ObservationType::Undefined: return "Undefined";
             default:                         return "???";
-         }
-      }
+         } // switch (e)
+      } // asString(ObservationType)
 
 
-      gpstk::ObservationType asObservationType(const std::string& s) throw()
+      ObservationType asObservationType(const std::string& s) throw()
       {
          if (s == "Unknown")
             return ObservationType::Unknown;
@@ -67,6 +67,6 @@ namespace gpstk
          if (s == "Undefined")
             return ObservationType::Undefined;
          return ObservationType::Unknown;
-      }
+      } // asObservationType(string)
    } // namespace StringUtils
 } // namespace gpstk

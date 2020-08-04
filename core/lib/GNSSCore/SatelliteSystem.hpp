@@ -1,29 +1,83 @@
+/** @warning This code is automatically generated.
+ *
+ *  DO NOT EDIT THIS CODE BY HAND.
+ *
+ *  Refer to the documenation in the toolkit_docs gitlab project.
+ */
+
+//==============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004-2019, The University of Texas at Austin
+//
+//==============================================================================
+
+//==============================================================================
+//
+//  This software developed by Applied Research Laboratories at the University
+//  of Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Department of Defense. The U.S. Government retains all rights to use,
+//  duplicate, distribute, disclose, or release this software. 
+//
+//  Pursuant to DoD Directive 523024 
+//
+//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                            release, distribution is unlimited.
+//
+//==============================================================================
+
 #ifndef GPSTK_SATELLITESYSTEM_HPP
 #define GPSTK_SATELLITESYSTEM_HPP
 
 #include <string>
+#include "EnumIterator.hpp"
 
 namespace gpstk
 {
-      /** Supported satellite systems
-       * @note any additions to this enumeration list should also
-       *   be added to convertSatelliteSystemToString() and
-       *   convertStringToSatelliteSystem() and to SatID_T. */
+      /// Supported satellite systems
    enum class SatelliteSystem
    {
-      GPS = 1,
+      Unknown,
+      GPS,
       Galileo,
       Glonass,
       Geosync,
       LEO,
       Transit,
-      BeiDou,
+      BeiDou,      ///< aka Compass
       QZSS,
-      IRNSS,
+      IRNSS,       ///< Official name changed from IRNSS to NavIC
       Mixed,
       UserDefined,
-      Unknown
-   };
+      Last,        ///< Used to verify that all items are described at compile time
+   }; // enum class SatelliteSystem
+
+      /** Define an iterator so C++11 can do things like
+       * for (SatelliteSystem i : SatelliteSystemIterator()) */
+   typedef EnumIterator<SatelliteSystem, SatelliteSystem::Unknown, SatelliteSystem::Last> SatelliteSystemIterator;
+
+   namespace StringUtils
+   {
+         /// Convert a SatelliteSystem to a whitespace-free string name.
+      std::string asString(SatelliteSystem e) throw();
+         /// Convert a string name to an SatelliteSystem
+      SatelliteSystem asSatelliteSystem(const std::string& s) throw();
+   }
 
       /** Translate system enumeration to its string representation.
        * @note The string representation is being used in file
@@ -37,7 +91,8 @@ namespace gpstk
        * @param[in] s The system to get the string name of.
        * @return A space-free string containing the name of the GNSS.
        */
-   inline std::string convertSatelliteSystemToString(SatelliteSystem s);
+   inline std::string convertSatelliteSystemToString(SatelliteSystem s)
+   { return StringUtils::asString(s); }
 
       /** Translate GNSS names as strings into system enumeration
        * equivalents.
@@ -48,72 +103,8 @@ namespace gpstk
        *   exactly match known values.
        */
    inline SatelliteSystem convertStringToSatelliteSystem(
-      const std::string& s);
-
-
-   namespace StringUtils
-   {
-         /// @ingroup StringUtils
-         //@{
-
-         /// SatelliteSystem as a string
-      inline std::string asString(SatelliteSystem s)
-      {
-         return convertSatelliteSystemToString(s);
-      }
-
-         ///@}
-   }
-
-
-   std::string
-   convertSatelliteSystemToString(SatelliteSystem s)
-   {
-      switch(s)
-      {
-         case SatelliteSystem::GPS:         return "GPS";           break;
-         case SatelliteSystem::Galileo:     return "Galileo";       break;
-         case SatelliteSystem::Glonass:     return "GLONASS";       break;
-         case SatelliteSystem::Geosync:     return "Geostationary"; break;
-         case SatelliteSystem::LEO:         return "LEO";           break;
-         case SatelliteSystem::Transit:     return "Transit";       break;
-         case SatelliteSystem::BeiDou:      return "BeiDou";        break;
-         case SatelliteSystem::QZSS:        return "QZSS";          break;
-         case SatelliteSystem::IRNSS:       return "IRNSS";         break;
-         case SatelliteSystem::Mixed:       return "Mixed";         break;
-         case SatelliteSystem::UserDefined: return "UserDefined";   break;
-         case SatelliteSystem::Unknown:     return "Unknown";       break;
-         default:                           return "??";            break;
-      }
-   }
-
-   SatelliteSystem
-   convertStringToSatelliteSystem(const std::string& s)
-   {
-      if (s == "GPS")
-         return SatelliteSystem::GPS;
-      if (s == "Galileo")
-         return SatelliteSystem::Galileo;
-      if (s == "GLONASS")
-         return SatelliteSystem::Glonass;
-      if (s == "Geostationary")
-         return SatelliteSystem::Geosync;
-      if (s == "LEO")
-         return SatelliteSystem::LEO;
-      if (s == "Transit")
-         return SatelliteSystem::Transit;
-      if (s == "BeiDou")
-         return SatelliteSystem::BeiDou;
-      if (s == "QZSS")
-         return SatelliteSystem::QZSS;
-      if (s == "IRNSS")
-         return SatelliteSystem::IRNSS;
-      if (s == "Mixed")
-         return SatelliteSystem::Mixed;
-      if (s == "UserDefined")
-         return SatelliteSystem::UserDefined;
-      return SatelliteSystem::Unknown;
-   }
+      const std::string& s)
+   { return StringUtils::asSatelliteSystem(s); }
 
 } // namespace gpstk
 

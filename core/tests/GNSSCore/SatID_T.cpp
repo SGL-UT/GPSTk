@@ -124,7 +124,7 @@ public:
 
       sat3.dump(outputStream3);
       outputString3 = outputStream3.str();
-      compareString3 = "?? -10";
+      compareString3 = "??? -10";
       TUASSERTE(std::string, compareString3, outputString3);
 
       TURETURN();

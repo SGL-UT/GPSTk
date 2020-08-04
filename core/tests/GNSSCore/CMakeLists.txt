@@ -167,15 +167,15 @@ add_test(GNSSCore_SatMetaDataStore SatMetaDataStore_T)
 
 add_executable(RinexObsID_T RinexObsID_T.cpp)
 target_link_libraries(RinexObsID_T gpstk)
-add_test(GNSSEph_RinexObsID RinexObsID_T)
+add_test(GNSSCore_RinexObsID RinexObsID_T)
 
 add_executable(RinexSatID_T RinexSatID_T.cpp)
 target_link_libraries(RinexSatID_T gpstk)
-add_test(GNSSEph_RinexSatID RinexSatID_T)
+add_test(GNSSCore_RinexSatID RinexSatID_T)
 
 add_executable(SatID_T SatID_T.cpp)
 target_link_libraries(SatID_T gpstk)
-add_test(GNSSEph_SatID SatID_T)
+add_test(GNSSCore_SatID SatID_T)
 
 ###############################################################################
 ###############################################################################
