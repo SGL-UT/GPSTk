@@ -60,7 +60,7 @@ static_analysis:
 
 build_debian_7:
   stage: build
-  extends: .big_build
+  extends: .normal_job
   tags:
     - docker-executor
     # Not all docker runners support debian 7
@@ -222,7 +222,7 @@ build_windows:
 # Runs all tests of GPSTK for each platform
 test_debian_7:
   stage: test
-  extends: .big_build
+  extends: .normal_job
   tags:
     - docker-executor
     # Not all docker runners support debian 7

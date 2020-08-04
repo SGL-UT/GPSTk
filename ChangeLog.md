@@ -1,3 +1,65 @@
+# Version 6.0.0   Thursday July 30, 2020
+
+Modifications by Author
+-----------------------
+     Amelia Wilson <awilson@arlut.utexas.edu> (1):
+           Klobuchar model Nav Reader support
+
+     Andrew Kuck <kuck@arlut.utexas.edu> (8):
+           Add jobs to build/test on centos7 with swig3
+           Add jobs to build/test on centos7 with swig3
+           Specify docker registry on image names.
+           Apply suggestion to core/lib/GNSSCore/SVNumXRef.cpp
+           Add Registry to swig3 images.
+           Typo.
+           Add runner tag for deb7 support.
+           Update to latest CI configuration.
+
+     Brent Renfro <renfrob@arlut.utexas.edu> (6):
+           Updated satellite types
+           Simaplifying initialization
+           Updated SVN60 to de-assign PRN23
+           Adding SVN76 as PRN23
+           Fixing block desriptors
+           Updating AntennaStore B3 reference point
+
+     John Knutson <johnk@arlut.utexas.edu> (30):
+           CommonTime::setTimeSystem returns CommonTime&
+           Add accessor methods for Rinex3ObsHeader wavelength factor for python convenience
+           Add stuff to prevent SWIG from generating bad code to modify static constants
+           Don't set RPATH on swig _gpstk.so file, which is resulting in the installed file pointing to the source libgpstk.so
+           Replace use of FileHunter with FileSpecFind.
+           Temporary debugging to try and figure out what's breaking under windows
+           Temporary debugging to try and figure out what's breaking under windows
+           Temporary debugging to try and figure out what's breaking under windows
+           Temporary debugging to try and figure out what's breaking under windows
+           Temporary debugging to try and figure out what's breaking under windows
+           This should fix failures under windows where a path is specified with no wildcards, but not a simple filename with no path
+           Have I ever mentioned how much I like languages where whitespace is syntactically significant?
+           incremental build tweaks
+           Add test for FileSpecFind on a path-less, wildcard-less file
+           Try to make FileSpecFind handle files in current working directory under windows
+           Removing debug output
+           First cut at moving SatelliteSystem to strongly typed enum
+           Revert "First cut at moving SatelliteSystem to strongly typed enum"
+           First round of changes in deprecating doub2for etc.
+           Convert SEMData to use FormattedDouble.
+           Migrate from doub2for etc to FormattedDouble
+           Windows requires explicit operator++/--, will this be enough?
+           Add deprecation message to FileHunter docs
+           Fix typo
+           Add more details to the deprecation statement.
+           split SAT record into CLOCK, LAUNCH and NORAD records
+           Eliminate memory leaks and a few other issues detected by valgrind
+           Resolve remaining valgrind issues
+           Fix some uninitialized data valgrind was complaining about
+           Resolve "swig-wrap Matrix class"
+
+     Quang Duong <qduong@arlut.utexas.edu> (1):
+           Wrapped manual append in vector constructor
+
+
+
 Version 5.0.1   Wednesday June 17, 2020
 
    Modifications by Author

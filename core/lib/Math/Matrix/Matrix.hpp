@@ -74,8 +74,10 @@ namespace gpstk
       typedef typename Vector<T>::value_type value_type;
          /// STL reference type
       typedef typename Vector<T>::reference reference;
+#ifndef SWIG
          /// STL const reference type
       typedef typename Vector<T>::const_reference const_reference;
+#endif
          /// STL iterator type
       typedef typename Vector<T>::iterator iterator;
          /// STL const iterator type
@@ -133,6 +135,9 @@ namespace gpstk
                (*this)(i,j) = mat(topRow + i, topCol + j);
       }
 
+      virtual ~Matrix()
+      {}
+
          /// STL begin
       iterator begin() { return v.begin(); }
          /// STL const begin
@@ -143,8 +148,10 @@ namespace gpstk
       const_iterator end() const { return v.end(); }
          /// STL front
       value_type front() { return v.front(); }
+#ifndef SWIG
          /// STL const front
       const_reference front() const { return v.front();}
+#endif
          /// STL empty
       bool empty() const { return s == 0; }
          /// STL size

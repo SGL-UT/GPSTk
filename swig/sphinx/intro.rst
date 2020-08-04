@@ -113,7 +113,6 @@ Prime examples of things **NOT wrapped** include (most of which are easily repla
 * Command Line utilities (python's built-in argparse does the job better)
 * String utilities
 * Vector graphics utilities
-* Matrix class (trust us, you wouldn't want to use a python wrap of that thing anyway!)
 
 
 

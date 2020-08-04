@@ -66,6 +66,9 @@ namespace gpstk
          /// default constructor
       explicit ConstMatrixBase() {}
 
+      virtual ~ConstMatrixBase()
+      {}
+
          /// the rows()*cols() size of the matrix.
       size_t size() const
       { return static_cast<const BaseClass*>(this)->size(); }
@@ -214,6 +217,9 @@ namespace gpstk
    public:
          /// default constructor
       explicit RefMatrixBase() {}
+
+      virtual ~RefMatrixBase()
+      {}
 
          /// returns a reference to the (i,j) element of the matrix.
       T& operator() (size_t i, size_t j) 
