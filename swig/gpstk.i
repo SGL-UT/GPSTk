@@ -42,6 +42,7 @@ def renameEnums(prefix):
         del globals()[k]
     tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()}
     globals()[prefix] = IntEnum(prefix,tmpD)
+    globals()[prefix].__str__ = lambda x: str(x.name)
 # Turn the gpstk.SatelliteSystem_* constants into a Python enum
 renameEnums('SatelliteSystem')
 renameEnums('CarrierBand')

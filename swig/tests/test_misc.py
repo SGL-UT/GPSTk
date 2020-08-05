@@ -9,15 +9,15 @@ import gpstk
 class ReferenceFrame_test(unittest.TestCase):
     def test_unknown(self):
         r = gpstk.ReferenceFrame.Unknown
-        self.assertEqual('ReferenceFrame.Unknown', str(r))
+        self.assertEqual('Unknown', str(r))
 
     def test_string_input(self):
         r = gpstk.ReferenceFrame.PZ90
-        self.assertEqual('ReferenceFrame.PZ90', str(r))
+        self.assertEqual('PZ90', str(r))
 
     def test_constant_input(self):
         r = gpstk.ReferenceFrame.WGS84
-        self.assertEqual('ReferenceFrame.WGS84', str(r))
+        self.assertEqual('WGS84', str(r))
 
 
 class SatID_test(unittest.TestCase):
