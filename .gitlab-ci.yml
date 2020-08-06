@@ -56,6 +56,20 @@ static_analysis:
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
 
+# Runs the documentation generation
+gen_docs:
+  stage: check
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/debian9_fai_ish
+  script:
+    - doxygen
+  # Allow failures here to prevent blocking the rest of the pipeline.
+  allow_failure: true
+  artifacts:
+    paths:
+      - gpstk_doc_dir/
+
 build_debian_7:
   stage: build
   extends: .normal_job
