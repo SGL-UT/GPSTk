@@ -1,0 +1,74 @@
+# Default owners
+* @kuck @johnk
+
+# CODEOWNERS
+CODEOWNERS @kuck @rain
+
+# ----------------
+# Conda/RPM/Distro
+# ----------------
+
+conda_recipe/ @kuck
+conda_recipe_py36/ @kuck
+debian/ @kuck
+rpm_files/ @kuck
+
+# -----------
+# Python/Swig
+# -----------
+
+swig/ @kuck
+
+# -------------
+# Documentation
+# -------------
+
+docs/ @johnk
+ref/ @johnk
+ref/build/ @johnk
+ref/papers/ @renfrob @rain @kuck
+ref/usersguide/ @johnk @rain @renfrob
+
+# ---------------------
+# Major module sections
+# ---------------------
+
+# Core apps
+core/apps/ @johnk
+core/apps/positioning/ @btolman
+core/apps/Rinextools/ @btolman
+
+# Core lib
+core/lib/ @johnk
+core/lib/AppFrame/ @johnk
+core/lib/CommandLine/CommandLine.cpp @btolman
+core/lib/CommandLine/CommandLine.hpp @btolman
+core/lib/CommandLine/ @johnk
+core/lib/FileDirProc/ @johnk
+core/lib/Geomatics/ @btolman
+core/lib/GNSSEph/ @renfrob
+core/lib/NavFilter/ @johnk
+core/lib/ORD/ @kuck
+core/lib/PosSol/ @btolman
+core/lib/RefTime/ @btolman
+core/lib/Utilities/ @johnk
+
+# Core tests
+core/tests/ @johnk
+
+# Ext
+ext/ @johnk
+ext/apps/filetools/ @btolman
+ext/apps/geomatics/ @btolman
+ext/apps/misc/ @renfrob
+ext/apps/rfw/ @littlej
+ext/apps/Rinextools/ @btolman
+ext/lib/Geomatics/ @btolman
+ext/lib/GNSSEph/ @renfrob
+ext/lib/PosSol/ @btolman
+ext/lib/Rxio/ @littlej
+
+# Other
+data/ @kuck
+deprecated/ @kuck
+examples/ @johnk @btolman @renfrob
