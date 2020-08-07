@@ -66,7 +66,7 @@ generate_documentation:
     # Install GraphViz
     - sudo apt-get install -y graphviz
     # Call doxygen w/alternate target directory
-    - sed -e "s#gpstk_doc_dir#docs#g" Doxyfile | doxygen -
+    - doxygen
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
   artifacts:
