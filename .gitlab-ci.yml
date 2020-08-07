@@ -57,18 +57,21 @@ static_analysis:
   allow_failure: true
 
 # Runs the documentation generation
-gen_docs:
+generate_documentation:
   stage: check
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
-    - doxygen
+    # Install GraphViz
+    - sudo apt-get install -y graphviz
+    # Call doxygen w/alternate target directory
+    - sed -e "s#gpstk_doc_dir#docs#g" Doxyfile | doxygen -
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
   artifacts:
     paths:
-      - gpstk_doc_dir/
+      - docs/
 
 build_debian_7:
   stage: build
