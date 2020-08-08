@@ -150,17 +150,17 @@ namespace gpstk
          valid = true;
 
          // Test for remaining valid characters. 
-      else if (testShort== 053 || 
-               testShort== 055 ||
-               testShort== 056 ||
-               testShort== 047 ||
-               testShort==0370 ||    // Degree sign
-               testShort== 057 ||
-               testShort== 040 ||
-               testShort== 071 ||
+      else if (testShort== 053 ||    // +
+               testShort== 055 ||    // -
+               testShort== 056 ||    // decimal point
+               testShort== 047 ||    // minute mark
+               testShort==0370 ||    // degree sign
+               testShort== 057 ||    // forward slash
+               testShort== 040 ||    // Space
+               testShort== 072 ||    // :
                testShort== 042 ) valid = true;
 
-      char retVal = ' ';
+      char retVal = '_';   // Underscore is NOT a valid character, but it is printable. 
       if (valid) retVal = (char) testShort; 
       return retVal;  
    }
@@ -180,8 +180,7 @@ namespace gpstk
       string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       s << "  55";
       s << " " << printTime(beginValid,tform) << "  ";
-      //s << "'" << textMsg << "'"; 
-      s << " (Contents are no longer text. Awaiting new ICD)"; 
+      s << "'" << textMsg << "'  (underscores represent invalid characters)"; 
    } // end of dumpTerse()
 
    void OrbSysGpsL_55::dumpBody(ostream& s) const
@@ -192,9 +191,8 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      s << " Text message:" << endl;
-      //s << "'" << textMsg << "'" << endl;
-      s << " (Contents are no longer text. Awaiting new ICD)" << endl;
+      s << " Text message (underscores represent invalid characters):" << endl;
+      s << "'" << textMsg << "'" << endl;
 
       s.setf(ios::uppercase);
       s.precision(0);
