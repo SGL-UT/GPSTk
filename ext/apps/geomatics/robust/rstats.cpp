@@ -939,7 +939,7 @@ try {
    if(GD.verbose) cout << "Found " << GD.data.size() << " data.\n";
 
    // compute stats ---------------------------------------------
-   const int N(GD.data.size());
+   const unsigned N(GD.data.size());
    for(i=0; i<N; i++) {
       GD.cstats.Add(GD.data[i]);
       if(GD.xcol > -1) GD.tsstats.Add(GD.xdata[i],GD.data[i]);
@@ -1209,7 +1209,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 int FindBins(void)
 {
 try {
-   unsigned int i,j,k;
+   int i,j,k;
    GlobalData& GD=GlobalData::Instance();
    int prec;
    const double min(GD.cstats.Minimum()), max(GD.cstats.Maximum());
@@ -1883,7 +1883,7 @@ try {
       vx = GD.xdata[i];
    }
 
-   int N(vdata.size());
+   unsigned N(vdata.size());
 
    // get the DFT (not fast) of real valued data
    vector<double> ampsin(1+N/2),ampcos(1+N/2);

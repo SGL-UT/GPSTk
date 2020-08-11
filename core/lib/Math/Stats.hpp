@@ -56,7 +56,7 @@ namespace gpstk
    /// Compute the median of a gpstk::Vector
    template <class T> inline T median(const Vector<T>& v)
    {
-      const unsigned int n(v.size());
+      const int n(v.size());
       if(n==0) return T();
       if(n==1) return v(0);
       if(n==2) return (v(0)+v(1))/T(2);
