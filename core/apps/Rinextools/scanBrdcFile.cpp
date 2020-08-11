@@ -177,7 +177,7 @@ bool scanBrdcFile::initialize(int argc, char *argv[])
       out << "Input File -> to Output File" << endl; 
       out << "----------------------------" << endl;
    }
-   for (int i=0;i<inputOption.getCount();i++)
+   for (unsigned i=0;i<inputOption.getCount();i++)
    {
       string inFn = inputOption.getValue()[i];
       string outFn = outputOption.getValue()[i];

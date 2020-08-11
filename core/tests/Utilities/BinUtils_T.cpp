@@ -143,7 +143,7 @@ public:
       TOHOSTTEST(uint64_t,"\x01\x02\x03\x04\x05\x06\x07\x08",0x0102030405060708,buntohll);
          // With signed quantities, we try to exacerbate possible sign
          // extension problems.
-      TOHOSTTEST(int16_t,"\xf7\x03",0xf703,buntohss);
+      TOHOSTTEST(int16_t,"\xf7\x03",(int16_t)0xf703,buntohss);
       TOHOSTTEST(int32_t,"\xff\x0c\x0b\x0a",0xff0c0b0a,buntohsl);
       TOHOSTTEST(int64_t,"\xff\xff\x56\x34\x12\x0f\x0e\x0d",0xffff5634120f0e0d,buntohsll);
          // using http://babbage.cs.qc.edu/courses/cs341/IEEE-754.html
@@ -167,7 +167,7 @@ public:
       TOHOSTTESTPOS(uint16_t,"abc\x34\x96",0x3496,buntohs,3);
       TOHOSTTESTPOS(uint32_t,"abc\xde\xad\xbe\xef",0xdeadbeef,buntohl,3);
       TOHOSTTESTPOS(uint64_t,"abc\x01\x02\x03\x04\x05\x06\x07\x08",0x0102030405060708,buntohll,3);
-      TOHOSTTESTPOS(int16_t,"abc\xf7\x03",0xf703,buntohss,3);
+      TOHOSTTESTPOS(int16_t,"abc\xf7\x03",(int16_t)0xf703,buntohss,3);
       TOHOSTTESTPOS(int32_t,"abc\xff\x0c\x0b\x0a",0xff0c0b0a,buntohsl,3);
       TOHOSTTESTPOS(int64_t,"abc\xff\xff\x56\x34\x12\x0f\x0e\x0d",0xffff5634120f0e0d,buntohsll,3);
       TOHOSTTESTFPOS(float,"abc\x40\x5d\x3b\xe2",(float)3.45678,buntohf,3);
@@ -190,7 +190,7 @@ public:
       HOSTTOTEST(int16_t,"\xf7\x03",0x03f7,buhtoiss);
       HOSTTOTEST(int32_t,"\xff\x0c\x0b\x0a",0x0a0b0cff,buhtoisl);
       HOSTTOTEST(int64_t,"\xff\xff\x56\x34\x12\x0f\x0e\x0d",0x0d0e0f123456ffff,buhtoisll);
-      HOSTTOTEST(float,"\xe2\x3b\x5d\x40",3.45678,buhtoif);
+      HOSTTOTEST(float,"\xe2\x3b\x5d\x40",3.45678f,buhtoif);
       HOSTTOTEST(double,"\x2c\xbc\xcb\x45\x7c\xa7\x0b\x40",3.45678,buhtoid);
       uint32_t fbits = 0x0100807f;
       float *fptr = (float*)&fbits;
@@ -207,7 +207,7 @@ public:
       HOSTTOTESTPOS(int16_t,"\xf7\x03",0x03f7,buhtoiss,3);
       HOSTTOTESTPOS(int32_t,"\xff\x0c\x0b\x0a",0x0a0b0cff,buhtoisl,3);
       HOSTTOTESTPOS(int64_t,"\xff\xff\x56\x34\x12\x0f\x0e\x0d",0x0d0e0f123456ffff,buhtoisll,3);
-      HOSTTOTESTPOS(float,"\xe2\x3b\x5d\x40",3.45678,buhtoif,3);
+      HOSTTOTESTPOS(float,"\xe2\x3b\x5d\x40",3.45678f,buhtoif,3);
       HOSTTOTESTPOS(double,"\x2c\xbc\xcb\x45\x7c\xa7\x0b\x40",3.45678,buhtoid,3);
       HOSTTOTESTPOS(float,"\x7f\x80\x00\x01",*fptr,buhtoif,3);
       HOSTTOTESTPOS(double,"\x7f\xf3\x91\xa8\x6a\x9d\x85\x3d",*dptr,buhtoid,3);
@@ -227,7 +227,7 @@ public:
       HOSTTOTEST(int16_t,"\x03\xf7",0x03f7,buhtonss);
       HOSTTOTEST(int32_t,"\x0a\x0b\x0c\xff",0x0a0b0cff,buhtonsl);
       HOSTTOTEST(int64_t,"\x0d\x0e\x0f\x12\x34\x56\xff\xff",0x0d0e0f123456ffff,buhtonsll);
-      HOSTTOTEST(float,"\x40\x5d\x3b\xe2",3.45678,buhtonf);
+      HOSTTOTEST(float,"\x40\x5d\x3b\xe2",3.45678f,buhtonf);
       HOSTTOTEST(double,"\x40\x0b\xa7\x7c\x45\xcb\xbc\x2c",3.45678,buhtond);
       uint32_t fbits = 0x0100807f;
       float *fptr = (float*)&fbits;
@@ -244,7 +244,7 @@ public:
       HOSTTOTESTPOS(int16_t,"\x03\xf7",0x03f7,buhtonss,3);
       HOSTTOTESTPOS(int32_t,"\x0a\x0b\x0c\xff",0x0a0b0cff,buhtonsl,3);
       HOSTTOTESTPOS(int64_t,"\x0d\x0e\x0f\x12\x34\x56\xff\xff",0x0d0e0f123456ffff,buhtonsll,3);
-      HOSTTOTESTPOS(float,"\x40\x5d\x3b\xe2",3.45678,buhtonf,3);
+      HOSTTOTESTPOS(float,"\x40\x5d\x3b\xe2",3.45678f,buhtonf,3);
       HOSTTOTESTPOS(double,"\x40\x0b\xa7\x7c\x45\xcb\xbc\x2c",3.45678,buhtond,3);
       HOSTTOTESTPOS(float,"\x01\x00\x80\x7f",*fptr,buhtonf,3);
       HOSTTOTESTPOS(double,"\x3d\x85\x9d\x6a\xa8\x91\xf3\x7f",*dptr,buhtond,3);

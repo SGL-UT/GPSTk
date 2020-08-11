@@ -356,6 +356,7 @@ namespace std { class fstream {}; }
 // %include "OrbSysGpsL_51.hpp"
 // %include "OrbSysGpsL_52.hpp"
 // %include "OrbSysGpsL_55.hpp"
+%include "OrbDataUTC.hpp"
 %include "OrbSysGpsL_56.hpp"
 // %include "OrbSysGpsL_63.hpp"
 %include "OrbSysGpsL_Reserved.hpp"
