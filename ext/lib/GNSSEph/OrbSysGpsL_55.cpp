@@ -188,12 +188,11 @@ namespace gpstk
 
       string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       s << "  55";
-      s << " " << printTime(beginValid,tform) << "  " << endl;
-      s << " Text message";
+      s << " " << printTime(beginValid,tform);
+      s << "  Text message ";
+      s << "[" << textMsg << "]" ; 
       if (textMsg.find('_')!=string::npos)
          s << " (underscores represent invalid characters)"; 
-      s << endl;
-      s << "[" << textMsg << "]" ; 
    } // end of dumpTerse()
 
    void OrbSysGpsL_55::dumpBody(ostream& s) const
