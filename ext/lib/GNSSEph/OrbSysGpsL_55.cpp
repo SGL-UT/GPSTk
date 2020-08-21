@@ -188,10 +188,12 @@ namespace gpstk
 
       string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       s << "  55";
-      s << " " << printTime(beginValid,tform) << "  ";
-      s << "'" << textMsg; 
+      s << " " << printTime(beginValid,tform) << "  " << endl;
+      s << " Text message";
       if (textMsg.find('_')!=string::npos)
-         s << "'  (underscores represent invalid characters)"; 
+         s << " (underscores represent invalid characters)"; 
+      s << endl;
+      s << "[" << textMsg << "]" ; 
    } // end of dumpTerse()
 
    void OrbSysGpsL_55::dumpBody(ostream& s) const
@@ -204,8 +206,9 @@ namespace gpstk
 
       s << " Text message ";
       if (textMsg.find('_')!=string::npos)
-         s << "(underscores represent invalid characters):" << endl;
-      s << "'" << textMsg << "'" << endl;
+         s << "(underscores represent invalid characters):";
+      s << endl;
+      s << "[" << textMsg << "]" << endl;
 
       s.setf(ios::uppercase);
       s.precision(0);
