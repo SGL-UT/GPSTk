@@ -679,11 +679,11 @@ namespace gpstk
        *  None of the meta-data (transmit time, SatID, ObsID)
        *  will be changed. 
        */
-   void PackedNavBits::copyBits(const PackedNavBits& from, 
+   void PackedNavBits::copyBits(const PackedNavBits& src, 
                                 const short startBit, 
                                 const short endBit)
    {
-      if (bits_used != from.bits_used)
+      if (bits_used != src.bits_used)
       {
          stringstream ss;
          ss << "PackedNavBits::copyBits( ) may only be called on two";
@@ -697,7 +697,7 @@ namespace gpstk
 
       for (short i=startBit; i<=finalBit; i++)
       {
-         bits[i] = from.bits[i];
+         bits[i] = src.bits[i];
       }
    }
 

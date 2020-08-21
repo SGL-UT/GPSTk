@@ -72,8 +72,12 @@ public:
    {
       receiverPos.setGeodetic(30.387577, -97.727607, 240);
 
-      prange.push_back(21665483.747); prange.push_back(21662553.318); prange.push_back(21659650.826);
-      prange2.push_back(21665487.640); prange2.push_back(21662557.419); prange2.push_back(21659655.019);
+      prange.push_back(21665483.747f);
+      prange.push_back(21662553.318f);
+      prange.push_back(21659650.826f);
+      prange2.push_back(21665487.640f);
+      prange2.push_back(21662557.419f);
+      prange2.push_back(21659655.019f);
 
       id.id = 1;
       id.system = gpstk::SatelliteSystem::GPS;

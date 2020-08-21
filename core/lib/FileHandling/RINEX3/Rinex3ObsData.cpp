@@ -524,7 +524,7 @@ namespace gpstk
          }  // end loop over numSVs
 
             // number of R2 OTs in header
-         unsigned numObs(strm.header.R2ObsTypes.size());
+         int numObs(strm.header.R2ObsTypes.size());
          rod.obs.clear();
             // loop over all sats, reading obs data
          for(isv=0; isv < rod.numSVs; isv++)

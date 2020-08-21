@@ -538,7 +538,7 @@ user_install_windows:
     - build_windows
 # Temporarily allow failures as Windows Runner issues are resolved
   allow_failure: true
-  timeout: 5m
+  timeout: 10m
 
 # System Stage
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.

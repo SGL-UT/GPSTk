@@ -244,7 +244,7 @@ namespace gpstk
          InvalidRequest exc("NMCT data is not unencrypted.");
          GPSTK_THROW(exc);
       }
-      if (sidr.id <1 | sidr.id >=max_erd+1)
+      if ((sidr.id < 1) | (sidr.id >=max_erd+1))
       {
          InvalidRequest exc("SatID out of range");
          GPSTK_THROW(exc);

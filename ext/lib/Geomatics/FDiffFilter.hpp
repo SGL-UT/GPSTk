@@ -475,7 +475,8 @@ template<class T> int FDiffFilter<T>::analysis(void)
 //------------------------------------------------------------------------------------
 template<class T> void FDiffFilter<T>::dump(std::ostream& os, std::string tag)
 {
-   int i,j,k,iprev,w(osw>5?osw+1:5);
+   size_t i,j,k,iprev;
+   int w(osw>5?osw+1:5);
    os << "#" << tag << " FDiffFilter::dump() with limit "
       << std::fixed << std::setprecision(osp) << fdlim << " sigma limit " << siglim
       << std::setprecision(osp+2) << " med,mad slope " << medSlope << " " << madSlope

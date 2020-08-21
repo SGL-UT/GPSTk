@@ -169,7 +169,12 @@ namespace gpstk
              }
              else
              {
-                FFStreamError e("Unknown 1st char in line " + asString(i) + ": "
+                   /** @bug i is uninitialized at this point and it's
+                    * not clear what was intended in this exception
+                    * message, so commenting out the use of i for
+                    * now. */
+                FFStreamError e("Unknown 1st char: "
+                                   //in line " + asString(i) + ": "
                    + string(1, line[0]));
                 GPSTK_THROW(e);
              }
@@ -237,7 +242,7 @@ namespace gpstk
 
       strm.formattedGetLine(line);
       lineCount++;
-      if(debug) std::cout << "SP3 Header Line \%f1 " << line << std::endl;
+      if(debug) std::cout << "SP3 Header Line %f1 " << line << std::endl;
       if (version == SP3c || version == SP3d) {
          if (line[0]=='%' && line[1]=='f')
          {
@@ -246,20 +251,20 @@ namespace gpstk
          }
          else
          {
-            FFStreamError e("Unknown label in line \%f1: " + line.substr(0,2));
+            FFStreamError e("Unknown label in line %f1: " + line.substr(0,2));
             GPSTK_THROW(e);
          }
       }
 
       strm.formattedGetLine(line);
       lineCount++;
-      if(debug) std::cout << "SP3 Header Line \%f2 " << line << std::endl;
+      if(debug) std::cout << "SP3 Header Line %f2 " << line << std::endl;
 
          // read in 2 unused %i lines                             // lines 17,18
       for(i = 0; i <= 1; i++) {
          strm.formattedGetLine(line);
          lineCount++;
-         if(debug) std::cout << "SP3 Header Line \%i " << line << std::endl;
+         if(debug) std::cout << "SP3 Header Line %i " << line << std::endl;
       }
 
          // read in comment lines
