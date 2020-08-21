@@ -71,7 +71,7 @@ fill(BrcKeplerOrbit& orbit)
 {
    ObsID oi(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcY);
    orbit.loadData("GPS", oi, 31, GPSWeekZcount(1886, 398400),
-                  GPSWeekZcount(1887, 0), GPSWeekZcount(1887, 0), 1, 7, 
+                  GPSWeekZcount(1887, 0), GPSWeekZcount(1887, 0), 1, true,
                      // these are the same as in EngEphemeris_T.cpp
                   LDEXP(double( int16_t(0xfe17)),     -29), // Cuc
                   LDEXP(double( int16_t(0x0b0e)),     -29), // Cus

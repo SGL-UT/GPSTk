@@ -388,7 +388,7 @@ namespace gpstk
           * @throw InvalidParameter if called using two
           *   objects that are NOT the same size.
           */
-      void copyBits(const PackedNavBits& from, 
+      void copyBits(const PackedNavBits& src, 
                     const short startBit=0, 
                     const short endBit=-1);
 

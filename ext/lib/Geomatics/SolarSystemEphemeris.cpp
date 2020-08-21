@@ -1120,7 +1120,7 @@ try {
    T = 2.0*(MJD-(Tbeg-MJD_TO_JD))/Tspan - 1.0;
 
    // interpolate
-   unsigned int N=c_ncoeff[which];
+   int N=c_ncoeff[which];
    vector<double> C(N,0.0);     // Chebyshev
    vector<double> U(N,0.0);     // derivative of Chebyshev
    for(i=0; i<ncomp; i++) {     // loop over components

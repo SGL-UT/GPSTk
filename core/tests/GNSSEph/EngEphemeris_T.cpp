@@ -903,19 +903,19 @@ IODE (91)      IDOT*2^43 (.307155651409E-9*2^43/pi) parity comp
          // ASalert[0]
       TUCATCH(eephCopy = eeph);
       TUASSERTE(EngEphemeris, eeph, eephCopy);
-      eephCopy.ASalert[0] = 0xbeef;
+      eephCopy.ASalert[0] = 0xbe;
       TUASSERT(eephCopy != eeph);
       TUASSERT(!(eephCopy == eeph));
          // ASalert[1]
       TUCATCH(eephCopy = eeph);
       TUASSERTE(EngEphemeris, eeph, eephCopy);
-      eephCopy.ASalert[1] = 0xbeef;
+      eephCopy.ASalert[1] = 0xbe;
       TUASSERT(eephCopy != eeph);
       TUASSERT(!(eephCopy == eeph));
          // ASalert[2]
       TUCATCH(eephCopy = eeph);
       TUASSERTE(EngEphemeris, eeph, eephCopy);
-      eephCopy.ASalert[2] = 0xbeef;
+      eephCopy.ASalert[2] = 0xbe;
       TUASSERT(eephCopy != eeph);
       TUASSERT(!(eephCopy == eeph));
          // weeknum
