@@ -161,7 +161,16 @@ namespace gpstk
                testShort== 042 ) valid = true;
 
       char retVal = '_';   // Underscore is NOT a valid character, but it is printable. 
-      if (valid) retVal = (char) testShort; 
+      if (valid)
+      {
+         retVal = (char) testShort;
+
+         // degree sign is allowable, but doesn't always print in reduced ASCII.
+         // Since only upper case A-Z are valid, we will use a small 'd'
+         // to stand in for the degree sign.
+         if (testShort==0370)
+            retVal = 'd';        
+      } 
       return retVal;  
    }
 
@@ -180,7 +189,9 @@ namespace gpstk
       string tform="%02m/%02d/%04Y %03j %02H:%02M:%02S";
       s << "  55";
       s << " " << printTime(beginValid,tform) << "  ";
-      s << "'" << textMsg << "'  (underscores represent invalid characters)"; 
+      s << "'" << textMsg; 
+      if (textMsg.find('_')!=string::npos)
+         s << "'  (underscores represent invalid characters)"; 
    } // end of dumpTerse()
 
    void OrbSysGpsL_55::dumpBody(ostream& s) const
@@ -191,7 +202,9 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      s << " Text message (underscores represent invalid characters):" << endl;
+      s << " Text message ";
+      if (textMsg.find('_')!=string::npos)
+         s << "(underscores represent invalid characters):" << endl;
       s << "'" << textMsg << "'" << endl;
 
       s.setf(ios::uppercase);
