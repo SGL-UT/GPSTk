@@ -84,19 +84,19 @@ namespace gpstk
       { 'C',  TrackingCode::CA },
       { 'P',  TrackingCode::P },
       { 'Y',  TrackingCode::Y },
-      { 'W',  TrackingCode::W },
-      { 'N',  TrackingCode::N },
-      { 'D',  TrackingCode::D },
-      { 'M',  TrackingCode::M },
-      { 'S',  TrackingCode::C2M },
-      { 'L',  TrackingCode::C2L },
-      { 'X',  TrackingCode::C2LM },
-      { 'I',  TrackingCode::I5 },
-      { 'Q',  TrackingCode::Q5 },
+      { 'W',  TrackingCode::Ztracking },
+      { 'N',  TrackingCode::YCodeless },
+      { 'D',  TrackingCode::Semicodeless },
+      { 'M',  TrackingCode::MDP },
+      { 'S',  TrackingCode::L2CM },
+      { 'L',  TrackingCode::L2CL },
+      { 'X',  TrackingCode::L2CML },
+      { 'I',  TrackingCode::L5I },
+      { 'Q',  TrackingCode::L5Q },
       { 'A',  TrackingCode::L1OCD },
       { 'B',  TrackingCode::L1OCP },
-      { 'Z',  TrackingCode::ABC },
-      { 'E',  TrackingCode::JE6 },
+      { 'Z',  TrackingCode::E1ABC },
+      { 'E',  TrackingCode::L6E },
       { '-',  TrackingCode::Undefined },
    }; // std::map<char, TrackingCode> RinexObsID::char2tc
 
@@ -134,111 +134,97 @@ namespace gpstk
    }; // std::map<CarrierBand, char> RinexObsID::cb2char
 
    std::map<TrackingCode, char> RinexObsID::tc2char {
-      { TrackingCode::Unknown,    ' ' },
-      { TrackingCode::Any,        '*' },
-      { TrackingCode::CA,         'C' },
-      { TrackingCode::P,          'P' },
-      { TrackingCode::Y,          'Y' },
-      { TrackingCode::W,          'W' },
-      { TrackingCode::N,          'N' },
-      { TrackingCode::D,          'D' },
-      { TrackingCode::M,          'M' },
-      { TrackingCode::C2M,        'S' },
-      { TrackingCode::C2L,        'L' },
-      { TrackingCode::C2LM,       'X' },
-      { TrackingCode::I5,         'I' },
-      { TrackingCode::Q5,         'Q' },
-      { TrackingCode::IQ5,        'X' },
-      { TrackingCode::G1P,        'L' },
-      { TrackingCode::G1D,        'S' },
-      { TrackingCode::G1X,        'X' },
-      { TrackingCode::GCA,        'C' },
-      { TrackingCode::GP,         'P' },
-      { TrackingCode::IR3,        'I' },
-      { TrackingCode::QR3,        'Q' },
-      { TrackingCode::IQR3,       'X' },
-      { TrackingCode::L1OCD,      'A' },
-      { TrackingCode::L1OCP,      'B' },
-      { TrackingCode::L1OC,       'X' },
-      { TrackingCode::L2CSIOCp,   'X' },
-      { TrackingCode::L2CSI,      'A' },
-      { TrackingCode::L2OCP,      'B' },
-      { TrackingCode::A,          'A' },
-      { TrackingCode::B,          'B' },
-      { TrackingCode::C,          'C' },
-      { TrackingCode::BC,         'X' },
-      { TrackingCode::ABC,        'Z' },
-      { TrackingCode::IE5,        'I' },
-      { TrackingCode::QE5,        'Q' },
-      { TrackingCode::IQE5,       'X' },
-      { TrackingCode::IE5a,       'I' },
-      { TrackingCode::QE5a,       'Q' },
-      { TrackingCode::IQE5a,      'X' },
-      { TrackingCode::IE5b,       'I' },
-      { TrackingCode::QE5b,       'Q' },
-      { TrackingCode::IQE5b,      'X' },
-      { TrackingCode::A6,         'A' },
-      { TrackingCode::B6,         'B' },
-      { TrackingCode::C6,         'C' },
-      { TrackingCode::BC6,        'X' },
-      { TrackingCode::ABC6,       'Z' },
-      { TrackingCode::SCA,        'C' },
-      { TrackingCode::SI5,        'I' },
-      { TrackingCode::SQ5,        'Q' },
-      { TrackingCode::SIQ5,       'X' },
-      { TrackingCode::JCA,        'C' },
-      { TrackingCode::JD1,        'S' },
-      { TrackingCode::JP1,        'L' },
-      { TrackingCode::JX1,        'X' },
-      { TrackingCode::JZ1,        'Z' },
-      { TrackingCode::JM2,        'S' },
-      { TrackingCode::JL2,        'L' },
-      { TrackingCode::JX2,        'X' },
-      { TrackingCode::JI5,        'I' },
-      { TrackingCode::JQ5,        'Q' },
-      { TrackingCode::JIQ5,       'X' },
-      { TrackingCode::JI5S,       'D' },
-      { TrackingCode::JQ5S,       'P' },
-      { TrackingCode::JIQ5S,      'Z' },
-      { TrackingCode::JI6,        'S' },
-      { TrackingCode::JQ6,        'L' },
-      { TrackingCode::JIQ6,       'X' },
-      { TrackingCode::JD6,        'S' },
-      { TrackingCode::JE6,        'E' },
-      { TrackingCode::JDE6,       'Z' },
-      { TrackingCode::CI1,        'I' },
-      { TrackingCode::CQ1,        'Q' },
-      { TrackingCode::CIQ1,       'X' },
-      { TrackingCode::CI7,        'I' },
-      { TrackingCode::CQ7,        'Q' },
-      { TrackingCode::CIQ7,       'X' },
-      { TrackingCode::CI6,        'I' },
-      { TrackingCode::CQ6,        'Q' },
-      { TrackingCode::CIQ6,       'X' },
-      { TrackingCode::CA1,        'A' },
-      { TrackingCode::CCD1,       'D' },
-      { TrackingCode::CCDP1,      'X' },
-      { TrackingCode::CCP1,       'P' },
-      { TrackingCode::CI2ab,      'D' },
-      { TrackingCode::CIQ2ab,     'X' },
-      { TrackingCode::CQ2ab,      'P' },
-      { TrackingCode::CI2a,       'D' },
-      { TrackingCode::CIQ2a,      'X' },
-      { TrackingCode::CQ2a,       'P' },
-      { TrackingCode::CI2b,       'D' },
-      { TrackingCode::CIQ2b,      'Z' },
-      { TrackingCode::CQ2b,       'P' },
-      { TrackingCode::CodelessC,  'N' },
-      { TrackingCode::CIQ3A,      'A' },
-      { TrackingCode::IA5,        'A' },
-      { TrackingCode::IB5,        'B' },
-      { TrackingCode::IC5,        'C' },
-      { TrackingCode::IX5,        'X' },
-      { TrackingCode::IA9,        'A' },
-      { TrackingCode::IB9,        'B' },
-      { TrackingCode::IC9,        'C' },
-      { TrackingCode::IX9,        'X' },
-      { TrackingCode::Undefined,  '-' },
+      { TrackingCode::Unknown,       ' ' },
+      { TrackingCode::Any,           '*' },
+      { TrackingCode::CA,            'C' },
+      { TrackingCode::P,             'P' },
+      { TrackingCode::Y,             'Y' },
+      { TrackingCode::Ztracking,     'W' },
+      { TrackingCode::YCodeless,     'N' },
+      { TrackingCode::Semicodeless,  'D' },
+      { TrackingCode::MDP,           'M' },
+      { TrackingCode::L2CM,          'S' },
+      { TrackingCode::L2CL,          'L' },
+      { TrackingCode::L2CML,         'X' },
+      { TrackingCode::L5I,           'I' },
+      { TrackingCode::L5Q,           'Q' },
+      { TrackingCode::L5IQ,          'X' },
+      { TrackingCode::L1CP,          'L' },
+      { TrackingCode::L1CD,          'S' },
+      { TrackingCode::L1CDP,         'X' },
+      { TrackingCode::Standard,      'C' },
+      { TrackingCode::Precise,       'P' },
+      { TrackingCode::L3OCD,         'I' },
+      { TrackingCode::L3OCP,         'Q' },
+      { TrackingCode::L3OCDP,        'X' },
+      { TrackingCode::L1OCD,         'A' },
+      { TrackingCode::L1OCP,         'B' },
+      { TrackingCode::L1OCDP,        'X' },
+      { TrackingCode::L2CSIL2OCp,    'X' },
+      { TrackingCode::L2CSI,         'A' },
+      { TrackingCode::L2OCP,         'B' },
+      { TrackingCode::E1A,           'A' },
+      { TrackingCode::E1B,           'B' },
+      { TrackingCode::E1C,           'C' },
+      { TrackingCode::E1BC,          'X' },
+      { TrackingCode::E1ABC,         'Z' },
+      { TrackingCode::E5abI,         'I' },
+      { TrackingCode::E5abQ,         'Q' },
+      { TrackingCode::E5abIQ,        'X' },
+      { TrackingCode::E5aI,          'I' },
+      { TrackingCode::E5aQ,          'Q' },
+      { TrackingCode::E5aIQ,         'X' },
+      { TrackingCode::E5bI,          'I' },
+      { TrackingCode::E5bQ,          'Q' },
+      { TrackingCode::E5bIQ,         'X' },
+      { TrackingCode::E6A,           'A' },
+      { TrackingCode::E6B,           'B' },
+      { TrackingCode::E6C,           'C' },
+      { TrackingCode::E6BC,          'X' },
+      { TrackingCode::E6ABC,         'Z' },
+      { TrackingCode::L1S,           'Z' },
+      { TrackingCode::L5SI,          'D' },
+      { TrackingCode::L5SQ,          'P' },
+      { TrackingCode::L5SIQ,         'Z' },
+      { TrackingCode::LEXS,          'S' },
+      { TrackingCode::LEXL,          'L' },
+      { TrackingCode::LEXSL,         'X' },
+      { TrackingCode::L6D,           'S' },
+      { TrackingCode::L6E,           'E' },
+      { TrackingCode::L6DE,          'Z' },
+      { TrackingCode::B1I,           'I' },
+      { TrackingCode::B1Q,           'Q' },
+      { TrackingCode::B1IQ,          'X' },
+      { TrackingCode::B2I,           'I' },
+      { TrackingCode::B2Q,           'Q' },
+      { TrackingCode::B2IQ,          'X' },
+      { TrackingCode::B3I,           'I' },
+      { TrackingCode::B3Q,           'Q' },
+      { TrackingCode::B3IQ,          'X' },
+      { TrackingCode::B1A,           'A' },
+      { TrackingCode::B1CD,          'D' },
+      { TrackingCode::B1CDP,         'X' },
+      { TrackingCode::B1CP,          'P' },
+      { TrackingCode::B2abI,         'D' },
+      { TrackingCode::B2abIQ,        'X' },
+      { TrackingCode::B2abQ,         'P' },
+      { TrackingCode::B2aI,          'D' },
+      { TrackingCode::B2aIQ,         'X' },
+      { TrackingCode::B2aQ,          'P' },
+      { TrackingCode::B2bI,          'D' },
+      { TrackingCode::B2bIQ,         'Z' },
+      { TrackingCode::B2bQ,          'P' },
+      { TrackingCode::BCodeless,     'N' },
+      { TrackingCode::B3AIQ,         'A' },
+      { TrackingCode::SPSL5,         'A' },
+      { TrackingCode::RSL5D,         'B' },
+      { TrackingCode::RSL5P,         'C' },
+      { TrackingCode::RSL5DP,        'X' },
+      { TrackingCode::SPSS,          'A' },
+      { TrackingCode::RSSD,          'B' },
+      { TrackingCode::RSSP,          'C' },
+      { TrackingCode::RSSDP,         'X' },
+      { TrackingCode::Undefined,     '-' },
    }; // std::map<TrackingCode, char> RinexObsID::tc2char
 
    // map of valid RINEX tracking codes, systems and frequency
@@ -381,249 +367,249 @@ namespace gpstk
             if (rincode == "2I")
             {
                band = CarrierBand::B1;
-               code = TrackingCode::CI1;
+               code = TrackingCode::B1I;
             }
             else if (rincode == "2Q")
             {
                band = CarrierBand::B1;
-               code = TrackingCode::CQ1;
+               code = TrackingCode::B1Q;
             }
             else if (rincode == "2X")
             {
                band = CarrierBand::B1;
-               code = TrackingCode::CIQ1;
+               code = TrackingCode::B1IQ;
             }
             else if (rincode == "1D")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::CCD1;
+               code = TrackingCode::B1CD;
             }
             else if (rincode == "1P")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::CCP1;
+               code = TrackingCode::B1CP;
             }
             else if (rincode == "1X")
             {
                if (fabs(rinexVersion - 3.02) < 0.005)
                {
                   band = CarrierBand::B1;
-                  code = TrackingCode::CIQ1;
+                  code = TrackingCode::B1IQ;
                }
                else
                {
                   band = CarrierBand::L1;
-                  code = TrackingCode::CCDP1;
+                  code = TrackingCode::B1CDP;
                }
             }
             else if (rincode == "1A")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::CA1;
+               code = TrackingCode::B1A;
             }
             else if (rincode == "1N")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::CodelessC;
+               code = TrackingCode::BCodeless;
             }
             else if (rincode == "1I")
             {
                band = CarrierBand::B1;
-               code = TrackingCode::CI1;
+               code = TrackingCode::B1I;
             }
             else if (rincode == "1Q")
             {
                band = CarrierBand::B1;
-               code = TrackingCode::CQ1;
+               code = TrackingCode::B1Q;
             }
             else if (rincode == "5D")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::CI2a;
+               code = TrackingCode::B2aI;
             }
             else if (rincode == "5P")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::CQ2a;
+               code = TrackingCode::B2aQ;
             }
             else if (rincode == "5X")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::CIQ2a;
+               code = TrackingCode::B2aIQ;
             }
             else if (rincode == "7I")
             {
                band = CarrierBand::B2;
-               code = TrackingCode::CI7;
+               code = TrackingCode::B2I;
             }
             else if (rincode == "7Q")
             {
                band = CarrierBand::B2;
-               code = TrackingCode::CQ7;
+               code = TrackingCode::B2Q;
             }
             else if (rincode == "7X")
             {
                band = CarrierBand::B2;
-               code = TrackingCode::CIQ7;
+               code = TrackingCode::B2IQ;
             }
             else if (rincode == "7D")
             {
                band = CarrierBand::B2;
-               code = TrackingCode::CI2b;
+               code = TrackingCode::B2bI;
             }
             else if (rincode == "7P")
             {
                band = CarrierBand::B2;
-               code = TrackingCode::CQ2b;
+               code = TrackingCode::B2bQ;
             }
             else if (rincode == "7Z")
             {
                band = CarrierBand::B2;
-               code = TrackingCode::CIQ2b;
+               code = TrackingCode::B2bIQ;
             }
             else if (rincode == "8D")
             {
                band = CarrierBand::E5ab;
-               code = TrackingCode::CI2ab;
+               code = TrackingCode::B2abI;
             }
             else if (rincode == "8P")
             {
                band = CarrierBand::E5ab;
-               code = TrackingCode::CQ2ab;
+               code = TrackingCode::B2abQ;
             }
             else if (rincode == "8X")
             {
                band = CarrierBand::E5ab;
-               code = TrackingCode::CIQ2ab;
+               code = TrackingCode::B2abIQ;
             }
             else if (rincode == "6I")
             {
                band = CarrierBand::B3;
-               code = TrackingCode::CI6;
+               code = TrackingCode::B3I;
             }
             else if (rincode == "6Q")
             {
                band = CarrierBand::B3;
-               code = TrackingCode::CQ6;
+               code = TrackingCode::B3Q;
             }
             else if (rincode == "6X")
             {
                band = CarrierBand::B3;
-               code = TrackingCode::CIQ6;
+               code = TrackingCode::B3IQ;
             }
             else if (rincode == "6A")
             {
                band = CarrierBand::B3;
-               code = TrackingCode::CIQ3A;
+               code = TrackingCode::B3AIQ;
             }
             break;
          case 'E': // Galileo
             if (rincode == "1A")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::A;
+               code = TrackingCode::E1A;
             }
             else if (rincode == "1B")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::B;
+               code = TrackingCode::E1B;
             }
             else if (rincode == "1C")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::C;
+               code = TrackingCode::E1C;
             }
             else if (rincode == "1X")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::BC;
+               code = TrackingCode::E1BC;
             }
             else if (rincode == "1Z")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::ABC;
+               code = TrackingCode::E1ABC;
             }
             else if (rincode == "5I")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::IE5a;
+               code = TrackingCode::E5aI;
             }
             else if (rincode == "5Q")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::QE5a;
+               code = TrackingCode::E5aQ;
             }
             else if (rincode == "5X")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::IQE5a;
+               code = TrackingCode::E5aIQ;
             }
             else if (rincode == "7I")
             {
                band = CarrierBand::E5b;
-               code = TrackingCode::IE5b;
+               code = TrackingCode::E5bI;
             }
             else if (rincode == "7Q")
             {
                band = CarrierBand::E5b;
-               code = TrackingCode::QE5b;
+               code = TrackingCode::E5bQ;
             }
             else if (rincode == "7X")
             {
                band = CarrierBand::E5b;
-               code = TrackingCode::IQE5b;
+               code = TrackingCode::E5bIQ;
             }
             else if (rincode == "8I")
             {
                band = CarrierBand::E5ab;
-               code = TrackingCode::IE5;
+               code = TrackingCode::E5abI;
             }
             else if (rincode == "8Q")
             {
                band = CarrierBand::E5ab;
-               code = TrackingCode::QE5;
+               code = TrackingCode::E5abQ;
             }
             else if (rincode == "8X")
             {
                band = CarrierBand::E5ab;
-               code = TrackingCode::IQE5;
+               code = TrackingCode::E5abIQ;
             }
             else if (rincode == "6A")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::A6;
+               code = TrackingCode::E6A;
             }
             else if (rincode == "6B")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::B6;
+               code = TrackingCode::E6B;
             }
             else if (rincode == "6C")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::C6;
+               code = TrackingCode::E6C;
             }
             else if (rincode == "6X")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::BC6;
+               code = TrackingCode::E6BC;
             }
             else if (rincode == "6Z")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::ABC6;
+               code = TrackingCode::E6ABC;
             }
             break;
          case 'R': // GLONASS
             if (rincode == "1C")
             {
                band = CarrierBand::G1;
-               code = TrackingCode::GCA;
+               code = TrackingCode::Standard;
             }
             else if (rincode == "1P")
             {
                band = CarrierBand::G1;
-               code = TrackingCode::GP;
+               code = TrackingCode::Precise;
             }
             else if (rincode == "4A")
             {
@@ -638,17 +624,17 @@ namespace gpstk
             else if (rincode == "4X")
             {
                band = CarrierBand::G1a;
-               code = TrackingCode::L1OC;
+               code = TrackingCode::L1OCDP;
             }
             else if (rincode == "2C")
             {
                band = CarrierBand::G2;
-               code = TrackingCode::GCA;
+               code = TrackingCode::Standard;
             }
             else if (rincode == "2P")
             {
                band = CarrierBand::G2;
-               code = TrackingCode::GP;
+               code = TrackingCode::Precise;
             }
             else if (rincode == "6A")
             {
@@ -663,22 +649,22 @@ namespace gpstk
             else if (rincode == "6X")
             {
                band = CarrierBand::G2a;
-               code = TrackingCode::L2CSIOCp;
+               code = TrackingCode::L2CSIL2OCp;
             }
             else if (rincode == "3I")
             {
                band = CarrierBand::G3;
-               code = TrackingCode::IR3;
+               code = TrackingCode::L3OCD;
             }
             else if (rincode == "3Q")
             {
                band = CarrierBand::G3;
-               code = TrackingCode::QR3;
+               code = TrackingCode::L3OCP;
             }
             else if (rincode == "3X")
             {
                band = CarrierBand::G3;
-               code = TrackingCode::IQR3;
+               code = TrackingCode::L3OCDP;
             }
             break;
          case 'G': // GPS
@@ -690,17 +676,17 @@ namespace gpstk
             else if (rincode == "1S")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::G1D;
+               code = TrackingCode::L1CD;
             }
             else if (rincode == "1L")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::G1P;
+               code = TrackingCode::L1CP;
             }
             else if (rincode == "1X")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::G1X;
+               code = TrackingCode::L1CDP;
             }
             else if (rincode == "1P")
             {
@@ -710,7 +696,7 @@ namespace gpstk
             else if (rincode == "1W")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::W;
+               code = TrackingCode::Ztracking;
             }
             else if (rincode == "1Y")
             {
@@ -720,12 +706,12 @@ namespace gpstk
             else if (rincode == "1M")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::M;
+               code = TrackingCode::MDP;
             }
             else if (rincode == "1N")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::N;
+               code = TrackingCode::YCodeless;
             }
             else if (rincode == "2C")
             {
@@ -735,22 +721,22 @@ namespace gpstk
             else if (rincode == "2D")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::D;
+               code = TrackingCode::Semicodeless;
             }
             else if (rincode == "2S")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::C2M;
+               code = TrackingCode::L2CM;
             }
             else if (rincode == "2L")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::C2L;
+               code = TrackingCode::L2CL;
             }
             else if (rincode == "2X")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::C2LM;
+               code = TrackingCode::L2CML;
             }
             else if (rincode == "2P")
             {
@@ -760,7 +746,7 @@ namespace gpstk
             else if (rincode == "2W")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::W;
+               code = TrackingCode::Ztracking;
             }
             else if (rincode == "2Y")
             {
@@ -770,193 +756,193 @@ namespace gpstk
             else if (rincode == "2M")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::M;
+               code = TrackingCode::MDP;
             }
             else if (rincode == "2N")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::N;
+               code = TrackingCode::YCodeless;
             }
             else if (rincode == "5I")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::I5;
+               code = TrackingCode::L5I;
             }
             else if (rincode == "5Q")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::Q5;
+               code = TrackingCode::L5Q;
             }
             else if (rincode == "5X")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::IQ5;
+               code = TrackingCode::L5IQ;
             }
             break;
          case 'I': // NavIC
             if (rincode == "5A")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::IA5;
+               code = TrackingCode::SPSL5;
             }
             else if (rincode == "5B")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::IB5;
+               code = TrackingCode::RSL5D;
             }
             else if (rincode == "5C")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::IC5;
+               code = TrackingCode::RSL5P;
             }
             else if (rincode == "5X")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::IX5;
+               code = TrackingCode::RSL5DP;
             }
             else if (rincode == "9A")
             {
                band = CarrierBand::I9;
-               code = TrackingCode::IA9;
+               code = TrackingCode::SPSS;
             }
             else if (rincode == "9B")
             {
                band = CarrierBand::I9;
-               code = TrackingCode::IB9;
+               code = TrackingCode::RSSD;
             }
             else if (rincode == "9C")
             {
                band = CarrierBand::I9;
-               code = TrackingCode::IC9;
+               code = TrackingCode::RSSP;
             }
             else if (rincode == "9X")
             {
                band = CarrierBand::I9;
-               code = TrackingCode::IX9;
+               code = TrackingCode::RSSDP;
             }
             break;
          case 'J': // QZSS
             if (rincode == "1C")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::JCA;
+               code = TrackingCode::CA;
             }
             else if (rincode == "1L")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::JP1;
+               code = TrackingCode::L1CP;
             }
             else if (rincode == "1S")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::JD1;
+               code = TrackingCode::L1CD;
             }
             else if (rincode == "1X")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::JX1;
+               code = TrackingCode::L1CDP;
             }
             else if (rincode == "1Z")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::JZ1;
+               code = TrackingCode::L1S;
             }
             else if (rincode == "2S")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::JM2;
+               code = TrackingCode::L2CM;
             }
             else if (rincode == "2L")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::JL2;
+               code = TrackingCode::L2CL;
             }
             else if (rincode == "2X")
             {
                band = CarrierBand::L2;
-               code = TrackingCode::JX2;
+               code = TrackingCode::L2CML;
             }
             else if (rincode == "5I")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::JI5;
+               code = TrackingCode::L5I;
             }
             else if (rincode == "5Q")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::JQ5;
+               code = TrackingCode::L5Q;
             }
             else if (rincode == "5X")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::JIQ5;
+               code = TrackingCode::L5IQ;
             }
             else if (rincode == "5D")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::JI5S;
+               code = TrackingCode::L5SI;
             }
             else if (rincode == "5P")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::JQ5S;
+               code = TrackingCode::L5SQ;
             }
             else if (rincode == "5Z")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::JIQ5S;
+               code = TrackingCode::L5SIQ;
             }
             else if (rincode == "6S")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::JI6;
+               code = TrackingCode::LEXS;
             }
             else if (rincode == "6S")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::JD6;
+               code = TrackingCode::L6D;
             }
             else if (rincode == "6L")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::JQ6;
+               code = TrackingCode::LEXL;
             }
             else if (rincode == "6X")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::JIQ6;
+               code = TrackingCode::LEXSL;
             }
             else if (rincode == "6E")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::JE6;
+               code = TrackingCode::L6E;
             }
             else if (rincode == "6Z")
             {
                band = CarrierBand::E6;
-               code = TrackingCode::JDE6;
+               code = TrackingCode::L6DE;
             }
             break;
          case 'S': // SBAS
             if (rincode == "1C")
             {
                band = CarrierBand::L1;
-               code = TrackingCode::SCA;
+               code = TrackingCode::CA;
             }
             else if (rincode == "5I")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::SI5;
+               code = TrackingCode::L5I;
             }
             else if (rincode == "5Q")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::SQ5;
+               code = TrackingCode::L5Q;
             }
             else if (rincode == "5X")
             {
                band = CarrierBand::L5;
-               code = TrackingCode::SIQ5;
+               code = TrackingCode::L5IQ;
             }
             break;
       } // switch (modStrID[0])

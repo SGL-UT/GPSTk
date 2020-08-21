@@ -648,20 +648,20 @@ namespace gpstk
             case TrackingCode::CA:   attribute = "C"; break;
             case TrackingCode::P:    attribute = "P"; break;
             case TrackingCode::Y:    attribute = "Y"; break;
-            case TrackingCode::W:    attribute = "W"; break;
-            case TrackingCode::N:    attribute = "N"; break;
-            case TrackingCode::M:    attribute = "M"; break;
-            case TrackingCode::C2M:  attribute = "S"; break;
-            case TrackingCode::C2L:  attribute = "L"; break;
-            case TrackingCode::C2LM: attribute = "X"; break;
-            case TrackingCode::I5:   attribute = "I"; break;
-            case TrackingCode::Q5:   attribute = "Q"; break;
-            case TrackingCode::IQ5:  attribute = "X"; break;
-            case TrackingCode::A:    attribute = "A"; break;
-            case TrackingCode::B:    attribute = "B"; break;
-            case TrackingCode::C:    attribute = "C"; break;
-            case TrackingCode::BC:   attribute = "X"; break;
-            case TrackingCode::ABC:  attribute = "Z"; break;
+            case TrackingCode::Ztracking:    attribute = "W"; break;
+            case TrackingCode::YCodeless:    attribute = "N"; break;
+            case TrackingCode::MDP:    attribute = "M"; break;
+            case TrackingCode::L2CM:  attribute = "S"; break;
+            case TrackingCode::L2CL:  attribute = "L"; break;
+            case TrackingCode::L2CML: attribute = "X"; break;
+            case TrackingCode::L5I:   attribute = "I"; break;
+            case TrackingCode::L5Q:   attribute = "Q"; break;
+            case TrackingCode::L5IQ:  attribute = "X"; break;
+            case TrackingCode::E1A:    attribute = "A"; break;
+            case TrackingCode::E1B:    attribute = "B"; break;
+            case TrackingCode::E1C:    attribute = "C"; break;
+            case TrackingCode::E1BC:   attribute = "X"; break;
+            case TrackingCode::E1ABC:  attribute = "Z"; break;
 			default: break; //NB Determine if additional enumeration values need to be handled
          }
          if (ignore)

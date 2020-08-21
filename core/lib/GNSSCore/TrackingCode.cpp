@@ -51,112 +51,128 @@ namespace gpstk
       {
          switch (e)
          {
-            case TrackingCode::Unknown:   return "Unknown";
-            case TrackingCode::Any:       return "Any";
-            case TrackingCode::CA:        return "CA";
-            case TrackingCode::P:         return "P";
-            case TrackingCode::Y:         return "Y";
-            case TrackingCode::W:         return "W";
-            case TrackingCode::N:         return "N";
-            case TrackingCode::D:         return "D";
-            case TrackingCode::M:         return "M";
-            case TrackingCode::C2M:       return "C2M";
-            case TrackingCode::C2L:       return "C2L";
-            case TrackingCode::C2LM:      return "C2LM";
-            case TrackingCode::I5:        return "I5";
-            case TrackingCode::Q5:        return "Q5";
-            case TrackingCode::IQ5:       return "IQ5";
-            case TrackingCode::G1P:       return "G1P";
-            case TrackingCode::G1D:       return "G1D";
-            case TrackingCode::G1X:       return "G1X";
-            case TrackingCode::GCA:       return "GCA";
-            case TrackingCode::GP:        return "GP";
-            case TrackingCode::IR3:       return "IR3";
-            case TrackingCode::QR3:       return "QR3";
-            case TrackingCode::IQR3:      return "IQR3";
-            case TrackingCode::L1OCD:     return "L1OCD";
-            case TrackingCode::L1OCP:     return "L1OCP";
-            case TrackingCode::L1OC:      return "L1OC";
-            case TrackingCode::L2CSIOCp:  return "L2CSIOCp";
-            case TrackingCode::L2CSI:     return "L2CSI";
-            case TrackingCode::L2OCP:     return "L2OCP";
-            case TrackingCode::A:         return "A";
-            case TrackingCode::B:         return "B";
-            case TrackingCode::C:         return "C";
-            case TrackingCode::BC:        return "BC";
-            case TrackingCode::ABC:       return "ABC";
-            case TrackingCode::IE5:       return "IE5";
-            case TrackingCode::QE5:       return "QE5";
-            case TrackingCode::IQE5:      return "IQE5";
-            case TrackingCode::IE5a:      return "IE5a";
-            case TrackingCode::QE5a:      return "QE5a";
-            case TrackingCode::IQE5a:     return "IQE5a";
-            case TrackingCode::IE5b:      return "IE5b";
-            case TrackingCode::QE5b:      return "QE5b";
-            case TrackingCode::IQE5b:     return "IQE5b";
-            case TrackingCode::A6:        return "A6";
-            case TrackingCode::B6:        return "B6";
-            case TrackingCode::C6:        return "C6";
-            case TrackingCode::BC6:       return "BC6";
-            case TrackingCode::ABC6:      return "ABC6";
-            case TrackingCode::SCA:       return "SCA";
-            case TrackingCode::SI5:       return "SI5";
-            case TrackingCode::SQ5:       return "SQ5";
-            case TrackingCode::SIQ5:      return "SIQ5";
-            case TrackingCode::JCA:       return "JCA";
-            case TrackingCode::JD1:       return "JD1";
-            case TrackingCode::JP1:       return "JP1";
-            case TrackingCode::JX1:       return "JX1";
-            case TrackingCode::JZ1:       return "JZ1";
-            case TrackingCode::JM2:       return "JM2";
-            case TrackingCode::JL2:       return "JL2";
-            case TrackingCode::JX2:       return "JX2";
-            case TrackingCode::JI5:       return "JI5";
-            case TrackingCode::JQ5:       return "JQ5";
-            case TrackingCode::JIQ5:      return "JIQ5";
-            case TrackingCode::JI5S:      return "JI5S";
-            case TrackingCode::JQ5S:      return "JQ5S";
-            case TrackingCode::JIQ5S:     return "JIQ5S";
-            case TrackingCode::JI6:       return "JI6";
-            case TrackingCode::JQ6:       return "JQ6";
-            case TrackingCode::JIQ6:      return "JIQ6";
-            case TrackingCode::JD6:       return "JD6";
-            case TrackingCode::JE6:       return "JE6";
-            case TrackingCode::JDE6:      return "JDE6";
-            case TrackingCode::CI1:       return "CI1";
-            case TrackingCode::CQ1:       return "CQ1";
-            case TrackingCode::CIQ1:      return "CIQ1";
-            case TrackingCode::CI7:       return "CI7";
-            case TrackingCode::CQ7:       return "CQ7";
-            case TrackingCode::CIQ7:      return "CIQ7";
-            case TrackingCode::CI6:       return "CI6";
-            case TrackingCode::CQ6:       return "CQ6";
-            case TrackingCode::CIQ6:      return "CIQ6";
-            case TrackingCode::CA1:       return "CA1";
-            case TrackingCode::CCD1:      return "CCD1";
-            case TrackingCode::CCDP1:     return "CCDP1";
-            case TrackingCode::CCP1:      return "CCP1";
-            case TrackingCode::CI2ab:     return "CI2ab";
-            case TrackingCode::CIQ2ab:    return "CIQ2ab";
-            case TrackingCode::CQ2ab:     return "CQ2ab";
-            case TrackingCode::CI2a:      return "CI2a";
-            case TrackingCode::CIQ2a:     return "CIQ2a";
-            case TrackingCode::CQ2a:      return "CQ2a";
-            case TrackingCode::CI2b:      return "CI2b";
-            case TrackingCode::CIQ2b:     return "CIQ2b";
-            case TrackingCode::CQ2b:      return "CQ2b";
-            case TrackingCode::CodelessC: return "CodelessC";
-            case TrackingCode::CIQ3A:     return "CIQ3A";
-            case TrackingCode::IA5:       return "IA5";
-            case TrackingCode::IB5:       return "IB5";
-            case TrackingCode::IC5:       return "IC5";
-            case TrackingCode::IX5:       return "IX5";
-            case TrackingCode::IA9:       return "IA9";
-            case TrackingCode::IB9:       return "IB9";
-            case TrackingCode::IC9:       return "IC9";
-            case TrackingCode::IX9:       return "IX9";
-            case TrackingCode::Undefined: return "Undefined";
-            default:                      return "???";
+            case TrackingCode::Unknown:      return "Unknown";
+            case TrackingCode::Any:          return "Any";
+            case TrackingCode::CA:           return "CA";
+            case TrackingCode::P:            return "P";
+            case TrackingCode::Y:            return "Y";
+            case TrackingCode::Ztracking:    return "Ztracking";
+            case TrackingCode::YCodeless:    return "YCodeless";
+            case TrackingCode::Semicodeless: return "Semicodeless";
+            case TrackingCode::MD:           return "MD";
+            case TrackingCode::MDP:          return "MDP";
+            case TrackingCode::MP:           return "MP";
+            case TrackingCode::MPA:          return "MPA";
+            case TrackingCode::MARL:         return "MARL";
+            case TrackingCode::MARLD:        return "MARLD";
+            case TrackingCode::MARLP:        return "MARLP";
+            case TrackingCode::Mprime:       return "Mprime";
+            case TrackingCode::MprimePA:     return "MprimePA";
+            case TrackingCode::L2CM:         return "L2CM";
+            case TrackingCode::L2CL:         return "L2CL";
+            case TrackingCode::L2CML:        return "L2CML";
+            case TrackingCode::L5I:          return "L5I";
+            case TrackingCode::L5Q:          return "L5Q";
+            case TrackingCode::L5IQ:         return "L5IQ";
+            case TrackingCode::L1CP:         return "L1CP";
+            case TrackingCode::L1CD:         return "L1CD";
+            case TrackingCode::L1CDP:        return "L1CDP";
+            case TrackingCode::NSCA:         return "NSCA";
+            case TrackingCode::NSCD:         return "NSCD";
+            case TrackingCode::NSCL:         return "NSCL";
+            case TrackingCode::NSCM:         return "NSCM";
+            case TrackingCode::NSCMCL:       return "NSCMCL";
+            case TrackingCode::NSCP:         return "NSCP";
+            case TrackingCode::NSCPCD:       return "NSCPCD";
+            case TrackingCode::NSI5:         return "NSI5";
+            case TrackingCode::NSM:          return "NSM";
+            case TrackingCode::NSMPA:        return "NSMPA";
+            case TrackingCode::NSMprime:     return "NSMprime";
+            case TrackingCode::NSMprimePA:   return "NSMprimePA";
+            case TrackingCode::NSP:          return "NSP";
+            case TrackingCode::NSQ5:         return "NSQ5";
+            case TrackingCode::NSY:          return "NSY";
+            case TrackingCode::Standard:     return "Standard";
+            case TrackingCode::Precise:      return "Precise";
+            case TrackingCode::L3OCD:        return "L3OCD";
+            case TrackingCode::L3OCP:        return "L3OCP";
+            case TrackingCode::L3OCDP:       return "L3OCDP";
+            case TrackingCode::L1OCD:        return "L1OCD";
+            case TrackingCode::L1OCP:        return "L1OCP";
+            case TrackingCode::L1OCDP:       return "L1OCDP";
+            case TrackingCode::L2CSIL2OCp:   return "L2CSIL2OCp";
+            case TrackingCode::L2CSI:        return "L2CSI";
+            case TrackingCode::L2OCP:        return "L2OCP";
+            case TrackingCode::G3TestData:   return "G3TestData";
+            case TrackingCode::G3TestPilot:  return "G3TestPilot";
+            case TrackingCode::L1SC:         return "L1SC";
+            case TrackingCode::L2SC:         return "L2SC";
+            case TrackingCode::E1A:          return "E1A";
+            case TrackingCode::E1B:          return "E1B";
+            case TrackingCode::E1C:          return "E1C";
+            case TrackingCode::E1BC:         return "E1BC";
+            case TrackingCode::E1ABC:        return "E1ABC";
+            case TrackingCode::E5abI:        return "E5abI";
+            case TrackingCode::E5abQ:        return "E5abQ";
+            case TrackingCode::E5abIQ:       return "E5abIQ";
+            case TrackingCode::E5aI:         return "E5aI";
+            case TrackingCode::E5aQ:         return "E5aQ";
+            case TrackingCode::E5aIQ:        return "E5aIQ";
+            case TrackingCode::E5bI:         return "E5bI";
+            case TrackingCode::E5bQ:         return "E5bQ";
+            case TrackingCode::E5bIQ:        return "E5bIQ";
+            case TrackingCode::E6A:          return "E6A";
+            case TrackingCode::E6B:          return "E6B";
+            case TrackingCode::E6C:          return "E6C";
+            case TrackingCode::E6BC:         return "E6BC";
+            case TrackingCode::E6ABC:        return "E6ABC";
+            case TrackingCode::L1S:          return "L1S";
+            case TrackingCode::L5SI:         return "L5SI";
+            case TrackingCode::L5SQ:         return "L5SQ";
+            case TrackingCode::L5SIQ:        return "L5SIQ";
+            case TrackingCode::LEXS:         return "LEXS";
+            case TrackingCode::LEXL:         return "LEXL";
+            case TrackingCode::LEXSL:        return "LEXSL";
+            case TrackingCode::L6D:          return "L6D";
+            case TrackingCode::L6E:          return "L6E";
+            case TrackingCode::L6DE:         return "L6DE";
+            case TrackingCode::B1I:          return "B1I";
+            case TrackingCode::B1Q:          return "B1Q";
+            case TrackingCode::B1IQ:         return "B1IQ";
+            case TrackingCode::B2I:          return "B2I";
+            case TrackingCode::B2Q:          return "B2Q";
+            case TrackingCode::B2IQ:         return "B2IQ";
+            case TrackingCode::B3I:          return "B3I";
+            case TrackingCode::B3Q:          return "B3Q";
+            case TrackingCode::B3IQ:         return "B3IQ";
+            case TrackingCode::B1A:          return "B1A";
+            case TrackingCode::B1CD:         return "B1CD";
+            case TrackingCode::B1CDP:        return "B1CDP";
+            case TrackingCode::B1CP:         return "B1CP";
+            case TrackingCode::B2abI:        return "B2abI";
+            case TrackingCode::B2abIQ:       return "B2abIQ";
+            case TrackingCode::B2abQ:        return "B2abQ";
+            case TrackingCode::B2aI:         return "B2aI";
+            case TrackingCode::B2aIQ:        return "B2aIQ";
+            case TrackingCode::B2aQ:         return "B2aQ";
+            case TrackingCode::B2bI:         return "B2bI";
+            case TrackingCode::B2bIQ:        return "B2bIQ";
+            case TrackingCode::B2bQ:         return "B2bQ";
+            case TrackingCode::B3AQ:         return "B3AQ";
+            case TrackingCode::BCodeless:    return "BCodeless";
+            case TrackingCode::B3AI:         return "B3AI";
+            case TrackingCode::B3AIQ:        return "B3AIQ";
+            case TrackingCode::SPSL5:        return "SPSL5";
+            case TrackingCode::RSL5D:        return "RSL5D";
+            case TrackingCode::RSL5P:        return "RSL5P";
+            case TrackingCode::RSL5DP:       return "RSL5DP";
+            case TrackingCode::SPSS:         return "SPSS";
+            case TrackingCode::RSSD:         return "RSSD";
+            case TrackingCode::RSSP:         return "RSSP";
+            case TrackingCode::RSSDP:        return "RSSDP";
+            case TrackingCode::CW:           return "CW";
+            case TrackingCode::Undefined:    return "Undefined";
+            default:                         return "???";
          } // switch (e)
       } // asString(TrackingCode)
 
@@ -173,204 +189,236 @@ namespace gpstk
             return TrackingCode::P;
          if (s == "Y")
             return TrackingCode::Y;
-         if (s == "W")
-            return TrackingCode::W;
-         if (s == "N")
-            return TrackingCode::N;
-         if (s == "D")
-            return TrackingCode::D;
-         if (s == "M")
-            return TrackingCode::M;
-         if (s == "C2M")
-            return TrackingCode::C2M;
-         if (s == "C2L")
-            return TrackingCode::C2L;
-         if (s == "C2LM")
-            return TrackingCode::C2LM;
-         if (s == "I5")
-            return TrackingCode::I5;
-         if (s == "Q5")
-            return TrackingCode::Q5;
-         if (s == "IQ5")
-            return TrackingCode::IQ5;
-         if (s == "G1P")
-            return TrackingCode::G1P;
-         if (s == "G1D")
-            return TrackingCode::G1D;
-         if (s == "G1X")
-            return TrackingCode::G1X;
-         if (s == "GCA")
-            return TrackingCode::GCA;
-         if (s == "GP")
-            return TrackingCode::GP;
-         if (s == "IR3")
-            return TrackingCode::IR3;
-         if (s == "QR3")
-            return TrackingCode::QR3;
-         if (s == "IQR3")
-            return TrackingCode::IQR3;
+         if (s == "Ztracking")
+            return TrackingCode::Ztracking;
+         if (s == "YCodeless")
+            return TrackingCode::YCodeless;
+         if (s == "Semicodeless")
+            return TrackingCode::Semicodeless;
+         if (s == "MD")
+            return TrackingCode::MD;
+         if (s == "MDP")
+            return TrackingCode::MDP;
+         if (s == "MP")
+            return TrackingCode::MP;
+         if (s == "MPA")
+            return TrackingCode::MPA;
+         if (s == "MARL")
+            return TrackingCode::MARL;
+         if (s == "MARLD")
+            return TrackingCode::MARLD;
+         if (s == "MARLP")
+            return TrackingCode::MARLP;
+         if (s == "Mprime")
+            return TrackingCode::Mprime;
+         if (s == "MprimePA")
+            return TrackingCode::MprimePA;
+         if (s == "L2CM")
+            return TrackingCode::L2CM;
+         if (s == "L2CL")
+            return TrackingCode::L2CL;
+         if (s == "L2CML")
+            return TrackingCode::L2CML;
+         if (s == "L5I")
+            return TrackingCode::L5I;
+         if (s == "L5Q")
+            return TrackingCode::L5Q;
+         if (s == "L5IQ")
+            return TrackingCode::L5IQ;
+         if (s == "L1CP")
+            return TrackingCode::L1CP;
+         if (s == "L1CD")
+            return TrackingCode::L1CD;
+         if (s == "L1CDP")
+            return TrackingCode::L1CDP;
+         if (s == "NSCA")
+            return TrackingCode::NSCA;
+         if (s == "NSCD")
+            return TrackingCode::NSCD;
+         if (s == "NSCL")
+            return TrackingCode::NSCL;
+         if (s == "NSCM")
+            return TrackingCode::NSCM;
+         if (s == "NSCMCL")
+            return TrackingCode::NSCMCL;
+         if (s == "NSCP")
+            return TrackingCode::NSCP;
+         if (s == "NSCPCD")
+            return TrackingCode::NSCPCD;
+         if (s == "NSI5")
+            return TrackingCode::NSI5;
+         if (s == "NSM")
+            return TrackingCode::NSM;
+         if (s == "NSMPA")
+            return TrackingCode::NSMPA;
+         if (s == "NSMprime")
+            return TrackingCode::NSMprime;
+         if (s == "NSMprimePA")
+            return TrackingCode::NSMprimePA;
+         if (s == "NSP")
+            return TrackingCode::NSP;
+         if (s == "NSQ5")
+            return TrackingCode::NSQ5;
+         if (s == "NSY")
+            return TrackingCode::NSY;
+         if (s == "Standard")
+            return TrackingCode::Standard;
+         if (s == "Precise")
+            return TrackingCode::Precise;
+         if (s == "L3OCD")
+            return TrackingCode::L3OCD;
+         if (s == "L3OCP")
+            return TrackingCode::L3OCP;
+         if (s == "L3OCDP")
+            return TrackingCode::L3OCDP;
          if (s == "L1OCD")
             return TrackingCode::L1OCD;
          if (s == "L1OCP")
             return TrackingCode::L1OCP;
-         if (s == "L1OC")
-            return TrackingCode::L1OC;
-         if (s == "L2CSIOCp")
-            return TrackingCode::L2CSIOCp;
+         if (s == "L1OCDP")
+            return TrackingCode::L1OCDP;
+         if (s == "L2CSIL2OCp")
+            return TrackingCode::L2CSIL2OCp;
          if (s == "L2CSI")
             return TrackingCode::L2CSI;
          if (s == "L2OCP")
             return TrackingCode::L2OCP;
-         if (s == "A")
-            return TrackingCode::A;
-         if (s == "B")
-            return TrackingCode::B;
-         if (s == "C")
-            return TrackingCode::C;
-         if (s == "BC")
-            return TrackingCode::BC;
-         if (s == "ABC")
-            return TrackingCode::ABC;
-         if (s == "IE5")
-            return TrackingCode::IE5;
-         if (s == "QE5")
-            return TrackingCode::QE5;
-         if (s == "IQE5")
-            return TrackingCode::IQE5;
-         if (s == "IE5a")
-            return TrackingCode::IE5a;
-         if (s == "QE5a")
-            return TrackingCode::QE5a;
-         if (s == "IQE5a")
-            return TrackingCode::IQE5a;
-         if (s == "IE5b")
-            return TrackingCode::IE5b;
-         if (s == "QE5b")
-            return TrackingCode::QE5b;
-         if (s == "IQE5b")
-            return TrackingCode::IQE5b;
-         if (s == "A6")
-            return TrackingCode::A6;
-         if (s == "B6")
-            return TrackingCode::B6;
-         if (s == "C6")
-            return TrackingCode::C6;
-         if (s == "BC6")
-            return TrackingCode::BC6;
-         if (s == "ABC6")
-            return TrackingCode::ABC6;
-         if (s == "SCA")
-            return TrackingCode::SCA;
-         if (s == "SI5")
-            return TrackingCode::SI5;
-         if (s == "SQ5")
-            return TrackingCode::SQ5;
-         if (s == "SIQ5")
-            return TrackingCode::SIQ5;
-         if (s == "JCA")
-            return TrackingCode::JCA;
-         if (s == "JD1")
-            return TrackingCode::JD1;
-         if (s == "JP1")
-            return TrackingCode::JP1;
-         if (s == "JX1")
-            return TrackingCode::JX1;
-         if (s == "JZ1")
-            return TrackingCode::JZ1;
-         if (s == "JM2")
-            return TrackingCode::JM2;
-         if (s == "JL2")
-            return TrackingCode::JL2;
-         if (s == "JX2")
-            return TrackingCode::JX2;
-         if (s == "JI5")
-            return TrackingCode::JI5;
-         if (s == "JQ5")
-            return TrackingCode::JQ5;
-         if (s == "JIQ5")
-            return TrackingCode::JIQ5;
-         if (s == "JI5S")
-            return TrackingCode::JI5S;
-         if (s == "JQ5S")
-            return TrackingCode::JQ5S;
-         if (s == "JIQ5S")
-            return TrackingCode::JIQ5S;
-         if (s == "JI6")
-            return TrackingCode::JI6;
-         if (s == "JQ6")
-            return TrackingCode::JQ6;
-         if (s == "JIQ6")
-            return TrackingCode::JIQ6;
-         if (s == "JD6")
-            return TrackingCode::JD6;
-         if (s == "JE6")
-            return TrackingCode::JE6;
-         if (s == "JDE6")
-            return TrackingCode::JDE6;
-         if (s == "CI1")
-            return TrackingCode::CI1;
-         if (s == "CQ1")
-            return TrackingCode::CQ1;
-         if (s == "CIQ1")
-            return TrackingCode::CIQ1;
-         if (s == "CI7")
-            return TrackingCode::CI7;
-         if (s == "CQ7")
-            return TrackingCode::CQ7;
-         if (s == "CIQ7")
-            return TrackingCode::CIQ7;
-         if (s == "CI6")
-            return TrackingCode::CI6;
-         if (s == "CQ6")
-            return TrackingCode::CQ6;
-         if (s == "CIQ6")
-            return TrackingCode::CIQ6;
-         if (s == "CA1")
-            return TrackingCode::CA1;
-         if (s == "CCD1")
-            return TrackingCode::CCD1;
-         if (s == "CCDP1")
-            return TrackingCode::CCDP1;
-         if (s == "CCP1")
-            return TrackingCode::CCP1;
-         if (s == "CI2ab")
-            return TrackingCode::CI2ab;
-         if (s == "CIQ2ab")
-            return TrackingCode::CIQ2ab;
-         if (s == "CQ2ab")
-            return TrackingCode::CQ2ab;
-         if (s == "CI2a")
-            return TrackingCode::CI2a;
-         if (s == "CIQ2a")
-            return TrackingCode::CIQ2a;
-         if (s == "CQ2a")
-            return TrackingCode::CQ2a;
-         if (s == "CI2b")
-            return TrackingCode::CI2b;
-         if (s == "CIQ2b")
-            return TrackingCode::CIQ2b;
-         if (s == "CQ2b")
-            return TrackingCode::CQ2b;
-         if (s == "CodelessC")
-            return TrackingCode::CodelessC;
-         if (s == "CIQ3A")
-            return TrackingCode::CIQ3A;
-         if (s == "IA5")
-            return TrackingCode::IA5;
-         if (s == "IB5")
-            return TrackingCode::IB5;
-         if (s == "IC5")
-            return TrackingCode::IC5;
-         if (s == "IX5")
-            return TrackingCode::IX5;
-         if (s == "IA9")
-            return TrackingCode::IA9;
-         if (s == "IB9")
-            return TrackingCode::IB9;
-         if (s == "IC9")
-            return TrackingCode::IC9;
-         if (s == "IX9")
-            return TrackingCode::IX9;
+         if (s == "G3TestData")
+            return TrackingCode::G3TestData;
+         if (s == "G3TestPilot")
+            return TrackingCode::G3TestPilot;
+         if (s == "L1SC")
+            return TrackingCode::L1SC;
+         if (s == "L2SC")
+            return TrackingCode::L2SC;
+         if (s == "E1A")
+            return TrackingCode::E1A;
+         if (s == "E1B")
+            return TrackingCode::E1B;
+         if (s == "E1C")
+            return TrackingCode::E1C;
+         if (s == "E1BC")
+            return TrackingCode::E1BC;
+         if (s == "E1ABC")
+            return TrackingCode::E1ABC;
+         if (s == "E5abI")
+            return TrackingCode::E5abI;
+         if (s == "E5abQ")
+            return TrackingCode::E5abQ;
+         if (s == "E5abIQ")
+            return TrackingCode::E5abIQ;
+         if (s == "E5aI")
+            return TrackingCode::E5aI;
+         if (s == "E5aQ")
+            return TrackingCode::E5aQ;
+         if (s == "E5aIQ")
+            return TrackingCode::E5aIQ;
+         if (s == "E5bI")
+            return TrackingCode::E5bI;
+         if (s == "E5bQ")
+            return TrackingCode::E5bQ;
+         if (s == "E5bIQ")
+            return TrackingCode::E5bIQ;
+         if (s == "E6A")
+            return TrackingCode::E6A;
+         if (s == "E6B")
+            return TrackingCode::E6B;
+         if (s == "E6C")
+            return TrackingCode::E6C;
+         if (s == "E6BC")
+            return TrackingCode::E6BC;
+         if (s == "E6ABC")
+            return TrackingCode::E6ABC;
+         if (s == "L1S")
+            return TrackingCode::L1S;
+         if (s == "L5SI")
+            return TrackingCode::L5SI;
+         if (s == "L5SQ")
+            return TrackingCode::L5SQ;
+         if (s == "L5SIQ")
+            return TrackingCode::L5SIQ;
+         if (s == "LEXS")
+            return TrackingCode::LEXS;
+         if (s == "LEXL")
+            return TrackingCode::LEXL;
+         if (s == "LEXSL")
+            return TrackingCode::LEXSL;
+         if (s == "L6D")
+            return TrackingCode::L6D;
+         if (s == "L6E")
+            return TrackingCode::L6E;
+         if (s == "L6DE")
+            return TrackingCode::L6DE;
+         if (s == "B1I")
+            return TrackingCode::B1I;
+         if (s == "B1Q")
+            return TrackingCode::B1Q;
+         if (s == "B1IQ")
+            return TrackingCode::B1IQ;
+         if (s == "B2I")
+            return TrackingCode::B2I;
+         if (s == "B2Q")
+            return TrackingCode::B2Q;
+         if (s == "B2IQ")
+            return TrackingCode::B2IQ;
+         if (s == "B3I")
+            return TrackingCode::B3I;
+         if (s == "B3Q")
+            return TrackingCode::B3Q;
+         if (s == "B3IQ")
+            return TrackingCode::B3IQ;
+         if (s == "B1A")
+            return TrackingCode::B1A;
+         if (s == "B1CD")
+            return TrackingCode::B1CD;
+         if (s == "B1CDP")
+            return TrackingCode::B1CDP;
+         if (s == "B1CP")
+            return TrackingCode::B1CP;
+         if (s == "B2abI")
+            return TrackingCode::B2abI;
+         if (s == "B2abIQ")
+            return TrackingCode::B2abIQ;
+         if (s == "B2abQ")
+            return TrackingCode::B2abQ;
+         if (s == "B2aI")
+            return TrackingCode::B2aI;
+         if (s == "B2aIQ")
+            return TrackingCode::B2aIQ;
+         if (s == "B2aQ")
+            return TrackingCode::B2aQ;
+         if (s == "B2bI")
+            return TrackingCode::B2bI;
+         if (s == "B2bIQ")
+            return TrackingCode::B2bIQ;
+         if (s == "B2bQ")
+            return TrackingCode::B2bQ;
+         if (s == "B3AQ")
+            return TrackingCode::B3AQ;
+         if (s == "BCodeless")
+            return TrackingCode::BCodeless;
+         if (s == "B3AI")
+            return TrackingCode::B3AI;
+         if (s == "B3AIQ")
+            return TrackingCode::B3AIQ;
+         if (s == "SPSL5")
+            return TrackingCode::SPSL5;
+         if (s == "RSL5D")
+            return TrackingCode::RSL5D;
+         if (s == "RSL5P")
+            return TrackingCode::RSL5P;
+         if (s == "RSL5DP")
+            return TrackingCode::RSL5DP;
+         if (s == "SPSS")
+            return TrackingCode::SPSS;
+         if (s == "RSSD")
+            return TrackingCode::RSSD;
+         if (s == "RSSP")
+            return TrackingCode::RSSP;
+         if (s == "RSSDP")
+            return TrackingCode::RSSDP;
+         if (s == "CW")
+            return TrackingCode::CW;
          if (s == "Undefined")
             return TrackingCode::Undefined;
          return TrackingCode::Unknown;

@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2019/09/10 06:40:46
-+++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/faa1170b00.16o +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2020/08/21 16:06:06
++++++++++++++ RinSum summary of Rinex obs file /home/johnk/src/git/toolkit-work/gpstk/data/inputs/igs/faa1170b00.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: teqc  2011Oct11,  Run: 20160618 01:19:13UTC,  By: 
@@ -44,12 +44,12 @@ GLONASS Observation types (8):
  Type #07 (L2C) G2 GLOC/A phase
  Type #08 (S2C) G2 GLOC/A snr
 Geosync Observation types (6):
- Type #01 (C1C) L1 SBASC/A pseudorange
- Type #02 (L1C) L1 SBASC/A phase
- Type #03 (S1C) L1 SBASC/A snr
- Type #04 (C5X) L5 SBASI+Q5 pseudorange
- Type #05 (L5X) L5 SBASI+Q5 phase
- Type #06 (S5X) L5 SBASI+Q5 snr
+ Type #01 (C1C) L1 GPSC/A pseudorange
+ Type #02 (L1C) L1 GPSC/A phase
+ Type #03 (S1C) L1 GPSC/A snr
+ Type #04 (C5X) L5 GPSI+Q5 pseudorange
+ Type #05 (L5X) L5 GPSI+Q5 phase
+ Type #06 (S5X) L5 GPSI+Q5 snr
 R2ObsTypes: C1 P1 L1 S1 C2 P2 L2 S2 C5 L5 S5 C7 L7 S7 C8 L8 S8 
 mapSysR2toR3ObsID[E] C1:C1B C5:C5I C7:C7X C8:C8X L1:L1B L5:L5I L7:L7X L8:L8X S1:S1B S5:S5I S7:S7X S8:S8X 
 mapSysR2toR3ObsID[G] C1:C1C C2:C2X C5:C5X L1:L1C L2:L2W L5:L5X P1:C1W P2:C2W S1:S1C S2:S2W S5:S5X 
@@ -113,4 +113,4 @@ System R = GLONASS:
 TOTAL     50      0     50     50     50     50     50     50
 
  Warning - Obs type RG1 GLOP pseudorange (GLONASS G1 GLOP pseudorange, P1 in ver.2) should be removed from header
-RinSum timing: processing 0.123 sec, wallclock: 0 sec.
+RinSum timing: processing 0.046 sec, wallclock: 0 sec.

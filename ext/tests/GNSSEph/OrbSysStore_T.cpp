@@ -557,10 +557,10 @@ createAndDump_LNAV()
       ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::CA),    // L1 C/A  - 0
       ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::P),     // L1 P    - 1
       ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::Y),     // L2 Y    - 2
-      ObsID(ObservationType::Unknown, CarrierBand::L2, TrackingCode::C2LM),  // L2 CMCL - 3
-      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::M),     // L1 M    - 4
-      ObsID(ObservationType::Unknown, CarrierBand::L5, TrackingCode::I5),    // L5 I    - 5
-      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::G1D),   // L1C     - 6
+      ObsID(ObservationType::Unknown, CarrierBand::L2, TrackingCode::L2CML),  // L2 CMCL - 3
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::MDP),     // L1 M    - 4
+      ObsID(ObservationType::Unknown, CarrierBand::L5, TrackingCode::L5I),    // L5 I    - 5
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::L1CD),   // L1C     - 6
    };
 
       // Execute the test cases
@@ -878,10 +878,10 @@ setUpCNAV()
       // Define state variables for writing an CNAV data
    gpstk::ObsID L2ObsID(gpstk::ObservationType::NavMsg,
                     gpstk::CarrierBand::L2,
-                    gpstk::TrackingCode::C2LM);
+                    gpstk::TrackingCode::L2CML);
    gpstk::ObsID L5ObsID(gpstk::ObservationType::NavMsg,
                     gpstk::CarrierBand::L5,
-                    gpstk::TrackingCode::I5);
+                    gpstk::TrackingCode::L5I);
    msgsExpectedToBeAdded = 4;
    typeDesc = "GPS_CNAV";
 

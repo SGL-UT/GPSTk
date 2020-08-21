@@ -130,7 +130,7 @@ namespace gpstk
       {
          type=ObservationType::Range;
          band=CarrierBand::L2;
-         code=TrackingCode::C2LM;
+         code=TrackingCode::L2CML;
       }
       else if (rot == RinexObsHeader::S2)
       {
@@ -155,8 +155,8 @@ namespace gpstk
       buff[1] = cb2char[band];
       buff[2] = tc2char[code];
       if ((fabs(version - 3.02) < 0.005) && (band == CarrierBand::B1) &&
-          ((code == TrackingCode::CI1) || (code == TrackingCode::CQ1) ||
-           (code == TrackingCode::CIQ1)))
+          ((code == TrackingCode::B1I) || (code == TrackingCode::B1Q) ||
+           (code == TrackingCode::B1IQ)))
       {
             // kludge for RINEX 3.02 BDS codes
          buff[1] = '1';

@@ -61,112 +61,128 @@ namespace gpstk
        * identifiers need to be allocated */
    enum class TrackingCode
    {
-      Unknown,   ///< Uninitialized value
-      Any,       ///< Used to match any tracking code
-      CA,        ///< Legacy GPS civil code
-      P,         ///< Legacy GPS precise code
-      Y,         ///< Encrypted legacy GPS precise code
-      W,         ///< Encrypted legacy GPS precise code, codeless Z tracking
-      N,         ///< Encrypted legacy GPS precise code, squaring codeless tracking
-      D,         ///< Encrypted legacy GPS precise code, other codeless tracking
-      M,         ///< Modernized GPS military unique code
-      C2M,       ///< Modernized GPS L2 civil M code
-      C2L,       ///< Modernized GPS L2 civil L code
-      C2LM,      ///< Modernized GPS L2 civil M+L combined tracking
-      I5,        ///< Modernized GPS L5 civil in-phase
-      Q5,        ///< Modernized GPS L5 civil quadrature
-      IQ5,       ///< Modernized GPS L5 civil I+Q combined tracking
-      G1P,       ///< Modernized GPS L1C civil code tracking (pilot)
-      G1D,       ///< Modernized GPS L1C civil code tracking (data)
-      G1X,       ///< Modernized GPS L1C civil code tracking (pilot + data)
-      GCA,       ///< Legacy Glonass civil signal
-      GP,        ///< Legacy Glonass precise signal
-      IR3,       ///< Glonass L3 I code
-      QR3,       ///< Glonass L3 Q code
-      IQR3,      ///< Glonass L3 I+Q combined tracking
-      L1OCD,     ///< GLONASS L1 OCd code
-      L1OCP,     ///< GLONASS L1 OCp code
-      L1OC,      ///< GLONASS L1 OCd+OCp combined tracking
-      L2CSIOCp,  ///< GLONASS L2 CSI+OCp combined tracking
-      L2CSI,     ///< GLONASS L2 CSI code
-      L2OCP,     ///< GLONASS L2 OCp code
-      A,         ///< Galileo L1 PRS code
-      B,         ///< Galileo E1-B signal, supporting OS/HAS/SoL
-      C,         ///< Galileo E1 Dataless code
-      BC,        ///< Galileo E1 B+C combined tracking
-      ABC,       ///< Galileo E1 A+B+C combined tracking
-      IE5,       ///< Galileo E5 I code
-      QE5,       ///< Galileo E5 Q code
-      IQE5,      ///< Galileo E5 I+Q combined tracking
-      IE5a,      ///< Galileo E5a I code
-      QE5a,      ///< Galileo E5a Q code
-      IQE5a,     ///< Galileo E5a I+Q combined tracking
-      IE5b,      ///< Galileo E5b I code
-      QE5b,      ///< Galileo E5b Q code
-      IQE5b,     ///< Galileo E5b I+Q combined tracking
-      A6,        ///< Galileo E6 PRS code
-      B6,        ///< Galileo E6-b signal
-      C6,        ///< Galileo E6 Dataless code
-      BC6,       ///< Galileo E6 B+C combined tracking
-      ABC6,      ///< Galileo E6 A+B+C combined tracking
-      SCA,       ///< SBAS civil code
-      SI5,       ///< SBAS L5 I code
-      SQ5,       ///< SBAS L5 Q code
-      SIQ5,      ///< SBAS L5 I+Q code
-      JCA,       ///< QZSS civil code
-      JD1,       ///< QZSS L1C(D)
-      JP1,       ///< QZSS L1C(P)
-      JX1,       ///< QZSS L1C(D+P)
-      JZ1,       ///< QZSS L1-SAIF
-      JM2,       ///< QZSS L2C(M)
-      JL2,       ///< QZSS L2C(L)
-      JX2,       ///< QZSS L2C(M+L)
-      JI5,       ///< QZSS L5 in-phase
-      JQ5,       ///< QZSS L5 quadrature
-      JIQ5,      ///< QZSS L5 I+Q combined tracking
-      JI5S,      ///< QZSS L5S in-phase
-      JQ5S,      ///< QZSS L5S I+Q combined tracking
-      JIQ5S,     ///< QZSS L5S quadrature
-      JI6,       ///< QZSS LEX(6) short
-      JQ6,       ///< QZSS LEX(6) long
-      JIQ6,      ///< QZSS LEX(6) combined tracking
-      JD6,       ///< QZSS L6 Block II D code
-      JE6,       ///< QZSS L6 Block II E code
-      JDE6,      ///< QZSS L6 Block II D+E combined tracking
-      CI1,       ///< BeiDou B1 I code
-      CQ1,       ///< BeiDou B1 Q code
-      CIQ1,      ///< BeiDou B1 I+Q code
-      CI7,       ///< BeiDou B2 I code
-      CQ7,       ///< BeiDou B2 Q code
-      CIQ7,      ///< BeiDou B2 I+Q code
-      CI6,       ///< BeiDou B3 I code
-      CQ6,       ///< BeiDou B3 Q code
-      CIQ6,      ///< BeiDou B3 I+Q code
-      CA1,       ///< BeiDou B1A code
-      CCD1,      ///< BeiDou B1C D code
-      CCDP1,     ///< BeiDou B1C D+P code
-      CCP1,      ///< BeiDou B1C P code
-      CI2ab,     ///< BeiDou B2a+b I code
-      CIQ2ab,    ///< BeiDou B2a+B I+Q code
-      CQ2ab,     ///< BeiDou B2a+B Q code
-      CI2a,      ///< BeiDou B2a I code
-      CIQ2a,     ///< BeiDou B2a I+Q code
-      CQ2a,      ///< BeiDou B2a Q code
-      CI2b,      ///< BeiDou B2b I code
-      CIQ2b,     ///< BeiDou B2b I+Q code
-      CQ2b,      ///< BeiDou B2b Q code
-      CodelessC, ///< BeiDou codeless tracking
-      CIQ3A,     ///< BeiDou B3A I+Q code
-      IA5,       ///< IRNSS L5 SPS
-      IB5,       ///< IRNSS L5 RS(D)
-      IC5,       ///< IRNSS L5 RS(P)
-      IX5,       ///< IRNSS L5 B+C
-      IA9,       ///< IRNSS S-band SPS
-      IB9,       ///< IRNSS S-band RS(D)
-      IC9,       ///< INRSS S-band RS(P)
-      IX9,       ///< IRNSS S-band B+C
-      Undefined, ///< Code is known to be undefined (as opposed to unknown)
-      Last,      ///< Used to verify that all items are described at compile time
+      Unknown,      ///< Uninitialized value
+      Any,          ///< Used to match any tracking code
+      CA,           ///< Legacy GPS civil code
+      P,            ///< Legacy GPS precise code
+      Y,            ///< Encrypted legacy GPS precise code
+      Ztracking,    ///< Encrypted legacy GPS precise code, codeless Z tracking
+      YCodeless,    ///< Encrypted legacy GPS precise code, squaring codeless tracking
+      Semicodeless, ///< Encrypted legacy GPS precise code, other codeless tracking
+      MD,
+      MDP,          ///< Modernized GPS military unique code
+      MP,
+      MPA,
+      MARL,
+      MARLD,
+      MARLP,
+      Mprime,
+      MprimePA,
+      L2CM,         ///< Modernized GPS L2 civil M code
+      L2CL,         ///< Modernized GPS L2 civil L code
+      L2CML,        ///< Modernized GPS L2 civil M+L combined tracking
+      L5I,          ///< Modernized GPS L5 civil in-phase
+      L5Q,          ///< Modernized GPS L5 civil quadrature
+      L5IQ,         ///< Modernized GPS L5 civil I+Q combined tracking
+      L1CP,         ///< Modernized GPS L1C civil code tracking (pilot)
+      L1CD,         ///< Modernized GPS L1C civil code tracking (data)
+      L1CDP,        ///< Modernized GPS L1C civil code tracking (pilot + data)
+      NSCA,
+      NSCD,
+      NSCL,
+      NSCM,
+      NSCMCL,
+      NSCP,
+      NSCPCD,
+      NSI5,
+      NSM,
+      NSMPA,
+      NSMprime,
+      NSMprimePA,
+      NSP,
+      NSQ5,
+      NSY,
+      Standard,     ///< Legacy Glonass civil signal
+      Precise,      ///< Legacy Glonass precise signal
+      L3OCD,        ///< Glonass L3 I code
+      L3OCP,        ///< Glonass L3 Q code
+      L3OCDP,       ///< Glonass L3 I+Q combined tracking
+      L1OCD,        ///< GLONASS L1 OCd code
+      L1OCP,        ///< GLONASS L1 OCp code
+      L1OCDP,       ///< GLONASS L1 OCd+OCp combined tracking
+      L2CSIL2OCp,   ///< GLONASS L2 CSI+OCp combined tracking
+      L2CSI,        ///< GLONASS L2 CSI code
+      L2OCP,        ///< GLONASS L2 OCp code
+      G3TestData,
+      G3TestPilot,
+      L1SC,         ///< GLONASS L1SC in-phase signal
+      L2SC,         ///< GLONASS L2SC in-phase signal
+      E1A,          ///< Galileo L1 PRS code
+      E1B,          ///< Galileo E1-B signal, supporting OS/HAS/SoL
+      E1C,          ///< Galileo E1 Dataless code
+      E1BC,         ///< Galileo E1 B+C combined tracking
+      E1ABC,        ///< Galileo E1 A+B+C combined tracking
+      E5abI,        ///< Galileo E5 I code
+      E5abQ,        ///< Galileo E5 Q code
+      E5abIQ,       ///< Galileo E5 I+Q combined tracking
+      E5aI,         ///< Galileo E5a I code
+      E5aQ,         ///< Galileo E5a Q code
+      E5aIQ,        ///< Galileo E5a I+Q combined tracking
+      E5bI,         ///< Galileo E5b I code
+      E5bQ,         ///< Galileo E5b Q code
+      E5bIQ,        ///< Galileo E5b I+Q combined tracking
+      E6A,          ///< Galileo E6 PRS code
+      E6B,          ///< Galileo E6-b signal
+      E6C,          ///< Galileo E6 Dataless code
+      E6BC,         ///< Galileo E6 B+C combined tracking
+      E6ABC,        ///< Galileo E6 A+B+C combined tracking
+      L1S,          ///< QZSS L1-SAIF
+      L5SI,         ///< QZSS L5S in-phase
+      L5SQ,         ///< QZSS L5S I+Q combined tracking
+      L5SIQ,        ///< QZSS L5S quadrature
+      LEXS,         ///< QZSS LEX(6) short
+      LEXL,         ///< QZSS LEX(6) long
+      LEXSL,        ///< QZSS LEX(6) combined tracking
+      L6D,          ///< QZSS L6 Block II D code
+      L6E,          ///< QZSS L6 Block II E code
+      L6DE,         ///< QZSS L6 Block II D+E combined tracking
+      B1I,          ///< BeiDou B1 I code
+      B1Q,          ///< BeiDou B1 Q code
+      B1IQ,         ///< BeiDou B1 I+Q code
+      B2I,          ///< BeiDou B2 I code
+      B2Q,          ///< BeiDou B2 Q code
+      B2IQ,         ///< BeiDou B2 I+Q code
+      B3I,          ///< BeiDou B3 I code
+      B3Q,          ///< BeiDou B3 Q code
+      B3IQ,         ///< BeiDou B3 I+Q code
+      B1A,          ///< BeiDou B1A code
+      B1CD,         ///< BeiDou B1C D code
+      B1CDP,        ///< BeiDou B1C D+P code
+      B1CP,         ///< BeiDou B1C P code
+      B2abI,        ///< BeiDou B2a+b I code
+      B2abIQ,       ///< BeiDou B2a+B I+Q code
+      B2abQ,        ///< BeiDou B2a+B Q code
+      B2aI,         ///< BeiDou B2a I code
+      B2aIQ,        ///< BeiDou B2a I+Q code
+      B2aQ,         ///< BeiDou B2a Q code
+      B2bI,         ///< BeiDou B2b I code
+      B2bIQ,        ///< BeiDou B2b I+Q code
+      B2bQ,         ///< BeiDou B2b Q code
+      B3AQ,         ///< BeiDou B3A Q code
+      BCodeless,    ///< BeiDou codeless tracking
+      B3AI,         ///< BeiDou B3A I code
+      B3AIQ,        ///< BeiDou B3A I+Q code
+      SPSL5,        ///< IRNSS L5 SPS
+      RSL5D,        ///< IRNSS L5 RS(D)
+      RSL5P,        ///< IRNSS L5 RS(P)
+      RSL5DP,       ///< IRNSS L5 B+C
+      SPSS,         ///< IRNSS S-band SPS
+      RSSD,         ///< IRNSS S-band RS(D)
+      RSSP,         ///< INRSS S-band RS(P)
+      RSSDP,        ///< IRNSS S-band B+C
+      CW,           ///< Continuous Wave, i.e. no chipping sequence
+      Undefined,    ///< Code is known to be undefined (as opposed to unknown)
+      Last,         ///< Used to verify that all items are described at compile time
    }; // enum class TrackingCode
 
       /** Define an iterator so C++11 can do things like

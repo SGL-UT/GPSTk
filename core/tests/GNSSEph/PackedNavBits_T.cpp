@@ -521,13 +521,13 @@ equalityTest()
       // this object is empty.  We are focused on testing
       // the metadata handling. 
    SatID satID(1, SatelliteSystem::GPS);
-   ObsID obsID( ObservationType::NavMsg, CarrierBand::L2, TrackingCode::C2LM );
+   ObsID obsID( ObservationType::NavMsg, CarrierBand::L2, TrackingCode::L2CML );
    NavID navID(satID,obsID);
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
 
    SatID satID2(2, SatelliteSystem::GPS);
-   ObsID obsID2(ObservationType::NavMsg, CarrierBand::L5, TrackingCode::Q5 );
+   ObsID obsID2(ObservationType::NavMsg, CarrierBand::L5, TrackingCode::L5Q );
    NavID navID2(satID2,obsID2); 
    std::string rxID2 = "rx2";
    CommonTime ctPlus = ct + 900.0;
@@ -732,7 +732,7 @@ ancillaryMethods()
       // this object is empty.  We are focused on testing
       // the metadata handling. 
    SatID satID(1, SatelliteSystem::GPS);
-   ObsID obsID( ObservationType::NavMsg, CarrierBand::L2, TrackingCode::C2LM );
+   ObsID obsID( ObservationType::NavMsg, CarrierBand::L2, TrackingCode::L2CML );
    NavID navID(satID,obsID);
    std::string rxID = "rx1";
    CommonTime ct = CivilTime( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );

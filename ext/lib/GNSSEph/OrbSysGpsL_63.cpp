@@ -117,7 +117,7 @@ namespace gpstk
 
       // Legacy GPS Signals.   L1 P(Y), L2 P(Y), L1 C/A
         if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) &&
-             (tc==TrackingCode::P || tc==TrackingCode::Y || tc==TrackingCode::W || tc==TrackingCode::N || tc==TrackingCode::D))
+             (tc==TrackingCode::P || tc==TrackingCode::Y || tc==TrackingCode::Ztracking || tc==TrackingCode::YCodeless || tc==TrackingCode::Semicodeless))
         {
             minimumValue = 1;
         }
@@ -127,23 +127,23 @@ namespace gpstk
         }
 
           // L2C and M-Code (added with Block IIR-M)
-        if (cb==CarrierBand::L2 && (tc==TrackingCode::C2L || tc==TrackingCode::C2M || tc==TrackingCode::C2LM))
+        if (cb==CarrierBand::L2 && (tc==TrackingCode::L2CL || tc==TrackingCode::L2CM || tc==TrackingCode::L2CML))
         {
             minimumValue = 2;
         }
-        if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) && tc==TrackingCode::M)
+        if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) && tc==TrackingCode::MDP)
         {
             minimumValue = 2;
         }
 
           // L5
-        if (cb==CarrierBand::L5 && (tc==TrackingCode::I5 || tc==TrackingCode::Q5))
+        if (cb==CarrierBand::L5 && (tc==TrackingCode::L5I || tc==TrackingCode::L5Q))
         {
             minimumValue = 3;
         }
 
           // L1C
-        if (cb==CarrierBand::L1 && (tc==TrackingCode::G1P || tc==TrackingCode::G1D || tc==TrackingCode::G1X))
+        if (cb==CarrierBand::L1 && (tc==TrackingCode::L1CP || tc==TrackingCode::L1CD || tc==TrackingCode::L1CDP))
         {
             minimumValue = 4;
         }
