@@ -37,7 +37,7 @@
 #ifndef CNAV2SANITYFILTER_HPP
 #define CNAV2SANITYFILTER_HPP
 
-#include <NavFilter.hpp>
+#include "NavFilter.hpp"
 
 namespace gpstk
 {

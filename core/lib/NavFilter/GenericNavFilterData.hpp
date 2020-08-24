@@ -1,7 +1,7 @@
 #ifndef GENERICNAVFILTERDATA_HPP
 #define GENERICNAVFILTERDATA_HPP
 
-#include <NavFilterKey.hpp>
+#include "NavFilterKey.hpp"
 
 namespace gpstk
 {
