@@ -1,7 +1,7 @@
 #ifndef NAVMSGDATABITS_HPP
 #define NAVMSGDATABITS_HPP
 
-#include <NavMsgData.hpp>
+#include "NavMsgData.hpp"
 
 namespace gpstk
 {

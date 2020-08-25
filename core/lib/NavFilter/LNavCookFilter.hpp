@@ -37,8 +37,8 @@
 #ifndef LNAVCOOKFILTER_HPP
 #define LNAVCOOKFILTER_HPP
 
-#include <NavFilter.hpp>
-#include <LNavFilterData.hpp>
+#include "NavFilter.hpp"
+#include "LNavFilterData.hpp"
 
 namespace gpstk
 {
