@@ -103,12 +103,6 @@ namespace gpstk
          frTS = TimeSystem::GPS;
          toTS = TimeSystem::GAL;
       }
-      else if(STR == std::string("GAGP"))
-      { 
-         type = GAGP;
-         frTS = TimeSystem::GPS;
-         toTS = TimeSystem::GAL;
-      }
       else if(STR == std::string("GLGP"))
       { 
          type = GLGP;
@@ -168,7 +162,6 @@ namespace gpstk
          case SBUT: return std::string("SBAS to UTC");
          case GLUT: return std::string("GLO to UTC");
          case GPGA: return std::string("GPS to GAL");
-         case GAGP: return std::string("GPS to GAL");
          case GLGP: return std::string("GLO to GPS");
          case QZGP: return std::string("QZS to GPS");
          case QZUT: return std::string("QZS to UTC");
@@ -190,7 +183,6 @@ namespace gpstk
          case SBUT: return std::string("SBUT");
          case GLUT: return std::string("GLUT");
          case GPGA: return std::string("GPGA");
-         case GAGP: return std::string("GAGP");
          case GLGP: return std::string("GLGP");
          case QZGP: return std::string("QZGP");
          case QZUT: return std::string("QZUT");
@@ -227,10 +219,6 @@ namespace gpstk
               << ", RefTime = week/sow " << refWeek << "/" << refSOW;
             break;
          case GPGA:
-            s << ", A0G = " << A0 << ", A1G = " << A1
-              << ", RefTime = week/sow " << refWeek << "/" << refSOW;
-            break;
-         case GAGP:
             s << ", A0G = " << A0 << ", A1G = " << A1
               << ", RefTime = week/sow " << refWeek << "/" << refSOW;
             break;
@@ -355,7 +343,6 @@ namespace gpstk
             break;
 
          case GPGA:
-         case GAGP:
             if(fromTS != TimeSystem::GPS && fromTS != TimeSystem::GAL)
             {
                GPSTK_THROW(e);
