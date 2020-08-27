@@ -58,7 +58,7 @@ PROJECT_LOGO           = gpstk-logo-small.jpg
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = gpstk_doc_dir
+OUTPUT_DIRECTORY       = docs
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -723,7 +723,7 @@ QUIET                  = YES
 # Tip: Turn warnings on while writing the documentation.
 # The default value is: YES.
 
-WARNINGS               = NO
+WARNINGS               = YES
 
 # If the WARN_IF_UNDOCUMENTED tag is set to YES then doxygen will generate
 # warnings for undocumented members. If EXTRACT_ALL is set to YES then this flag
@@ -738,7 +738,7 @@ WARN_IF_UNDOCUMENTED   = NO
 # markup commands wrongly.
 # The default value is: YES.
 
-WARN_IF_DOC_ERROR      = NO
+WARN_IF_DOC_ERROR      = YES
 
 # This WARN_NO_PARAMDOC option can be enabled to get warnings for functions that
 # are documented, but have no documentation for their parameters or return
