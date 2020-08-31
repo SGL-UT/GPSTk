@@ -204,7 +204,7 @@ namespace gpstk
           * @param[out] sat If found the satellite's metadata.
           * @return true if the requested satellite mapping was found.
           */
-      bool findSatByFdmaSlot(uint32_t slotID,
+      bool findSatBySlotFdma(uint32_t slotID,
                               int32_t channel,
                         const gpstk::CommonTime& when,
                         SatMetaData& sat)

@@ -461,7 +461,7 @@ namespace gpstk
    } // findSat()
 
    bool SatMetaDataStore::
-   findSatByFdmaSlot(uint32_t slotID,
+   findSatBySlotFdma(uint32_t slotID,
                      int32_t channel,
                      const gpstk::CommonTime& when,
                      SatMetaData& sat)
