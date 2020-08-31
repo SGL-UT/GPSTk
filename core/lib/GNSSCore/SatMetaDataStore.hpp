@@ -192,6 +192,24 @@ namespace gpstk
                         SatMetaData& sat)
          const;
 
+         /** Find a GLONASS satellite in the map by searching by
+          *  its orbit slotID and FDMA channel.  To be a unique
+          *  identification, both are necessary.
+          *  This is only applicable to GLONASS FDMA SVs
+          * @param[in] slotID The GLONASS orbit slot ID 
+          *   identifying the desired satellite.
+          * @param[in] channel The FDMA channel
+          *   identifying the desired satellite.
+          * @param[in] when The time of interest of the desired satellite.
+          * @param[out] sat If found the satellite's metadata.
+          * @return true if the requested satellite mapping was found.
+          */
+      bool findSatByFdmaSlot(uint32_t slotID,
+                              int32_t channel,
+                        const gpstk::CommonTime& when,
+                        SatMetaData& sat)
+         const;
+
          /** Get the pseudo-random number of a satellite in the map by
           * searching by SVN.
           * @param[in] sys The GNSS of the desired satellite.
