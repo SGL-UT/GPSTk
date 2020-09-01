@@ -11,6 +11,7 @@ public:
    unsigned findSatTest();
    unsigned getSVNTest();
    unsigned findSatBySVNTest();
+   unsigned findSatBySlotFdmaTest();
    unsigned getPRNTest();
 };
 
@@ -214,6 +215,53 @@ findSatBySVNTest()
 
 
 unsigned SatMetaDataStore_T ::
+findSatBySlotFdmaTest()
+{
+   TUDEF("SatMetaDataStore", "loadData");
+   gpstk::SatMetaDataStore testObj;
+   gpstk::SatMetaData sat;
+   TUASSERT(testObj.loadData(gpstk::getPathData() + gpstk::getFileSep() +
+                             "satmeta_GLONASS.csv"));
+      // find a satellite
+   TUCSM("findSatBySlotFdma");
+   TUASSERT(testObj.findSatBySlotFdma(22, -3,
+                                 gpstk::YDSTime(2020,5,27), sat));
+
+   TUASSERTE(uint32_t, 0, sat.prn);
+   TUASSERTE(std::string, "731", sat.svn)
+   TUASSERTE(int32_t, 36400, sat.norad);
+   TUASSERTE(int32_t, -3, sat.chl);
+   TUASSERTE(uint32_t, 22, sat.slotID);
+   TUASSERTE(gpstk::SatID::SatelliteSystem, gpstk::SatID::systemGlonass, sat.sys);
+   TUASSERTE(gpstk::CommonTime, gpstk::YDSTime(2010,61,0), sat.launchTime);
+   TUASSERTE(gpstk::CommonTime, gpstk::YDSTime(2010,61,0), sat.startTime);
+   TUASSERTE(gpstk::CommonTime, gpstk::YDSTime(2020,153,86399), sat.endTime);
+   TUASSERTE(std::string, "3", sat.plane);
+   TUASSERTE(std::string, "?", sat.slot);
+   TUASSERTE(std::string, "M", sat.type);
+   TUASSERTE(std::string, "M", sat.signals);
+   TUASSERTE(std::string, "unk", sat.mission);
+   TUASSERTE(gpstk::SatMetaData::Status,
+             gpstk::SatMetaData::Status::Operational, sat.status);
+   TUASSERTE(gpstk::SatMetaData::ClockType,
+             gpstk::SatMetaData::ClockType::Unknown, sat.clocks[0]);
+   TUASSERTE(gpstk::SatMetaData::ClockType,
+             gpstk::SatMetaData::ClockType::Unknown, sat.clocks[1]);
+   TUASSERTE(gpstk::SatMetaData::ClockType,
+             gpstk::SatMetaData::ClockType::Unknown, sat.clocks[2]);
+   TUASSERTE(gpstk::SatMetaData::ClockType,
+             gpstk::SatMetaData::ClockType::Unknown, sat.clocks[3]);
+   TUASSERTE(uint8_t, 255, sat.activeClock);
+
+      // try to find the SVN before it was launched
+   TUASSERT(!testObj.findSatBySlotFdma(22, -3,
+                                       gpstk::YDSTime(1989,1,0), sat));
+
+   TURETURN();
+}
+
+
+unsigned SatMetaDataStore_T ::
 getPRNTest()
 {
    TUDEF("SatMetaDataStore", "loadData");
@@ -254,6 +302,7 @@ int main()
    errorTotal += testClass.findSatTest();
    errorTotal += testClass.getSVNTest();
    errorTotal += testClass.findSatBySVNTest();
+   errorTotal += testClass.findSatBySlotFdmaTest();
    errorTotal += testClass.getPRNTest();
    cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
    return errorTotal;
