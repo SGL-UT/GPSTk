@@ -460,6 +460,7 @@ namespace gpstk
       return false;
    } // findSat()
 
+
    bool SatMetaDataStore::
    findSatBySlotFdma(uint32_t slotID,
                      int32_t channel,
@@ -467,7 +468,7 @@ namespace gpstk
                      SatMetaData& sat)
          const
    {
-      SatID::SatelliteSystem sys = SatID::systemGlonass;
+      SatelliteSystem sys = SatelliteSystem::Glonass;
       SatMetaMap::const_iterator sysIt = satMap.find(sys);
       if (sysIt == satMap.end())
       {
@@ -496,6 +497,7 @@ namespace gpstk
       // cerr << "giving up" << endl;
       return false;
    } // findSatByFdmaSlot()
+
 
    bool SatMetaDataStore ::
    getSVN(SatelliteSystem sys, uint32_t prn,

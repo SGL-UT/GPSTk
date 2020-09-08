@@ -242,7 +242,7 @@ findSatBySlotFdmaTest()
    TUASSERTE(int32_t, 36400, sat.norad);
    TUASSERTE(int32_t, -3, sat.chl);
    TUASSERTE(uint32_t, 22, sat.slotID);
-   TUASSERTE(gpstk::SatID::SatelliteSystem, gpstk::SatID::systemGlonass, sat.sys);
+   TUASSERTE(gpstk::SatelliteSystem, gpstk::SatelliteSystem::Glonass, sat.sys);
    TUASSERTE(gpstk::CommonTime, gpstk::YDSTime(2010,61,0), sat.launchTime);
    TUASSERTE(gpstk::CommonTime, gpstk::YDSTime(2010,61,0), sat.startTime);
    TUASSERTE(gpstk::CommonTime, gpstk::YDSTime(2020,153,86399), sat.endTime);
