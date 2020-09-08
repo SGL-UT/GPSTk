@@ -1,8 +1,8 @@
 #ifndef NAVMSGDATAPNB_HPP
 #define NAVMSGDATAPNB_HPP
 
-#include <NavMsgData.hpp>
-#include <PackedNavBits.hpp>
+#include "NavMsgData.hpp"
+#include "PackedNavBits.hpp"
 
 namespace gpstk
 {

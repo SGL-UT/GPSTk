@@ -37,9 +37,9 @@
 #ifndef NAVORDERFILTER_HPP
 #define NAVORDERFILTER_HPP
 
-#include <NavFilterMgr.hpp>
-#include <NavFilter.hpp>
-#include <NavFilterKey.hpp>
+#include "NavFilterMgr.hpp"
+#include "NavFilter.hpp"
+#include "NavFilterKey.hpp"
 
 namespace gpstk
 {

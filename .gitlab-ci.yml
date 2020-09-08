@@ -58,6 +58,23 @@ static_analysis:
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
 
+# Runs the documentation generation
+generate_documentation:
+  stage: check
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/debian9_fai_ish
+  script:
+    # Install GraphViz
+    - sudo apt-get install -y graphviz
+    # Call doxygen w/alternate target directory
+    - doxygen
+  # Allow failures here to prevent blocking the rest of the pipeline.
+  allow_failure: true
+  artifacts:
+    paths:
+      - docs/
+
 build_debian_7:
   stage: build
   extends: .normal_job

@@ -460,6 +460,42 @@ namespace gpstk
       return false;
    } // findSat()
 
+   bool SatMetaDataStore::
+   findSatBySlotFdma(uint32_t slotID,
+                     int32_t channel,
+                     const gpstk::CommonTime& when,
+                     SatMetaData& sat)
+         const
+   {
+      SatID::SatelliteSystem sys = SatID::systemGlonass;
+      SatMetaMap::const_iterator sysIt = satMap.find(sys);
+      if (sysIt == satMap.end())
+      {
+         // std::cerr << "no system" << std::endl;
+         return false;
+      }
+         // This is a bit different than the PRN search because the
+         // map is sorted by PRN and not slotID, so we have to search
+         // until we either hit the end of the map or we find a match,
+         // there's no short-cut failures.
+      for (SatSet::const_iterator rv = sysIt->second.begin();
+           rv != sysIt->second.end();
+           rv++)
+      {
+         if ((rv->slotID == slotID)  &&
+             (rv->chl    == channel) &&
+             (when >= rv->startTime) &&
+             (when < rv->endTime))
+         {
+            // std::cerr << "found it" << std::endl;
+            // cerr << *rv << endl;
+            sat = *rv;
+            return true;
+         }
+      } // for (SatSet::const_iterator rv = sysIt->second.begin();
+      // cerr << "giving up" << endl;
+      return false;
+   } // findSatByFdmaSlot()
 
    bool SatMetaDataStore ::
    getSVN(SatelliteSystem sys, uint32_t prn,
