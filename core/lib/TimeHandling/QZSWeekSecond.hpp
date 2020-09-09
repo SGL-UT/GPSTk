@@ -126,7 +126,7 @@ namespace gpstk
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                                  "gf", sow );
             rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                                 "Ps", timeSystem.asString().c_str() );
+                                 "Ps", StringUtils::asString(timeSystem).c_str() );
             return rv;
          }
          catch(gpstk::StringUtils::StringException& e)

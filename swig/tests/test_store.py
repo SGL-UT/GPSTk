@@ -30,7 +30,7 @@ class BrcKeplerOrbitTest(unittest.TestCase):
         t2.addDays(1)
         t3 = gpstk.CommonTime()
         t3.addSeconds(60)
-        obs = gpstk.ObsID(gpstk.ObsID.otRange, gpstk.ObsID.cbAny, gpstk.ObsID.tcA)
+        obs = gpstk.ObsID(gpstk.ObservationType.Range, gpstk.CarrierBand.Any, gpstk.TrackingCode.A)
         b = gpstk.BrcKeplerOrbit('GPS', obs, 10, t1, t2, t3,
                            5, True, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                            0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.2, 1.3, 0.0)

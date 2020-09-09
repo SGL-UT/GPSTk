@@ -50,7 +50,7 @@ phaseShiftTest()
    gpstk::Rinex3ObsHeader hdr;
    gpstk::RinexObsID roidInvalid("GC1C",gpstk::Rinex3ObsBase::currentVersion);
    gpstk::RinexObsID roidValid("GL1C", gpstk::Rinex3ObsBase::currentVersion);
-   gpstk::SatID sid(7, gpstk::SatID::systemGPS);
+   gpstk::SatID sid(7, gpstk::SatelliteSystem::GPS);
    strm.exceptions(std::fstream::failbit);
       // Not setting most of the header fields because they're not being tested.
       // Basically, the phase shift record for "GL1C" should be
@@ -97,7 +97,7 @@ channelNumTest()
    gpstk::Rinex3ObsStream strm(outfn, std::ios::out | std::ios::trunc);
    gpstk::Rinex3ObsHeader hdr;
    gpstk::RinexObsID roidValid("GL1C", cv);
-   gpstk::SatID sid(7, gpstk::SatID::systemGPS);
+   gpstk::SatID sid(7, gpstk::SatelliteSystem::GPS);
    strm.exceptions(std::fstream::failbit);
       // Not setting most of the header fields because they're not being tested.
    hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1C", cv));
@@ -140,8 +140,8 @@ channelNumTest()
    TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GX2Y", cv)));
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
-   gpstk::RinexObsID forced(gpstk::ObsID::otChannel, gpstk::ObsID::cbL1,
-                            gpstk::ObsID::tcCA);
+   gpstk::RinexObsID forced(gpstk::ObservationType::Channel, gpstk::CarrierBand::L1,
+                            gpstk::TrackingCode::CA);
    TUCATCH(hdr.mapObsTypes["G"].push_back(forced));
    hdr.sysPhaseShift["G"][roidValid][sid] = 54.321;
    hdr.date = "20200512 181734 UTC";
@@ -202,7 +202,7 @@ ionoDelayTest()
    gpstk::Rinex3ObsStream strm(outfn, std::ios::out | std::ios::trunc);
    gpstk::Rinex3ObsHeader hdr;
    gpstk::RinexObsID roidValid("GL1C", cv);
-   gpstk::SatID sid(7, gpstk::SatID::systemGPS);
+   gpstk::SatID sid(7, gpstk::SatelliteSystem::GPS);
    strm.exceptions(std::fstream::failbit);
       // Not setting most of the header fields because they're not being tested.
    TUCATCH(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GC1C", cv)));
@@ -254,8 +254,8 @@ ionoDelayTest()
    TUTHROW(hdr.mapObsTypes["G"].push_back(gpstk::RinexObsID("GI2Y", cv)));
       // This should not appear in the header as it is redundant, but
       // it is still valid as an ObsID.
-   gpstk::RinexObsID forced(gpstk::ObsID::otIono, gpstk::ObsID::cbL1,
-                            gpstk::ObsID::tcCA);
+   gpstk::RinexObsID forced(gpstk::ObservationType::Iono, gpstk::CarrierBand::L1,
+                            gpstk::TrackingCode::CA);
    TUCATCH(hdr.mapObsTypes["G"].push_back(forced));
    hdr.sysPhaseShift["G"][roidValid][sid] = 54.321;
    hdr.date = "20200512 181734 UTC";
@@ -440,7 +440,7 @@ obsIDVersionTest()
 void Rinex3ObsOther_T ::
 fillHeader302(gpstk::Rinex3ObsHeader& hdr)
 {
-   gpstk::SatID sid(7, gpstk::SatID::systemBeiDou);
+   gpstk::SatID sid(7, gpstk::SatelliteSystem::BeiDou);
    hdr.date = "20200512 181734 UTC";
    hdr.preserveDate = true;
    hdr.version = 3.02;
@@ -500,7 +500,7 @@ fillHeader302(gpstk::Rinex3ObsHeader& hdr)
 void Rinex3ObsOther_T ::
 fillHeader304(gpstk::Rinex3ObsHeader& hdr)
 {
-   gpstk::SatID sid(7, gpstk::SatID::systemBeiDou);
+   gpstk::SatID sid(7, gpstk::SatelliteSystem::BeiDou);
    hdr.date = "20200512 181734 UTC";
    hdr.preserveDate = true;
    hdr.version = 3.04;

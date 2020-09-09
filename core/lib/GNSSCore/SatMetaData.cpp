@@ -10,7 +10,7 @@ namespace gpstk
            norad(0),
            chl(0),
            slotID(0),
-           sys(SatID::systemUnknown),
+           sys(SatelliteSystem::Unknown),
            launchTime(gpstk::CommonTime::END_OF_TIME),
            startTime(gpstk::CommonTime::END_OF_TIME),
            endTime(gpstk::CommonTime::END_OF_TIME),
@@ -107,7 +107,7 @@ namespace gpstk
         << smd.norad << ","
         << smd.chl << ","
         << smd.slotID << ","
-        << smd.sys << ","
+        << static_cast<int>(smd.sys) << ","
         << gpstk::printTime(smd.launchTime, "%Y,%j,%s,")
         << gpstk::printTime(smd.startTime, "%Y,%j,%s,")
         << gpstk::printTime(smd.endTime, "%Y,%j,%s,")

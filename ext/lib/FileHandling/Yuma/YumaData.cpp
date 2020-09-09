@@ -306,11 +306,11 @@ namespace gpstk
      oag.health   = SV_health; 
      
      // At this writing Yuma almanacs only exist for GPS
-     oag.subjectSV = SatID(PRN, SatID::systemGPS); 
+     oag.subjectSV = SatID(PRN, SatelliteSystem::GPS); 
 
      // Unfortunately, we've NO IDEA which SV transmitted 
      // these data.
-     oag.satID = SatID(0,SatID::systemGPS); 
+     oag.satID = SatID(0,SatelliteSystem::GPS); 
 
      // 
      oag.ctToe = GPSWeekSecond(week,Toa,TimeSystem::GPS);
@@ -330,7 +330,7 @@ namespace gpstk
         // each of L1 C/A, L1 P(Y), and L2 P(Y).   We'll
         // load obsID with L1 C/A for the sake of completeness,
         // but this will probably never be examined.
-     oag.obsID = ObsID(ObsID::otNavMsg,ObsID::cbL1,ObsID::tcCA);
+     oag.obsID = ObsID(ObservationType::NavMsg,CarrierBand::L1,TrackingCode::CA);
 
      return oag; 
    }

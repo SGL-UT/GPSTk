@@ -21,7 +21,7 @@ def triple2Position(x):
 # 4. Return an object that has a last_time (() -> CommonTime)
 def rinexnav_data(filename, prn):
     header, data = gpstk.readRinexNav(filename)
-    sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
+    sat = gpstk.SatID(prn, gpstk.SatelliteSystem.GPS)
     g = gpstk.GPSEphemerisStore()
     for d in data:
         if prn == d.PRNID:
@@ -44,7 +44,7 @@ def rinexnav_data(filename, prn):
 
 def rinex3nav_data(filename, prn):
     header, data = gpstk.readRinex3Nav(filename)
-    sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
+    sat = gpstk.SatID(prn, gpstk.SatelliteSystem.GPS)
     g = gpstk.GPSEphemerisStore()
     for d in data:
         if prn == d.PRNID:
@@ -86,7 +86,7 @@ def sp3_data(filename, prn):
 
 def yuma_data(filename, prn):
     header, data = gpstk.readYuma(filename)
-    sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
+    sat = gpstk.SatID(prn, gpstk.SatelliteSystem.GPS)
     almanac = gpstk.GPSAlmanacStore()
     for d in data:
         if prn == d.PRN:
@@ -109,7 +109,7 @@ def yuma_data(filename, prn):
 
 def sem_data(filename, prn):
     header, data = gpstk.readSEM(filename)
-    sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
+    sat = gpstk.SatID(prn, gpstk.SatelliteSystem.GPS)
     almanac = gpstk.GPSAlmanacStore()
     for d in data:
         if prn == d.PRN:

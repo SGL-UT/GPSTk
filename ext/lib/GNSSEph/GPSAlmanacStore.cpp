@@ -73,7 +73,7 @@ namespace gpstk
    {
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN_GPS))
       {
-         SatID sat(alm.getPRNID(),SatID::systemGPS);
+         SatID sat(alm.getPRNID(),SatelliteSystem::GPS);
          CommonTime toa = alm.getToaTime();
          uba[sat][toa] = alm;
          CommonTime tmin(toa - gpstk::HALFWEEK);

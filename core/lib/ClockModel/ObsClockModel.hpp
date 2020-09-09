@@ -126,7 +126,7 @@ namespace gpstk
       {
          for(int prn = 1; prn <= gpstk::MAX_PRN; prn++)
          {
-            SatID svid(prn, SatID::systemGPS);
+            SatID svid(prn, SatelliteSystem::GPS);
             modes[svid] = mode;
          }
          return *this;

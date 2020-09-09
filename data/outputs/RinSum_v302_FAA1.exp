@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2020/05/19 17:46:39
-+++++++++++++ RinSum summary of Rinex obs file /sgl/ceph/work/johnk/rinex304/gpstk/data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2020/08/21 16:06:06
++++++++++++++ RinSum summary of Rinex obs file /home/johnk/src/git/toolkit-work/gpstk/data/inputs/igs/FAA100PYF_R_20161700100_15M_01S_MO +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  3.02,  File type OBSERVATION DATA,  System MIXED.
 Prgm: sbf2rin-9.3.3,  Run: 20160618 013404 LCL,  By: 
@@ -55,18 +55,18 @@ GPS Observation types (18):
  Type #17 (D5Q) L5 GPSQ5 doppler
  Type #18 (S5Q) L5 GPSQ5 snr
 QZSS Observation types (12):
- Type #01 (C1C) L1 QZSSC/A pseudorange
- Type #02 (L1C) L1 QZSSC/A phase
- Type #03 (D1C) L1 QZSSC/A doppler
- Type #04 (S1C) L1 QZSSC/A snr
- Type #05 (C2L) L2 QZSSL2C(L) pseudorange
- Type #06 (L2L) L2 QZSSL2C(L) phase
- Type #07 (D2L) L2 QZSSL2C(L) doppler
- Type #08 (S2L) L2 QZSSL2C(L) snr
- Type #09 (C5Q) L5 QZSSL5Q pseudorange
- Type #10 (L5Q) L5 QZSSL5Q phase
- Type #11 (D5Q) L5 QZSSL5Q doppler
- Type #12 (S5Q) L5 QZSSL5Q snr
+ Type #01 (C1C) L1 GPSC/A pseudorange
+ Type #02 (L1C) L1 GPSC/A phase
+ Type #03 (D1C) L1 GPSC/A doppler
+ Type #04 (S1C) L1 GPSC/A snr
+ Type #05 (C2L) L2 GPSC2L pseudorange
+ Type #06 (L2L) L2 GPSC2L phase
+ Type #07 (D2L) L2 GPSC2L doppler
+ Type #08 (S2L) L2 GPSC2L snr
+ Type #09 (C5Q) L5 GPSQ5 pseudorange
+ Type #10 (L5Q) L5 GPSQ5 phase
+ Type #11 (D5Q) L5 GPSQ5 doppler
+ Type #12 (S5Q) L5 GPSQ5 snr
 GLONASS Observation types (12):
  Type #01 (C1C) G1 GLOC/A pseudorange
  Type #02 (L1C) G1 GLOC/A phase
@@ -81,10 +81,10 @@ GLONASS Observation types (12):
  Type #11 (D2C) G2 GLOC/A doppler
  Type #12 (S2C) G2 GLOC/A snr
 Geosync Observation types (4):
- Type #01 (C1C) L1 SBASC/A pseudorange
- Type #02 (L1C) L1 SBASC/A phase
- Type #03 (D1C) L1 SBASC/A doppler
- Type #04 (S1C) L1 SBASC/A snr
+ Type #01 (C1C) L1 GPSC/A pseudorange
+ Type #02 (L1C) L1 GPSC/A phase
+ Type #03 (D1C) L1 GPSC/A doppler
+ Type #04 (S1C) L1 GPSC/A snr
 R2ObsTypes: 
 Time of first obs 2016/06/18 01:00:00.000 GPS
 (This header is VALID)
@@ -188,4 +188,4 @@ System S = Geosync:
 TOTAL     25     25     25     25
 
  Warning - Computed last time does not agree with header
-RinSum timing: processing 0.051 sec, wallclock: 0 sec.
+RinSum timing: processing 0.066 sec, wallclock: 0 sec.

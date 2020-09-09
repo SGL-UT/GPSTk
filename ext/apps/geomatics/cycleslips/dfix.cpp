@@ -604,7 +604,7 @@ try {
 
    // systems and codes -----------------------------------
    bool skip;
-   string freqs(ObsID::validRinexFrequencies);
+   string freqs(RinexObsID::validRinexFrequencies);
    // loop over input syscode_in, but note it will start with def_syscode_in default
    // elements, before any user input, and must see if those defaults were overridden
    for(i=0; i<GD.syscode_in.size(); i++) {
@@ -648,7 +648,7 @@ try {
          str = string("");
          for(j=0; j<freqs.size(); j++) {
             // default codes for freq j
-            string strf(ObsID::validRinexTrackingCodes[sys[0]][freqs[j]]);
+            string strf(RinexObsID::validRinexTrackingCodes[sys[0]][freqs[j]]);
             StringUtils::stripTrailing(strf,"* ");
             if(str.empty() && !strf.empty()) str=strf;
             else for(k=0; k<strf.size(); k++) {
@@ -915,7 +915,7 @@ int findIndex(const vector<string>& allR3ObsID, const char sys,
    if(obs[1] != '1' && obs[1] != '2') return -2;
    char type(obs[0]=='P' ? 'C' : 'L');
    char freq(obs[1]);
-   //const string tkcodes(ObsID::validRinexTrackingCodes[sys][freq]);
+   //const string tkcodes(RinexObsID::validRinexTrackingCodes[sys][freq]);
    string test3("123"); test3[0]=sys; test3[1]=type; test3[2]=freq;
 
    int ind(-1);
@@ -1067,7 +1067,7 @@ try {
    while(rit != GD.R3sysobs.end()) {
       oss.str("");
       oss << " System " << rit->first << " ("
-        << ObsID::map1to3sys[string(1,rit->first)] << "): SatPass obstypes = [";
+        << RinexObsID::map1to3sys[string(1,rit->first)] << "): SatPass obstypes = [";
       for(i=0; i<rit->second.size(); i++)
          oss << (i==0 ? "":",") << rit->second[i];
       LOG(INFO) << oss.str() << "]";
@@ -1192,7 +1192,7 @@ try {
       }
 
       // get the GLOn
-      if(sat.system == SatID::systemGlonass) {
+      if(sat.system == SatelliteSystem::Glonass) {
          gloit = GD.GLOfreqCh.find(sat);
 
          // if GLONASS frequency channel not given, try to find it
@@ -1221,7 +1221,7 @@ try {
       int unique(GD.GDC.getUniqueNumber());        // == i+1 here
 
       // save the GLO freq channel
-      if(sat.system == SatID::systemGlonass &&
+      if(sat.system == SatelliteSystem::Glonass &&
          GD.GLOfreqCh.find(sat) == GD.GLOfreqCh.end())
             GD.GLOfreqCh[sat] = GLOn;
 

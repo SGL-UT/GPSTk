@@ -64,11 +64,11 @@ public:
 
       header.fileProgram = "rinex3Test";
       if(satString == "M")
-         header.fileSysSat.system = SatID::systemMixed;
+         header.fileSysSat.system = SatelliteSystem::Mixed;
       else if(satString == "R")
-         header.fileSysSat.system = SatID::systemGlonass;
+         header.fileSysSat.system = SatelliteSystem::Glonass;
       else
-         header.fileSysSat.system = SatID::systemGPS;
+         header.fileSysSat.system = SatelliteSystem::GPS;
       std::ostringstream ostr;
       ostr << gpstk::CivilTime(SystemTime());
       header.date = ostr.str();
@@ -212,54 +212,54 @@ public:
       strm2 << data;
    }
 
-   std::vector<RinexObsID> setupObsIDs(){
-      std::vector<RinexObsID> newObsIds;
+    std::vector<RinexObsID> setupObsIDs(){
+       std::vector<RinexObsID> newObsIds;
 
-      RinexObsID obsID1; //L1
-      obsID1.band = ObsID::cbL1;
-      obsID1.code = ObsID::tcP;
-      obsID1.type = ObsID::otPhase;
-      newObsIds.push_back(obsID1);
+       RinexObsID obsID1; //L1
+       obsID1.band = CarrierBand::L1;
+       obsID1.code = TrackingCode::P;
+       obsID1.type = ObservationType::Phase;
+       newObsIds.push_back(obsID1);
 
-      RinexObsID obsID2; //P1
-      obsID2.band = ObsID::cbL1;
-      obsID2.code = ObsID::tcP;
-      obsID2.type = ObsID::otRange;
-      newObsIds.push_back(obsID2);
+       RinexObsID obsID2; //P1
+       obsID2.band = CarrierBand::L1;
+       obsID2.code = TrackingCode::P;
+       obsID2.type = ObservationType::Range;
+       newObsIds.push_back(obsID2);
 
-      RinexObsID obsID3; //C1
-      obsID3.band = ObsID::cbL1;
-      obsID3.code = ObsID::tcCA;
-      obsID3.type = ObsID::otRange;
-      newObsIds.push_back(obsID3);
+       RinexObsID obsID3; //C1
+       obsID3.band = CarrierBand::L1;
+       obsID3.code = TrackingCode::CA;
+       obsID3.type = ObservationType::Range;
+       newObsIds.push_back(obsID3);
 
-      RinexObsID obsID4; //L2
-      obsID4.band = ObsID::cbL2;
-      obsID4.code = ObsID::tcP;
-      obsID4.type = ObsID::otPhase;
-      newObsIds.push_back(obsID4);
+       RinexObsID obsID4; //L2
+       obsID4.band = CarrierBand::L2;
+       obsID4.code = TrackingCode::P;
+       obsID4.type = ObservationType::Phase;
+       newObsIds.push_back(obsID4);
 
-      RinexObsID obsID5;
-      obsID5.band = ObsID::cbL2;
-      obsID5.code = ObsID::tcP;
-      obsID5.type = ObsID::otRange;
-      newObsIds.push_back(obsID5);
+       RinexObsID obsID5;
+       obsID5.band = CarrierBand::L2;
+       obsID5.code = TrackingCode::P;
+       obsID5.type = ObservationType::Range;
+       newObsIds.push_back(obsID5);
 
-      return newObsIds;
-   }
+       return newObsIds;
+    }
 
-   bool compareOutExp(string testID)
-   {
-      TestUtil tester;
-      return
-         (
-            tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".exp",
-                                  tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".out", 2)
-            &&
-            tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".exp",
-                                  tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".out", 2)
-          );
-   }
+    bool compareOutExp(string testID)
+    {
+       TestUtil tester;
+       return
+       (
+         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".exp",
+                                    tempFilePath + file_sep + "rinex3ObsTest_v302_" + testID + ".out", 2)
+         &&
+         tester.fileEqualTest( dataFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".exp",
+                                    tempFilePath + file_sep + "rinex3ObsTest_v211_" + testID + ".out", 2)
+       );
+    }
 
    int runFromScratch(void){
       TUDEF("Rinex3Obs", "Rinex3ObsFromScratch");

@@ -75,7 +75,7 @@ namespace gpstk
 
       // TimeSystem for this stream
       TimeSystem timeSystem;
-      timeSystem.fromString(strm.header.timeSystemString());
+      timeSystem = gpstk::StringUtils::asTimeSystem(strm.header.timeSystemString());
 
       // loop until an error occurs, or until the entire record (which may consist
       // of two lines) is read.
@@ -342,7 +342,7 @@ namespace gpstk
       else {
          line = RecType;                                    // P or V
          if (isVerA) {
-            if(sat.system != SatID::systemGPS) {
+            if(sat.system != SatelliteSystem::GPS) {
                FFStreamError fse("Cannot output non-GPS to SP3a");
                GPSTK_THROW(fse);
             }

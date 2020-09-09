@@ -80,7 +80,7 @@ public:
       prange2.push_back(21659655.019f);
 
       id.id = 1;
-      id.system = gpstk::SatID::systemGPS;
+      id.system = gpstk::SatelliteSystem::GPS;
 
       gpstk::CommonTime ct1 = gpstk::CivilTime(2006, 1, 31, 2, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();
       gpstk::CommonTime ct2 = gpstk::CivilTime(2006, 1, 31, 4, 0, 0, gpstk::TimeSystem::GPS).convertToCommonTime();

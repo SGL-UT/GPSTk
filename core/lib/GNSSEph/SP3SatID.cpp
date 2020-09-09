@@ -59,13 +59,13 @@ namespace gpstk
    {
       switch (system)
       {
-         case systemGPS:     return 'G';
-         case systemGalileo: return 'E';
-         case systemGlonass: return 'R';
-         case systemLEO:     return 'L';
-         case systemBeiDou:  return 'C';
-         case systemQZSS:    return 'J';
-         case systemMixed:   return 'M';
+         case SatelliteSystem::GPS:     return 'G';
+         case SatelliteSystem::Galileo: return 'E';
+         case SatelliteSystem::Glonass: return 'R';
+         case SatelliteSystem::LEO:     return 'L';
+         case SatelliteSystem::BeiDou:  return 'C';
+         case SatelliteSystem::QZSS:    return 'J';
+         case SatelliteSystem::Mixed:   return 'M';
                // non-SP3
          default: return '?';
       }
@@ -77,14 +77,14 @@ namespace gpstk
    {
       switch (system)
       {
-         case systemGPS:     return "GPS";
-         case systemGalileo: return "Galileo";
-         case systemGlonass: return "Glonass";
-         case systemLEO:     return "LEO";
-         case systemBeiDou:  return "BeiDou";
-         case systemQZSS:    return "QZSS";
-         case systemMixed:   return "Mixed";
-         default:            return "Unknown";
+         case SatelliteSystem::GPS:     return "GPS";
+         case SatelliteSystem::Galileo: return "Galileo";
+         case SatelliteSystem::Glonass: return "Glonass";
+         case SatelliteSystem::LEO:     return "LEO";
+         case SatelliteSystem::BeiDou:  return "BeiDou";
+         case SatelliteSystem::QZSS:    return "QZSS";
+         case SatelliteSystem::Mixed:   return "Mixed";
+         default:                       return "Unknown";
       }
    }
 
@@ -96,7 +96,7 @@ namespace gpstk
       std::istringstream iss(s);
 
       id = -1;
-      system = systemGPS;  // default
+      system = SatelliteSystem::GPS;  // default
       if(s.find_first_not_of(std::string(" \t\n"), 0) == std::string::npos)
          return;                    // all whitespace yields the default
 
@@ -107,28 +107,28 @@ namespace gpstk
          case '0': case '1': case '2': case '3': case '4':
          case '5': case '6': case '7': case '8': case '9':
             iss.putback(c);
-            system = SatID::systemGPS;
+            system = SatelliteSystem::GPS;
             break;
          case ' ': case 'G': case 'g':
-            system = SatID::systemGPS;
+            system = SatelliteSystem::GPS;
             break;
          case 'R': case 'r':
-            system = SatID::systemGlonass;
+            system = SatelliteSystem::Glonass;
             break;
          case 'E': case 'e':
-            system = SatID::systemGalileo;
+            system = SatelliteSystem::Galileo;
             break;
          case 'L': case 'l':
-            system = SatID::systemLEO;
+            system = SatelliteSystem::LEO;
             break;
          case 'C': case 'c':
-            system = SatID::systemBeiDou;
+            system = SatelliteSystem::BeiDou;
             break;
          case 'J': case 'j':
-            system = SatID::systemQZSS;
+            system = SatelliteSystem::QZSS;
             break;
          case 'M': case 'm':
-            system = SatID::systemMixed;
+            system = SatelliteSystem::Mixed;
             break;
          default:                   // non-SP3 system character
             Exception e(std::string("Invalid system character \"")
@@ -145,7 +145,7 @@ namespace gpstk
             // do the kludging that SP3 does for PRNs > 99
          switch (system)
          {
-            case SatID::systemQZSS:
+            case SatelliteSystem::QZSS:
                id += 192;
                break;
          }
@@ -162,7 +162,7 @@ namespace gpstk
          // do the kludging that SP3 does for PRNs > 99
       switch (system)
       {
-         case SatID::systemQZSS:
+         case SatelliteSystem::QZSS:
             sp3ID -=192;
             break;
       }
@@ -177,16 +177,16 @@ namespace gpstk
    {
       switch(system)
       {
-         case systemGPS:
-         case systemGlonass:
-         case systemGalileo:
-         case systemLEO: 
-         case systemBeiDou:
-         case systemQZSS: 
-         case systemMixed: break;
+         case SatelliteSystem::GPS:
+         case SatelliteSystem::Glonass:
+         case SatelliteSystem::Galileo:
+         case SatelliteSystem::LEO: 
+         case SatelliteSystem::BeiDou:
+         case SatelliteSystem::QZSS: 
+         case SatelliteSystem::Mixed: break;
                // invalidate anything non-SP3
          default:
-            system = systemUnknown;
+            system = SatelliteSystem::Unknown;
             id = -1;
       }
    }

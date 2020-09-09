@@ -1,4 +1,4 @@
-Load file /home/btolman/pre053/gpstk/data/Rinex3ObsLoader210.obs
+Load file /home/johnk/src/git/toolkit-work/gpstk/data/Rinex3ObsLoader210.obs
 Store size is 3600
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.10,  File type OBSERVATION DATA,  System MIXED.
@@ -25,8 +25,8 @@ GLONASS Observation types (5):
  Type #04 (C2P) G2 GLOP pseudorange
  Type #05 (C1P) G1 GLOP pseudorange
 Geosync Observation types (2):
- Type #01 (C1C) L1 SBASC/A pseudorange
- Type #02 (L1C) L1 SBASC/A phase
+ Type #01 (C1C) L1 GPSC/A pseudorange
+ Type #02 (L1C) L1 GPSC/A phase
 R2ObsTypes: C1 L1 L2 P2 P1 
 mapSysR2toR3ObsID[E] C1:C1B L1:L1B 
 mapSysR2toR3ObsID[G] C1:C1C L1:L1C L2:L2W P1:C1W P2:C2W 

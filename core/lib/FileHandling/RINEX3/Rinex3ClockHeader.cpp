@@ -147,7 +147,7 @@ namespace gpstk
             }
             else if(label == timeSystemString) {
                string ts(upperCase(line.substr(3,3)));
-               timeSystem.fromString(ts);
+               timeSystem = gpstk::StringUtils::asTimeSystem(ts);
                valid |= timeSystemValid;
             }
             else if(label == leapSecondsString) {
@@ -370,7 +370,7 @@ namespace gpstk
 
             if(valid & timeSystemValid && version >= 3) {
                line = string(3,' ');
-               line += leftJustify(timeSystem.asString(),57);
+               line += leftJustify(gpstk::StringUtils::asString(timeSystem),57);
                line += timeSystemString;      // "TIME SYSTEM ID"
                strm << line << endl;
                strm.lineNumber++;

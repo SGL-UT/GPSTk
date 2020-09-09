@@ -96,10 +96,10 @@ public:
          eph3.addSubframe(&eph3A[20], 1919, 11, 1);
 */
 
-         gpstk::SatID sat(11, gpstk::SatID::systemGPS);
-         gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
-                            gpstk::ObsID::cbL1,
-                            gpstk::ObsID::tcCA);
+         gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
+         gpstk::ObsID obsID(gpstk::ObservationType::NavMsg,
+                            gpstk::CarrierBand::L1,
+                            gpstk::TrackingCode::CA);
 
          eph1.transmitTime = gpstk::GPSWeekSecond(1917, 568800);
          eph1.HOWtime = 568806;

@@ -19,16 +19,16 @@ namespace gpstk
          /// Specifies a single GNSS signal.
       struct Signal
       {
-         ObsID::CarrierBand carrier; ///< Carrier frequency.
-         ObsID::TrackingCode code;   ///< Tracking code.
-         NavID::NavType nav;         ///< Navigation code.
+         CarrierBand carrier; ///< Carrier frequency.
+         gpstk::TrackingCode code;   ///< Tracking code.
+         gpstk::NavType nav;         ///< Navigation code.
       };
          /// Key of GNSS and satellite block
       class SystemBlock
       {
       public:
          inline bool operator<(const SystemBlock& right) const;
-         SatID::SatelliteSystem sys;
+         SatelliteSystem sys;
          std::string blk;
       };
          /// Like SatID but for SVN which is a string
@@ -36,8 +36,8 @@ namespace gpstk
       {
       public:
          SVNID();
-         SVNID(SatID::SatelliteSystem sys, const std::string& svn);
-         SatID::SatelliteSystem system;
+         SVNID(SatelliteSystem sys, const std::string& svn);
+         SatelliteSystem system;
          std::string id;
          bool operator<(const SVNID& right) const;
       };
@@ -57,7 +57,7 @@ namespace gpstk
          /// Set of satellites ordered by PRN or channel/slotID.
       using SatSet = std::multiset<SatMetaData, SatMetaDataSort>;
          /// Satellites grouped by system.
-      using SatMetaMap = std::map<SatID::SatelliteSystem, SatSet>;
+      using SatMetaMap = std::map<SatelliteSystem, SatSet>;
          /// Types of clocks on a satellite (hardware-specific positional idx).
       using ClockVec = std::vector<SatMetaData::ClockType>;
          /// Clock configuration information
@@ -135,7 +135,7 @@ namespace gpstk
           * @param[out] sat If found the satellite's metadata.
           * @return true if the requested satellite mapping was found.
           */
-      bool findSat(SatID::SatelliteSystem sys, uint32_t prn,
+      bool findSat(SatelliteSystem sys, uint32_t prn,
                    const gpstk::CommonTime& when,
                    SatMetaData& sat)
          const;
@@ -162,7 +162,7 @@ namespace gpstk
           * @param[out] svn If found the satellite's vehicle number.
           * @return true if the requested satellite mapping was found.
           */
-      bool getSVN(SatID::SatelliteSystem sys, uint32_t prn,
+      bool getSVN(SatelliteSystem sys, uint32_t prn,
                   const gpstk::CommonTime& when,
                   std::string& svn)
          const;
@@ -187,7 +187,7 @@ namespace gpstk
           * @param[out] sat If found the satellite's metadata.
           * @return true if the requested satellite mapping was found.
           */
-      bool findSatBySVN(SatID::SatelliteSystem sys, const std::string& svn,
+      bool findSatBySVN(SatelliteSystem sys, const std::string& svn,
                         const gpstk::CommonTime& when,
                         SatMetaData& sat)
          const;
@@ -219,7 +219,7 @@ namespace gpstk
           * @param[out] prn If found the satellite's pseudo-random number.
           * @return true if the requested satellite mapping was found.
           */
-      bool getPRN(SatID::SatelliteSystem sys, const std::string& svn,
+      bool getPRN(SatelliteSystem sys, const std::string& svn,
                   const gpstk::CommonTime& when,
                   uint32_t& prn)
          const;

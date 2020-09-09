@@ -118,7 +118,7 @@ TEST(OrdTestCase, TestBasicIonosphereFreeRangeRejectsSizeMismatch) {
 
 TEST(OrdTestCase, TestGetXvtFromStore) {
     MockXvtStore foo;
-    SatID satId(10, SatID::systemUserDefined);
+    SatID satId(10, SatelliteSystem::UserDefined);
     CommonTime time(CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
 
@@ -135,7 +135,7 @@ TEST(OrdTestCase, TestGetXvtFromStore) {
 TEST(OrdTestCase, TestRawRange1) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -155,7 +155,7 @@ TEST(OrdTestCase, TestRawRange1) {
 TEST(OrdTestCase, TestRawRange1HandlesException) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    SatID satId(10, gpstk::SatID::systemUserDefined);
+    SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -172,7 +172,7 @@ TEST(OrdTestCase, TestRawRange1HandlesException) {
 TEST(OrdTestCase, TestRawRange2) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -192,7 +192,7 @@ TEST(OrdTestCase, TestRawRange2) {
 TEST(OrdTestCase, TestRawRange2HandlesException) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    SatID satId(10, gpstk::SatID::systemUserDefined);
+    SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -209,7 +209,7 @@ TEST(OrdTestCase, TestRawRange2HandlesException) {
 TEST(OrdTestCase, TestRawRange3) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -229,7 +229,7 @@ TEST(OrdTestCase, TestRawRange3) {
 TEST(OrdTestCase, TestRawRange3HandlesException) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    SatID satId(10, gpstk::SatID::systemUserDefined);
+    SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -246,7 +246,7 @@ TEST(OrdTestCase, TestRawRange3HandlesException) {
 TEST(OrdTestCase, TestRawRange4) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    gpstk::SatID satId(10, gpstk::SatID::systemUserDefined);
+    gpstk::SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     gpstk::CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);
@@ -266,7 +266,7 @@ TEST(OrdTestCase, TestRawRange4) {
 TEST(OrdTestCase, TestRawRange4HandlesException) {
     MockXvtStore foo;
     Position rxLocation(10, 10, 0);
-    SatID satId(10, gpstk::SatID::systemUserDefined);
+    SatID satId(10, gpstk::SatelliteSystem::UserDefined);
     CommonTime time(gpstk::CommonTime::BEGINNING_OF_TIME);
     Xvt fakeXvt;
     fakeXvt.x = gpstk::Triple(100, 100, 100);

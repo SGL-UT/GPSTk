@@ -106,7 +106,7 @@ namespace gpstk
           * All numerical elements default to zero, "Unknown" for time frame.
           * @see CommonTime::set()
           */
-      explicit CommonTime(const TimeSystem& timeSystem = TimeSystem::Unknown )
+      explicit CommonTime(TimeSystem timeSystem = TimeSystem::Unknown )
       { set( 0, 0, 0.0, timeSystem ); }
 
          /**
@@ -145,7 +145,7 @@ namespace gpstk
       CommonTime& set( long day,
                        long sod,
                        double fsod = 0.0,
-                       const TimeSystem& timeSystem = TimeSystem::Unknown );
+                       TimeSystem timeSystem = TimeSystem::Unknown );
 
          /**
           * Set method that accepts values for day and seconds of day.  It also
@@ -155,7 +155,7 @@ namespace gpstk
           //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       CommonTime& set( long day,
                        double sod = 0.0,
-                       const TimeSystem& timeSystem = TimeSystem::Unknown );
+                       TimeSystem timeSystem = TimeSystem::Unknown );
 
          /**
           * Set method that accepts a value for day.  It also checks the
@@ -164,7 +164,7 @@ namespace gpstk
           */
           //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
       CommonTime& set( double day,
-                       const TimeSystem& timeSys = TimeSystem::Unknown );
+                       TimeSystem timeSys = TimeSystem::Unknown );
 
          /**
           * Set internal values method.  Set the data members of this object
@@ -175,13 +175,13 @@ namespace gpstk
       CommonTime& setInternal( long day = 0,
                                long msod = 0,
                                double fsod = 0.0,
-                               const TimeSystem& timeSys = TimeSystem::Unknown );
+                               TimeSystem timeSys = TimeSystem::Unknown );
 
          /**
           * Set method for internal variable m_timeSystem.
           */
           //METHOD SET FOR FUTURE DEPRECATION (PRIVATIZATION)
-      CommonTime& setTimeSystem( const TimeSystem& timeSystem )
+      CommonTime& setTimeSystem( TimeSystem timeSystem )
       { m_timeSystem = timeSystem; return *this; }
 
          /**
@@ -375,7 +375,7 @@ namespace gpstk
       CommonTime( long day,
                   long sod,
                   double fsod,
-                  const TimeSystem& timeSystem = TimeSystem::Unknown )
+                  TimeSystem timeSystem = TimeSystem::Unknown )
       { set( day, sod, fsod, timeSystem ); }
 
          /**

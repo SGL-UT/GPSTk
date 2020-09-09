@@ -41,8 +41,8 @@
 //
 //==============================================================================
 
-#ifndef FREQCONSTS_HPP
-#define FREQCONSTS_HPP
+#ifndef GPSTK_FREQCONSTS_HPP
+#define GPSTK_FREQCONSTS_HPP
 
 #include "SatID.hpp"
 
@@ -92,10 +92,6 @@ namespace gpstk
    const double FREQ_GALILEO_E1 = 1575.42e6;
       /// Galileo E1 carrier wavelength in meters
    const double WAVELENGTH_GALILEO_E1 = 0.190293672798;
-      /// Galileo E6 carrier frequency in Hz
-   const double FREQ_GALILEO_E6 = 1278.75e6;
-      /// Galileo E6 carrier wavelength in meters
-   const double WAVELENGTH_GALILEO_E6 = 0.234441804888;
       /// Galileo E5b carrier frequency in Hz
    const double FREQ_GALILEO_E5b = 1207.14e6;
       /// Galileo E5b carrier wavelength in meters
@@ -108,6 +104,10 @@ namespace gpstk
    const double FREQ_GALILEO_E5a = 1176.45e6;
       /// Galileo E5a carrier wavelength in meters
    const double WAVELENGTH_GALILEO_E5a = 0.254828048791;
+      /// Galileo E6 carrier frequency in Hz
+   const double FREQ_GALILEO_E6 = 1278.75e6;
+      /// Galileo E6 carrier wavelength in meters
+   const double WAVELENGTH_GALILEO_E6 = 0.234441804888;
       /// SBAS L1 carrier frequency in Hz
    const double FREQ_SBAS_L1 = 1575.42e6;
       /// SBAS L1 carrier wavelength in meters
@@ -144,14 +144,14 @@ namespace gpstk
    const double FREQ_BEIDOU_B1 = 1561.098e6;
       /// BeiDou B1 carrier wavelength in meters
    const double WAVELENGTH_BEIDOU_B1 = 0.192039486310;
-      /// BeiDou B3 carrier frequency in Hz
-   const double FREQ_BEIDOU_B3 = 1268.52e6;
-      /// BeiDou B3 carrier wavelength in meters
-   const double WAVELENGTH_BEIDOU_B3 = 0.236332464604;
       /// BeiDou B2b carrier frequency in Hz
    const double FREQ_BEIDOU_B2b = 1207.14e6;
       /// BeiDou B2b carrier wavelength in meters
    const double WAVELENGTH_BEIDOU_B2b = 0.248349369584;
+      /// BeiDou B3 carrier frequency in Hz
+   const double FREQ_BEIDOU_B3 = 1268.52e6;
+      /// BeiDou B3 carrier wavelength in meters
+   const double WAVELENGTH_BEIDOU_B3 = 0.236332464604;
       /// BeiDou B2 carrier frequency in Hz
    const double FREQ_BEIDOU_B2 = 1191.795e6;
       /// BeiDou B2 carrier wavelength in meters
@@ -180,13 +180,13 @@ namespace gpstk
        * @return 0 if rinexBandNum is not a valid band for the given
        *   system, otherwise the wavelength in meters.
        */
-   inline double getWavelength(SatID::SatelliteSystem sys,
+   inline double getWavelength(SatelliteSystem sys,
                                int rinexBandNum, int gloChan=0)
       throw()
    {
       switch(sys)
       {
-         case SatID::systemGPS:
+         case SatelliteSystem::GPS:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_GPS_L1;
@@ -194,7 +194,7 @@ namespace gpstk
                case 5: return WAVELENGTH_GPS_L5;
             }
             break;
-         case SatID::systemGlonass:
+         case SatelliteSystem::Glonass:
             switch (rinexBandNum)
             {
                case 1:
@@ -206,24 +206,24 @@ namespace gpstk
                case 3: return WAVELENGTH_GLONASS_G3;
             }
             break;
-         case SatID::systemGalileo:
+         case SatelliteSystem::Galileo:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_GALILEO_E1;
-               case 6: return WAVELENGTH_GALILEO_E6;
                case 7: return WAVELENGTH_GALILEO_E5b;
                case 8: return WAVELENGTH_GALILEO_E5;
                case 5: return WAVELENGTH_GALILEO_E5a;
+               case 6: return WAVELENGTH_GALILEO_E6;
             }
             break;
-         case SatID::systemGeosync:
+         case SatelliteSystem::Geosync:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_SBAS_L1;
                case 5: return WAVELENGTH_SBAS_L5;
             }
             break;
-         case SatID::systemQZSS:
+         case SatelliteSystem::QZSS:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_QZSS_L1;
@@ -232,18 +232,18 @@ namespace gpstk
                case 6: return WAVELENGTH_QZSS_L6;
             }
             break;
-         case SatID::systemBeiDou:
+         case SatelliteSystem::BeiDou:
             switch (rinexBandNum)
             {
                case 1: return WAVELENGTH_BEIDOU_L1;
                case 2: return WAVELENGTH_BEIDOU_B1;
-               case 6: return WAVELENGTH_BEIDOU_B3;
                case 7: return WAVELENGTH_BEIDOU_B2b;
+               case 6: return WAVELENGTH_BEIDOU_B3;
                case 8: return WAVELENGTH_BEIDOU_B2;
                case 5: return WAVELENGTH_BEIDOU_B2a;
             }
             break;
-         case SatID::systemIRNSS:
+         case SatelliteSystem::IRNSS:
             switch (rinexBandNum)
             {
                case 9: return WAVELENGTH_NAVIC_S;
@@ -260,7 +260,7 @@ namespace gpstk
        * given satellite system.
        * @return 0 if either of the input n's are not valid RINEX bands
        *   for the system. */
-   inline double getBeta(SatID::SatelliteSystem sys, int na, int nb)
+   inline double getBeta(SatelliteSystem sys, int na, int nb)
       throw()
    {
       double wla = getWavelength(sys,na);
@@ -275,7 +275,7 @@ namespace gpstk
        * system (sat.id is ignored).
        * @return 0 if either of the input n's are not valid RINEX
        *   bands for the satellite system. */
-   inline double getAlpha(SatID::SatelliteSystem sys, int na, int nb)
+   inline double getAlpha(SatelliteSystem sys, int na, int nb)
       throw()
    {
       double beta(getBeta(sys,na,nb));
@@ -285,4 +285,4 @@ namespace gpstk
    }
 } // namespace gpstk
 
-#endif // FREQCONSTS_HPP
+#endif // GPSTK_FREQCONSTS_HPP

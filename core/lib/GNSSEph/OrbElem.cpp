@@ -207,7 +207,7 @@ namespace gpstk
          // Several GNSSs use this algorithm.  In some cases the physical
          // constants need to be different.
       EllipsoidModel *ell;
-      if (satID.system==SatID::systemBeiDou)
+      if (satID.system==SatelliteSystem::BeiDou)
          ell = new CGCS2000Ellipsoid();
       else
          ell = new GPSEllipsoid();
@@ -353,7 +353,7 @@ namespace gpstk
          // Several GNSSs use this algorithm.  In some cases the physical
          // constants need to be different.
       EllipsoidModel *ell;
-      if (satID.system==SatID::systemBeiDou)
+      if (satID.system==SatelliteSystem::BeiDou)
          ell = new CGCS2000Ellipsoid();
       else
          ell = new GPSEllipsoid();

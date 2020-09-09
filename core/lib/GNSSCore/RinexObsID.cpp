@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004-2019, The University of Texas at Austin
 //
 //==============================================================================
@@ -23,13 +23,13 @@
 //==============================================================================
 //
 //  This software developed by Applied Research Laboratories at the University of
-//  Texas at Austin, under contract to an agency or agencies within the U.S. 
+//  Texas at Austin, under contract to an agency or agencies within the U.S.
 //  Department of Defense. The U.S. Government retains all rights to use,
-//  duplicate, distribute, disclose, or release this software. 
+//  duplicate, distribute, disclose, or release this software.
 //
-//  Pursuant to DoD Directive 523024 
+//  Pursuant to DoD Directive 523024
 //
-//  DISTRIBUTION STATEMENT A: This software has been approved for public 
+//  DISTRIBUTION STATEMENT A: This software has been approved for public
 //                            release, distribution is unlimited.
 //
 //==============================================================================
@@ -46,32 +46,104 @@
 
 namespace gpstk
 {
-   /// Construct this object from the string specifier
-   RinexObsID::RinexObsID(const std::string& strID, double version)
-         : ObsID(strID, version)
-   {
-      if(!isValidRinexObsID(strID)) {
-         InvalidParameter ip(strID + " is not a valid RinexObsID");
-         GPSTK_THROW(ip);
-      }
-   }
 
-   RinexObsID::RinexObsID(const RinexObsType& rot) : ObsID()
+   // string containing the system characters for all valid RINEX systems.
+   std::string RinexObsID::validRinexSystems("GRESCJI");
+
+   // maps between 1-char and 3-char system id
+   std::map<std::string, std::string> RinexObsID::map1to3sys {
+      { "G", "GPS" },
+      { "R", "GLO" },
+      { "E", "GAL" },
+      { "S", "GEO" },
+      { "C", "BDS" },
+      { "J", "QZS" },
+      { "I", "IRN" }
+   };
+
+   std::map<std::string, std::string> RinexObsID::map3to1sys {
+      { "GPS", "G" },
+      { "GLO", "R" },
+      { "GAL", "E" },
+      { "GEO", "S" },
+      { "BDS", "C" },
+      { "QZS", "J" },
+      { "IRN", "I" }
+   };
+
+   // string containing the frequency digits for all valid RINEX systems.
+   std::string RinexObsID::validRinexFrequencies("123456789");
+
+   /// Construct this object from the string specifier
+
+   RinexObsID::RinexObsID(const RinexObsType& rot)
+         : ObsID()
    {
-      // Note that the choice of tracking code for L1, L2, S1, S2 are arbitrary
-      // since they are ambiguous in the rinex 2 specifications
-      // L1 -> L1P; P1 -> C1P; C1 -> C1C; S1 -> S1P; D1 -> D1P
-      if      (rot == RinexObsHeader::L1) {type=otPhase;   band=cbL1; code=tcP;}
-      else if (rot == RinexObsHeader::P1) {type=otRange;   band=cbL1; code=tcP;}
-      else if (rot == RinexObsHeader::C1) {type=otRange;   band=cbL1; code=tcCA;}
-      else if (rot == RinexObsHeader::S1) {type=otSNR;     band=cbL1; code=tcP;}
-      else if (rot == RinexObsHeader::D1) {type=otDoppler; band=cbL1; code=tcP;}
-      // L2 -> L2P; P2 -> C2P; C2 -> C2X; S2 -> S2P; D2 -> D2P
-      else if (rot == RinexObsHeader::L2) {type=otPhase;   band=cbL2; code=tcP;}
-      else if (rot == RinexObsHeader::P2) {type=otRange;   band=cbL2; code=tcP;}
-      else if (rot == RinexObsHeader::C2) {type=otRange;   band=cbL2; code=tcC2LM;}
-      else if (rot == RinexObsHeader::S2) {type=otSNR;     band=cbL2; code=tcP;}
-      else if (rot == RinexObsHeader::D2) {type=otDoppler; band=cbL2; code=tcP;}
+         // Note that the choice of tracking code for L1, L2, S1, S2
+         // are arbitrary since they are ambiguous in the rinex 2
+         // specifications
+         // L1 -> L1P; P1 -> C1P; C1 -> C1C; S1 -> S1P; D1 -> D1P
+      if (rot == RinexObsHeader::L1)
+      {
+         type=ObservationType::Phase;
+         band=CarrierBand::L1;
+         code=TrackingCode::P;
+      }
+      else if (rot == RinexObsHeader::P1)
+      {
+         type=ObservationType::Range;
+         band=CarrierBand::L1;
+         code=TrackingCode::P;
+      }
+      else if (rot == RinexObsHeader::C1)
+      {
+         type=ObservationType::Range;
+         band=CarrierBand::L1;
+         code=TrackingCode::CA;
+      }
+      else if (rot == RinexObsHeader::S1)
+      {
+         type=ObservationType::SNR;
+         band=CarrierBand::L1;
+         code=TrackingCode::P;
+      }
+      else if (rot == RinexObsHeader::D1)
+      {
+         type=ObservationType::Doppler;
+         band=CarrierBand::L1;
+         code=TrackingCode::P;
+      }
+         // L2 -> L2P; P2 -> C2P; C2 -> C2X; S2 -> S2P; D2 -> D2P
+      else if (rot == RinexObsHeader::L2)
+      {
+         type=ObservationType::Phase;
+         band=CarrierBand::L2;
+         code=TrackingCode::P;
+      }
+      else if (rot == RinexObsHeader::P2)
+      {
+         type=ObservationType::Range;
+         band=CarrierBand::L2;
+         code=TrackingCode::P;
+      }
+      else if (rot == RinexObsHeader::C2)
+      {
+         type=ObservationType::Range;
+         band=CarrierBand::L2;
+         code=TrackingCode::L2CML;
+      }
+      else if (rot == RinexObsHeader::S2)
+      {
+         type=ObservationType::SNR;
+         band=CarrierBand::L2;
+         code=TrackingCode::P;
+      }
+      else if (rot == RinexObsHeader::D2)
+      {
+         type=ObservationType::Doppler;
+         band=CarrierBand::L2;
+         code=TrackingCode::P;
+      }
    }
 
    // Represent this object using the Rinex3 notation
@@ -82,18 +154,19 @@ namespace gpstk
       buff[0] = ot2char[type];
       buff[1] = cb2char[band];
       buff[2] = tc2char[code];
-      if ((fabs(version - 3.02) < 0.005) && (band == cbB1) &&
-          ((code == tcCI1) || (code == tcCQ1) || (code == tcCIQ1)))
+      if ((fabs(version - 3.02) < 0.005) && (band == CarrierBand::B1) &&
+          ((code == TrackingCode::B1I) || (code == TrackingCode::B1Q) ||
+           (code == TrackingCode::B1IQ)))
       {
             // kludge for RINEX 3.02 BDS codes
          buff[1] = '1';
       }
          // special cases.
-      if (type == ObsID::otIono)
+      if (type == ObservationType::Iono)
       {
          buff[2] = ' ';
       }
-      else if (type == ObsID::otChannel)
+      else if (type == ObservationType::Channel)
       {
          buff[1] = '1';
          buff[2] = ' ';
@@ -141,7 +214,7 @@ namespace gpstk
    //       L5   A,B,C,X                              I 5 ABCX
    //       L9   A,B,C,X                              I 9 ABCX
 
-   // Determine if the given ObsID is valid. If the input string is 3 
+   // Determine if the given ObsID is valid. If the input string is 3
    // characters long, the system is assumed to be GPS. If this string is 4
    // characters long, the first character is the system designator as
    // described in the Rinex 3 specification.
@@ -149,21 +222,29 @@ namespace gpstk
    {
       int i(static_cast<int>(strID.length())-3);
       if(i < 0 || i > 1)
+      {
          return false;
+      }
 
       char sys;
       std::string id;
 
-      if(i == 1) {
+      if(i == 1)
+      {
          sys = strID[0];
          id = strID.substr(1);
          return isValidRinexObsID(id,sys);
       }
 
       // test all RINEX systems
-      std::string syss(ObsID::validRinexSystems);
+      std::string syss(RinexObsID::validRinexSystems);
       for(size_t j=0; j<syss.size(); j++)
-         if(isValidRinexObsID(strID,syss[j])) return true;
+      {
+         if(isValidRinexObsID(strID,syss[j]))
+         {
+            return true;
+         }
+      }
 
       return false;
    }
@@ -172,16 +253,18 @@ namespace gpstk
    bool isValidRinexObsID(const std::string& strID, const char sys)
    {
       if(strID.length() != 3)
+      {
          return false;
+      }
       char ot(strID[0]);
       char cb(strID[1]);
       char tc(strID[2]);
-      std::string codes(ObsID::validRinexTrackingCodes[sys][cb]);
+      const std::string &codes(RinexObsID::validRinexTrackingCodes[sys][cb]);
       if(ot == ' ' || ot == '-')
       {
          return false;
       }
-      if (ObsID::char2ot.find(ot) == ObsID::char2ot.end())
+      if (RinexObsID::char2ot.find(ot) == RinexObsID::char2ot.end())
       {
          return false;
       }
@@ -220,20 +303,20 @@ namespace gpstk
          const std::string types("CLDS");
          std::map<char,std::string>::const_iterator it;
 
-         for(size_t i=0; i<ObsID::validRinexSystems.size(); i++) {
-            char csys = ObsID::validRinexSystems[i];
-            std::string sys = ObsID::validRinexSystems.substr(i,1);
+         for(size_t i=0; i<RinexObsID::validRinexSystems.size(); i++) {
+            char csys = RinexObsID::validRinexSystems[i];
+            std::string sys = RinexObsID::validRinexSystems.substr(i,1);
             RinexSatID sat(sys);
             std::string system(sat.systemString());
 
             s << "System " << sys << " = " << system << ", frequencies ";
-            for(it = ObsID::validRinexTrackingCodes[sys[0]].begin();
-               it != ObsID::validRinexTrackingCodes[sys[0]].end(); ++it)
+            for(it = RinexObsID::validRinexTrackingCodes[sys[0]].begin();
+               it != RinexObsID::validRinexTrackingCodes[sys[0]].end(); ++it)
                s << it->first;
             s << std::endl;
 
-            for(it = ObsID::validRinexTrackingCodes[sys[0]].begin();
-               it != ObsID::validRinexTrackingCodes[sys[0]].end(); ++it)
+            for(it = RinexObsID::validRinexTrackingCodes[sys[0]].begin();
+               it != RinexObsID::validRinexTrackingCodes[sys[0]].end(); ++it)
             {
                s << "   " << system << "(" << sys << "), freq " << it->first
                   << ", codes '" << it->second << "'" << std::endl;
@@ -273,12 +356,12 @@ namespace gpstk
    {
       if (type != right.type)
          return false;
-      if (type == otIono)
+      if (type == ObservationType::Iono)
       {
             // only check band for ionospheric delay.
          return band == right.band;
       }
-      if (type == otChannel)
+      if (type == ObservationType::Channel)
       {
             // There's only one channel type pseudo-observable
          return true;
@@ -287,4 +370,64 @@ namespace gpstk
       return operator==(right);
    }
 
+      // This is used to register a new RinexObsID & Rinex 3
+      // identifier.  The syntax for the Rinex 3 identifier is the
+      // same as for the RinexObsID constructor.  If there are spaces
+      // in the provided identifier, they are ignored
+   RinexObsID RinexObsID ::
+   newID(const std::string& strID, const std::string& desc)
+   {
+      if (char2ot.count(strID[0]) && 
+          char2cb.count(strID[1]) && 
+          char2tc.count(strID[2]))
+      {
+         GPSTK_THROW(InvalidParameter("Identifier " + strID +
+                                      " already defined."));
+      }
+
+      return idCreator(strID, desc);
+   }
+
+
+   RinexObsID RinexObsID ::
+   idCreator(const std::string& strID, const std::string& desc)
+   {
+      char ot = strID[0];
+      ObservationType type;
+      if (!char2ot.count(ot))
+      {
+         type = (ObservationType)otDesc.size();
+         otDesc[type] = desc;
+         char2ot[ot] = type;
+         ot2char[type] = ot;
+      }
+      else
+         type = char2ot[ot];
+
+      char cb = strID[1];
+      CarrierBand band;
+      if (!char2cb.count(cb))
+      {
+         band = (CarrierBand)cbDesc.size();
+         cbDesc[band] = desc;
+         char2cb[cb] = band;
+         cb2char[band] = cb;
+      }
+      else
+         band = char2cb[cb];
+
+      char tc = strID[2];
+      TrackingCode code;
+      if (!char2tc.count(tc))
+      {
+         code = (TrackingCode) tcDesc.size();
+         tcDesc[code] = desc;
+         char2tc[tc] = code;
+         tc2char[code] = tc;
+      }
+      else
+         code = char2tc[tc];
+ 
+      return RinexObsID(type, band, code);
+   }
 }  // end namespace

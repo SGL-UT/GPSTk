@@ -101,7 +101,7 @@ public:
 };
 
 OrbSysGpsC_T::
-OrbSysGpsC_T(): nid(NavID::ntGPSCNAVL2)
+OrbSysGpsC_T(): nid(NavType::GPSCNAVL2)
 {
    debugLevel = 0; 
    init();
@@ -158,9 +158,9 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg, 
-                    gpstk::ObsID::cbL2, 
-                    gpstk::ObsID::tcC2LM);
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg, 
+                    gpstk::CarrierBand::L2, 
+                    gpstk::TrackingCode::L2CML);
    typeDesc = "GPS_CNAV";
    initialCT = CivilTime(2017,1,1,00,00,24,TimeSystem::GPS);
    finalCT   = CivilTime(2017,1,1,00,54,12,TimeSystem::GPS);
@@ -257,7 +257,7 @@ setUpCNAV()
          
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]); 

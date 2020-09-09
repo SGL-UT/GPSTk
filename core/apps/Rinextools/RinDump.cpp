@@ -457,10 +457,10 @@ try {
       vector<SatID> sats(C.SP3EphStore.getSatList());
       for(i=0; i<sats.size(); i++) {                           // loop over sats
          // check for some GLO channel - can't compute b/c we don't have data yet
-         if(sats[i].system == SatID::systemGlonass) {
+         if(sats[i].system == SatelliteSystem::Glonass) {
             map<RinexSatID,int>::const_iterator it(C.GLOfreqChan.find(sats[i]));
             if(it==C.GLOfreqChan.end()
-                                 && sats[i].system==RinexSatID::systemGlonass) {
+                                 && sats[i].system==SatelliteSystem::Glonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
 
@@ -558,15 +558,15 @@ try {
          //LOG(VERBOSE) << "Read " << nread << " RINEX navigation files, containing "
          //   << nrec << " records, into store.";
          //LOG(VERBOSE) << "GPS ephemeris store contains "
-         //   << C.RinEphStore.size(SatID::systemGPS) << " ephemerides.";
+         //   << C.RinEphStore.size(SatelliteSystem::GPS) << " ephemerides.";
          //LOG(VERBOSE) << "GAL ephemeris store contains "
-         //   << C.RinEphStore.size(SatID::systemGalileo) << " ephemerides.";
+         //   << C.RinEphStore.size(SatelliteSystem::Galileo) << " ephemerides.";
          //LOG(VERBOSE) << "BDS ephemeris store contains "
-         //   << C.RinEphStore.size(SatID::systemBeiDou) << " ephemerides.";
+         //   << C.RinEphStore.size(SatelliteSystem::BeiDou) << " ephemerides.";
          //LOG(VERBOSE) << "QZS ephemeris store contains "
-         //   << C.RinEphStore.size(SatID::systemQZSS) << " ephemerides.";
+         //   << C.RinEphStore.size(SatelliteSystem::QZSS) << " ephemerides.";
          //LOG(VERBOSE) << "GLO ephemeris store contains "
-         //   << C.RinEphStore.size(SatID::systemGlonass) << " satellites.";
+         //   << C.RinEphStore.size(SatelliteSystem::Glonass) << " satellites.";
          // dump the entire store
          //int level=0;
          //if(C.verbose) level=2; else if(C.debug > -1) level=3;
@@ -840,7 +840,7 @@ void Configuration::SetDefaults(void)
    InputSyss.push_back("GLO");
 
    //map<string,string> mapSysCodes;   // map of system, default codes e.g. GLO,PC
-   // don't use ObsID::validRinexTrackingCodes b/c order is important
+   // don't use RinexObsID::validRinexTrackingCodes b/c order is important
    mapSysCodes.insert(make_pair(string("GPS"),string("PYWLMIQSXCN")));
    mapSysCodes.insert(make_pair(string("GLO"),string("PCIQXAB")));
    mapSysCodes.insert(make_pair(string("GAL"),string("ABCIQXZ")));
@@ -858,7 +858,7 @@ void Configuration::SetDefaults(void)
    map1to3Sys["J"] = "QZS";   map3to1Sys["QZS"] = "J";
    map1to3Sys["I"] = "IRN";   map3to1Sys["IRN"] = "I";
 
-   string validSys(ObsID::validRinexSystems);
+   string validSys(RinexObsID::validRinexSystems);
    for(size_t i=0; i<validSys.size(); i++) {
       if(map1to3Sys.count(string(1,validSys[i])) == 0) {
          LOG(WARNING) << "Warning - system \"" << validSys[i]
@@ -940,45 +940,41 @@ int Configuration::ProcessUserInput(int argc, char **argv)
    if(typehelp)
    {
       vector<string> goodtags;
-      string syss(ObsID::validRinexSystems);
+      string syss(RinexObsID::validRinexSystems);
       // build a table
       map<string, map<string, map<string, map<char,string> > > > table;
       for(size_t s=0; s<syss.size(); s++)
       {
-         for(int j=0; j<ObsID::cbLast; ++j)
+         for (CarrierBand carrierBand : CarrierBandIterator())
          {
-            ObsID::CarrierBand carrierBand = (ObsID::CarrierBand)j;
             switch (carrierBand)
             {
-               case ObsID::cbUnknown:
-               case ObsID::cbAny:
-               case ObsID::cbUndefined:
-               case ObsID::cbLast:
-               case ObsID::cbZero:
+               case CarrierBand::Unknown:
+               case CarrierBand::Any:
+               case CarrierBand::Undefined:
+               case CarrierBand::Last:
                      // skip the above tracking codes
                   continue;
             }
-            for(int k=0; k<ObsID::tcLast; ++k)
+            for (TrackingCode trackCode : TrackingCodeIterator())
             {
-               ObsID::TrackingCode trackCode = (ObsID::TrackingCode)k;
                switch (trackCode)
                {
-                  case ObsID::tcUnknown:
-                  case ObsID::tcAny:
-                  case ObsID::tcUndefined:
-                  case ObsID::tcLast:
+                  case TrackingCode::Unknown:
+                  case TrackingCode::Any:
+                  case TrackingCode::Undefined:
+                  case TrackingCode::Last:
                         // skip the above tracking codes
                      continue;
                }
-               for(int i=0; i<ObsID::otLast; ++i)
+               for(ObservationType obsType : ObservationTypeIterator())
                {
-                  ObsID::ObservationType obsType = (ObsID::ObservationType)i;
                   switch (obsType)
                   {
-                     case ObsID::otUnknown:
-                     case ObsID::otAny:
-                     case ObsID::otUndefined:
-                     case ObsID::otLast:
+                     case ObservationType::Unknown:
+                     case ObservationType::Any:
+                     case ObservationType::Undefined:
+                     case ObservationType::Last:
                            // skip the above obs types
                         continue;
                   }
@@ -986,10 +982,10 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                   {
                      string tag(
                         string(1,syss[s]) +
-                        string(1,ObsID::ot2char[obsType]) +
-                        string(1,ObsID::cb2char[carrierBand]) +
-                        string(1,ObsID::tc2char[trackCode]));
-                     ObsID obs(tag, useVersion);
+                        string(1,RinexObsID::ot2char[obsType]) +
+                        string(1,RinexObsID::cb2char[carrierBand]) +
+                        string(1,RinexObsID::tc2char[trackCode]));
+                     RinexObsID obs(tag, useVersion);
                      string name(asString(obs));
                      if (name.find("Unknown") != string::npos ||
                          name.find("undefined") != string::npos ||
@@ -1005,10 +1001,10 @@ int Configuration::ProcessUserInput(int argc, char **argv)
                         goodtags.push_back(tag);
                         string sys(
                            RinexSatID(string(1,tag[0])).systemString3());
-                        char type(ObsID::ot2char[ObsID::ObservationType(i)]);
+                        char type(RinexObsID::ot2char[obsType]);
                            /// @todo keep sys char ? id(tag.substr(1));
                         string id(tag);
-                        string desc(asString(ObsID(tag, useVersion)));
+                        string desc(asString(RinexObsID(tag, useVersion)));
                         vector<string> fld(split(desc,' '));
                         string codedesc = fld[1];
                         if ((codedesc.find("GPS") == 0) ||
@@ -2207,11 +2203,11 @@ bool LinCom::ParseAndSave(const string& lab, bool save)
             // convert to TECU
             double TECUperM(1.0);
             if(C.doTECU) {
-               if(sat.system == SatID::systemGPS) {
+               if(sat.system == SatelliteSystem::GPS) {
                   static const double GPSL1(L1_FREQ_GPS*1.e-8);
                   TECUperM = GPSL1*GPSL1/40.28;
                }
-               else if(sat.system == SatID::systemGlonass) {
+               else if(sat.system == SatelliteSystem::Glonass) {
                   static const double GLOL1((L1_FREQ_GLO
                                  + C.GLOfreqChan.count(sat)*L1_FREQ_STEP_GLO)*1.e-8);
                   TECUperM = GLOL1*GLOL1/40.28;

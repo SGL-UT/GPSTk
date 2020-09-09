@@ -276,7 +276,7 @@ namespace gpstk
           * @throw SVNotPresentException
           */
       Xvt svXvt(short prn, const CommonTime& t) const
-      { SatID sat(prn,SatID::systemGPS); return svXvt(sat,t); }
+      { SatID sat(prn,SatelliteSystem::GPS); return svXvt(sat,t); }
 
       void dump(std::ostream& s = std::cout, bool checkFlag=true) const;
 

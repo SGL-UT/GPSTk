@@ -100,14 +100,14 @@ namespace gpstk
       {
       switch(nid.navType)
       {
-         case NavID::ntGPSLNAV:
+         case NavType::GPSLNAV:
          {
             loadDataGpsLNAV(pnb);
             break;
          }
 
-         case NavID::ntGPSCNAVL2:
-         case NavID::ntGPSCNAVL5: 
+         case NavType::GPSCNAVL2:
+         case NavType::GPSCNAVL5: 
          {
             loadDataGpsCNAV(pnb);
             break;
@@ -547,7 +547,7 @@ namespace gpstk
       s << "w           " << setw(16) << w         << " rad" << endl;
       s << "M0          " << setw(16) << M0        << " rad" << endl;
 
-      if (subjectSV.system==SatID::systemBeiDou)
+      if (subjectSV.system==SatelliteSystem::BeiDou)
       {
          s << "Health                 0x" << hex << setfill('0') << setw(3) 
                         << health << " 9 bits"
@@ -604,7 +604,7 @@ namespace gpstk
       }
       string tform2("%02m/%02d/%4Y %03j %02H:%02M:%02S");
       stringstream ss; 
-      string ssys = SatID::convertSatelliteSystemToString(subjectSV.system); 
+      string ssys = convertSatelliteSystemToString(subjectSV.system); 
       ss << setw(7) << ssys;
       ss << " " << setw(2) << subjectSV.id;
       ss << "  AL ";
@@ -664,12 +664,12 @@ namespace gpstk
       satID = msg.getsatSys();
       if (satID.id>=MIN_PRN_QZS && satID.id<=MAX_PRN_QZS)
       {
-         satID.system = SatID::systemQZSS; 
+         satID.system = SatelliteSystem::QZSS; 
       }
 
          // Set the subjectSV (found in OrbAlm.hpp)
       int subjectPRN = SVID;
-      if (subjectPRN>0 && satID.system==SatID::systemQZSS)
+      if (subjectPRN>0 && satID.system==SatelliteSystem::QZSS)
       {
          subjectPRN += (MIN_PRN_QZS - 1); 
       }
@@ -754,7 +754,7 @@ namespace gpstk
       satID = msg.getsatSys();
 
          // Set the subjectSV (found in OrbAlm.hpp)
-      subjectSV = SatID(SVID, SatID::systemGPS);
+      subjectSV = SatID(SVID, SatelliteSystem::GPS);
 
          // Crack the bits into engineering units. 
       unsigned short wna = (unsigned short) msg.asUnsignedLong(127,13,1);
@@ -776,12 +776,12 @@ namespace gpstk
 
       setHealthy(false); 
       const ObsID& oidr = msg.getobsID();
-      if (oidr.band==ObsID::cbL2 &&
+      if (oidr.band==CarrierBand::L2 &&
            !(health & 0x02))
       {
          setHealthy(true);
       }
-      if (oidr.band==ObsID::cbL5 &&
+      if (oidr.band==CarrierBand::L5 &&
           !(health & 0x01))
       {
          setHealthy(false); 

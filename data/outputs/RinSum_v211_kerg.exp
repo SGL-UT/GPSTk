@@ -1,5 +1,5 @@
-# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2019/09/10 06:40:46
-+++++++++++++ RinSum summary of Rinex obs file /home/renfrob/git/gpstk/data/inputs/igs/kerg1700.16o +++++++++++++
+# RinSum, part of the GPS Toolkit, Ver 4.1 8/26/15, Run 2020/08/21 15:22:00
++++++++++++++ RinSum summary of Rinex obs file /home/johnk/src/git/toolkit-work/gpstk/data/inputs/igs/kerg1700.16o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.11,  File type OBSERVATION DATA,  System MIXED.
 Prgm: teqc  2016Apr1,  Run: 20160619 00:55:45UTC,  By: 
@@ -51,14 +51,14 @@ GLONASS Observation types (9):
  Type #08 (C2P) G2 GLOP pseudorange
  Type #09 (S2C) G2 GLOC/A snr
 Geosync Observation types (8):
- Type #01 (S1C) L1 SBASC/A snr
- Type #02 (L5X) L5 SBASI+Q5 phase
- Type #03 (L1C) L1 SBASC/A phase
- Type #04 (S5X) L5 SBASI+Q5 snr
- Type #05 (D1C) L1 SBASC/A doppler
- Type #06 (D5X) L5 SBASI+Q5 doppler
- Type #07 (C5X) L5 SBASI+Q5 pseudorange
- Type #08 (C1C) L1 SBASC/A pseudorange
+ Type #01 (S1C) L1 GPSC/A snr
+ Type #02 (L5X) L5 GPSI+Q5 phase
+ Type #03 (L1C) L1 GPSC/A phase
+ Type #04 (S5X) L5 GPSI+Q5 snr
+ Type #05 (D1C) L1 GPSC/A doppler
+ Type #06 (D5X) L5 GPSI+Q5 doppler
+ Type #07 (C5X) L5 GPSI+Q5 pseudorange
+ Type #08 (C1C) L1 GPSC/A pseudorange
 R2ObsTypes: S1 D8 L8 L5 L2 D2 L1 D7 S5 D1 D5 P1 C5 C1 S7 L7 C8 C7 P2 S2 S8 
 mapSysR2toR3ObsID[E] C1:C1B C5:C5I C7:C7X C8:C8X D1:D1B D5:D5I D7:D7X D8:D8X L1:L1B L5:L5I L7:L7X L8:L8X S1:S1B S5:S5I S7:S7X S8:S8X 
 mapSysR2toR3ObsID[G] C1:C1C C5:C5X D1:D1C D2:D2W D5:D5X L1:L1C L2:L2W L5:L5X P1:C1W P2:C2W S1:S1C S2:S2W S5:S5X 
@@ -137,8 +137,8 @@ System S = Geosync:
 TOTAL     15      0     15      0     15      0      0     15
 
  Warning - Obs type GL1 GPScodelessZ pseudorange (GPS L1 GPScodelessZ pseudorange, P1 in ver.2) should be removed from header
- Warning - Obs type SL5 SBASI+Q5 phase (Geosync L5 SBASI+Q5 phase, L5 in ver.2) should be removed from header
- Warning - Obs type SL5 SBASI+Q5 snr (Geosync L5 SBASI+Q5 snr, S5 in ver.2) should be removed from header
- Warning - Obs type SL5 SBASI+Q5 doppler (Geosync L5 SBASI+Q5 doppler, D5 in ver.2) should be removed from header
- Warning - Obs type SL5 SBASI+Q5 pseudorange (Geosync L5 SBASI+Q5 pseudorange, C5 in ver.2) should be removed from header
-RinSum timing: processing 0.151 sec, wallclock: 0 sec.
+ Warning - Obs type SL5 GPSI+Q5 phase (Geosync L5 GPSI+Q5 phase, L5 in ver.2) should be removed from header
+ Warning - Obs type SL5 GPSI+Q5 snr (Geosync L5 GPSI+Q5 snr, S5 in ver.2) should be removed from header
+ Warning - Obs type SL5 GPSI+Q5 doppler (Geosync L5 GPSI+Q5 doppler, D5 in ver.2) should be removed from header
+ Warning - Obs type SL5 GPSI+Q5 pseudorange (Geosync L5 GPSI+Q5 pseudorange, C5 in ver.2) should be removed from header
+RinSum timing: processing 0.036 sec, wallclock: 0 sec.

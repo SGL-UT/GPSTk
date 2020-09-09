@@ -179,7 +179,7 @@ namespace gpstk
       fileType = "O";          // observation data
       fileSys = "G";           // GPS only by default
       preserveVerType = false; // let the write methods chose the above
-      fileSysSat = SatID(-1,SatID::systemGPS);
+      fileSysSat = SatID(-1,SatelliteSystem::GPS);
       fileProgram.clear();
       fileAgency.clear();
       date.clear();
@@ -359,7 +359,7 @@ namespace gpstk
          }
          else
          {
-            if(fileSysSat.system == RinexSatID::systemUnknown)
+            if(fileSysSat.system == SatelliteSystem::Unknown)
             {
                FFStreamError err("Invalid satellite system");
                GPSTK_THROW(err);
@@ -367,7 +367,7 @@ namespace gpstk
 
             line += leftJustify(string("OBSERVATION DATA"), 20);
             string str;
-            if(fileSysSat.system == SatID::systemMixed)
+            if(fileSysSat.system == SatelliteSystem::Mixed)
                str = "MIXED";
             else
             {
@@ -608,7 +608,7 @@ namespace gpstk
              mapIter++)
          {
             bool addedChannel = false;
-            std::set<ObsID::CarrierBand> addedIono;
+            std::set<CarrierBand> addedIono;
             int obsWritten = 0;
             line = ""; // make sure the line contents are reset
 
@@ -616,13 +616,13 @@ namespace gpstk
 
             for(size_t i = 0; i < ObsTypeList.size(); i++)
             {
-               if (ObsTypeList[i].type == ObsID::otIono)
+               if (ObsTypeList[i].type == ObservationType::Iono)
                {
                   if (addedIono.count(ObsTypeList[i].band) > 0)
                      continue; // only write this pseudo-obs once
                   addedIono.insert(ObsTypeList[i].band);
                }
-               else if (ObsTypeList[i].type == ObsID::otChannel)
+               else if (ObsTypeList[i].type == ObservationType::Channel)
                {
                   if (addedChannel)
                      continue; // only write this pseudo-obs once
@@ -859,7 +859,7 @@ namespace gpstk
                {
                   RinexSatID sat(jt->second.begin()->first);
                   double corr(jt->second.begin()->second);
-                  if (jt->first.type != ObsID::otPhase)
+                  if (jt->first.type != ObservationType::Phase)
                   {
                         // Phase shift only makes sense for phase measurements.
                      continue;
@@ -1074,7 +1074,7 @@ namespace gpstk
             fileSysSat = SatID(sat);
          }
          else
-            fileSysSat = SatID(-1,SatID::systemMixed);
+            fileSysSat = SatID(-1,SatelliteSystem::Mixed);
 
          if(fileType[0] != 'O' && fileType[0] != 'o')
          {
@@ -1645,7 +1645,7 @@ namespace gpstk
                   syss.push_back(sys);
             }
          }
-         else if(fileSysSat.system != SatID::systemMixed)
+         else if(fileSysSat.system != SatelliteSystem::Mixed)
          {
                // only one system in this file
             syss.push_back(string(1,RinexSatID(fileSysSat).systemChar()));
@@ -1756,32 +1756,32 @@ namespace gpstk
       if(strm.timesystem == TimeSystem::Any ||
          strm.timesystem == TimeSystem::Unknown)
       {
-         if(fileSysSat.system == SatID::systemGPS)
+         if(fileSysSat.system == SatelliteSystem::GPS)
          {
             strm.timesystem = TimeSystem::GPS;
             firstObs.setTimeSystem(TimeSystem::GPS);
          }
-         else if(fileSysSat.system == SatID::systemGlonass)
+         else if(fileSysSat.system == SatelliteSystem::Glonass)
          {
             strm.timesystem = TimeSystem::UTC;
             firstObs.setTimeSystem(TimeSystem::UTC);
          }
-         else if(fileSysSat.system == SatID::systemGalileo)
+         else if(fileSysSat.system == SatelliteSystem::Galileo)
          {
             strm.timesystem = TimeSystem::GAL;
             firstObs.setTimeSystem(TimeSystem::GAL);
          }
-         else if(fileSysSat.system == SatID::systemQZSS)
+         else if(fileSysSat.system == SatelliteSystem::QZSS)
          {
             strm.timesystem = TimeSystem::QZS;
             firstObs.setTimeSystem(TimeSystem::QZS);
          }
-         else if(fileSysSat.system == SatID::systemBeiDou)
+         else if(fileSysSat.system == SatelliteSystem::BeiDou)
          {
             strm.timesystem = TimeSystem::BDT;
             firstObs.setTimeSystem(TimeSystem::BDT);
          }
-         else if(fileSysSat.system == SatID::systemMixed)
+         else if(fileSysSat.system == SatelliteSystem::Mixed)
          {
             // lenient
             strm.timesystem = TimeSystem::GPS;
@@ -2098,7 +2098,7 @@ namespace gpstk
       sec   = asDouble(line.substr(30, 13));
       tsys  =          line.substr(48,  3) ;
 
-      ts.fromString(tsys);
+      ts = gpstk::StringUtils::asTimeSystem(tsys);
 
       return CivilTime(year, month, day, hour, min, sec, ts);
    } // end parseTime
@@ -2107,7 +2107,7 @@ namespace gpstk
    string Rinex3ObsHeader::writeTime(const CivilTime& civtime) const
    {
       using gpstk::StringUtils::asString;
-      string line;
+      string line, tsStr(gpstk::StringUtils::asString(civtime.getTimeSystem()));
 
       line  = rightJustify(asString<short>(civtime.year    )   ,  6);
       line += rightJustify(asString<short>(civtime.month   )   ,  6);
@@ -2115,7 +2115,7 @@ namespace gpstk
       line += rightJustify(asString<short>(civtime.hour    )   ,  6);
       line += rightJustify(asString<short>(civtime.minute  )   ,  6);
       line += rightJustify(asString(       civtime.second,7)   , 13);
-      line += rightJustify((civtime.getTimeSystem()).asString(),  8);
+      line += rightJustify(tsStr,  8);
 
       return line;
    } // end writeTime
@@ -2170,7 +2170,7 @@ namespace gpstk
             string R2ot, lab(mit->second[i].asString(version));
                // the list of all tracking code characters for this sys, freq
             string allCodes(
-               ObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
+               RinexObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
 
             if (lab == string("C1C"))
                R2ot = string("C1");
@@ -2240,7 +2240,7 @@ namespace gpstk
       size_t i;
 
       string str;
-      if(fileSysSat.system == SatID::systemMixed)
+      if(fileSysSat.system == SatelliteSystem::Mixed)
          str = "MIXED";
       else
       {
@@ -2442,7 +2442,7 @@ namespace gpstk
          s << "Number of Satellites with data : " << numSVs << endl;
       if(valid & validPrnObs)
       {
-         RinexSatID sat, sys(-1,SatID::systemUnknown);
+         RinexSatID sat, sys(-1,SatelliteSystem::Unknown);
          s << " PRN and number of observations for each obs type:" << endl;
          map<RinexSatID, vector<int> >::const_iterator it = numObsForSat.begin();
          while (it != numObsForSat.end())
@@ -2847,16 +2847,16 @@ namespace gpstk
             // only be listed once (or once per band in the case of
             // the ionospheric delay) in any sane manner.
          bool addedChannel = false;
-         std::set<ObsID::CarrierBand> addedIono;
+         std::set<CarrierBand> addedIono;
          for(size_t i = 0; i < mapIter.second.size(); i++)
          {
-            if (mapIter.second[i].type == ObsID::otIono)
+            if (mapIter.second[i].type == ObservationType::Iono)
             {
                if (addedIono.count(mapIter.second[i].band) > 0)
                   continue; // only write this pseudo-obs once
                addedIono.insert(mapIter.second[i].band);
             }
-            else if (mapIter.second[i].type == ObsID::otChannel)
+            else if (mapIter.second[i].type == ObservationType::Channel)
             {
                if (addedChannel)
                   continue; // only write this pseudo-obs once

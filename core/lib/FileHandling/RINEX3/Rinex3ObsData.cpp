@@ -268,7 +268,7 @@ namespace gpstk
       size_t index = hdr.getObsIndex(string(1,svID.systemChar()), obsID);
       if (obs[svID].size() <= index)
          obs[svID].resize(index+1);
-      if (obsID.type == ObsID::otChannel)
+      if (obsID.type == ObservationType::Channel)
       {
             /** @todo If the existing channel data is greater than or
              * equal to this number, we have stuffed the maximum
