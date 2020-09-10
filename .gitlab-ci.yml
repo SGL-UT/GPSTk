@@ -104,7 +104,7 @@ build_debian_8:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DTEST_SWITCH=ON ../
     - make all -j 4
   artifacts:
     paths:
@@ -263,7 +263,6 @@ test_debian_8:
     when: on_failure
     paths:
     - build/Testing/Temporary/
-    - build/swig/
   dependencies:
     - build_debian_8
   after_script:
@@ -632,7 +631,6 @@ deploy_debian_8:
   script:
     - cd debs
     - sudo dpkg -i ./*.deb
-    - python -c "import gpstk"
     - timeconvert
   dependencies:
     - package_debian_8
