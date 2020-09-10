@@ -24,7 +24,7 @@ PYTHON_EXE_PARAM=""
 PYTHON_INSTALL_PREFIX_PARAM=""
 
 # add python bindings for package builds using profile pkg_python
-ifeq ($(filter pkg_python,$(DEB_BUILD_PROFILES)), )
+ifneq ($(filter pkg_python,$(DEB_BUILD_PROFILES)), )
     PYTHON_FLAG="ON"
     BUILD_FOR_PACKAGE_SWITCH_FLAG="ON"
     PYTHON_EXE_PARAM="-DPYTHON_EXECUTABLE=/usr/bin/python"
