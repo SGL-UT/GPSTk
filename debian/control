@@ -1,7 +1,7 @@
 Source: gpstk
 Priority: optional
 Maintainer: Bryan Parsons <bparsons@arlut.utexas.edu>
-Build-Depends: debhelper (>= 9), cmake, python-dev, dh-python
+Build-Depends: debhelper (>= 9), cmake, python-dev <pkg_python>, dh-python <pkg_python>
 X-Python-Version: 2.7
 Standards-Version: 3.9.5
 Section: libs
@@ -58,6 +58,7 @@ Description: GPS Toolkit (GPSTk) - Shared Library Debugging Symbols
  * provide a core library to facilitate the development of GNSS applications.
 
 Package: python-gpstk
+Build-Profiles: <pkg_python>
 Section: python
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
