@@ -342,9 +342,11 @@ namespace gpstk
             else if(storeTimeSystem != head.timeSystem)
             {
                InvalidRequest ir("Time system of file " + filename
-                                 + " (" + head.timeSystem.asString()
+                                 + " ("
+                                 + gpstk::StringUtils::asString(head.timeSystem)
                                  + ") is incompatible with store time system ("
-                                 + storeTimeSystem.asString() + ").");
+                                 + gpstk::StringUtils::asString(storeTimeSystem)
+                                 + ").");
                GPSTK_THROW(ir);
             }
          }  // end if header time system is set
@@ -717,9 +719,11 @@ namespace gpstk
             else if(storeTimeSystem != head.timeSystem)
             {
                InvalidRequest ir("Time system of file " + filename
-                                 + " (" + head.timeSystem.asString()
+                                 + " ("
+                                 + gpstk::StringUtils::asString(head.timeSystem)
                                  + ") is incompatible with store time system ("
-                                 + storeTimeSystem.asString() + ").");
+                                 + gpstk::StringUtils::asString(storeTimeSystem)
+                                 + ").");
                GPSTK_THROW(ir);
             }
          }  // end if header time system is set

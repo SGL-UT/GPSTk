@@ -643,7 +643,7 @@ namespace gpstk
          m1 = (xp - xmean);          // arcsec
          m2 = -(yp - ymean);         // arcsec
       }
-      LOG(DEBUG7) << " poletide means " << iers.asString()
+      LOG(DEBUG7) << " poletide means " << iers
          << fixed << setprecision(15) << " " << m1 << " " << m2;
 
       // the rest is nearly identical in all conventions
@@ -663,7 +663,7 @@ namespace gpstk
       disp[1] =   0.009 * ::cos(theta) * (m1 * sinlon - m2 * coslon);   // E
       disp[2] = -upcoef * ::sin(2*theta) * (m1 * coslon + m2 * sinlon); // U
    
-      LOG(DEBUG7) << " poletide " << iers.asString() << " (NEU) "
+      LOG(DEBUG7) << " poletide " << iers << " (NEU) "
             << ttag.asGPSString()
             << fixed << setprecision(9)
             << disp[0] << " " << disp[1] << " " << disp[2];

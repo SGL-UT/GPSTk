@@ -12,6 +12,8 @@ stages:
 # Default cmake arguments
 variables:
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
+  # this is usually set to master, unless there are downstream dependencies
+  SGLTK_BRANCH: master
   DOCKER_REGISTRY: "modisdev:5000/sgl_ci"
 # this can be used for incremental builds
 #  GIT_CLEAN_FLAGS: none
@@ -85,11 +87,12 @@ build_debian_7:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DBUILD_PYTHON=ON -DPIP_WHEEL_SWITCH=OFF -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DTEST_SWITCH=ON ../
+    - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DTEST_SWITCH=ON ../
     - make all -j 4
   artifacts:
     paths:
       - build/
+  allow_failure: true
 
 build_debian_8:
   stage: build
@@ -183,27 +186,11 @@ build_redhat:
     - mkdir build
     - cd build
     - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_EXT=ON -DTEST_SWITCH=ON ../
     - make all -j 4
   artifacts:
     paths:
     - build/
-
-build_redhat_swig3:
-  stage: build
-  extends: .normal_job
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_swig3_sgl
-  script:
-    - mkdir build
-    - cd build
-    - export gpstk=`pwd`/install
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
-    - make all -j 4
-  artifacts:
-    paths:
-      - build/
 
 build_windows:
   stage: build
@@ -276,6 +263,7 @@ test_debian_8:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_debian_8
   after_script:
@@ -302,6 +290,7 @@ test_debian_9:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_debian_9
   after_script:
@@ -328,6 +317,7 @@ test_debian_10:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_debian_10
   after_script:
@@ -355,6 +345,7 @@ test_conda_py27:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_conda_py27
   after_script:
@@ -382,6 +373,7 @@ test_conda_py36:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_conda_py36
   after_script:
@@ -420,32 +412,6 @@ test_redhat:
          grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
       fi
 
-test_redhat_swig3:
-  stage: test
-  extends: .normal_job
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_swig3_sgl
-  script:
-    - cd build
-    - ctest -j 4
-    - touch $CI_PROJECT_DIR/success
-  artifacts:
-    when: on_failure
-    paths:
-      - build/Testing/Temporary/
-  dependencies:
-    - build_redhat_swig3
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
-
 test_windows:
   stage: test
   extends: .normal_job
@@ -458,6 +424,7 @@ test_windows:
     when: on_failure
     paths:
     - build/Testing/Temporary/
+    - build/swig/
   dependencies:
     - build_windows
   allow_failure: true
@@ -494,34 +461,13 @@ user_install_redhat:
   script:
     - cd build
     - export gpstk=`pwd`/install
-    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - cmake -DCMAKE_INSTALL_PREFIX=$gpstk ../
     - make install -j 4
-    - python -c "import gpstk"
   artifacts:
     paths:
       - build/install
   dependencies:
     - build_redhat
-
-user_install_redhat_swig3:
-  stage: install
-  extends: .normal_job
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_swig3_sgl
-  script:
-    - cd build
-    - export gpstk=`pwd`/install
-    - export PYTHONPATH=$gpstk/lib/python2.7/site-packages
-    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=$gpstk ../
-    - make install -j 4
-    - python -c "import gpstk"
-  artifacts:
-    paths:
-      - build/install
-  dependencies:
-    - build_redhat_swig3
 
 user_install_windows:
   stage: install
@@ -555,7 +501,6 @@ system_install_debian_9:
   dependencies:
     - build_debian_9
 
-
 system_install_redhat:
   stage: install
   extends: .normal_job
@@ -565,26 +510,10 @@ system_install_redhat:
   script:
     - cd build
     - export gpstk=/usr/local
-    - cmake -DPYTHON_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - cmake -DCMAKE_INSTALL_PREFIX=$gpstk ../
     - sudo make install -j 4
-    - python -c "import gpstk"
   dependencies:
     - build_redhat
-
-system_install_redhat_swig3:
-  stage: install
-  extends: .normal_job
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_swig3_sgl
-  script:
-    - cd build
-    - export gpstk=/usr/local
-    - cmake -DPYTHON_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_PREFIX=$gpstk ../
-    - sudo make install -j 4
-    - python -c "import gpstk"
-  dependencies:
-    - build_redhat_swig3
 
 # Package Stage
 # Tests packaging of GPSTk on all platforms
@@ -692,40 +621,6 @@ package_redhat:
       - rpm_files/SRPMS/gpstk-*
   dependencies: []
 
-package_redhat_py36:
-  stage: package
-  extends: .package_build
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_sgl
-  script:
-    - bash rpm_files/setup_dirs.sh
-    - git archive --prefix python3-gpstk-master/ -o rpm_files/SOURCES/python3-gpstk-master.tar.gz HEAD
-    - pushd rpm_files
-    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk_py36.spec
-  artifacts:
-    paths:
-      - rpm_files/RPMS/x86_64/python3-gpstk-*
-      - rpm_files/SRPMS/python3-gpstk-*
-  dependencies: []
-
-package_redhat_py27:
-  stage: package
-  extends: .package_build
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_sgl
-  script:
-    - bash rpm_files/setup_dirs.sh
-    - git archive --prefix python-gpstk-master/ -o rpm_files/SOURCES/python-gpstk-master.tar.gz HEAD
-    - pushd rpm_files
-    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk_py27.spec
-  artifacts:
-    paths:
-      - rpm_files/RPMS/x86_64/python-gpstk-*
-      - rpm_files/SRPMS/python-gpstk-*
-  dependencies: []
-
 # Deploy Stage
 # Tests install of GPSTk package on each platform, saves artifacts for downstream builds.
 deploy_debian_8:
@@ -783,38 +678,6 @@ deploy_redhat:
   dependencies:
     - package_redhat
 
-deploy_redhat_py27:
-  stage: deploy
-  extends: .package_build
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_sgl
-  script:
-    - cd rpm_files/RPMS/x86_64/
-    - sudo yum install gpstk-*.rpm -y
-    - sudo yum install python-gpstk-*.rpm -y
-    - python2 -c "import gpstk"
-    - timeconvert
-  dependencies:
-    - package_redhat_py27
-    - package_redhat
-
-deploy_redhat_py36:
-  stage: deploy
-  extends: .package_build
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_sgl
-  script:
-    - cd rpm_files/RPMS/x86_64/
-    - sudo yum install gpstk-*.rpm -y
-    - sudo yum install python3-gpstk-*.rpm -y
-    - python3 -c "import gpstk"
-    - timeconvert
-  dependencies:
-    - package_redhat_py36
-    - package_redhat
-
 # package_windows:
 #   stage: package
 #   tags:
@@ -836,7 +699,7 @@ sgltk_debian:
   image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd build
-    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
@@ -855,32 +718,13 @@ sgltk_redhat:
   image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - cd build
-    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
     - mkdir build
     - cd build
-    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
+    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DTEST_SWITCH=ON ../
     - make all -j 4
   dependencies:
     - user_install_redhat
-
-sgltk_redhat_swig3:
-  stage: downstream
-  extends: .normal_job
-  tags:
-    - docker-executor
-  image: $DOCKER_REGISTRY/centos7_swig3_sgl
-  script:
-    - cd build
-    - git clone https://repositories.arlut.utexas.edu/sgl/sgltk.git
-    - export gpstk=`pwd`/install
-    - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
-    - cd sgltk
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DBUILD_PYTHON=ON -DTEST_SWITCH=ON ../
-    - make all -j 4
-  dependencies:
-    - user_install_redhat_swig3

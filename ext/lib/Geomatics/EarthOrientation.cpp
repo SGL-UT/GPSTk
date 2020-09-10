@@ -85,7 +85,7 @@ namespace gpstk
       os << " " << fixed << setw(10) << setprecision(6) << eo.xp
          << " " << setw(10) << setprecision(6) << eo.yp
          << " " << setw(11) << setprecision(7) << eo.UT1mUTC
-         << " " << eo.convention.asString();
+         << " " << eo.convention;
       return os;
    }
 

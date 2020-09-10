@@ -622,46 +622,46 @@ namespace gpstk
          bool ignore=false;
          switch (i->first.type)
          {
-            case ObsID::otRange:    type = "C"; break;
-            case ObsID::otPhase:    type = "L"; break;
-            case ObsID::otDoppler:  type = "D"; break;
-            case ObsID::otSNR:      type = "S"; break;
-            case ObsID::otSSI:      ignore = true; break;
-            case ObsID::otLLI:      ignore = true; break;
-            case ObsID::otTrackLen: ignore = true; break;
+            case ObservationType::Range:    type = "C"; break;
+            case ObservationType::Phase:    type = "L"; break;
+            case ObservationType::Doppler:  type = "D"; break;
+            case ObservationType::SNR:      type = "S"; break;
+            case ObservationType::SSI:      ignore = true; break;
+            case ObservationType::LLI:      ignore = true; break;
+            case ObservationType::TrackLen: ignore = true; break;
 			default: break; //NB Determine if additional enumeration values need to be handled
          }
 
          switch (i->first.band)
          {
-            case ObsID::cbL1:   band = "1"; break;
-            case ObsID::cbL2:   band = "2"; break;
-            case ObsID::cbL5:   band = "5"; break;
-            case ObsID::cbE6:   band = "6"; break;
-            case ObsID::cbE5b:  band = "7"; break;
-            case ObsID::cbE5ab: band = "8"; break;
+            case CarrierBand::L1:   band = "1"; break;
+            case CarrierBand::L2:   band = "2"; break;
+            case CarrierBand::L5:   band = "5"; break;
+            case CarrierBand::E6:   band = "6"; break;
+            case CarrierBand::E5b:  band = "7"; break;
+            case CarrierBand::E5ab: band = "8"; break;
 			default: break; //NB Determine if additional enumeration values need to be handled	
          }
 
          switch (i->first.code)
          {
-            case ObsID::tcCA:   attribute = "C"; break;
-            case ObsID::tcP:    attribute = "P"; break;
-            case ObsID::tcY:    attribute = "Y"; break;
-            case ObsID::tcW:    attribute = "W"; break;
-            case ObsID::tcN:    attribute = "N"; break;
-            case ObsID::tcM:    attribute = "M"; break;
-            case ObsID::tcC2M:  attribute = "S"; break;
-            case ObsID::tcC2L:  attribute = "L"; break;
-            case ObsID::tcC2LM: attribute = "X"; break;
-            case ObsID::tcI5:   attribute = "I"; break;
-            case ObsID::tcQ5:   attribute = "Q"; break;
-            case ObsID::tcIQ5:  attribute = "X"; break;
-            case ObsID::tcA:    attribute = "A"; break;
-            case ObsID::tcB:    attribute = "B"; break;
-            case ObsID::tcC:    attribute = "C"; break;
-            case ObsID::tcBC:   attribute = "X"; break;
-            case ObsID::tcABC:  attribute = "Z"; break;
+            case TrackingCode::CA:   attribute = "C"; break;
+            case TrackingCode::P:    attribute = "P"; break;
+            case TrackingCode::Y:    attribute = "Y"; break;
+            case TrackingCode::Ztracking:    attribute = "W"; break;
+            case TrackingCode::YCodeless:    attribute = "N"; break;
+            case TrackingCode::MDP:    attribute = "M"; break;
+            case TrackingCode::L2CM:  attribute = "S"; break;
+            case TrackingCode::L2CL:  attribute = "L"; break;
+            case TrackingCode::L2CML: attribute = "X"; break;
+            case TrackingCode::L5I:   attribute = "I"; break;
+            case TrackingCode::L5Q:   attribute = "Q"; break;
+            case TrackingCode::L5IQ:  attribute = "X"; break;
+            case TrackingCode::E1A:    attribute = "A"; break;
+            case TrackingCode::E1B:    attribute = "B"; break;
+            case TrackingCode::E1C:    attribute = "C"; break;
+            case TrackingCode::E1BC:   attribute = "X"; break;
+            case TrackingCode::E1ABC:  attribute = "Z"; break;
 			default: break; //NB Determine if additional enumeration values need to be handled
          }
          if (ignore)

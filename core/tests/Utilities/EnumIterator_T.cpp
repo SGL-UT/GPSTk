@@ -1,0 +1,115 @@
+#include "TestUtil.hpp"
+#include "EnumIterator.hpp"
+#include <iostream>
+
+using namespace std;
+
+enum class TestEnum1
+{
+   One,
+   Two,
+   Three,
+   Four,
+   Five,
+   Last
+};
+
+ostream& operator<<(ostream& s, TestEnum1 e)
+{
+   s << static_cast<int>(e);
+   return s;
+}
+
+class EnumIterator_T
+{
+public:
+   unsigned constructorTest();
+   unsigned incrementTest();
+   unsigned inequalityTest();
+   unsigned beginEndTest();
+};
+
+
+unsigned EnumIterator_T ::
+constructorTest()
+{
+   TUDEF("EnumIterator", "EnumIterator()");
+   typedef gpstk::EnumIterator<TestEnum1, TestEnum1::One, TestEnum1::Last> TestIterator1;
+   TestIterator1 test1;
+      // this also tests the dereference operator
+   TUASSERTE(TestEnum1, TestEnum1::One, *test1);
+
+   typedef gpstk::EnumIterator<TestEnum1, TestEnum1::Two, TestEnum1::Last> TestIterator2;
+   TestIterator2 test2;
+      // this also tests the dereference operator
+   TUASSERTE(TestEnum1, TestEnum1::Two, *test2);
+
+   TUCSM("EnumIterator(C)");
+   TestIterator1 test3(TestEnum1::Three);
+      // this also tests the dereference operator
+   TUASSERTE(TestEnum1, TestEnum1::Three, *test3);
+
+   TURETURN();
+}
+
+
+unsigned EnumIterator_T ::
+incrementTest()
+{
+   TUDEF("EnumIterator", "operator++");
+   typedef gpstk::EnumIterator<TestEnum1, TestEnum1::One, TestEnum1::Last> TestIterator1;
+   TestIterator1 test1;
+      // this also tests the dereference operator
+   TUASSERTE(TestEnum1, TestEnum1::One, *test1);
+   ++test1;
+   TUASSERTE(TestEnum1, TestEnum1::Two, *test1);
+   TURETURN();
+}
+
+
+unsigned EnumIterator_T ::
+inequalityTest()
+{
+   TUDEF("EnumIterator", "operator!=");
+   typedef gpstk::EnumIterator<TestEnum1, TestEnum1::One, TestEnum1::Last> TestIterator1;
+   TestIterator1 test1, test2;
+   TUASSERT(!(test1.operator!=(test2)));
+   ++test2;
+   TUASSERT(test1.operator!=(test2));
+   TURETURN();
+}
+
+
+unsigned EnumIterator_T ::
+beginEndTest()
+{
+   TUDEF("EnumIterator", "begin/end");
+   typedef gpstk::EnumIterator<TestEnum1, TestEnum1::One, TestEnum1::Last> TestIterator1;
+   unsigned count = 0;
+   TestIterator1 test;
+   for (test = test.begin(); test != test.end(); ++test, count++)
+   {
+   }
+   TUASSERTE(unsigned, 5, count);
+      // nicer syntax
+   count = 0;
+   for (TestEnum1 e : TestIterator1())
+   {
+      count++;
+   }
+   TUASSERTE(unsigned, 5, count);
+   TURETURN();
+}
+
+
+int main()
+{
+   unsigned errorTotal = 0;
+   EnumIterator_T testClass;
+   errorTotal += testClass.constructorTest();
+   errorTotal += testClass.incrementTest();
+   errorTotal += testClass.inequalityTest();
+   errorTotal += testClass.beginEndTest();
+   cout << "Total Failures for " << __FILE__ << ": " << errorTotal << endl;
+   return errorTotal;
+}

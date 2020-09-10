@@ -626,40 +626,58 @@ void dumpAllRinex3ObsTypes(ostream& os)
    typedef map<string, map<char,string> > codeMap;
 
    vector<string> goodtags;
-   string syss(ObsID::validRinexSystems);
+   string syss(RinexObsID::validRinexSystems);
    // build a table: table[sys][band][codedesc][type] = 4-char ObsID;
    //                      char cb..  tc..      ot..
    tableMap table;
-   for(size_t s=0; s<syss.size(); s++)
-      for(int j=ObsID::cbAny; j<ObsID::cbUndefined; ++j)
-         for(int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
-            for(int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
-               try {
-                  string tag(string(1,syss[s]) +
-                             string(1,ObsID::ot2char[ObsID::ObservationType(i)]) +
-                             string(1,ObsID::cb2char[ObsID::CarrierBand(j)]) +
-                             string(1,ObsID::tc2char[ObsID::TrackingCode(k)]));
-                  ObsID obs(tag, Rinex3ObsBase::currentVersion);
+   for (size_t s=0; s<syss.size(); s++)
+   {
+      for (CarrierBand j : CarrierBandIterator())
+      {
+         for (TrackingCode k : TrackingCodeIterator())
+         {
+            for (ObservationType i : ObservationTypeIterator())
+            {
+               try
+               {
+                  string tag(
+                     string(1,syss[s]) +
+                     string(1,RinexObsID::ot2char[i]) +
+                     string(1,RinexObsID::cb2char[j]) +
+                     string(1,RinexObsID::tc2char[k]));
+                  RinexObsID obs(tag, Rinex3ObsBase::currentVersion);
                   string name(asString(obs));
-                  if(name.find("Unknown") != string::npos ||
-                     name.find("undefined") != string::npos ||
-                     name.find("Any") != string::npos ||
-                     !isValidRinexObsID(tag)) continue;
+                  if (name.find("Unknown") != string::npos ||
+                      name.find("undefined") != string::npos ||
+                      name.find("Any") != string::npos ||
+                      !isValidRinexObsID(tag))
+                  {
+                     continue;
+                  }
 
-                  if(find(goodtags.begin(),goodtags.end(),tag) == goodtags.end()) {
+                  if(find(goodtags.begin(),goodtags.end(),tag) == goodtags.end())
+                  {
                      goodtags.push_back(tag);
                      string sys(RinexSatID(string(1,tag[0])).systemString3());
-                     char type(ObsID::ot2char[ObsID::ObservationType(i)]);
+                     char type(RinexObsID::ot2char[i]);
                      string id(tag); // TD keep sys char ? id(tag.substr(1));
                      string desc(
-                        asString(ObsID(tag, Rinex3ObsBase::currentVersion)));
+                        asString(
+                           RinexObsID(tag,Rinex3ObsBase::currentVersion)));
                      vector<string> fld(split(desc,' '));
                      string codedesc(fld[1].substr(syss[s]=='S'?4:3));
                      string band(fld[0]);
                      table[sys][band][codedesc][type] = id;
                   }
                }
-               catch(InvalidParameter& ) { continue; }
+               catch (InvalidParameter& )
+               {
+                  continue;
+               }
+            } // for (ObservationType i : ObservationTypeIterator())
+         } // for (TrackingCode k : TrackingCodeIterator())
+      } // for (CarrierBand j : CarrierBandIterator())
+   } // for (size_t s=0; s<syss.size(); s++)
 
    tableMap::iterator it;
    obsMap::iterator jt;
@@ -673,7 +691,7 @@ void dumpAllRinex3ObsTypes(ostream& os)
             if(kt->first.length() > len3) len3 = kt->first.length();
          }
 
-   string fres(ObsID::validRinexFrequencies);
+   string fres(RinexObsID::validRinexFrequencies);
    os << "\nAll valid RINEX3 systems   : " << syss << endl;
    os << "All valid RINEX3 frequencies : " << fres << endl;
    os << "All valid RINEX observation codes:" << endl;
@@ -707,7 +725,7 @@ void dumpAllRinex3ObsTypes(ostream& os)
 
             if(fr != kt->second['L'][2]) {
                fr = kt->second['L'][2];
-               string tc(ObsID::validRinexTrackingCodes[syss[i]][fr]);
+               string tc(RinexObsID::validRinexTrackingCodes[syss[i]][fr]);
                if(!tc.empty())
                   os << "  all codes for " << it->first << " " << jt->first
                            << " = '" << tc << "'";

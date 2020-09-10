@@ -66,14 +66,14 @@ namespace gpstk
       {
       switch (navID.navType)
       {
-         case NavID::ntGPSLNAV: 
+         case NavType::GPSLNAV: 
          {
             retVal = GPSLNAV(pnb); 
             break;
          }
 
-         case NavID::ntGPSCNAVL5: 
-         case NavID::ntGPSCNAVL2:
+         case NavType::GPSCNAVL5: 
+         case NavType::GPSCNAVL2:
          {
             retVal = GPSCNAV(pnb); 
             break;

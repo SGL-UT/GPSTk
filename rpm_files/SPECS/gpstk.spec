@@ -11,7 +11,6 @@ Source:         %{name}-master.tar.gz
 URL:            https://github.com/SGL-UT/GPSTk
 Group:          Development/Libraries
 BuildRequires: cmake
-BuildRequires: swig
 BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: ncurses-devel
@@ -31,7 +30,7 @@ The primary goals of the GPSTk project are to:
 %build
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/ -DBUILD_EXT=ON -DBUILD_PYTHON=OFF -DBUILD_FOR_PACKAGE_SWITCH=ON ../
+cmake -DCMAKE_INSTALL_PREFIX=/ -DBUILD_EXT=ON ../
 make all -j 4
 
 # Install bin/lib/include folders in RPM BUILDROOT for packaging

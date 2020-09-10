@@ -89,8 +89,8 @@ namespace gpstk
 //-------------------------------------------------------------------
    bool OrbSysGpsL_63::hasSignal(const SatID& sidr,
                                  const CommonTime& ct,
-                                 const ObsID::CarrierBand cb,
-                                 const ObsID::TrackingCode tc) const
+                                 const CarrierBand cb,
+                                 const gpstk::TrackingCode tc) const
    {
       // Verify that the object has been loaded with data.
        if (!dataLoadedFlag)
@@ -100,7 +100,7 @@ namespace gpstk
        }
 
       // Check for a valid satelilte ID
-       if (sidr.system!=SatID::systemGPS ||
+       if (sidr.system!=SatelliteSystem::GPS ||
            sidr.id>MAX_PRN)
        {
            stringstream ss;
@@ -116,34 +116,34 @@ namespace gpstk
         int minimumValue = INVALID;
 
       // Legacy GPS Signals.   L1 P(Y), L2 P(Y), L1 C/A
-        if ( (cb==ObsID::cbL1 || cb==ObsID::cbL2) &&
-             (tc==ObsID::tcP || tc==ObsID::tcY || tc==ObsID::tcW || tc==ObsID::tcN || tc==ObsID::tcD))
+        if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) &&
+             (tc==TrackingCode::P || tc==TrackingCode::Y || tc==TrackingCode::Ztracking || tc==TrackingCode::YCodeless || tc==TrackingCode::Semicodeless))
         {
             minimumValue = 1;
         }
-        if (cb==ObsID::cbL1 && tc==ObsID::tcCA)
+        if (cb==CarrierBand::L1 && tc==TrackingCode::CA)
         {
             minimumValue = 1;
         }
 
           // L2C and M-Code (added with Block IIR-M)
-        if (cb==ObsID::cbL2 && (tc==ObsID::tcC2L || tc==ObsID::tcC2M || tc==ObsID::tcC2LM))
+        if (cb==CarrierBand::L2 && (tc==TrackingCode::L2CL || tc==TrackingCode::L2CM || tc==TrackingCode::L2CML))
         {
             minimumValue = 2;
         }
-        if ( (cb==ObsID::cbL1 || cb==ObsID::cbL2) && tc==ObsID::tcM)
+        if ( (cb==CarrierBand::L1 || cb==CarrierBand::L2) && tc==TrackingCode::MDP)
         {
             minimumValue = 2;
         }
 
           // L5
-        if (cb==ObsID::cbL5 && (tc==ObsID::tcI5 || tc==ObsID::tcQ5))
+        if (cb==CarrierBand::L5 && (tc==TrackingCode::L5I || tc==TrackingCode::L5Q))
         {
             minimumValue = 3;
         }
 
           // L1C
-        if (cb==ObsID::cbL1 && (tc==ObsID::tcG1P || tc==ObsID::tcG1D || tc==ObsID::tcG1X))
+        if (cb==CarrierBand::L1 && (tc==TrackingCode::L1CP || tc==TrackingCode::L1CD || tc==TrackingCode::L1CDP))
         {
             minimumValue = 4;
         }
@@ -151,7 +151,9 @@ namespace gpstk
         if (minimumValue==INVALID)
         {
             stringstream ss;
-            ss << " Carrier " << cb << ", tracking code " << tc << " is not a valid combination for a GPS SV.";
+            ss << " Carrier " << StringUtils::asString(cb) << ", tracking code "
+               << StringUtils::asString(tc)
+               << " is not a valid combination for a GPS SV.";
             InvalidRequest ir(ss.str());
             GPSTK_THROW(ir);
         }
@@ -246,7 +248,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      string ssys = SatID::convertSatelliteSystemToString(satID.system);
+      string ssys = convertSatelliteSystemToString(satID.system);
       s << setw(7) << ssys;
       s << " " << setw(2) << satID.id;
 

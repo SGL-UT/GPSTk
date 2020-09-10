@@ -80,7 +80,7 @@ namespace gpstk
 
          /// constructor
       SP3Header() : version(undefined), numberOfEpochs(0),
-                    system(1, SP3SatID::systemGPS), timeSystem(TimeSystem::Any),
+                    system(1, SatelliteSystem::GPS), timeSystem(TimeSystem::Any),
                     basePV(0.0), baseClk(0.0), allowSP3aEvents(false)
       {}
 
@@ -160,7 +160,7 @@ namespace gpstk
 
          /// return a string with time system name
       std::string timeSystemString() const throw()
-      { return timeSystem.asString(); };
+      { return gpstk::StringUtils::asString(timeSystem); };
 
          // The next four lines is our common interface
          /// SP3Header is a "header" so this function always returns true.

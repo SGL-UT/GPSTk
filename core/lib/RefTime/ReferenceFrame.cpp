@@ -40,44 +40,38 @@ using namespace std;
 
 namespace gpstk
 {
-   // Static initialization of const std::strings for asString().
-   // Must parallel enum Frames in ReferenceFrames.hpp.
-   // NB: DO NOT use std::map here; on some systems initialization fails.
-   const string ReferenceFrame::Strings[count] =
-     {
-       string("Unknown"),
-       string("WGS84"),          // WGS84, assumed to be the latest version
-       string("WGS84(G730)"),    // WGS84, GPS week 730 version
-       string("WGS84(G873)"),    // WGS84, GPS week 873 version
-       string("WGS84(G1150)"),   // WGS84, GPS week 1150 version
-       string("ITRF"),           // ITRF, assumed to be the latest version
-       string("PZ90"),           // PZ90 (GLONASS) assumed to be the latest version
-       string("PZ90KGS"),         // PZ90 (KGS) the "original"
-       string("CGCS2000")
-     };
-
-   ReferenceFrame::ReferenceFrame(const string str) throw()
+   namespace StringUtils
    {
-      frame = Unknown;
-      for(int i=0; i<count; i++) {
-         if(Strings[i] == str) {
-            frame = static_cast<Frames>(i);
-            return;
+      std::string asString(ReferenceFrame e)
+      {
+         switch (e)
+         {
+            case ReferenceFrame::Unknown:    return "Unknown";
+            case ReferenceFrame::WGS84:      return "WGS84";
+            case ReferenceFrame::WGS84G730:  return "WGS84(G730)";
+            case ReferenceFrame::WGS84G873:  return "WGS84(G873)";
+            case ReferenceFrame::WGS84G1150: return "WGS84(G1150)";
+            case ReferenceFrame::ITRF:       return "ITRF";
+            case ReferenceFrame::PZ90:       return "PZ90";
+            case ReferenceFrame::PZ90KGS:    return "PZ90KGS";
+            case ReferenceFrame::CGCS2000:   return "CGCS2000";
+            default:                         return "???";
          }
       }
-   }
 
-   void ReferenceFrame::setReferenceFrame(const Frames& frm)
-      throw()
-   {
-      if(frm < 0 || frm >= count)
-         frame = Unknown;
-      else
-         frame = frm;
-   }
 
-   ostream& operator<<(ostream os, const ReferenceFrame& rf)
-   {
-      return os << rf.asString();
+      ReferenceFrame asReferenceFrame(const std::string& s)
+      {
+         if (s == "Unknown")      return ReferenceFrame::Unknown;
+         if (s == "WGS84")        return ReferenceFrame::WGS84;
+         if (s == "WGS84(G730)")  return ReferenceFrame::WGS84G730;
+         if (s == "WGS84(G873)")  return ReferenceFrame::WGS84G873;
+         if (s == "WGS84(G1150)") return ReferenceFrame::WGS84G1150;
+         if (s == "ITRF")         return ReferenceFrame::ITRF;
+         if (s == "PZ90")         return ReferenceFrame::PZ90;
+         if (s == "PZ90KGS")      return ReferenceFrame::PZ90KGS;
+         if (s == "CGCS2000")     return ReferenceFrame::CGCS2000;
+         return ReferenceFrame::Unknown;
+      }
    }
 }   // end namespace

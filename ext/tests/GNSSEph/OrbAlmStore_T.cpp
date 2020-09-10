@@ -234,7 +234,7 @@ findEmptyTest()
    {
          // test that an exception is thrown for a completely empty OrbAlmStore
       OrbAlmStore oas;
-      SatID s(1,SatID::systemGPS);
+      SatID s(1,SatelliteSystem::GPS);
       SystemTime now;
       CommonTime ct(now);
       ct.setTimeSystem(TimeSystem::Any);
@@ -395,7 +395,7 @@ createAndDump()
 //--- Test the isPresent( ) method --------------------------------
    currMethod = typeDesc + " OrbAlmStore.isPresent() ";
    TUCSM(currMethod);
-   SatID sidT1(1,SatID::systemGPS);
+   SatID sidT1(1,SatelliteSystem::GPS);
    if (oas.isPresent(sidT1))
    {
       TUPASS("");
@@ -405,7 +405,7 @@ createAndDump()
       TUFAIL("Failed to find PRN 1 in store");
    }
 
-   SatID sidT2(33,SatID::systemGPS);
+   SatID sidT2(33,SatelliteSystem::GPS);
    if (oas.isPresent(sidT2))
    {
       TUFAIL("Reported PRN 33 as present (which is not true)");
@@ -538,7 +538,7 @@ createAndDump()
    currMethod = typeDesc + " OrbAlmStore.getXvt()";
    TUCSM(currMethod);
 
-   SatID sidXvt(1,SatID::systemGPS);
+   SatID sidXvt(1,SatelliteSystem::GPS);
    CommonTime test1 = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);
    CommonTime test2 = CivilTime(2015,12,31,12,00,00,TimeSystem::GPS);
    CommonTime test3 = CivilTime(2016, 1,31,00,00,00,TimeSystem::GPS);
@@ -655,7 +655,7 @@ createAndDump()
    for (unsigned prn = 1; prn <= 32; prn++)
    {
       const OrbAlm *foo = (const OrbAlm*)-1;
-      SatID sidee(prn,SatID::systemGPS);
+      SatID sidee(prn,SatelliteSystem::GPS);
       try
       {
          foo = oas.find(sidee, ct);
@@ -952,9 +952,9 @@ setUpLNAV()
    {
       std::cout << "Building PNB from strings" << std::endl;
    }
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
-                          gpstk::ObsID::cbL1,
-                          gpstk::ObsID::tcCA);
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
+                          gpstk::CarrierBand::L1,
+                          gpstk::TrackingCode::CA);
    gpstk::PackedNavBits msg;
    for (unsigned short i=0; i<LNavExCount; i++)
    {
@@ -984,7 +984,7 @@ setUpLNAV()
        *  8.   True    1/31/16 00:00    F            12/31 12:29:25         Late, but no eff. test
        */
    pfList.clear();
-   SatID sidTest(1,SatID::systemGPS);
+   SatID sidTest(1,SatelliteSystem::GPS);
    CommonTime begValFirstAlmPRN1 = CivilTime(2015,12,31,00,02,54,TimeSystem::GPS);
    CommonTime begValSecondAlmPRN1 = CivilTime(2015,12,31,12,20,24,TimeSystem::GPS);
    CommonTime testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);
@@ -1030,7 +1030,7 @@ setUpLNAV()
       //  4.   True   12/31 00:00:00    F            12/31 00:02:54         Early, but no eff test
       //  5.   True    1/31/16 00:00    F            12/31 12:29:25         Late, but no eff. test
       //  6.  False   12/31 00:02:55    T            12/31 00:02:54         As 2, but using a SatID not in the maps
-   SatID xmitID(2,SatID::systemGPS);
+   SatID xmitID(2,SatelliteSystem::GPS);
 
    testTime = CivilTime(2015,12,31,00,00,00,TimeSystem::GPS);  // 1
    pfd = PassFailData(sidTest, testTime,true,xmitID);
@@ -1053,7 +1053,7 @@ setUpLNAV()
    pfList.push_back(pfd);
 
    testTime = CivilTime(2015,12,31,00,02,55,TimeSystem::GPS);  // 6
-   SatID xmitID_32(32,SatID::systemGPS);
+   SatID xmitID_32(32,SatelliteSystem::GPS);
    pfd = PassFailData(sidTest, testTime,true,begValFirstAlmPRN1,xmitID_32);
    pfList.push_back(pfd);
 
@@ -1061,7 +1061,7 @@ setUpLNAV()
       // that contain almanac data for PRN 5 (Subframe 5, page 5).  They
       // contain the smae data, but different transmit times.  We want
       // to verify that the correct almanac message was retained.
-   SatID subjID_5(5,SatID::systemGPS);
+   SatID subjID_5(5,SatelliteSystem::GPS);
    testTime = CivilTime(2015,12,31,01,00,00,TimeSystem::GPS);
    CommonTime begValidPRN5 = CivilTime(2015,12,31,00,04,54,TimeSystem::GPS);
    pfd = PassFailData(subjID_5,testTime,true,begValidPRN5);
@@ -1078,7 +1078,7 @@ setUpLNAV()
       //                                                                 exactly what we want to know
       //  2.   True     1   12/31 13:00:00   T          END_OF_TIME
       //  x.  False    32   12/31 13:00:00   T          NONE             Subject SV not present
-   SatID subjID_1(1,SatID::systemGPS);
+   SatID subjID_1(1,SatelliteSystem::GPS);
    testTime = CivilTime(2015,12,31,00,03,00,TimeSystem::GPS);
    CommonTime lastXmit = CivilTime(2015,12,31,18,35,24,TimeSystem::GPS);
    pfd = PassFailData(subjID_1,testTime,true,lastXmit);
@@ -1102,9 +1102,9 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
-                          gpstk::ObsID::cbL2,
-                          gpstk::ObsID::tcC2LM);
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
+                          gpstk::CarrierBand::L2,
+                          gpstk::TrackingCode::L2CML);
    typeDesc = "GPS_CNAV";
 
       // Literals for CNAV test data
@@ -1163,7 +1163,7 @@ getPnbLNav(const gpstk::ObsID& oidr, const std::string& str)
 
          // Convert the PRN to a SatID
       int prn = StringUtils::asInt(words[5]);
-      SatID sid(prn,SatID::systemGPS);
+      SatID sid(prn,SatelliteSystem::GPS);
 
          // Get the message ID
       int msgID = StringUtils::asInt(words[7]);
@@ -1221,7 +1221,7 @@ getPnbCNav(const gpstk::ObsID& oidr, const std::string& str)
 
          // Convert the PRN to a SatID
       int prn = StringUtils::asInt(words[5]);
-      SatID sid(prn,SatID::systemGPS);
+      SatID sid(prn,SatelliteSystem::GPS);
 
          // Get the message ID
       int msgID = StringUtils::asInt(words[7]);
@@ -1280,7 +1280,7 @@ testComputeXvt(OrbAlmStore& oas,
                TestUtil& testFramework)
 {
    gpstk::Xvt rv;
-   SatID sidXvt(33, SatID::systemGPS);
+   SatID sidXvt(33, SatelliteSystem::GPS);
    CommonTime test2 = CivilTime(2015,12,31,12,00,00,TimeSystem::GPS);
    TUCATCH(rv = oas.computeXvt(sidXvt, test2));
    TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable, rv.health);
@@ -1303,7 +1303,7 @@ testGetSVHealth(OrbAlmStore& oas,
                 TestUtil& testFramework)
 {
    gpstk::Xvt::HealthStatus rv;
-   SatID sidXvt(33, SatID::systemGPS);
+   SatID sidXvt(33, SatelliteSystem::GPS);
    CommonTime test2 = CivilTime(2015,12,31,12,00,00,TimeSystem::GPS);
    TUCATCH(rv = oas.getSVHealth(sidXvt, test2));
    TUASSERTE(Xvt::HealthStatus, Xvt::HealthStatus::Unavailable, rv);
@@ -1314,9 +1314,9 @@ unsigned OrbAlmStore_T ::
 testUnhealthyLNav()
 {
    TUDEF("OrbAlmStore", "getSVHealth");
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
-                          gpstk::ObsID::cbL1,
-                          gpstk::ObsID::tcCA);
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
+                          gpstk::CarrierBand::L1,
+                          gpstk::TrackingCode::CA);
    OrbAlmStore oas;
    list<PackedNavBits> unhealthyDataList;
    gpstk::PackedNavBits msg = getPnbLNav(
@@ -1338,7 +1338,7 @@ testUnhealthyLNav()
    TUASSERTE(unsigned, 1, oas.size(2));
 
    gpstk::Xvt rv;
-   SatID sidXvt(22, SatID::systemGPS);
+   SatID sidXvt(22, SatelliteSystem::GPS);
    CommonTime test2 = CivilTime(2015,12,18,00,15,00,TimeSystem::GPS);
       // The test almanac page has a toa of 2016/01/02 19:50:24 and an
       // endValid time of 2016/01/05 21:50:24, which seems a little

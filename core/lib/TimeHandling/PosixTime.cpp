@@ -109,7 +109,7 @@ namespace gpstk
          rv = formattedPrint(rv, getFormatPrefixInt() + "N",
                              "Nlu", ts.tv_nsec);
          rv = formattedPrint(rv, getFormatPrefixInt() + "P",
-                             "Ps", timeSystem.asString().c_str() );
+                             "Ps", StringUtils::asString(timeSystem).c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -156,7 +156,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem.fromString(i->second);
+               timeSystem = gpstk::StringUtils::asTimeSystem(i->second);
                break;
 
             default:

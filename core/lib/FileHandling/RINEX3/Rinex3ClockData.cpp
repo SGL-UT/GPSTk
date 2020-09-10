@@ -51,7 +51,7 @@ using namespace std;
 namespace gpstk
 {
    Rinex3ClockData::Rinex3ClockData()
-         : sat(-1,RinexSatID::systemGPS), time(CommonTime::BEGINNING_OF_TIME),
+         : sat(-1,SatelliteSystem::GPS), time(CommonTime::BEGINNING_OF_TIME),
            bias(0), sig_bias(0), drift(0), sig_drift(0), accel(0), sig_accel(0)
    {
    }

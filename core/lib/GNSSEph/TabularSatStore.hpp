@@ -698,8 +698,8 @@ namespace gpstk
             && ts != storeTimeSystem)
          {
             InvalidRequest ir("Conflicting time systems: " +
-                              ts.asString() + " - " +
-                              storeTimeSystem.asString());
+                              gpstk::StringUtils::asString(ts) + " - " +
+                              gpstk::StringUtils::asString(storeTimeSystem));
             GPSTK_THROW(ir);
          }
       }
@@ -861,7 +861,7 @@ namespace gpstk
       }
 
          /// Get the number of data records for the given satellite system
-      inline int ndata(const SatID::SatelliteSystem& sys) const throw()
+      inline int ndata(const SatelliteSystem& sys) const throw()
       {
          int n(0);
          typename SatTable::const_iterator sit;

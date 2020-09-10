@@ -82,7 +82,7 @@ try {
       // dump the list of ephemerides, and build a map of sat,IODE
       for(i=0,it=EphList.begin(); it != EphList.end(); it++,i++) {
          short prn = it->satID.id;
-         sat = GSatID(prn,SatID::systemGPS);
+         sat = GSatID(prn,SatelliteSystem::GPS);
          if(IODEmap.find(sat) == IODEmap.end()) {
             IODEmap[sat] = -1;
          }

@@ -197,7 +197,7 @@ try {
       LOG(INFO) << "Solar System Ephemeris is DE"
          << C.SolSys.EphNumber() << "; timespan "
          << C.SolSys.startTime() << " to " << C.SolSys.endTime()
-         << " with " << C.SolSys.getConvention().asString();
+         << " with " << C.SolSys.getConvention();
 
       // read EarthOP file and fill store
       expand_filename(C.earthfile);

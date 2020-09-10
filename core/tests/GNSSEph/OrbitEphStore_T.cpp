@@ -57,10 +57,10 @@ public:
          gpstk::OrbitEphStore store;
             // this eph will be removed by edit()
          gpstk::OrbitEph baleted;
-         gpstk::SatID sat(11, gpstk::SatID::systemGPS);
-         gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
-                            gpstk::ObsID::cbL1,
-                            gpstk::ObsID::tcCA);
+         gpstk::SatID sat(11, gpstk::SatelliteSystem::GPS);
+         gpstk::ObsID obsID(gpstk::ObservationType::NavMsg,
+                            gpstk::CarrierBand::L1,
+                            gpstk::TrackingCode::CA);
          baleted.dataLoadedFlag = true;
          baleted.satID = sat;
          baleted.obsID = obsID;
@@ -124,10 +124,10 @@ public:
             // specific characteristics.
 
          gpstk::OrbitEph to1;
-         gpstk::SatID sat1(1, gpstk::SatID::systemGPS);
-         gpstk::ObsID obsID(gpstk::ObsID::otNavMsg,
-                            gpstk::ObsID::cbL1,
-                            gpstk::ObsID::tcCA);
+         gpstk::SatID sat1(1, gpstk::SatelliteSystem::GPS);
+         gpstk::ObsID obsID(gpstk::ObservationType::NavMsg,
+                            gpstk::CarrierBand::L1,
+                            gpstk::TrackingCode::CA);
          to1.dataLoadedFlag = true;
          to1.satID = sat1;
          to1.obsID = obsID;
@@ -137,7 +137,7 @@ public:
          to1.endValid = to1.ctToe + 7200;
 
          gpstk::OrbitEph to2;
-         gpstk::SatID sat2(32, gpstk::SatID::systemGPS);
+         gpstk::SatID sat2(32, gpstk::SatelliteSystem::GPS);
          to2.dataLoadedFlag = true;
          to2.satID = sat2;
          to2.obsID = obsID;
@@ -147,7 +147,7 @@ public:
          to2.endValid = to2.ctToe + 7200;
 
          gpstk::OrbitEph to3;
-         gpstk::SatID sat3(16, gpstk::SatID::systemGPS);
+         gpstk::SatID sat3(16, gpstk::SatelliteSystem::GPS);
          to3.dataLoadedFlag = true;
          to3.satID = sat3;
          to3.obsID = obsID;
@@ -202,7 +202,7 @@ public:
          TUCATCH(xvt = store.computeXvt(to3.satID, to3.ctToe));
          TUASSERTE(gpstk::Xvt::HealthStatus,
                    gpstk::Xvt::HealthStatus::Healthy, xvt.health);
-         gpstk::SatID bogus(33, gpstk::SatID::systemGPS);
+         gpstk::SatID bogus(33, gpstk::SatelliteSystem::GPS);
          TUCATCH(xvt = store.computeXvt(bogus, to3.ctToe));
          TUASSERTE(gpstk::Xvt::HealthStatus,
                    gpstk::Xvt::HealthStatus::Unavailable, xvt.health);

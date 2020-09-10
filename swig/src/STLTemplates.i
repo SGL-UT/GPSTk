@@ -1,13 +1,15 @@
 %{
 #include "SatID.hpp"
+#include "SatelliteSystem.hpp"
 %}
 
 %include "SatID.hpp"
+%include "SatelliteSystem.hpp"
 
 //////////////////////////////////////////////////
 //            std::vector wraps
 //////////////////////////////////////////////////
-%template(vector_GNSS)       std::vector<gpstk::SatID::SatelliteSystem>;
+%template(vector_GNSS)       std::vector<gpstk::SatelliteSystem>;
 %template(vector_SatID)      std::vector<gpstk::SatID>;
 %template(vector_ObsID)      std::vector<gpstk::ObsID>;
 %template(vector_double)     std::vector<double>;
@@ -78,15 +80,15 @@
 %template(ObsEpochMap) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
 
 // These are needed to properly interpret an ObsID instance
-%template(map_ObservationType_string) std::map<enum gpstk::ObsID::ObservationType, std::string>;
-%template(map_CarrierBand_string) std::map<enum gpstk::ObsID::CarrierBand, std::string>;
-%template(map_TrackingCode_string) std::map<enum gpstk::ObsID::TrackingCode, std::string>;
-%template(map_char_ObservationType) std::map<char, enum gpstk::ObsID::ObservationType>;
-%template(map_char_CarrierBand) std::map<char, enum gpstk::ObsID::CarrierBand>;
-%template(map_char_TrackingCode) std::map<char, enum gpstk::ObsID::TrackingCode>;
-%template(map_ObservationType_char) std::map<enum gpstk::ObsID::ObservationType,char>;
-%template(map_CarrierBand_char) std::map<enum gpstk::ObsID::CarrierBand,char>;
-%template(map_TrackingCode_char) std::map<enum gpstk::ObsID::TrackingCode,char>;
+%template(map_ObservationType_string) std::map<enum gpstk::ObservationType, std::string>;
+%template(map_CarrierBand_string) std::map<enum gpstk::CarrierBand, std::string>;
+%template(map_TrackingCode_string) std::map<enum gpstk::TrackingCode, std::string>;
+%template(map_char_ObservationType) std::map<char, enum gpstk::ObservationType>;
+%template(map_char_CarrierBand) std::map<char, enum gpstk::CarrierBand>;
+%template(map_char_TrackingCode) std::map<char, enum gpstk::TrackingCode>;
+%template(map_ObservationType_char) std::map<enum gpstk::ObservationType,char>;
+%template(map_CarrierBand_char) std::map<enum gpstk::CarrierBand,char>;
+%template(map_TrackingCode_char) std::map<enum gpstk::TrackingCode,char>;
 
 //////////////////////////////////////////////////
 //             std::set wraps

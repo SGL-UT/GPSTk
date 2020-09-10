@@ -97,9 +97,9 @@ try {
 
    // time tags
    double UT1=mjd+UT1mUTC/SEC_PER_DAY;
-   double dt = TimeSystem::Correction(TimeSystem::UTC,TimeSystem::TAI,2007,4,5.5);
+   double dt = getTimeSystemCorrection(TimeSystem::UTC,TimeSystem::TAI,2007,4,5.5);
    double TAI=mjd+dt/SEC_PER_DAY;
-   dt = TimeSystem::Correction(TimeSystem::UTC,TimeSystem::TT,2007,4,5.5);
+   dt = getTimeSystemCorrection(TimeSystem::UTC,TimeSystem::TT,2007,4,5.5);
    double TT =mjd+dt/SEC_PER_DAY;
    LOG(INFO) << fixed
       << setprecision(1) << "Times: UTC " << MJD_TO_JD << " + "

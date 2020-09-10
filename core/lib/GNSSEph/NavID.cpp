@@ -44,188 +44,182 @@
 
 namespace gpstk
 {
-      const std::string NavID::NavTypeStrings[] = {
-         "GPS_LNAV",
-         "GPS_CNAV_L2",
-         "GPS_CNAV_L5",
-         "GPS_CNAV2",
-         "GPS_MNAV",
-         "Beidou_D1",
-         "Beidou_D2",
-         "GloCivilF",
-         "GloCivilC",
-         "GalFNAV",
-         "GalINAV",
-         "IRNSS_SPS",
-         "Unknown"
-      };
-         /// explicit constructor, no defaults
-      NavID::NavID( const SatID& sidr, const ObsID& oidr )
-      {
+      /// explicit constructor, no defaults
+   NavID::NavID( const SatID& sidr, const ObsID& oidr )
+   {
          // Default case    
-         navType = ntUnknown; 
+      navType = NavType::Unknown; 
           
-            //If SatID (sat system type) corresponds to GPS AND ObsID
-            //(carrier band) corresponds to either L1 OR L2 AND ObsID
-            //(tracking code) matches CA, P, Y, W, N, OR D then NavID 
-            //corresponds to GPS LNAV.
-         switch (sidr.system)
-         {
-           case SatID::systemGPS:
-           {
-              if (( oidr.band==ObsID::cbL1 || oidr.band==ObsID::cbL2 ) &&
-                  ( oidr.code==ObsID::tcCA || oidr.code==ObsID::tcP ||
-                    oidr.code==ObsID::tcY  || oidr.code==ObsID::tcY ||
-                    oidr.code==ObsID::tcW  || oidr.code==ObsID::tcN ||
-                    oidr.code==ObsID::tcD  )) 
-                    navType = ntGPSLNAV;
-              
-              else if ( oidr.band==ObsID::cbL2 &&
-                       (oidr.code==ObsID::tcC2M || 
-                        oidr.code==ObsID::tcC2L ||
-                        oidr.code==ObsID::tcC2LM )) 
-                        navType = ntGPSCNAVL2;
-              
-              else if ( oidr.band==ObsID::cbL5 &&             
-                       (oidr.code==ObsID::tcI5 || 
-                        oidr.code==ObsID::tcQ5 ||                
-                        oidr.code==ObsID::tcIQ5 )) 
-                        navType = ntGPSCNAVL5;
- 
-              else if ( oidr.band==ObsID::cbL1 &&
-                      ( oidr.code==ObsID::tcG1P ||
-                        oidr.code==ObsID::tcG1D ||
-                        oidr.code==ObsID::tcG1X ) )
-                        navType = ntGPSCNAV2;
-
-              else if ((oidr.band==ObsID::cbL1 ||
-                        oidr.band==ObsID::cbL2) &&
-                        oidr.code==ObsID::tcM ) 
-                        navType = ntGPSMNAV;
-              break;
-            }
-            case SatID::systemQZSS:
-            {
-               if ( oidr.band==ObsID::cbL1  &&
-                    oidr.code==ObsID::tcCA )
-                    navType = ntGPSLNAV;
-              
-               else if ( oidr.band==ObsID::cbL2 &&
-                       ( oidr.code==ObsID::tcC2M  || oidr.code==ObsID::tcC2L ||
-                         oidr.code==ObsID::tcC2LM )) 
-                         navType = ntGPSCNAVL2;
-              
-               else if ( oidr.band==ObsID::cbL5 &&             
-                       ( oidr.code==ObsID::tcI5 || oidr.code==ObsID::tcQ5 ||                
-                         oidr.code==ObsID::tcIQ5 )) 
-                         navType = ntGPSCNAVL5;
-
-               else if ( oidr.band==ObsID::cbL1 &&
-                       ( oidr.code==ObsID::tcG1P ||
-                         oidr.code==ObsID::tcG1D ||
-                         oidr.code==ObsID::tcG1X ))
-                         navType = ntGPSCNAV2;
-               break;
-            }
-            case SatID::systemBeiDou:
-            {             
-               if ( sidr.id>5 &&                                                  
-                  ( oidr.band==ObsID::cbB1   || oidr.band==ObsID::cbB2   ||
-                    oidr.band==ObsID::cbB3 ) &&
-                  ( oidr.code==ObsID::tcCI1  || oidr.code==ObsID::tcCQ1  ||                
-                    oidr.code==ObsID::tcCIQ1 || oidr.code==ObsID::tcCI7  ||
-                    oidr.code==ObsID::tcCQ7  || oidr.code==ObsID::tcCIQ7 ||
-                    oidr.code==ObsID::tcCI6  || oidr.code==ObsID::tcCQ6  ||
-                    oidr.code==ObsID::tcCIQ6 )) 
-                    navType = ntBeiDou_D1; 
-         
-               else if ( sidr.id<=5 &&                                                  
-                       ( oidr.band==ObsID::cbB1   || oidr.band==ObsID::cbB2   ||
-                         oidr.band==ObsID::cbB3 )&&
-                       ( oidr.code==ObsID::tcCI1  || oidr.code==ObsID::tcCQ1  ||                
-                         oidr.code==ObsID::tcCIQ1 || oidr.code==ObsID::tcCI7  ||
-                         oidr.code==ObsID::tcCQ7  || oidr.code==ObsID::tcCIQ7 ||
-                         oidr.code==ObsID::tcCI6  || oidr.code==ObsID::tcCQ6  ||
-                         oidr.code==ObsID::tcCIQ6 )) 
-                         navType = ntBeiDou_D2;
-               break;
-            }
-            case SatID::systemGlonass:
-            {
-               if (( oidr.band==ObsID::cbG1 || oidr.band==ObsID::cbG2 ) &&         
-                   ( oidr.code==ObsID::tcGCA ))  
-                   navType = ntGloCivilF;
-             
-               else if ( oidr.band==ObsID::cbG3 &&
-                       ( oidr.code==ObsID::tcIR3 || oidr.code==ObsID::tcQR3 ||
-                         oidr.code==ObsID::tcIQR3 )) 
-                         navType = ntGloCivilC;
-               break;
-            }
-            case SatID::systemGalileo:
-            {
-               if ( oidr.band==ObsID::cbL1 && oidr.code==ObsID::tcB )
-                  navType = ntGalINAV;
-               else if ( oidr.band==ObsID::cbE5b  && 
-                       ( oidr.code==ObsID::tcIE5b || oidr.code==ObsID::tcIQE5b ))
-                       navType = ntGalINAV;
-               else if ( oidr.band==ObsID::cbL5 &&            // This is Galileo E5a
-                       ( oidr.code==ObsID::tcIE5a || oidr.code==ObsID::tcIQE5a ))
-                       navType = ntGalFNAV; 
-               break;
-            }
-            case SatID::systemIRNSS:
-            {
-               if ( oidr.band==ObsID::cbL5 &&
-                  ( oidr.code==ObsID::tcIA5 || oidr.code==ObsID::tcIB5 ||
-                    oidr.code==ObsID::tcIC5 || oidr.code==ObsID::tcIX5 ))  
-                    navType = ntIRNSS_SPS; 
-               break;
-            }
-            default:
-               navType = ntUnknown;  
-         } // end of switch statement       
-      }
-      
-      NavID::NavID( const std::string& s )
+         //If SatID (sat system type) corresponds to GPS AND ObsID
+         //(carrier band) corresponds to either L1 OR L2 AND ObsID
+         //(tracking code) matches CA, P, Y, W, N, OR D then NavID 
+         //corresponds to GPS LNAV.
+      switch (sidr.system)
       {
-         if ( s.compare( NavTypeStrings[0] ) == 0 )
-            navType = ntGPSLNAV;
-         
-         else if ( s.compare( NavTypeStrings[1] ) == 0 )
-            navType = ntGPSCNAVL2;
-            
-         else if ( s.compare( NavTypeStrings[2] ) == 0 )
-            navType = ntGPSCNAVL5;
+         case SatelliteSystem::GPS:
+         {
+            if (( oidr.band==CarrierBand::L1 || oidr.band==CarrierBand::L2 ) &&
+                ( oidr.code==TrackingCode::CA || oidr.code==TrackingCode::P ||
+                  oidr.code==TrackingCode::Y  || oidr.code==TrackingCode::Y ||
+                  oidr.code==TrackingCode::Ztracking  || oidr.code==TrackingCode::YCodeless ||
+                  oidr.code==TrackingCode::Semicodeless  ))
+            {
+               navType = NavType::GPSLNAV;
+            }
+            else if ( oidr.band==CarrierBand::L2 &&
+                      (oidr.code==TrackingCode::L2CM || 
+                       oidr.code==TrackingCode::L2CL ||
+                       oidr.code==TrackingCode::L2CML )) 
+            {
+               navType = NavType::GPSCNAVL2;
+            }
+            else if ( oidr.band==CarrierBand::L5 &&             
+                      (oidr.code==TrackingCode::L5I || 
+                       oidr.code==TrackingCode::L5Q ||                
+                       oidr.code==TrackingCode::L5IQ ))
+            {
+               navType = NavType::GPSCNAVL5;
+            }
+            else if ( oidr.band==CarrierBand::L1 &&
+                      ( oidr.code==TrackingCode::L1CP ||
+                        oidr.code==TrackingCode::L1CD ||
+                        oidr.code==TrackingCode::L1CDP ) )
+            {
+               navType = NavType::GPSCNAV2;
+            }
+            else if ((oidr.band==CarrierBand::L1 ||
+                      oidr.band==CarrierBand::L2) &&
+                     oidr.code==TrackingCode::MDP )
+            {
+               navType = NavType::GPSMNAV;
+            }
+            break;
+         }
+         case SatelliteSystem::QZSS:
+         {
+            if ( oidr.band==CarrierBand::L1  &&
+                 oidr.code==TrackingCode::CA )
+            {
+               navType = NavType::GPSLNAV;
+            }
+            else if ( oidr.band==CarrierBand::L2 &&
+                      ( oidr.code==TrackingCode::L2CM  ||
+                        oidr.code==TrackingCode::L2CL ||
+                        oidr.code==TrackingCode::L2CML ))
+            {
+               navType = NavType::GPSCNAVL2;
+            }
+            else if ( oidr.band==CarrierBand::L5 &&             
+                      ( oidr.code==TrackingCode::L5I ||
+                        oidr.code==TrackingCode::L5Q ||                
+                        oidr.code==TrackingCode::L5IQ ))
+            {
+               navType = NavType::GPSCNAVL5;
+            }
+            else if ( oidr.band==CarrierBand::L1 &&
+                      ( oidr.code==TrackingCode::L1CP ||
+                        oidr.code==TrackingCode::L1CD ||
+                        oidr.code==TrackingCode::L1CDP ))
+            {
+               navType = NavType::GPSCNAV2;
+            }
+            break;
+         }
+         case SatelliteSystem::BeiDou:
+         {             
+            if ( sidr.id>5 &&                                                  
+                 ( oidr.band==CarrierBand::B1   ||
+                   oidr.band==CarrierBand::B2   ||
+                   oidr.band==CarrierBand::B3 ) &&
+                 ( oidr.code==TrackingCode::B1I  ||
+                   oidr.code==TrackingCode::B1Q  ||                
+                   oidr.code==TrackingCode::B1IQ ||
+                   oidr.code==TrackingCode::B2I  ||
+                   oidr.code==TrackingCode::B2Q  ||
+                   oidr.code==TrackingCode::B2IQ ||
+                   oidr.code==TrackingCode::B3I  ||
+                   oidr.code==TrackingCode::B3Q  ||
+                   oidr.code==TrackingCode::B3IQ ))
+            {
+               navType = NavType::BeiDou_D1; 
+            }
+            else if ( sidr.id<=5 &&                                             
+                      ( oidr.band==CarrierBand::B1   ||
+                        oidr.band==CarrierBand::B2   ||
+                        oidr.band==CarrierBand::B3 )&&
+                      ( oidr.code==TrackingCode::B1I  ||
+                        oidr.code==TrackingCode::B1Q  ||                
+                        oidr.code==TrackingCode::B1IQ ||
+                        oidr.code==TrackingCode::B2I  ||
+                        oidr.code==TrackingCode::B2Q  ||
+                        oidr.code==TrackingCode::B2IQ ||
+                        oidr.code==TrackingCode::B3I  ||
+                        oidr.code==TrackingCode::B3Q  ||
+                        oidr.code==TrackingCode::B3IQ ))
+            {
+               navType = NavType::BeiDou_D2;
+            }
+            break;
+         }
+         case SatelliteSystem::Glonass:
+         {
+            if (( oidr.band==CarrierBand::G1 ||
+                  oidr.band==CarrierBand::G2 ) &&         
+                ( oidr.code==TrackingCode::Standard ))
+            {
+               navType = NavType::GloCivilF;
+            }
+            else if ( oidr.band==CarrierBand::G3 &&
+                      ( oidr.code==TrackingCode::L3OCD ||
+                        oidr.code==TrackingCode::L3OCP ||
+                        oidr.code==TrackingCode::L3OCDP ))
+            {
+               navType = NavType::GloCivilC;
+            }
+            break;
+         }
+         case SatelliteSystem::Galileo:
+         {
+            if ( oidr.band==CarrierBand::L1 && oidr.code==TrackingCode::E1B )
+            {
+               navType = NavType::GalINAV;
+            }
+            else if ( oidr.band==CarrierBand::E5b  && 
+                      ( oidr.code==TrackingCode::E5bI ||
+                        oidr.code==TrackingCode::E5bIQ ))
+            {
+               navType = NavType::GalINAV;
+            }
+            else if ( oidr.band==CarrierBand::L5 &&      // This is Galileo E5a
+                      ( oidr.code==TrackingCode::E5aI ||
+                        oidr.code==TrackingCode::E5aIQ ))
+            {
+               navType = NavType::GalFNAV;
+            }
+            break;
+         }
+         case SatelliteSystem::IRNSS:
+         {
+            if ( oidr.band==CarrierBand::L5 &&
+                 ( oidr.code==TrackingCode::SPSL5 ||
+                   oidr.code==TrackingCode::RSL5D ||
+                   oidr.code==TrackingCode::RSL5P ||
+                   oidr.code==TrackingCode::RSL5DP ))
+            {
+               navType = NavType::IRNSS_SPS;
+            }
+            break;
+         }
+         default:
+            navType = NavType::Unknown;
+            break;
+      } // end of switch statement       
+   }
 
-         else if ( s.compare( NavTypeStrings[3] ) == 0 )
-            navType = ntGPSCNAV2;
-                        
-         else if ( s.compare( NavTypeStrings[4] ) == 0 )
-            navType = ntGPSMNAV;
-            
-         else if ( s.compare( NavTypeStrings[5] ) == 0 )
-            navType = ntBeiDou_D1;
-            
-         else if ( s.compare( NavTypeStrings[6] ) == 0 )
-            navType = ntBeiDou_D2;
-            
-         else if ( s.compare( NavTypeStrings[7] ) == 0 )
-            navType = ntGloCivilF;
-            
-         else if ( s.compare( NavTypeStrings[8] ) == 0 )
-            navType = ntGloCivilC;
-            
-         else if ( s.compare( NavTypeStrings[9] ) == 0 )
-            navType = ntGalFNAV;
-            
-         else if ( s.compare( NavTypeStrings[10] ) == 0 )
-            navType = ntGalINAV;
 
-         else if ( s.compare( NavTypeStrings[11] ) == 0 )
-            navType = ntIRNSS_SPS;
-            
-         else navType = ntUnknown;
-      }
+   NavID::NavID( const std::string& s )
+         : navType(convertStringToNavType(s))
+   {
+   }
 } // namespace gpstk
 

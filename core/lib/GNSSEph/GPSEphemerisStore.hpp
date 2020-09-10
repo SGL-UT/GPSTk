@@ -122,7 +122,7 @@ namespace gpstk
          /// ephemeris is not found.
       const GPSEphemeris& findEphemeris(const SatID& sat, const CommonTime& t) const
       {
-         if(sat.system != SatID::systemGPS) {
+         if(sat.system != SatelliteSystem::GPS) {
             InvalidRequest e("Invalid satellite system");
             GPSTK_THROW(e);
          }
@@ -146,7 +146,7 @@ namespace gpstk
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Woverloaded-virtual"
       int addToList(std::list<GPSEphemeris>& gpslist,
-                    SatID sat=SatID(-1,SatID::systemGPS)) const;
+                    SatID sat=SatID(-1,SatelliteSystem::GPS)) const;
 
    }; // end class GPSEphemerisStore
 #pragma clang diagnostic pop

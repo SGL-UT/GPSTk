@@ -102,7 +102,7 @@ namespace gpstk {
       IERSConvention convention;
 
       /// Constructor
-      EarthOrientation() : xp(0),yp(0),UT1mUTC(0),convention(IERSConvention::NONE)
+      EarthOrientation() : xp(0),yp(0),UT1mUTC(0),convention(IERSConvention::Unknown)
          { }
 
       /// append to output stream

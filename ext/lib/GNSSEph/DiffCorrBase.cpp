@@ -154,7 +154,7 @@ namespace gpstk
 
          // Obtain the transmit PRN ID.
       unsigned prnID = msg.asUnsignedLong(startBit_prn,prnBitLength,1);
-      xmitSv = SatID(prnID, SatID::systemGPS); 
+      xmitSv = SatID(prnID, SatelliteSystem::GPS); 
 
    } 
   

@@ -43,400 +43,335 @@ using namespace gpstk;
 
 class ReferenceFrame_T
 {
-   public:
-   ReferenceFrame_T(){}
-   ~ReferenceFrame_T(){}
+public:
+   unsigned asStringTest()
+   {
+      TUDEF("ReferenceFrame", "asString");
 
-int getFrameTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "getReferenceFrame", __FILE__, __LINE__);
-   std::string testMesg;
+      string pz("PZ90");
+      string wgs("WGS84");
+      string unk("Unknown");
 
-   testMesg = "Get ReferenceFrame function failed";
-   ReferenceFrame rf1((ReferenceFrame::Frames)0);
-   ReferenceFrame::Frames frame1 = (ReferenceFrame::Frames)0;
-   testFramework.assert(rf1.getReferenceFrame() == frame1, testMesg, __LINE__);
+      ReferenceFrame rf1(ReferenceFrame::PZ90);
+      TUASSERTE(std::string, pz, gpstk::StringUtils::asString(rf1));
 
-   ReferenceFrame rf2((ReferenceFrame::Frames)1);
-   ReferenceFrame::Frames frame2 = (ReferenceFrame::Frames)1;
-   testFramework.assert(rf2.getReferenceFrame() == frame2, testMesg, __LINE__);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      TUASSERTE(std::string, wgs, gpstk::StringUtils::asString(rf2));
 
-   ReferenceFrame rf3((ReferenceFrame::Frames)2);
-   ReferenceFrame::Frames frame3 = (ReferenceFrame::Frames)2;
-   testFramework.assert(rf3.getReferenceFrame() == frame3, testMesg, __LINE__);
+      ReferenceFrame rf3(ReferenceFrame::Unknown);
+      TUASSERTE(std::string, unk, gpstk::StringUtils::asString(rf3));
 
-      //Fails to ReferenceFrame::Unknown
-   ReferenceFrame rf4((ReferenceFrame::Frames)-1);
-   ReferenceFrame::Frames frame4 = (ReferenceFrame::Frames)3;
-   testFramework.assert(rf4.getReferenceFrame() != frame4, testMesg, __LINE__);
-   testFramework.assert(rf4.getReferenceFrame() == frame1, testMesg, __LINE__);
+      TURETURN();
+   }
 
-   return testFramework.countFails();
-}
-int asStringTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "asString", __FILE__, __LINE__);
-   std::string testMesg;
 
-   string pz("PZ90");
-   string wgs("WGS84");
-   string unk("Unknown");
+   unsigned equalityTest()
+   {
+      TUDEF("ReferenceFrame", "operator==");
 
-   testMesg = "asString function failed";
-   ReferenceFrame rf1(ReferenceFrame::PZ90);
-   testFramework.assert(rf1.asString() == pz, testMesg, __LINE__);
+      ReferenceFrame rf1(ReferenceFrame::PZ90);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      ReferenceFrame rf3(ReferenceFrame::Unknown);
+      ReferenceFrame rf4 = gpstk::StringUtils::asReferenceFrame("PZ90");
+      ReferenceFrame rf5 = gpstk::StringUtils::asReferenceFrame("WGS84");
+      ReferenceFrame rf6 = gpstk::StringUtils::asReferenceFrame("Junk");
 
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   testFramework.assert(rf2.asString() == wgs, testMesg, __LINE__);
+         //PZ90 Enum with...
+      TUASSERT( rf1 == rf1);
+      TUASSERT(!(rf1 == rf2) );
+      TUASSERT(!(rf1 == rf3) );
+      TUASSERT( rf1 == rf4);
+      TUASSERT(!(rf1 == rf5) );
+      TUASSERT(!(rf1 == rf6) );
 
-   ReferenceFrame rf3(ReferenceFrame::Unknown);
-   testFramework.assert(rf3.asString() == unk, testMesg, __LINE__);
+         //WGS84 Enum with...
+      TUASSERT(!(rf2 == rf1) );
+      TUASSERT( rf2 == rf2);
+      TUASSERT(!(rf2 == rf3) );
+      TUASSERT(!(rf2 == rf4) );
+      TUASSERT( rf2 == rf5);
+      TUASSERT(!(rf2 == rf6));
 
-   return testFramework.countFails();
-}
-int equalityTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "== Operator", __FILE__, __LINE__);
-   std::string testMesg;
+         //Unknown Enum with... (Should fail every one)
+      TUASSERT(!(rf3 == rf1) );
+      TUASSERT(!(rf3 == rf2) );
+      TUASSERT( (rf3 == rf3) );
+      TUASSERT(!(rf3 == rf4) );
+      TUASSERT(!(rf3 == rf5) );
+      TUASSERT( (rf3 == rf6) );
 
-   ReferenceFrame rf1(ReferenceFrame::PZ90);
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   ReferenceFrame rf3(ReferenceFrame::Unknown);
-   ReferenceFrame rf4("PZ90");
-   ReferenceFrame rf5("WGS84");
-   ReferenceFrame rf6("Junk String That Will Never Match Up");
+      TURETURN();
+   }
 
-      //PZ90 Enum with...
-   testMesg = " == operator failed with PZ90";
-   testFramework.assert( rf1 == rf1, testMesg, __LINE__);
-   testFramework.assert(!(rf1 == rf2) , testMesg, __LINE__);
-   testFramework.assert(!(rf1 == rf3) , testMesg, __LINE__);
-   testFramework.assert( rf1 == rf4, testMesg, __LINE__);
-   testFramework.assert(!(rf1 == rf5) , testMesg, __LINE__);
-   testFramework.assert(!(rf1 == rf6) , testMesg, __LINE__);
 
-      //WGS84 Enum with...
-   testMesg = " == operator failed with WGS84";
-   testFramework.assert(!(rf2 == rf1) , testMesg, __LINE__);
-   testFramework.assert( rf2 == rf2, testMesg, __LINE__);
-   testFramework.assert(!(rf2 == rf3) , testMesg, __LINE__);
-   testFramework.assert(!(rf2 == rf4) , testMesg, __LINE__);
-   testFramework.assert( rf2 == rf5, testMesg, __LINE__);
-   testFramework.assert(!(rf2 == rf6), testMesg, __LINE__);
+   unsigned inequalityTest()
+   {
+      TUDEF("ReferenceFrame", "operator!=");
 
-      //Unknown Enum with... (Should fail every one)
-   testMesg = " == operator failed with Unknown";
-   testFramework.assert(!(rf3 == rf1) , testMesg, __LINE__);
-   testFramework.assert(!(rf3 == rf2) , testMesg, __LINE__);
-   testFramework.assert( (rf3 == rf3) , testMesg, __LINE__);
-   testFramework.assert(!(rf3 == rf4) , testMesg, __LINE__);
-   testFramework.assert(!(rf3 == rf5) , testMesg, __LINE__);
-   testFramework.assert( (rf3 == rf6) , testMesg, __LINE__);
+      ReferenceFrame rf1(ReferenceFrame::PZ90);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      ReferenceFrame rf3(ReferenceFrame::Unknown);
+      ReferenceFrame rf4 = gpstk::StringUtils::asReferenceFrame("PZ90");
+      ReferenceFrame rf5 = gpstk::StringUtils::asReferenceFrame("WGS84");
+      ReferenceFrame rf6 = gpstk::StringUtils::asReferenceFrame("Junk");
 
-   return testFramework.countFails();
-}
-int inequalityTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "!= Operator", __FILE__, __LINE__);
-   std::string testMesg;
+         //PZ90 Enum with...
+      TUASSERT( !(rf1 != rf1) );
+      TUASSERT( (rf1 != rf2) );
+      TUASSERT( (rf1 != rf3) );
+      TUASSERT( !(rf1 != rf4) );
+      TUASSERT( (rf1 != rf5) );
+      TUASSERT( (rf1 != rf6) );
 
-   ReferenceFrame rf1(ReferenceFrame::PZ90);
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   ReferenceFrame rf3(ReferenceFrame::Unknown);
-   ReferenceFrame rf4("PZ90");
-   ReferenceFrame rf5("WGS84");
-   ReferenceFrame rf6("Junk String That Will Never Match Up");
+         //WGS84 Enum with...
+      TUASSERT( (rf2 != rf1) );
+      TUASSERT( !(rf2 != rf2) );
+      TUASSERT( (rf2 != rf3) );
+      TUASSERT( (rf2 != rf4) );
+      TUASSERT( !(rf2 != rf5) );
+      TUASSERT( (rf2 != rf6) );
 
-      //PZ90 Enum with...
-   testMesg = " != operator failed with PZ90";
-   testFramework.assert( !(rf1 != rf1) , testMesg, __LINE__);
-   testFramework.assert( (rf1 != rf2) , testMesg, __LINE__);
-   testFramework.assert( (rf1 != rf3) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 != rf4) , testMesg, __LINE__);
-   testFramework.assert( (rf1 != rf5) , testMesg, __LINE__);
-   testFramework.assert( (rf1 != rf6) , testMesg, __LINE__);
+         //Unknown Enum with...
+      TUASSERT( (rf3 != rf1) );
+      TUASSERT( (rf3 != rf2) );
+      TUASSERT( !(rf3 != rf3) );
+      TUASSERT( (rf3 != rf4) );
+      TUASSERT( (rf3 != rf5) );
+      TUASSERT( !(rf3 != rf6) );
 
-      //WGS84 Enum with...
-   testMesg = " != operator failed with WGS84";
-   testFramework.assert( (rf2 != rf1) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 != rf2) , testMesg, __LINE__);
-   testFramework.assert( (rf2 != rf3) , testMesg, __LINE__);
-   testFramework.assert( (rf2 != rf4) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 != rf5) , testMesg, __LINE__);
-   testFramework.assert( (rf2 != rf6) , testMesg, __LINE__);
+      TURETURN();
+   }
 
-      //Unknown Enum with...
-   testMesg = " != operator failed with Unknown";
-   testFramework.assert( (rf3 != rf1) , testMesg, __LINE__);
-   testFramework.assert( (rf3 != rf2) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 != rf3) , testMesg, __LINE__);
-   testFramework.assert( (rf3 != rf4) , testMesg, __LINE__);
-   testFramework.assert( (rf3 != rf5) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 != rf6) , testMesg, __LINE__);
 
-   return testFramework.countFails();
-}
-int greaterThanTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "> Operator", __FILE__, __LINE__);
-   std::string testMesg;
+   unsigned greaterThanTest()
+   {
+      TUDEF("ReferenceFrame", "operator>");
 
-   ReferenceFrame rf1(ReferenceFrame::Unknown);
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   ReferenceFrame rf3(ReferenceFrame::PZ90);
-   ReferenceFrame rf4("Junk String That Will Never Match Up");
-   ReferenceFrame rf5("WGS84");
-   ReferenceFrame rf6("PZ90");
+      ReferenceFrame rf1(ReferenceFrame::Unknown);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      ReferenceFrame rf3(ReferenceFrame::PZ90);
+      ReferenceFrame rf4 = gpstk::StringUtils::asReferenceFrame("Junk");
+      ReferenceFrame rf5 = gpstk::StringUtils::asReferenceFrame("WGS84");
+      ReferenceFrame rf6 = gpstk::StringUtils::asReferenceFrame("PZ90");
 
-   testMesg = " > operator failed with Unknown";
-   testFramework.assert( !(rf1 > rf1) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 > rf2) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 > rf3) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 > rf4) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 > rf5) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 > rf6) , testMesg, __LINE__);
+      TUASSERT( !(rf1 > rf1) );
+      TUASSERT( !(rf1 > rf2) );
+      TUASSERT( !(rf1 > rf3) );
+      TUASSERT( !(rf1 > rf4) );
+      TUASSERT( !(rf1 > rf5) );
+      TUASSERT( !(rf1 > rf6) );
 
-   testMesg = " > operator failed with WGS84";
-   testFramework.assert( (rf2 > rf1) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 > rf2) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 > rf3) , testMesg, __LINE__);
-   testFramework.assert( (rf2 > rf4) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 > rf5) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 > rf6) , testMesg, __LINE__);
+      TUASSERT( (rf2 > rf1) );
+      TUASSERT( !(rf2 > rf2) );
+      TUASSERT( !(rf2 > rf3) );
+      TUASSERT( (rf2 > rf4) );
+      TUASSERT( !(rf2 > rf5) );
+      TUASSERT( !(rf2 > rf6) );
 
-   testMesg = " > operator failed with PZ90";
-   testFramework.assert( (rf3 > rf1) , testMesg, __LINE__);
-   testFramework.assert( (rf3 > rf2) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 > rf3) , testMesg, __LINE__);
-   testFramework.assert( (rf3 > rf4) , testMesg, __LINE__);
-   testFramework.assert( (rf3 > rf5) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 > rf6) , testMesg, __LINE__);
+      TUASSERT( (rf3 > rf1) );
+      TUASSERT( (rf3 > rf2) );
+      TUASSERT( !(rf3 > rf3) );
+      TUASSERT( (rf3 > rf4) );
+      TUASSERT( (rf3 > rf5) );
+      TUASSERT( !(rf3 > rf6) );
 
-   return testFramework.countFails();
-}
-int lessThanTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "< Operator", __FILE__, __LINE__);
-   std::string testMesg;
+      TURETURN();
+   }
 
-   ReferenceFrame rf1(ReferenceFrame::Unknown);
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   ReferenceFrame rf3(ReferenceFrame::PZ90);
-   ReferenceFrame rf4("Junk String That Will Never Match Up");
-   ReferenceFrame rf5("WGS84");
-   ReferenceFrame rf6("PZ90");
 
-   testMesg = " < operator failed with Unknown";
-   testFramework.assert( !(rf1 < rf1) , testMesg, __LINE__);
-   testFramework.assert( rf1 < rf2 , testMesg, __LINE__);
-   testFramework.assert( rf1 < rf3 , testMesg, __LINE__);
-   testFramework.assert( !(rf1 < rf4) , testMesg, __LINE__);
-   testFramework.assert( rf1 < rf5 , testMesg, __LINE__);
-   testFramework.assert( rf1 < rf6 , testMesg, __LINE__);
+   unsigned lessThanTest()
+   {
+      TUDEF("ReferenceFrame", "operator<");
 
-   testMesg = " < operator failed with WGS84";
-   testFramework.assert( !(rf2 < rf1) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 < rf2) , testMesg, __LINE__);
-   testFramework.assert( (rf2 < rf3) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 < rf4) , testMesg, __LINE__);
-   testFramework.assert( !(rf2 < rf5) , testMesg, __LINE__);
-   testFramework.assert( (rf2 < rf6) , testMesg, __LINE__);
+      ReferenceFrame rf1(ReferenceFrame::Unknown);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      ReferenceFrame rf3(ReferenceFrame::PZ90);
+      ReferenceFrame rf6 = gpstk::StringUtils::asReferenceFrame("PZ90");
+      ReferenceFrame rf5 = gpstk::StringUtils::asReferenceFrame("WGS84");
+      ReferenceFrame rf4 = gpstk::StringUtils::asReferenceFrame("Junk");
 
-   testMesg = " < operator failed with PZ90";
-   testFramework.assert( !(rf3 < rf1) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 < rf2) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 < rf3) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 < rf4) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 < rf5) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 < rf6) , testMesg, __LINE__);
+      TUASSERT( !(rf1 < rf1) );
+      TUASSERT( rf1 < rf2 );
+      TUASSERT( rf1 < rf3 );
+      TUASSERT( !(rf1 < rf4) );
+      TUASSERT( rf1 < rf5 );
+      TUASSERT( rf1 < rf6 );
 
-   return testFramework.countFails();
-}
-int greaterThanOrEqualToTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", ">= Operator", __FILE__, __LINE__);
-   std::string testMesg;
+      TUASSERT( !(rf2 < rf1) );
+      TUASSERT( !(rf2 < rf2) );
+      TUASSERT( (rf2 < rf3) );
+      TUASSERT( !(rf2 < rf4) );
+      TUASSERT( !(rf2 < rf5) );
+      TUASSERT( (rf2 < rf6) );
 
-   ReferenceFrame rf1(ReferenceFrame::Unknown);
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   ReferenceFrame rf3(ReferenceFrame::PZ90);
-   ReferenceFrame rf4("Junk String That Will Never Match Up");
-   ReferenceFrame rf5("WGS84");
-   ReferenceFrame rf6("PZ90");
+      TUASSERT( !(rf3 < rf1) );
+      TUASSERT( !(rf3 < rf2) );
+      TUASSERT( !(rf3 < rf3) );
+      TUASSERT( !(rf3 < rf4) );
+      TUASSERT( !(rf3 < rf5) );
+      TUASSERT( !(rf3 < rf6) );
 
-      //Unknown with...
-   testMesg = " >= operator failed with Unknown";
-   testFramework.assert( rf1 >= rf1 , testMesg, __LINE__);
-   testFramework.assert( !(rf1 >= rf2) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 >= rf3) , testMesg, __LINE__);
-   testFramework.assert( rf1 >= rf4 , testMesg, __LINE__);
-   testFramework.assert( !(rf1 >= rf5) , testMesg, __LINE__);
-   testFramework.assert( !(rf1 >= rf6) , testMesg, __LINE__);
+      TURETURN();
+   }
 
-   testMesg = " >= operator failed with WGS84";
-   testFramework.assert( rf2 >= rf1 , testMesg, __LINE__);
-   testFramework.assert( rf2 >= rf2 , testMesg, __LINE__);
-   testFramework.assert( !(rf2 >= rf3) , testMesg, __LINE__);
-   testFramework.assert( rf2 >= rf4 , testMesg, __LINE__);
-   testFramework.assert( rf2 >= rf5 , testMesg, __LINE__);
-   testFramework.assert( !(rf2 >= rf6) , testMesg, __LINE__);
 
-   testMesg = " >= operator failed with PZ90";
-   testFramework.assert( rf3 >= rf1 , testMesg, __LINE__);
-   testFramework.assert( rf3 >= rf2 , testMesg, __LINE__);
-   testFramework.assert( rf3 >= rf3 , testMesg, __LINE__);
-   testFramework.assert( rf3 >= rf4 , testMesg, __LINE__);
-   testFramework.assert( rf3 >= rf5 , testMesg, __LINE__);
-   testFramework.assert( rf3 >= rf6 , testMesg, __LINE__);
+   unsigned greaterThanOrEqualToTest()
+   {
+      TUDEF("ReferenceFrame", "operator>=");
 
-   return testFramework.countFails();
-}
-int lesserThanOrEqualToTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "<= Operator", __FILE__, __LINE__);
-   std::string testMesg;
+      ReferenceFrame rf1(ReferenceFrame::Unknown);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      ReferenceFrame rf3(ReferenceFrame::PZ90);
+      ReferenceFrame rf6 = gpstk::StringUtils::asReferenceFrame("PZ90");
+      ReferenceFrame rf5 = gpstk::StringUtils::asReferenceFrame("WGS84");
+      ReferenceFrame rf4 = gpstk::StringUtils::asReferenceFrame("Junk");
 
-   ReferenceFrame rf1(ReferenceFrame::Unknown);
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   ReferenceFrame rf3(ReferenceFrame::PZ90);
-   ReferenceFrame rf4("Junk String That Will Never Match Up");
-   ReferenceFrame rf5("WGS84");
-   ReferenceFrame rf6("PZ90");
+         //Unknown with...
+      TUASSERT( rf1 >= rf1 );
+      TUASSERT( !(rf1 >= rf2) );
+      TUASSERT( !(rf1 >= rf3) );
+      TUASSERT( rf1 >= rf4 );
+      TUASSERT( !(rf1 >= rf5) );
+      TUASSERT( !(rf1 >= rf6) );
 
-   testMesg = " <= operator failed with Unknown";
-   testFramework.assert( rf1 <= rf1 , testMesg, __LINE__);
-   testFramework.assert( rf1 <= rf2 , testMesg, __LINE__);
-   testFramework.assert( rf1 <= rf3 , testMesg, __LINE__);
-   testFramework.assert( rf1 <= rf4 , testMesg, __LINE__);
-   testFramework.assert( rf1 <= rf5 , testMesg, __LINE__);
-   testFramework.assert( rf1 <= rf6 , testMesg, __LINE__);
+      TUASSERT( rf2 >= rf1 );
+      TUASSERT( rf2 >= rf2 );
+      TUASSERT( !(rf2 >= rf3) );
+      TUASSERT( rf2 >= rf4 );
+      TUASSERT( rf2 >= rf5 );
+      TUASSERT( !(rf2 >= rf6) );
 
-   testMesg = " <= operator failed with WGS84";
-   testFramework.assert( !(rf2 <= rf1) , testMesg, __LINE__);
-   testFramework.assert( rf2 <= rf2 , testMesg, __LINE__);
-   testFramework.assert( rf2 <= rf3 , testMesg, __LINE__);
-   testFramework.assert( !(rf2 <= rf4) , testMesg, __LINE__);
-   testFramework.assert( rf2 <= rf5 , testMesg, __LINE__);
-   testFramework.assert( rf2 <= rf6 , testMesg, __LINE__);
+      TUASSERT( rf3 >= rf1 );
+      TUASSERT( rf3 >= rf2 );
+      TUASSERT( rf3 >= rf3 );
+      TUASSERT( rf3 >= rf4 );
+      TUASSERT( rf3 >= rf5 );
+      TUASSERT( rf3 >= rf6 );
 
-   testMesg = " <= operator failed with PZ90";
-   testFramework.assert( !(rf3 <= rf1) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 <= rf2) , testMesg, __LINE__);
-   testFramework.assert( rf3 <= rf3 , testMesg, __LINE__);
-   testFramework.assert( !(rf3 <= rf4) , testMesg, __LINE__);
-   testFramework.assert( !(rf3 <= rf5) , testMesg, __LINE__);
-   testFramework.assert( rf3 <= rf6 , testMesg, __LINE__);
+      TURETURN();
+   }
 
-   return testFramework.countFails();
-}
-int setReferenceFrameTest(void)
-{
-   TestUtil testFramework("ReferenceFrame", "ReferenceFrame", __FILE__, __LINE__);
-   std::string testMesg;
 
-   ReferenceFrame rf1(ReferenceFrame::Unknown);
-   ReferenceFrame rf2(ReferenceFrame::WGS84);
-   ReferenceFrame rf3(ReferenceFrame::PZ90);
+   unsigned lesserThanOrEqualToTest()
+   {
+      TUDEF("ReferenceFrame", "operator<=");
 
-   testMesg = "setReferenceFrame failed";
-   ReferenceFrame frame(ReferenceFrame::Unknown);
-   testFramework.assert(frame == rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+      ReferenceFrame rf1(ReferenceFrame::Unknown);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      ReferenceFrame rf3(ReferenceFrame::PZ90);
+      ReferenceFrame rf6 = gpstk::StringUtils::asReferenceFrame("PZ90");
+      ReferenceFrame rf5 = gpstk::StringUtils::asReferenceFrame("WGS84");
+      ReferenceFrame rf4 = gpstk::StringUtils::asReferenceFrame("Junk");
 
-   frame = ReferenceFrame((ReferenceFrame::Frames)0);
-   testFramework.assert(frame == rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+      TUASSERT( rf1 <= rf1 );
+      TUASSERT( rf1 <= rf2 );
+      TUASSERT( rf1 <= rf3 );
+      TUASSERT( rf1 <= rf4 );
+      TUASSERT( rf1 <= rf5 );
+      TUASSERT( rf1 <= rf6 );
 
-   frame = ReferenceFrame("Unknown");
-   testFramework.assert(frame == rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+      TUASSERT( !(rf2 <= rf1) );
+      TUASSERT( rf2 <= rf2 );
+      TUASSERT( rf2 <= rf3 );
+      TUASSERT( !(rf2 <= rf4) );
+      TUASSERT( rf2 <= rf5 );
+      TUASSERT( rf2 <= rf6 );
 
-   frame = ReferenceFrame("A Junk String that won't match up");
-   testFramework.assert(frame == rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+      TUASSERT( !(rf3 <= rf1) );
+      TUASSERT( !(rf3 <= rf2) );
+      TUASSERT( rf3 <= rf3 );
+      TUASSERT( !(rf3 <= rf4) );
+      TUASSERT( !(rf3 <= rf5) );
+      TUASSERT( rf3 <= rf6 );
 
-   frame = ReferenceFrame((ReferenceFrame::Frames)-1);
-   testFramework.assert(frame == rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+      TURETURN();
+   }
 
-   frame = ReferenceFrame((ReferenceFrame::Frames)-1);
-   testFramework.assert(frame == rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
 
-   frame = ReferenceFrame(ReferenceFrame::WGS84);
-   testFramework.assert(frame != rf1, testMesg, __LINE__);
-   testFramework.assert(frame == rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+   unsigned setReferenceFrameTest()
+   {
+      TUDEF("ReferenceFrame", "ReferenceFrame");
 
-   frame = ReferenceFrame("WGS84");
-   testFramework.assert(frame != rf1, testMesg, __LINE__);
-   testFramework.assert(frame == rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+      ReferenceFrame rf1(ReferenceFrame::Unknown);
+      ReferenceFrame rf2(ReferenceFrame::WGS84);
+      ReferenceFrame rf3(ReferenceFrame::PZ90);
 
-   frame = ReferenceFrame((ReferenceFrame::Frames)1);
-   testFramework.assert(frame != rf1, testMesg, __LINE__);
-   testFramework.assert(frame == rf2, testMesg, __LINE__);
-   testFramework.assert(frame != rf3, testMesg, __LINE__);
+      ReferenceFrame frame(ReferenceFrame::Unknown);
+      TUASSERT(frame == rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame != rf3);
 
-   frame = ReferenceFrame(ReferenceFrame::PZ90);
-   testFramework.assert(frame != rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame == rf3, testMesg, __LINE__);
+      frame = ReferenceFrame((ReferenceFrame)0);
+      TUASSERT(frame == rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame != rf3);
 
-   frame = ReferenceFrame("PZ90");
-   testFramework.assert(frame != rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame == rf3, testMesg, __LINE__);
+      frame = gpstk::StringUtils::asReferenceFrame("Unknown");
+      TUASSERT(frame == rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame != rf3);
 
-   frame = ReferenceFrame((ReferenceFrame::Frames)6);
-   testFramework.assert(frame != rf1, testMesg, __LINE__);
-   testFramework.assert(frame != rf2, testMesg, __LINE__);
-   testFramework.assert(frame == rf3, testMesg, __LINE__);
+      frame = gpstk::StringUtils::asReferenceFrame("Junk");
+      TUASSERT(frame == rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame != rf3);
 
-   return testFramework.countFails();
-}
+      frame = ReferenceFrame((ReferenceFrame)-1);
+      TUASSERT(frame != rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame != rf3);
+
+      frame = ReferenceFrame(ReferenceFrame::WGS84);
+      TUASSERT(frame != rf1);
+      TUASSERT(frame == rf2);
+      TUASSERT(frame != rf3);
+
+      frame = gpstk::StringUtils::asReferenceFrame("WGS84");
+      TUASSERT(frame != rf1);
+      TUASSERT(frame == rf2);
+      TUASSERT(frame != rf3);
+
+      frame = ReferenceFrame((ReferenceFrame)1);
+      TUASSERT(frame != rf1);
+      TUASSERT(frame == rf2);
+      TUASSERT(frame != rf3);
+
+      frame = ReferenceFrame(ReferenceFrame::PZ90);
+      TUASSERT(frame != rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame == rf3);
+
+      frame = gpstk::StringUtils::asReferenceFrame("PZ90");
+      TUASSERT(frame != rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame == rf3);
+
+      frame = ReferenceFrame((ReferenceFrame)6);
+      TUASSERT(frame != rf1);
+      TUASSERT(frame != rf2);
+      TUASSERT(frame == rf3);
+
+      TURETURN();
+   }
 };
 
-int main(void)
+
+int main()
 {
    ReferenceFrame_T testClass;
-   int check, errorCounter = 0;
+   unsigned errorTotal = 0;
 
-   check = testClass.getFrameTest();
-   errorCounter += check;
+   errorTotal += testClass.asStringTest();
+   errorTotal += testClass.equalityTest();
+   errorTotal += testClass.inequalityTest();
+   errorTotal += testClass.greaterThanTest();
+   errorTotal += testClass.lessThanTest();
+   errorTotal += testClass.greaterThanOrEqualToTest();
+   errorTotal += testClass.lesserThanOrEqualToTest();
+   errorTotal += testClass.setReferenceFrameTest();
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal
+             << std::endl;
 
-   check = testClass.asStringTest();
-   errorCounter += check;
-
-   check = testClass.equalityTest();
-   errorCounter += check;
-
-   check = testClass.inequalityTest();
-   errorCounter += check;
-
-   check = testClass.greaterThanTest();
-   errorCounter += check;
-
-   check = testClass.lessThanTest();
-   errorCounter += check;
-
-   check = testClass.greaterThanOrEqualToTest();
-   errorCounter += check;
-
-   check = testClass.lesserThanOrEqualToTest();
-   errorCounter += check;
-
-   check = testClass.setReferenceFrameTest();
-   errorCounter += check;
-
-   std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-   return errorCounter;
+   return errorTotal;
 }
 
