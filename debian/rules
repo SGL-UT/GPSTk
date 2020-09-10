@@ -17,6 +17,15 @@ include /usr/share/dpkg/default.mk
 # package maintainers to append LDFLAGS
 #export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
+PYTHON_FLAG="ON"
+BUILD_FOR_PACKAGE_SWITCH_FLAG="ON"
+
+# remove python bindings for debian 8 package builds
+ifneq ($(filter debian8_pkg,$(DEB_BUILD_PROFILES)), )
+    PYTHON_FLAG="OFF"
+    # Also start using pybuild instead of python_distutils
+    BUILD_FOR_PACKAGE_SWITCH_FLAG="OFF"
+endif
 
 # main packaging script based on dh7 syntax
 %:
@@ -26,10 +35,10 @@ override_dh_auto_configure:
 	debian/check_versions_match.sh
 	dh_auto_configure -- \
 	 -DBUILD_EXT=ON \
-	 -DBUILD_PYTHON=ON \
+	 -DBUILD_PYTHON=$(PYTHON_FLAG)\
 	 -DPYTHON_EXECUTABLE=/usr/bin/python \
 	 -DPYTHON_INSTALL_PREFIX=$(CURDIR)/debian/python-gpstk \
-	 -DBUILD_FOR_PACKAGE_SWITCH=ON \
+	 -DBUILD_FOR_PACKAGE_SWITCH=$(BUILD_FOR_PACKAGE_SWITCH_FLAG) \
 	 -DUSE_RPATH=OFF \
 	 -DCMAKE_BUILD_TYPE=relwithdebinfo
 

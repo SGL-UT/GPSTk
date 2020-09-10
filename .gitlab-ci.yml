@@ -528,7 +528,7 @@ package_debian_8:
     # Use the most recent Maintainer as current maintainer.
     - export DEBEMAIL=$(dpkg-parsechangelog -S Maintainer)
     - dch --bpo "No Changes"
-    - dpkg-buildpackage -us -uc -d --changes-option="-DDistribution=jessie-sgl"
+    - dpkg-buildpackage --build-profiles=debian8_pkg -us -uc -d --changes-option="-DDistribution=jessie-sgl"
     - mkdir debs
     - mv ../*.deb debs
     - mv ../*.changes debs
