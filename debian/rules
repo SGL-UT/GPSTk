@@ -21,7 +21,7 @@ PYTHON_FLAG="ON"
 BUILD_FOR_PACKAGE_SWITCH_FLAG="ON"
 
 # remove python bindings for debian 8 package builds
-ifneq ($(filter debian8_pkg,$(DEB_BUILD_PROFILES)), )
+ifeq ($(filter debian8_pkg,$(DEB_BUILD_PROFILES)), )
     PYTHON_FLAG="OFF"
     # Also start using pybuild instead of python_distutils
     BUILD_FOR_PACKAGE_SWITCH_FLAG="OFF"
