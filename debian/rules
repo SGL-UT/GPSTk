@@ -17,6 +17,19 @@ include /usr/share/dpkg/default.mk
 # package maintainers to append LDFLAGS
 #export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
+# remove python bindings for package builds.
+PYTHON_FLAG="OFF"
+BUILD_FOR_PACKAGE_SWITCH_FLAG="OFF"
+PYTHON_EXE_PARAM=
+PYTHON_INSTALL_PREFIX_PARAM=
+
+# add python bindings for package builds using profile pkg_python
+ifneq ($(filter pkg_python,$(DEB_BUILD_PROFILES)), )
+    PYTHON_FLAG="ON"
+    BUILD_FOR_PACKAGE_SWITCH_FLAG="ON"
+    PYTHON_EXE_PARAM="-DPYTHON_EXECUTABLE=/usr/bin/python"
+    PYTHON_INSTALL_PREFIX_PARAM="-DPYTHON_INSTALL_PREFIX=$(CURDIR)/debian/python-gpstk"
+endif
 
 # main packaging script based on dh7 syntax
 %:
@@ -26,10 +39,10 @@ override_dh_auto_configure:
 	debian/check_versions_match.sh
 	dh_auto_configure -- \
 	 -DBUILD_EXT=ON \
-	 -DBUILD_PYTHON=ON \
-	 -DPYTHON_EXECUTABLE=/usr/bin/python \
-	 -DPYTHON_INSTALL_PREFIX=$(CURDIR)/debian/python-gpstk \
-	 -DBUILD_FOR_PACKAGE_SWITCH=ON \
+	 -DBUILD_PYTHON=$(PYTHON_FLAG) \
+	 $(PYTHON_EXE_PARAM) \
+	 $(PYTHON_INSTALL_PREFIX_PARAM) \
+	 -DBUILD_FOR_PACKAGE_SWITCH=$(BUILD_FOR_PACKAGE_SWITCH_FLAG) \
 	 -DUSE_RPATH=OFF \
 	 -DCMAKE_BUILD_TYPE=relwithdebinfo
 
