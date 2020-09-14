@@ -1,3 +1,76 @@
+gpstk (7.0.0-1) stable; urgency=low
+
+  * Updated to version 7.0.0
+  * Add CODEOWNERS file.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/439
+  * Fix various pieces of code to resolve warning messages on various
+    platforms.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/442
+  * Fix OrbSysGpsL_55 Restore output of text message
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/444
+  * Fix core/lib include statements to search GPSTk include directory.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/445
+  * Refactor Yuma/SEM file support back into ext
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/446
+  * Add Documentation Artifact to CI Pipeline
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/443
+  * Add SatMetaDataStore findSatByFdmaSlot
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/447
+  * Refactor enumerations in TimeSystem, ReferenceFrame, IERSConvention,
+    SatID, NavID and ObsID (SatelliteSystem, NavType, ObservationType,
+    CarrierBand, TrackingCode) to use strongly typed enumerations and
+    move them outside the scope of those classes.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/421
+  * Rename TrackingCode enumerations to better support codes that RINEX
+    does not by using names based on the ICDs rather than what RINEX
+    uses.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/421
+  * Add EnumIterator class to provide the ability to iterate over the
+    above enum classes.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/421
+  * Refactor swig bindings for enums to use similar naming conventions
+    between C++ and python (e.g. gpstk::TrackingCode::CA in C++ and
+    gpstk.TrackingCode.CA in python)
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/421
+  * Move RINEX-isms (such as the string constructor for decoding RINEX
+    obs IDs) in ObsID into RinexObsID where they belong.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/421
+  * Refactor ObsID and RinexObsID initialization of containers (tcDesc,
+    etc.) to use C++11 syntax and eliminate the use of a singleton
+    initializer.
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/421
+  * Dropping Python Swig binding support for RHEL7/DEB7
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/421
+  * Refactor debian8 remove python bindings
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/450
+  * Refactor debian dpkg-buildpackage Update control files to remove
+    python bindings
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/451
+  * Refactor gpstk pipeline downstream jobs
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/453
+  * Update OceanLoadTides.hpp Add reference to SPOTL in doxygen comments
+  * > https://repositories.arlut.utexas.edu/sgl/gpstk/-
+    /merge_requests/449
+
+ -- Andrew Kuck <kuck@arlut.utexas.edu>  Mon, 14 Sep 2020 15:20:07 -0500
+
 gpstk (6.0.0-1) stable; urgency=low
 
   * Updated to version 6.0.0

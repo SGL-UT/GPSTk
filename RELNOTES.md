@@ -1,69 +1,41 @@
-GPSTk 6.0.0 Release Notes
+GPSTk 7.0.0 Release Notes
 ========================
 
  * This version contains bug fixes required by a downstream dependency.  
  * The major version number was incremented because of some non-backward compatible changes 
-   to function method definitions.
+   to function method definitions and enumerations.
 
-Updates since v5.0.1
+Updates since v6.0.0
 ---------------------
-  * Update Ashtech and other classes to prevent SWIG from generating bad code.
-  * Update CommonTime::setTimeSystem to return a reference to itself.
-  * Update FileFilterFrame to use FileSpecFind instead of FileHunter.
-  * Update FileFilterFrameWithHeader to use FileSpecFind instead of FileHunter.
-  * Update FileSpec for a more optimal implementation of hasField
-  * Update AntexData Add BeiDou-3, QZSS, NAVIC satellite types
-  * Update SVNumXRef Deassign PRN23 from SVN60
-  * Update SVNumXRef Add SVN76/PRN23
-  * Update existing uses of doub2for etc. to use FormattedDouble.
-  * Update test data to use fortran format numbers in RINEX nav data.
-  * Update and Adding swig support for IonoModel and Nav Reader
-  * Update SWIG bindings to fix memory leaks for Matrix.
-
+  * Update OceanLoadTides.hpp Add reference to SPOTL in doxygen comments
+  * Refactor ObsID and RinexObsID initialization of containers (tcDesc, etc.) to use C++11 syntax and eliminate the use of a singleton initializer.
+ 
 **Build System and Test Suite**
-  * Update swig CMakeLists.txt to preclude setting RUNPATH in _gpstk.so thus preventing it from pointing to the 
-    wrong libgpstk.so
+  * Dropping Python Swig binding support for RHEL7/DEB7
+  * Refactor debian8 remove python bindings
+  * Refactor debian dpkg-buildpackage Update control files to remove python bindings
 
 **Gitlab CI**
-  * Update gitlab-ci.yml to declare a registry associated with each image.
-  * Update CI Pipeline to be more adept at producing downloadable packages.
-  * Add CI testing on Redhat 7 with SWIG 3 installed.
+  * Add CODEOWNERS file.
+  * Refactor gpstk pipeline downstream jobs
+  * Add Documentation Artifact to CI Pipeline  
 
 **Library Changes**
-  * Add Rinex3ObsHeader accessors for wavelengthFactor in support of python.
-  * Add FileSpec methods hasTimeField and hasNonTimeField.
-  * Add Filter class to FileSpecFind to support matching of sets of values.
-  * Add FormattedDouble as a more versatile replacement for doub2for, for2doub, etc.
+  * Add SatMetaDataStore findSatByFdmaSlot
+  * Add EnumIterator class to provide the ability to iterate over the above enum classes.
+  * Add SatMetaDataStore findSatByFdmaSlot
+  * Add EnumIterator class to provide the ability to iterate over the above enum classes.
+  * Refactor Yuma/SEM file support back into ext
+  * Refactor enumerations in TimeSystem, ReferenceFrame, IERSConvention, SatID, NavID and ObsID (SatelliteSystem, NavType, ObservationType, CarrierBand, TrackingCode) to use strongly typed enumerations and move them outside the scope of those classes.
+  * Rename TrackingCode enumerations to better support codes that RINEX does not by using names based on the ICDs rather than what RINEX uses.
+  * Refactor swig bindings for enums to use similar naming conventions between C++ and python (e.g. gpstk::TrackingCode::CA in C++ and gpstk.TrackingCode.CA in python)
+  * Move RINEX-isms (such as the string constructor for decoding RINEX obs IDs) in ObsID into RinexObsID where they belong.  
 
-Fixes since v5.0.1
---------------------
-  * Fix SWIG vector constructor to take a list of integers
-  * Fix FileSpecFind to handle more use cases under windows.
-  * Fix FileSpecFind to support both forward slash and backslash file separators under windows.
-  * Fix AntennaStore BeiDou phase center
-  * Fix RinDump to eliminate a memory leak.
-  * Fix rinheaddiff to eliminate a memory leak.
-  * Fix PRSolve to eliminate a memory leak.
-  * Fix FFTextStream to eliminate an invalid memory read.
-  * Fix RinDump to eliminate a memory leak.
-  * Fix OrbitEph to initialize all data members.
-  * Fix RationalizeRinexNav to eliminate a memory leak.
-  * Fix BasicFrameworkHelp_T to eliminate a memory leak.
-  * Fix CommandOption_T to eliminate a memory leak.
-  * Fix Rinex3Obs_FromScratch_t.cpp to eliminate a memory leak.
-  * Fix CNav2Filter_T to eliminate a memory leak.
-  * Fix CNavFilter_T to eliminate a memory leak.
-  * Fix dfix to eliminate use of uninitialized variables.
-  * Fix rstats to eliminate a memory leak.
-  * Fix OrbAlmStore to eliminate a memory leak.
-  * Fix OrbSysStore to eliminate a memory leak.
-  * Fix WindowFilter to eliminate use of uninitialized variables.
-  * Fix gdc::getArcStats to eliminate a memory leak.
-  * Fix RinexObsHeader to eliminate use of uninitialized variables.
-  * Fix GlobalTropModel to eliminate use of uninitialized variables.
-  * Fix BDSEphemeris to eliminate use of uninitialized variables.
-  * Fix OrbElem to eliminate use of uninitialized variables.
-  * Fix TimeRange_T to eliminate dereferencing of unallocated memory pointers.
-  * Fix FFBinaryStraem to eliminate use of uninitialized variables.
-  * Fix YDSTime to eliminate use of uninitialized variables.
-  * Fix Matrix destructors to work under antique Debian 7
+Fixes since v6.0.0
+--------------------!
+  * Fix various pieces of code to resolve warning messages on various platforms.
+  * Fix OrbSysGpsL_55 Restore output of text message
+  * Fix core/lib include statements to search GPSTk include directory.
+  * Fix various pieces of code to resolve warning messages on various platforms.
+  * Fix OrbSysGpsL_55 Restore output of text message
+  * Fix core/lib include statements to search GPSTk include directory.
