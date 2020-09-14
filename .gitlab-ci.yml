@@ -707,8 +707,7 @@ sgltk_debian:
     - make all -j 4
   dependencies:
     - user_install_debian_9
-  allow_failure: true
-  
+
 sgltk_redhat:
   stage: downstream
   extends: .normal_job
