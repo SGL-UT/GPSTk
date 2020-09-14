@@ -55,13 +55,19 @@ namespace gpstk {
 
 /// Ocean loading. Computation of displacements of sites on the solid earth surface
 /// due to ocean loading.
-/// The computation requires a site-specific set of coefficients that are available
-/// on the web in a flat file with a specific format. These coefficient files may
-/// be obtained from the web. For example all the ITRF sites are found at
+///
+/// The computation requires a site(Lat,Lon)-specific set of coefficients, in a flat
+/// file with a specific format, and obtainable by a variety of methods.
+/// Coefficients for all the ITRF sites are found at
 /// ftp://maia.usno.navy.mil/conventions/chapter7/olls25.blq
 /// Also, at http://www.oso.chalmers.se/~loading one may submit site label and
 /// position for one or more sites, and the resulting ocean loading file will be
 /// computed and emailed.
+/// Finally, open source software package SPOTL (Some Programs for Ocean Load Tides)
+/// is available from http://igppweb.ucsd.edu/~agnew/Spotl/spotlmain.html.
+/// This software will compute the coefficients and output the file, with a variety
+/// of options.
+/// 
 /// Once a file is obtained for the site of choice, this object is initialized by
 /// calling initializeSites(), passing it the file name an a list of the sites for
 /// which computations will later be desired. The function isValid() returns true
