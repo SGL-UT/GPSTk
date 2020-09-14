@@ -723,8 +723,7 @@ sgltk_redhat:
     - cd sgltk
     - mkdir build
     - cd build
-    - cmake -DCMAKE_PREFIX_PATH=$gpstk -DTEST_SWITCH=ON ../
+    - cmake -DBUILD_PYTHON=OFF -DCMAKE_PREFIX_PATH=$gpstk -DTEST_SWITCH=ON ../
     - make all -j 4
   dependencies:
     - user_install_redhat
-  allow_failure: true
