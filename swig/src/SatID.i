@@ -4,6 +4,9 @@
    SatID(int p)
    { return new gpstk::SatID(p, gpstk::SatelliteSystem::GPS); }
 
+   SatID(int p, int ss)
+   { return new gpstk::SatID(p, (gpstk::SatelliteSystem) ss); }
+
    std::string __str__()
    { return gpstk::StringUtils::asString(*$self);}
 
@@ -11,7 +14,7 @@
    {return "<" + gpstk::StringUtils::asString(*$self) +">";}
 };
 
-%rename(__str__) gpstk::StringUitls::asString();
+%rename(__str__) gpstk::StringUtils::asString();
 
 %pythoncode %{
 # Define a hash to allow SatID objects to be used in sets/dicts   
