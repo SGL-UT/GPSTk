@@ -1,9 +1,9 @@
 GPSTk 7.0.0 Release Notes
 ========================
 
- * This version contains bug fixes required by a downstream dependency.  
- * The major version number was incremented because of some non-backward compatible changes 
-   to function method definitions and enumerations.
+ * This version addresses enumeration changes used by downstream dependencies in sgltk, mdhtk, mdhtk-python
+ * It contains deprecation of python bindings (swig support) for rhel7 and deb7/8.
+ * Additionally, bug fixes and library changes were implemented.
 
 Updates since v6.0.0
 ---------------------
@@ -23,8 +23,6 @@ Updates since v6.0.0
 **Library Changes**
   * Add SatMetaDataStore findSatByFdmaSlot
   * Add EnumIterator class to provide the ability to iterate over the above enum classes.
-  * Add SatMetaDataStore findSatByFdmaSlot
-  * Add EnumIterator class to provide the ability to iterate over the above enum classes.
   * Refactor Yuma/SEM file support back into ext
   * Refactor enumerations in TimeSystem, ReferenceFrame, IERSConvention, SatID, NavID and ObsID (SatelliteSystem, NavType, ObservationType, CarrierBand, TrackingCode) to use strongly typed enumerations and move them outside the scope of those classes.
   * Rename TrackingCode enumerations to better support codes that RINEX does not by using names based on the ICDs rather than what RINEX uses.
@@ -33,9 +31,6 @@ Updates since v6.0.0
 
 Fixes since v6.0.0
 --------------------!
-  * Fix various pieces of code to resolve warning messages on various platforms.
-  * Fix OrbSysGpsL_55 Restore output of text message
-  * Fix core/lib include statements to search GPSTk include directory.
   * Fix various pieces of code to resolve warning messages on various platforms.
   * Fix OrbSysGpsL_55 Restore output of text message
   * Fix core/lib include statements to search GPSTk include directory.

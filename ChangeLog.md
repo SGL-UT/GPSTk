@@ -71,7 +71,7 @@ Modifications by Author
            Move Yuma/SEM file support back into ext, as it depends on stuff in ext
            Fix merged code for enum changes
 
-     dbarber <dbarber@arlut.utexas.edu> (13):
+     David Barber <dbarber@arlut.utexas.edu> (13):
            Removed python bindings for rhel7/debian 7 for gitlab pipeline configuration files
            Updated spec file for Removing python bindings for rhel7/debian 7 for gitlab pipeline configuration files
            Remove python bindings for debian8
