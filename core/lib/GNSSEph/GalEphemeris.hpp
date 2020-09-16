@@ -63,7 +63,8 @@ namespace gpstk
          ctToe.setTimeSystem(TimeSystem::GAL);
          ctToc.setTimeSystem(TimeSystem::GAL);
          transmitTime.setTimeSystem(TimeSystem::GAL);
-      }
+         health = Xvt::Uninitialized;
+      };
 
          /// Destructor
       virtual ~GalEphemeris(void) {}
@@ -105,12 +106,18 @@ namespace gpstk
       CommonTime transmitTime;   ///< Time of transmission
       long HOWtime;              ///< Time (seconds-of-week) of handover word (txmit)
       short IODnav;              ///< Index of data - Nav
-      short health;              ///< Satellite health - a bit map
+      Xvt::HealthStatus health;  ///< Satellite health status
       double accuracy;           ///< Accuracy in meters or -1: as broadcast
       double Tgda;               ///< Ionospheric E5a/E1 data correction (seconds)
       double Tgdb;               ///< Ionospheric E5b/E1 data correction (seconds)
       short datasources;         ///< bit map
       short fitDuration;         ///< not in the BCE - set to a default
+
+         // Derive health status based on Section 2.3.1.4 of Galileo System Definition Document
+         // (SDD) issue 1.1 (May 2019).
+      static Xvt::HealthStatus deriveHealth(const unsigned short SHS, 
+                                            const unsigned short DVS, 
+                                            const unsigned short SISA );
 
    }; // end class GalEphemeris
 

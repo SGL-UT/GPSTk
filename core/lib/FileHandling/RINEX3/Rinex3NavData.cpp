@@ -63,7 +63,7 @@ namespace gpstk
       sat = RinexSatID(PRNID,SatID::systemGPS);
       xmitTime = rnd.getXmitWS().sow;
       weeknum = rnd.getXmitWS().week;
-      accuracy = rnd.accuracy;
+      accuracy = rnd.accuracy;    
       health = rnd.health;
 
       // flags
@@ -815,12 +815,50 @@ namespace gpstk
 
       // now load the Galileo-specific parts
       gale.IODnav = IODnav;
-      gale.health = health;
+      //gale.health = health;
       gale.accuracy = accuracy;
       gale.Tgda = Tgd;
       gale.Tgdb = Tgd2;
       gale.datasources = datasources;
       gale.fitDuration = 4;
+
+      // In RINEX, the SISA value has already been translated 
+      // to accuracy.  A SISA value of 255 is given tha 
+      // accuracy value of -1.   For purposes of the deriveHealth()
+      // method, we need a value from 0-255.  deriveHealth() only 
+      // cares about 255 or "not 255".  
+      unsigned short SISA = 255;
+      if (accuracy!=-1)
+         SISA = 1; 
+
+      // The RINEX "health" field contains a variety
+      // of bit-encoded information, including the DVS
+      // HS values (RINEX 3.04, Table A8). 
+      // Based on the data source,  
+      // derive DVS and HS bit values for this message.
+      //
+      // Default to the values for E5a
+      unsigned shiftDVS = 3; 
+      unsigned shiftHS  = 4;
+      if ( (datasources & 0x01) !=0 )  // I/NAV (E1B)
+      {
+         shiftDVS = 0;
+         shiftHS  = 1;
+      }
+      else if ( (datasources & 0x04) !=0 ) // I/NAV (E5b)
+      {
+         shiftDVS = 6;
+         shiftHS  = 7;
+      }
+      unsigned short DVS = (health >> shiftDVS) & 0x01; 
+      unsigned short HS  = (health >> shiftHS)  & 0x03; 
+
+      gale.health = GalEphemeris::deriveHealth(HS,DVS,SISA);
+
+      std::cout << "PRN, datasources, health, SISA, DVS, HS: "
+                << setw(2) << PRNID << ", (" << datasources << ", 0x" << std::hex << datasources << "), (" << std::dec 
+                << health << ", 0x" << std::hex << health << "), " << std::dec 
+                << SISA << ", " << DVS << ", " << HS << std::endl;
 
 //      gale.HOWtime = xmitTime;
       week = static_cast<GALWeekSecond>(gale.ctToe).getWeek();
