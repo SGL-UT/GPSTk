@@ -82,6 +82,7 @@
 
 #include "OrbitEphStore.hpp"
 #include "GalEphemeris.hpp"
+#include "SatelliteSystem.hpp"
 #include "Xvt.hpp"
 
 // Rinex3 Nav Loading
@@ -208,7 +209,7 @@ public:
       gpstk::CommonTime ctTest = gpstk::CivilTime(2020, 5, 29, 0, 30, 0.0, gpstk::TimeSystem::GAL); 
       for (int i=0; i<CASE_COUNT; i++)
       {
-         gpstk::SatID sid(prnId[i],gpstk::SatID::systemGalileo); 
+         gpstk::SatID sid(prnId[i],gpstk::SatelliteSystem::Galileo); 
          gpstk::Xvt::HealthStatus health;
          TUCATCH(health = store.getSVHealth(sid, ctTest));
          TUASSERTE(gpstk::Xvt::HealthStatus,
