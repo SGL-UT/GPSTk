@@ -22,6 +22,65 @@ using namespace gpstk;
 %include "std_multimap.i"
 %include "stdint.i"
 
+// =============================================================
+//  Section 1b: Enumerations
+// =============================================================
+// Put these enum definitions near the top so that SWIG knows that they're
+// enums, otherwise it will generate code treating them as objects.
+
+// The gpstk::StringUtils generate a bunch of shadowing warnings, since SWIG can't tell them apart.
+// This may be fixed in SWIG 4.0.
+%ignore gpstk::StringUtils::asString;
+
+%include "gpstk_enum_typemaps.i"
+
+// Some enumerations don't have non-colliding string-conversion method names.  Can't use StringUtils::asString()
+%include "SatelliteSystem.hpp"
+%include "CarrierBand.hpp"
+%include "TrackingCode.hpp"
+%include "ObservationType.hpp"
+%include "NavType.hpp"
+%include "TimeSystem.hpp"
+%include "ReferenceFrame.hpp"
+
+// This code allows us to turn C++ enums into Python enums while
+// maintaining compatibility in SWIG bindings.  We specifically use an
+// IntEnum class in Python to allow the implicit conversion to int
+// when calling C++ code from Python, as SWIG treats the enums as ints
+// when generating code.
+/** @note During the implementation of this code, Python would
+ * commonly issue an exception with the text "Wrong number or type of
+ * arguments for overloaded function".  This turned out to be caused
+ * by SWIG not having knowledge of the C++ enumeration's definition
+ * before generating code to use it, thus resulting in the enumeration
+ * being handled like an object.  To resolve this issue, we have
+ * inline forward declarations for the enums at the top of this
+ * file.
+ * However, this must occur _after_ the std*.i files are included, or it won't
+ * be able to handle things like python string conversions. */
+%pythoncode %{
+from enum import IntEnum
+def renameEnums(prefix):
+    tmpD = {k:v for k,v in globals().items() if k.startswith(prefix+'_')}
+    for k,v in tmpD.items():
+        del globals()[k]
+    tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()}
+    globals()[prefix] = IntEnum(prefix,tmpD)
+    globals()[prefix].__str__ = lambda x: str(x.name)
+# Turn the gpstk.SatelliteSystem_* constants into a Python enum
+renameEnums('SatelliteSystem')
+renameEnums('CarrierBand')
+renameEnums('TrackingCode')
+renameEnums('ObservationType')
+renameEnums('NavType')
+renameEnums('TimeSystem')
+renameEnums('ReferenceFrame')
+del renameEnums
+del IntEnum
+%}
+
+
+
  // Several clases have specifc .i files that
  // may override this
 %rename(__str__) *::asString() const;
@@ -48,56 +107,6 @@ using namespace gpstk;
 %include "Exception.hpp"
 %include "FFStreamError.hpp"
 %include "GPSTkException.i"
-
-
-// =============================================================
-//  Section 1b: Enumerations
-// =============================================================
-// Put these enum definitions near the top so that SWIG knows that they're
-// enums, otherwise it will generate code treating them as objects.
-// Note: this must occur _after_ the std*.i files are included, or it won't
-// be able to handle things like python string conversions.
-%include "SatelliteSystem.hpp"
-%include "CarrierBand.hpp"
-%include "TrackingCode.hpp"
-%include "ObservationType.hpp"
-%include "NavType.hpp"
-%include "TimeSystem.hpp"
-%include "ReferenceFrame.hpp"
-
-// This code allows us to turn C++ enums into Python enums while
-// maintaining compatibility in SWIG bindings.  We specifically use an
-// IntEnum class in Python to allow the implicit conversion to int
-// when calling C++ code from Python, as SWIG treats the enums as ints
-// when generating code.
-/** @note During the implementation of this code, Python would
- * commonly issue an exception with the text "Wrong number or type of
- * arguments for overloaded function".  This turned out to be caused
- * by SWIG not having knowledge of the C++ enumeration's definition
- * before generating code to use it, thus resulting in the enumeration
- * being handled like an object.  To resolve this issue, we have
- * inline forward declarations for the enums at the top of this
- * file. */
-%pythoncode %{
-from enum import IntEnum
-def renameEnums(prefix):
-    tmpD = {k:v for k,v in globals().items() if k.startswith(prefix+'_')}
-    for k,v in tmpD.items():
-        del globals()[k]
-    tmpD = {k[len(prefix)+1:]:v for k,v in tmpD.items()}
-    globals()[prefix] = IntEnum(prefix,tmpD)
-    globals()[prefix].__str__ = lambda x: str(x.name)
-# Turn the gpstk.SatelliteSystem_* constants into a Python enum
-renameEnums('SatelliteSystem')
-renameEnums('CarrierBand')
-renameEnums('TrackingCode')
-renameEnums('ObservationType')
-renameEnums('NavType')
-renameEnums('TimeSystem')
-renameEnums('ReferenceFrame')
-del renameEnums
-del IntEnum
-%}
 
 
 // =============================================================

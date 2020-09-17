@@ -5,20 +5,101 @@ sys.path.insert(0, os.path.abspath(".."))
 from gpstk.test_utils import args,run_unit_tests
 import gpstk
 
+class EnumConversion_test(unittest.TestCase):
+    """
+    Overkill?  Maybe... but it does catch swig errors related to Enumeration passing.
+    """
 
-class ReferenceFrame_test(unittest.TestCase):
-    def test_unknown(self):
-        r = gpstk.ReferenceFrame.Unknown
-        self.assertEqual('Unknown', str(r))
+    def test_SatelliteSystem(self):
+        with self.assertRaises(TypeError):
+            _ = gpstk.SatelliteSystem()
+            self.fail("No default constructor")
+        self.assertEqual(gpstk.SatelliteSystem(2), gpstk.SatelliteSystem.Galileo, msg='int Galileo')
+        self.assertEqual(gpstk.SatelliteSystem(1), gpstk.SatelliteSystem.GPS, msg='int GPS')
+        self.assertEqual(gpstk.SatelliteSystem(gpstk.SatelliteSystem.GPS), gpstk.SatelliteSystem.GPS, msg='gpstk enum GPS')
+        self.assertEqual(gpstk.SatelliteSystem(gpstk.SatelliteSystem.Galileo), gpstk.SatelliteSystem.Galileo, msg='gpstk enum Galileo')
+        self.assertEqual(gpstk.asSatelliteSystem('GPS'), gpstk.SatelliteSystem.GPS, msg='str GPS')
+        self.assertEqual(gpstk.asSatelliteSystem('Galileo'), gpstk.SatelliteSystem.Galileo, msg='str Galileo')
+        # TODO: Odd that enum -> str -> enum doesn't work.
+        #self.assertEqual(gpstk.asSatelliteSystem(str(gpstk.SatelliteSystem.Glonass)), gpstk.SatelliteSystem.Glonass, msg='str enum Glonass')
 
-    def test_string_input(self):
-        r = gpstk.ReferenceFrame.PZ90
-        self.assertEqual('PZ90', str(r))
+    def test_CarrierBand(self):
+        with self.assertRaises(TypeError):
+            _ = gpstk.CarrierBand()
+            self.fail("No default constructor")
+        self.assertEqual(gpstk.CarrierBand(4), gpstk.CarrierBand.L2, msg='int L2')
+        self.assertEqual(gpstk.CarrierBand(2), gpstk.CarrierBand.L1L2, msg='int L1L2')
+        self.assertEqual(gpstk.CarrierBand(gpstk.CarrierBand.L2), gpstk.CarrierBand.L2, msg='gpstk enum GPS')
+        self.assertEqual(gpstk.CarrierBand(gpstk.CarrierBand.L1L2), gpstk.CarrierBand.L1L2, msg='gpstk enum L1L2')
+        self.assertEqual(gpstk.asCarrierBand('L2'), gpstk.CarrierBand.L2, msg='str GPS')
+        # TODO: Odd that enum -> str -> enum doesn't work.
+        #self.assertEqual(gpstk.asCarrierBand(str(gpstk.CarrierBand.L1L2)), gpstk.CarrierBand.L1L2, msg='str enum str L1L2')
 
-    def test_constant_input(self):
-        r = gpstk.ReferenceFrame.WGS84
-        self.assertEqual('WGS84', str(r))
+    def test_TrackingCode(self):
+        with self.assertRaises(TypeError):
+            _ = gpstk.TrackingCode()
+            self.fail("No default constructor")
+        self.assertEqual(gpstk.TrackingCode(4), gpstk.TrackingCode.Y, msg='int Y')
+        self.assertEqual(gpstk.TrackingCode(2), gpstk.TrackingCode.CA, msg='int CA')
+        self.assertEqual(gpstk.TrackingCode(gpstk.TrackingCode.Y), gpstk.TrackingCode.Y, msg='gpstk enum Y')
+        self.assertEqual(gpstk.TrackingCode(gpstk.TrackingCode.CA), gpstk.TrackingCode.CA, msg='gpstk enum CA')
+        self.assertEqual(gpstk.asTrackingCode('Y'), gpstk.TrackingCode.Y, msg='str Y')
+        self.assertEqual(gpstk.asTrackingCode('CA'), gpstk.TrackingCode.CA, msg='str CA')
+        # TODO: Odd that enum -> str -> enum doesn't work.
+        #self.assertEqual(gpstk.asTrackingCode(str(gpstk.TrackingCode.CA)), gpstk.TrackingCode.CA, msg='str enum str CA')
 
+    def test_ObservationType(self):
+        with self.assertRaises(TypeError):
+            _ = gpstk.ObservationType()
+            self.fail("No default constructor")
+        self.assertEqual(gpstk.ObservationType(4), gpstk.ObservationType.Doppler, msg='int Doppler')
+        self.assertEqual(gpstk.ObservationType(2), gpstk.ObservationType.Range, msg='int Range')
+        self.assertEqual(gpstk.ObservationType(gpstk.ObservationType.Range), gpstk.ObservationType.Range, msg='gpstk enum Range')
+        self.assertEqual(gpstk.ObservationType(gpstk.ObservationType.Doppler), gpstk.ObservationType.Doppler, msg='gpstk enum Doppler')
+        self.assertEqual(gpstk.asObservationType('Range'), gpstk.ObservationType.Range, msg='str Range')
+        self.assertEqual(gpstk.asObservationType('Doppler'), gpstk.ObservationType.Doppler, msg='str Doppler')
+        # TODO: Odd that enum -> str -> enum doesn't work.
+        #self.assertEqual(gpstk.asObservationType(str(gpstk.ObservationType.Range)), gpstk.ObservationType.Range, msg='str enum str Range')
+
+    def test_NavType(self):
+        with self.assertRaises(TypeError):
+            _ = gpstk.NavType()
+            self.fail("No default constructor")
+        self.assertEqual(gpstk.NavType(4), gpstk.NavType.GPSMNAV, msg='int GPSMNAV')
+        self.assertEqual(gpstk.NavType(2), gpstk.NavType.GPSCNAVL5, msg='int GPS')
+        self.assertEqual(gpstk.NavType(gpstk.NavType.GPSCNAVL5), gpstk.NavType.GPSCNAVL5, msg='gpstk enum GPSCNAVL5')
+        self.assertEqual(gpstk.NavType(gpstk.NavType.GPSMNAV), gpstk.NavType.GPSMNAV, msg='gpstk enum GPSMNAV')
+
+        self.assertEqual(gpstk.asNavType('GPS_CNAV_L5'), gpstk.NavType.GPSCNAVL5, msg='str GPSCNAVL5')
+        self.assertEqual(gpstk.asNavType('GPS_MNAV'), gpstk.NavType.GPSMNAV, msg='str GPSMNAV')
+        # TODO: Odd that enum -> str -> enum doesn't work.
+        #self.assertEqual(gpstk.asNavType(str(gpstk.NavType.GPSCNAVL5)), gpstk.NavType.GPSCNAVL5, msg='str enum str GPSCNAVL5')
+
+    def test_TimeSystem(self):
+        with self.assertRaises(TypeError):
+            _ = gpstk.TimeSystem()
+            self.fail("No default constructor")
+        self.assertEqual(gpstk.TimeSystem(4), gpstk.TimeSystem.GAL, msg='int GAL')
+        self.assertEqual(gpstk.TimeSystem(2), gpstk.TimeSystem.GPS, msg='int GPS')
+        self.assertEqual(gpstk.TimeSystem(gpstk.TimeSystem.GPS), gpstk.TimeSystem.GPS, msg='gpstk enum GPS')
+        self.assertEqual(gpstk.TimeSystem(gpstk.TimeSystem.GAL), gpstk.TimeSystem.GAL, msg='gpstk enum GAL')
+        self.assertEqual(gpstk.asTimeSystem('GPS'), gpstk.TimeSystem.GPS, msg='str GPS')
+        self.assertEqual(gpstk.asTimeSystem('GAL'), gpstk.TimeSystem.GAL, msg='str GAL')
+        # TODO: Odd that enum -> str -> enum doesn't work.
+        #self.assertEqual(gpstk.asTimeSystem(str(gpstk.TimeSystem.GPS)), gpstk.TimeSystem.GPS, msg='str GPS')
+
+    def test_ReferenceFrame(self):
+        with self.assertRaises(TypeError):
+            _ = gpstk.ReferenceFrame()
+            self.fail("No default constructor")
+        self.assertEqual(gpstk.ReferenceFrame(4), gpstk.ReferenceFrame.WGS84G1150, msg='int WGS84G1150')
+        self.assertEqual(gpstk.ReferenceFrame(2), gpstk.ReferenceFrame.WGS84G730, msg='int WGS84G730')
+        self.assertEqual(gpstk.ReferenceFrame(gpstk.ReferenceFrame.WGS84G1150), gpstk.ReferenceFrame.WGS84G1150, msg='gpstk enum WGS84G1150')
+        self.assertEqual(gpstk.ReferenceFrame(gpstk.ReferenceFrame.WGS84G730), gpstk.ReferenceFrame.WGS84G730, msg='gpstk enum WGS84G730')
+        self.assertEqual(gpstk.asReferenceFrame('WGS84(G1150)'), gpstk.ReferenceFrame.WGS84G1150, msg='str WGS84G1150')
+        self.assertEqual(gpstk.asReferenceFrame('WGS84(G730)'), gpstk.ReferenceFrame.WGS84G730, msg='str WGS84G730')
+        # TODO: Odd that enum -> str -> enum doesn't work.
+        #self.assertEqual(gpstk.asReferenceFrame(str(gpstk.ReferenceFrame.WGS84G730)), gpstk.ReferenceFrame.WGS84G730, msg='str WGS84G730')
 
 class SatID_test(unittest.TestCase):
     def test_validity(self):
@@ -368,6 +449,7 @@ class Expression_test(unittest.TestCase):
 
         e = gpstk.Expression('1 + 2*x')
         self.assertAlmostEqual(12.0, gpstk.eval(e, x=5.5))
+
 
 
 if __name__ == '__main__':
