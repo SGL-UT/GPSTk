@@ -64,7 +64,7 @@ namespace gpstk
       RinexSatID() = default;
 
          /// Explicit constructor, no defaults, RINEX systems only.
-      RinexSatID(int p, const SatelliteSystem& s)
+      RinexSatID(int p, SatelliteSystem s)
          throw();
 
          /** Constructor from a string.
