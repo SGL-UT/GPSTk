@@ -42,8 +42,18 @@
 #include "GPSWeekSecond.hpp"
 #include "Rinex3NavStream.hpp"
 #include "Rinex3NavData.hpp"
+#include "SatelliteSystem.hpp"
 
 using namespace std;
+
+namespace gpstk
+{
+   ostream& operator<<(ostream& s, const gpstk::SatelliteSystem sys)
+   {
+      s << gpstk::StringUtils::asString(sys);
+      return s;
+   }
+}
 
 class OrbElemStore_T
 {
@@ -71,8 +81,8 @@ public:
       {
          gpstk::GloEphemerisStore store;
          gpstk::Rinex3NavData nd = loadNav(store, testFramework, true);
-         TUASSERTE(gpstk::SatID::SatelliteSystem,
-                   gpstk::SatID::SatelliteSystem::systemGlonass, nd.sat.system);
+         TUASSERTE(gpstk::SatelliteSystem,
+                   gpstk::SatelliteSystem::Glonass, nd.sat.system);
          gpstk::CommonTime searchTime(nd.time);
          gpstk::SatID sat(nd.sat);
 
@@ -145,7 +155,7 @@ public:
          gpstk::GloEphemerisStore store;
          gpstk::Rinex3NavData nd = loadNav(store, testFramework, false);
          gpstk::Xvt rv;
-         gpstk::SatID fake(933, gpstk::SatID::systemGlonass);
+         gpstk::SatID fake(933, gpstk::SatelliteSystem::Glonass);
          TUCATCH(rv = store.computeXvt(nd.sat, nd.time));
          TUASSERTE(gpstk::Xvt::HealthStatus,
                    gpstk::Xvt::HealthStatus::Healthy, rv.health);
@@ -169,7 +179,7 @@ public:
          gpstk::GloEphemerisStore store;
          gpstk::Rinex3NavData nd = loadNav(store, testFramework, false);
          gpstk::Xvt::HealthStatus rv;
-         gpstk::SatID fake(933, gpstk::SatID::systemGlonass);
+         gpstk::SatID fake(933, gpstk::SatelliteSystem::Glonass);
          TUCATCH(rv = store.getSVHealth(nd.sat, nd.time));
          TUASSERTE(gpstk::Xvt::HealthStatus,
                    gpstk::Xvt::HealthStatus::Healthy, rv);
@@ -198,11 +208,11 @@ public:
       ns >> nd;
       if (firstOnly)
       {
-         while ((nd.sat.system != gpstk::SatID::systemGlonass) && ns)
+         while ((nd.sat.system != gpstk::SatelliteSystem::Glonass) && ns)
          {
             ns >> nd;
          }
-         if (nd.sat.system != gpstk::SatID::systemGlonass)
+         if (nd.sat.system != gpstk::SatelliteSystem::Glonass)
          {
                // somehow got through the source file without any GLONASS data
             TUFAIL("input file did not contain GLONASS data");
@@ -215,7 +225,7 @@ public:
          while (ns)
          {
             ns >> nd;
-            if (nd.sat.system == gpstk::SatID::systemGlonass)
+            if (nd.sat.system == gpstk::SatelliteSystem::Glonass)
             {
                TUASSERT(store.addEphemeris(nd));
             }

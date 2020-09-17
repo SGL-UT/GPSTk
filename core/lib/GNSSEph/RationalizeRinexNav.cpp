@@ -146,7 +146,7 @@ namespace gpstk
             // This process is only relevant to GPS.  Therefore, 
             // if this is not a GPS SV, skip it.
          const SatID& sidr = it1->first;
-         if (sidr.system!=SatID::systemGPS) continue;
+         if (sidr.system!=SatelliteSystem::GPS) continue;
 
          NAV_DATA_LIST& ndl = it1->second;
 
@@ -388,7 +388,7 @@ namespace gpstk
             const Rinex3NavData& r3nd = *cit2; 
             switch (r3nd.sat.system)
             {
-               case SatID::systemGPS:
+               case SatelliteSystem::GPS:
                {
                   try
                   {
@@ -436,7 +436,7 @@ namespace gpstk
 
             switch (r3nd.sat.system)
             {
-               case SatID::systemGPS:
+               case SatelliteSystem::GPS:
                {
                   try
                   {
@@ -639,7 +639,7 @@ namespace gpstk
             // This process is only relevant to GPS.  Therefore, 
             // if this is not a GPS SV, skip it.
          const SatID& sidr = it1->first;
-         if (sidr.system!=SatID::systemGPS) continue;
+         if (sidr.system!=SatelliteSystem::GPS) continue;
 
             // ctCompare is where we store the time at 
             // which all data sets will be compared.
@@ -787,7 +787,7 @@ namespace gpstk
                      // This process is only relevant to GPS.  Therefore, 
                      // if this is not a GPS SV, skip it.
                   const SatID& sidr1 = citr1->first;
-                  if (sidr1.system!=SatID::systemGPS)
+                  if (sidr1.system!=SatelliteSystem::GPS)
                   {
                      citr1++;
                      continue;

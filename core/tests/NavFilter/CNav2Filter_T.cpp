@@ -108,9 +108,9 @@ CNav2Filter_T ::
 unsigned CNav2Filter_T ::
 loadData()
 {
-   ObsID oidCNAV2(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcG1X); 
+   ObsID oidCNAV2(ObservationType::NavMsg, CarrierBand::L1, TrackingCode::L1CDP); 
    unsigned PRN = 1;
-   SatID sid(PRN,SatID::systemGPS);
+   SatID sid(PRN,SatelliteSystem::GPS);
    CommonTime ct = GPSWeekSecond(2000,86400.0);
    double MESSAGE_INTERVAL = 18.0;      // CNAV-2 message rate
    size_t MAX_PAGE_NUMBER = 6;

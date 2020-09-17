@@ -2,7 +2,7 @@
 
 %extend gpstk::SatID {
    SatID(int p)
-   { return new gpstk::SatID(p, gpstk::SatID::systemGPS); }
+   { return new gpstk::SatID(p, gpstk::SatelliteSystem::GPS); }
 
    std::string __str__()
    { return gpstk::StringUtils::asString(*$self);}

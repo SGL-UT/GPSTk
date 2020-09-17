@@ -247,7 +247,7 @@ namespace gpstk
          // this uses CommonTime::setToString to get the time out
       try
       {
-         CommonTime dt(0.L);
+         CommonTime dt;
          mixedScanTime(dt, filename, fileSpecString);
          return dt;
       }

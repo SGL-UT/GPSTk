@@ -154,7 +154,7 @@ namespace gpstk
             switch( itr->first )
             {
                case 'P':
-                  ts.fromString(itr->second);
+                  ts = gpstk::StringUtils::asTimeSystem(itr->second);
                   t.setTimeSystem(ts);
                   break;
 
@@ -466,7 +466,7 @@ namespace gpstk
             switch( itr->first )
             {
                case 'P':
-                  ts.fromString(itr->second);
+                  ts = gpstk::StringUtils::asTimeSystem(itr->second);
                   t.setTimeSystem(ts);
                   break;
 

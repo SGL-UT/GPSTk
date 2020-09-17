@@ -164,16 +164,16 @@ namespace gpstk
          double rms  = asDouble(line.substr(16,26));
 
             // prepare SatID object that is the key of the map
-         SatID::SatelliteSystem system;
+         SatelliteSystem system;
          switch(line[3])
          {
 
             case ' ': case 'G': case 'g':
-               system = SatID::systemGPS;
+               system = SatelliteSystem::GPS;
                break;
 
             case 'R': case 'r':
-               system = SatID::systemGlonass;
+               system = SatelliteSystem::Glonass;
                break;
 
             default:                   // non-IONEX system character

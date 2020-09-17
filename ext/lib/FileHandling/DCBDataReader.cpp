@@ -89,11 +89,11 @@ namespace gpstk
                SatID sat;
                if(sysFlag == "G")
                {
-                  sat = SatID(satPRN,SatID::systemGPS);
+                  sat = SatID(satPRN,SatelliteSystem::GPS);
                }
                else if(sysFlag == "R")
                {
-                  sat = SatID(satPRN,SatID::systemGlonass);
+                  sat = SatID(satPRN,SatelliteSystem::Glonass);
                }
                else
                {
@@ -189,7 +189,7 @@ namespace gpstk
       // Get DCB data of a satellite
       // return P1-P2 or P1-C1 depend what you have loaded
    double DCBDataReader::getDCB(const int& prn,
-      const SatID::SatelliteSystem& system)
+      const SatelliteSystem& system)
    {
       SatID sat(prn,system);
       return allDCB.satDCB[sat];
@@ -198,14 +198,14 @@ namespace gpstk
       // Get DCB data of aReceiver
       // it return P1-P2 
    double DCBDataReader::getDCB(const string& station,
-      const SatID::SatelliteSystem& system)
+      const SatelliteSystem& system)
    {
 
-      if(system == SatID::systemGPS)
+      if(system == SatelliteSystem::GPS)
       {
          return allDCB.gpsDCB[station];
       }
-      else if(system == SatID::systemGlonass)
+      else if(system == SatelliteSystem::Glonass)
       {
          return allDCB.glonassDCB[station];
       }

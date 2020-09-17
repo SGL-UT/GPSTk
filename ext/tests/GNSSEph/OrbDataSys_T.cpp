@@ -208,9 +208,9 @@ setUpLNAV()
 
       // Convert the LNAV strings to PNB
    if (debugLevel) std::cout << "Building PNB from strings" << std::endl;
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
-                          gpstk::ObsID::cbL1,
-                          gpstk::ObsID::tcCA);
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
+                          gpstk::CarrierBand::L1,
+                          gpstk::TrackingCode::CA);
    gpstk::PackedNavBits msg;
    for (unsigned short i=0; i<LNavExCount; i++)
    {
@@ -226,9 +226,9 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg, 
-                    gpstk::ObsID::cbL2, 
-                    gpstk::ObsID::tcC2LM);
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg, 
+                    gpstk::CarrierBand::L2, 
+                    gpstk::TrackingCode::L2CML);
    typeDesc = "GPS_CNAV";
    initialCT = CivilTime(2017,1,1,00,00,24,TimeSystem::GPS);
    finalCT   = CivilTime(2017,1,1,00,54,12,TimeSystem::GPS);
@@ -318,7 +318,7 @@ setUpCNAV()
          
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]); 
@@ -376,7 +376,7 @@ setUpCNAV()
          
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]); 

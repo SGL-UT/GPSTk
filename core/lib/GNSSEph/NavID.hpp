@@ -44,6 +44,7 @@
 
 #include "SatID.hpp"
 #include "ObsID.hpp"
+#include "NavType.hpp"
 
 /**
  * @file NavID.hpp
@@ -52,39 +53,14 @@
 
 namespace gpstk
 {
-      // forward declarations
-   class NavID;
-
       /// @ingroup GNSSEph
       //@{
 
    class NavID
    {
    public:
-         /// Supported navigation types
-         //***NOTE***//
-         //If adding a new NavType enumerator, also add to string
-         //input constructor and convertNavTypeToString constructor.
-      enum NavType
-      {
-         ntGPSLNAV,
-         ntGPSCNAVL2,
-         ntGPSCNAVL5,
-         ntGPSCNAV2,
-         ntGPSMNAV,
-         ntBeiDou_D1,
-         ntBeiDou_D2,
-         ntGloCivilF,
-         ntGloCivilC,
-         ntGalFNAV,
-         ntGalINAV,
-         ntIRNSS_SPS,
-         ntUnknown,
-         ntLast
-      };
-   
          /// empty constructor, creates an invalid object
-      NavID() { navType=ntUnknown; }
+      NavID() { navType=NavType::Unknown; }
 
          /// explicit constructor, no defaults
          /// WARNING: This constructor has proven insufficient
@@ -93,39 +69,13 @@ namespace gpstk
          /// appears to not be followed in all cases.   Therefore
          /// users need to differentiate D1/D2 outside NavID 
          /// and use the explicit constructor
-         ///      NavID( NavID::nt<xxxxx> )
+         ///      NavID( NavType::<xxxxx> )
          /// to instatiate a BeiDou-related NavID. 
       NavID( const SatID& sidr, const ObsID& oidr );
 
       NavID( const NavType nt) { navType = nt; }
 
       NavID( const std::string& s );
-
-         /// Convenience method used by dump().
-      static std::string convertNavTypeToString( const NavType& s )
-      {
-            //define retVal for safety return
-         std::string retVal = "";
-         switch(s)
-         {
-            case ntGPSLNAV:      {retVal = NavTypeStrings[ 0];     break;}
-            case ntGPSCNAVL2:    {retVal = NavTypeStrings[ 1];     break;}
-            case ntGPSCNAVL5:    {retVal = NavTypeStrings[ 2];     break;}
-            case ntGPSCNAV2:     {retVal = NavTypeStrings[ 3];     break;}
-            case ntGPSMNAV:      {retVal = NavTypeStrings[ 4];     break;}
-            case ntBeiDou_D1:    {retVal = NavTypeStrings[ 5];     break;}
-            case ntBeiDou_D2:    {retVal = NavTypeStrings[ 6];     break;}
-            case ntGloCivilF:    {retVal = NavTypeStrings[ 7];     break;}
-            case ntGloCivilC:    {retVal = NavTypeStrings[ 8];     break;}
-            case ntGalFNAV:      {retVal = NavTypeStrings[ 9];     break;}
-            case ntGalINAV:      {retVal = NavTypeStrings[10];     break;}
-            case ntIRNSS_SPS:    {retVal = NavTypeStrings[11];     break;}
-            case ntUnknown:
-            default:             {retVal = NavTypeStrings[12];     break;}
-         };
-            //return retVal in case switch isn't reached
-         return retVal;
-      }
 
          /// Convenience output method.
       void dump(std::ostream& s) const
@@ -157,16 +107,7 @@ namespace gpstk
       bool operator>=(const NavID& right) const
       { return !(operator<(right)); }
 
-         /// Convert a NavType to a whitespace-free string name.
-      static std::string asString(NavType e) throw()
-      { return convertNavTypeToString(e); }
-         /// Convert a string name to a NavType
-      static NavType asNavType(const std::string& s) throw()
-      { return NavID(s).navType; }
-
       NavType navType;   ///< navType for this satellite
-      static const std::string NavTypeStrings[];
-
    }; // class NavID
 
       /// stream output for NavID

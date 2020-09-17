@@ -160,13 +160,13 @@ createAndDump_LNAV()
 //--- Test the isPresent( ) method --------------------------------
    currMethod = typeDesc + " OrbSysStore.isPresent() ";
    TUCSM(currMethod);
-   SatID sidT1(1,SatID::systemGPS);
+   SatID sidT1(1,SatelliteSystem::GPS);
    if (oss.isPresent(sidT1))
       TUPASS("");
    else
       TUFAIL("Failed to find PRN 1 in store");
 
-   SatID sidT2(33,SatID::systemGPS);
+   SatID sidT2(33,SatelliteSystem::GPS);
    if (oss.isPresent(sidT2))
       TUFAIL("Reported PRN 33 as present (which is not true)");
    else
@@ -221,8 +221,8 @@ createAndDump_LNAV()
 //--- Test the find( ) method --------------------------------
    currMethod = typeDesc + " OrbSysStore.find() ";
    TUCSM(currMethod);
-   SatID sidTest(1,SatID::systemGPS);
-   NavID nidTest(NavID::ntGPSLNAV);
+   SatID sidTest(1,SatelliteSystem::GPS);
+   NavID nidTest(NavType::GPSLNAV);
    unsigned long UID = 56;
 
       // TOO EARLY
@@ -404,7 +404,7 @@ createAndDump_LNAV()
    list<SatID> satIDList = oss.getSatIDList();
    TUASSERTE(int,3,satIDList.size());
    SatID sid = satIDList.front();
-   TUASSERTE(SatID,sid,SatID(1,SatID::systemGPS));
+   TUASSERTE(SatID,sid,SatID(1,SatelliteSystem::GPS));
 
       // Test getNavIDList()
    currMethod = typeDesc + " OrbSysStore.getNavIDList()";
@@ -412,19 +412,19 @@ createAndDump_LNAV()
    list<NavID> navIDList = oss.getNavIDList();
    TUASSERTE(int,1,navIDList.size());
    NavID nid = navIDList.front();
-   NavID expNid = NavID(NavID::ntGPSLNAV);
+   NavID expNid = NavID(NavType::GPSLNAV);
    TUASSERTE(NavID,nid,expNid);
 
       // Test getSatSysList()
    /*
    currMethod = typeDesc + " OrbSysStore.getSatSysList()";
    TUCSM(currMethod);
-   const list<SatID::SatelliteSystem>& satSysList = oss.getSatSysList();
+   const list<SatelliteSystem>& satSysList = oss.getSatSysList();
    TUASSERTE(int,1,satSysList.size());
-   SatID::SatelliteSystem ss = satSysList.front();
-   TUASSERTE(SatID::SatelliteSystem,ss,SatID::systemGPS);
+   SatelliteSystem ss = satSysList.front();
+   TUASSERTE(SatelliteSystem,ss,SatelliteSystem::GPS);
    cout << "Length of satSysList: " << satSysList.size() << endl;
-   list<SatID::SatelliteSystem>::const_iterator tt;
+   list<SatelliteSystem>::const_iterator tt;
    for (tt=satSysList.begin(); tt!=satSysList.end(); tt++)
    {
       cout << " " << *tt << endl;
@@ -542,25 +542,25 @@ createAndDump_LNAV()
       // Define SVs of interest
    SatID sidAr[] =
    {
-      SatID(18,SatID::systemGPS),    // Block IIA.  None in system on 12/13/2015.  Had to hand-edit data
-      SatID(19,SatID::systemGPS),    // Block IIR.  SVN 59/PRN 19
-      SatID(17,SatID::systemGPS),    // Block IIR-M.  SVN 53/PRN 17
-      SatID( 9,SatID::systemGPS),    // Block IIF.  SVN 68/PRN 9
-      SatID( 1,SatID::systemGPS),    // GPS III.  None in system on 12/13/2015.  Had to hand-edit data
-      SatID(99,SatID::systemGPS),    // Invalid PRN ID.
-      SatID( 1,SatID::systemBeiDou), // Invalid System
+      SatID(18,SatelliteSystem::GPS),    // Block IIA.  None in system on 12/13/2015.  Had to hand-edit data
+      SatID(19,SatelliteSystem::GPS),    // Block IIR.  SVN 59/PRN 19
+      SatID(17,SatelliteSystem::GPS),    // Block IIR-M.  SVN 53/PRN 17
+      SatID( 9,SatelliteSystem::GPS),    // Block IIF.  SVN 68/PRN 9
+      SatID( 1,SatelliteSystem::GPS),    // GPS III.  None in system on 12/13/2015.  Had to hand-edit data
+      SatID(99,SatelliteSystem::GPS),    // Invalid PRN ID.
+      SatID( 1,SatelliteSystem::BeiDou), // Invalid System
    };
 
       // Define signals of interest
    ObsID oidAr[] =
    {
-      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcCA),    // L1 C/A  - 0
-      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcP),     // L1 P    - 1
-      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcY),     // L2 Y    - 2
-      ObsID(ObsID::otUnknown, ObsID::cbL2, ObsID::tcC2LM),  // L2 CMCL - 3
-      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcM),     // L1 M    - 4
-      ObsID(ObsID::otUnknown, ObsID::cbL5, ObsID::tcI5),    // L5 I    - 5
-      ObsID(ObsID::otUnknown, ObsID::cbL1, ObsID::tcG1D),   // L1C     - 6
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::CA),    // L1 C/A  - 0
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::P),     // L1 P    - 1
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::Y),     // L2 Y    - 2
+      ObsID(ObservationType::Unknown, CarrierBand::L2, TrackingCode::L2CML),  // L2 CMCL - 3
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::MDP),     // L1 M    - 4
+      ObsID(ObservationType::Unknown, CarrierBand::L5, TrackingCode::L5I),    // L5 I    - 5
+      ObsID(ObservationType::Unknown, CarrierBand::L1, TrackingCode::L1CD),   // L1C     - 6
    };
 
       // Execute the test cases
@@ -608,7 +608,7 @@ createAndDump_LNAV()
    CommonTime totAssumed = CivilTime(2016,1,2,19,50,24,TimeSystem::GPS);
    double assumedOffset = A0Assumed + A1Assumed * (ctUtc - totAssumed);
 
-   NavID nidUtc(NavID::ntGPSLNAV);
+   NavID nidUtc(NavType::GPSLNAV);
    try
    {
       const OrbDataUTC* odu = oss.findUtcData(nidUtc,ctUtc);
@@ -735,7 +735,7 @@ createAndDump_CNAV()
    CommonTime totAssumed = CivilTime(2016,3,6,12,45,04,TimeSystem::GPS);
    double assumedOffset = A0Assumed + A1Assumed * (ctUtc - totAssumed);
 
-   NavID nidUtcL2(NavID::ntGPSCNAVL2);
+   NavID nidUtcL2(NavType::GPSCNAVL2);
    try
    {
       const OrbDataUTC* odu = oss.findUtcData(nidUtcL2,ctUtc);
@@ -753,7 +753,7 @@ createAndDump_CNAV()
    }
 
         //L5 check
-   NavID nidUtcL5(NavID::ntGPSCNAVL5);
+   NavID nidUtcL5(NavType::GPSCNAVL5);
    try
    {
       const OrbDataUTC* odu = oss.findUtcData(nidUtcL5,ctUtc);
@@ -858,9 +858,9 @@ setUpLNAV()
 
       // Convert the LNAV strings to PNB
    if (debugLevel) std::cout << "Building PNB from strings" << std::endl;
-   gpstk::ObsID currObsID(gpstk::ObsID::otNavMsg,
-                          gpstk::ObsID::cbL1,
-                          gpstk::ObsID::tcCA);
+   gpstk::ObsID currObsID(gpstk::ObservationType::NavMsg,
+                          gpstk::CarrierBand::L1,
+                          gpstk::TrackingCode::CA);
    gpstk::PackedNavBits msg;
    for (unsigned short i=0; i<LNavExCount; i++)
    {
@@ -876,12 +876,12 @@ setUpCNAV()
    init();
 
       // Define state variables for writing an CNAV data
-   gpstk::ObsID L2ObsID(gpstk::ObsID::otNavMsg,
-                    gpstk::ObsID::cbL2,
-                    gpstk::ObsID::tcC2LM);
-   gpstk::ObsID L5ObsID(gpstk::ObsID::otNavMsg,
-                    gpstk::ObsID::cbL5,
-                    gpstk::ObsID::tcI5);
+   gpstk::ObsID L2ObsID(gpstk::ObservationType::NavMsg,
+                    gpstk::CarrierBand::L2,
+                    gpstk::TrackingCode::L2CML);
+   gpstk::ObsID L5ObsID(gpstk::ObservationType::NavMsg,
+                    gpstk::CarrierBand::L5,
+                    gpstk::TrackingCode::L5I);
    msgsExpectedToBeAdded = 4;
    typeDesc = "GPS_CNAV";
 
@@ -955,7 +955,7 @@ setUpGLO()
 
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]);
@@ -1013,7 +1013,7 @@ setUpGLO()
 
             // Convert the PRN to a SatID
          int prn = StringUtils::asInt(words[5]);
-         SatID sid(prn,SatID::systemGPS);
+         SatID sid(prn,SatelliteSystem::GPS);
 
             // Get the message ID
          int msgID = StringUtils::asInt(words[7]);

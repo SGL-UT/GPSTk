@@ -290,7 +290,7 @@ public:
    SolutionData(const string& desc)
    {
       vector<string> fields = split(desc,':');
-      sfcodes = ObsID::map3to1sys[fields[0]];   // first char of sfcodes
+      sfcodes = RinexObsID::map3to1sys[fields[0]];   // first char of sfcodes
       // const char csys(sfcodes[0]);
       sfcodes += fields[1];                     // 1 or 2 freq chars
       sfcodes += fields[2];
@@ -324,7 +324,7 @@ public:
       size_t i,j;
       ostringstream oss;
       oss << "(" << sfcodes << ")";
-      oss << " " << ObsID::map1to3sys[sfcodes.substr(0,1)];
+      oss << " " << RinexObsID::map1to3sys[sfcodes.substr(0,1)];
       for(i=0; i<consts.size(); i++) {
          oss << " [c=" << fixed << setprecision(3) << consts[i];
          for(j=0; j<obsids[i].size(); j++)
@@ -821,7 +821,7 @@ try {
       LOG(VERBOSE) << "\nSP3 Ephemeris Store time intervals for " << sat
          << " are " << dtp << " (pos), and " << dtc << " (clk)";
       LOG(VERBOSE) << "SP3 Ephemeris store time system "
-         << C.SP3EphStore.getTimeSystem().asString();
+                   << gpstk::StringUtils::asString(C.SP3EphStore.getTimeSystem());
 
       // set gap checking - don't b/c TimeStep may vary GPS/GLO
       // TD this is a problem
@@ -849,10 +849,10 @@ try {
       LOG(VERBOSE) << "\nDump ephemeris sat list with count, times and GLO channel.";
       for(i=0; i<sats.size(); i++) {                           // loop over sats
          // check for some GLO channel - can't compute b/c we don't have data yet
-         if(sats[i].system == SatID::systemGlonass) {
+         if(sats[i].system == SatelliteSystem::Glonass) {
             map<RinexSatID,int>::const_iterator it(C.GLOfreqChannel.find(sats[i]));
             if(it == C.GLOfreqChannel.end()
-                           && sats[i].system == RinexSatID::systemGlonass) {
+                           && sats[i].system == SatelliteSystem::Glonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
                // set it to zero
@@ -928,15 +928,15 @@ try {
          LOG(VERBOSE) << "Read " << nread << " RINEX navigation files, containing "
             << nrec << " records, into store.";
          LOG(VERBOSE) << "GPS ephemeris store contains "
-            << C.RinEphStore.size(SatID::systemGPS) << " ephemerides.";
+            << C.RinEphStore.size(SatelliteSystem::GPS) << " ephemerides.";
          LOG(VERBOSE) << "GAL ephemeris store contains "
-            << C.RinEphStore.size(SatID::systemGalileo) << " ephemerides.";
+            << C.RinEphStore.size(SatelliteSystem::Galileo) << " ephemerides.";
          LOG(VERBOSE) << "BDS ephemeris store contains "
-            << C.RinEphStore.size(SatID::systemBeiDou) << " ephemerides.";
+            << C.RinEphStore.size(SatelliteSystem::BeiDou) << " ephemerides.";
          LOG(VERBOSE) << "QZS ephemeris store contains "
-            << C.RinEphStore.size(SatID::systemQZSS) << " ephemerides.";
+            << C.RinEphStore.size(SatelliteSystem::QZSS) << " ephemerides.";
          LOG(VERBOSE) << "GLO ephemeris store contains "
-            << C.RinEphStore.size(SatID::systemGlonass) << " satellites.";
+            << C.RinEphStore.size(SatelliteSystem::Glonass) << " satellites.";
          // dump the entire store
          C.RinEphStore.dump(LOGstrm,(C.debug > -1 ? 2:0));
       }
@@ -1055,7 +1055,7 @@ try {
 
             try { sat.fromString(word); }
             catch(Exception& e) { continue; }
-            if(sat.system == SatID::systemUnknown || sat.id == -1) continue;
+            if(sat.system == SatelliteSystem::Unknown || sat.id == -1) continue;
 
             word = stripFirstWord(line);  // get bias
             if(word.empty()) continue;
@@ -1180,12 +1180,12 @@ try {
          if(C.pEph == &C.SP3EphStore) n = C.SP3EphStore.ndata(sat.system);
          if(n == 0) {
             LOG(WARNING) << "Warning - no ephemeris found for system "
-               << ObsID::map1to3sys[SObj.sysChars[k]] << ", in solution descriptor "
+               << RinexObsID::map1to3sys[SObj.sysChars[k]] << ", in solution descriptor "
                << C.inSolDesc[i] << " => invalidate.";
             ok = false;
          }
          else {
-            LOG(INFO) << " Found system " << ObsID::map1to3sys[SObj.sysChars[k]]
+            LOG(INFO) << " Found system " << RinexObsID::map1to3sys[SObj.sysChars[k]]
                         << " with " << n << " ephemeris data.";
          }
       }
@@ -1278,7 +1278,7 @@ try {
          LOG(VERBOSE) << "Input header for RINEX file " << filename;
          Rhead.dump(LOGstrm);
          LOG(VERBOSE) << "Time system for RINEX file " << filename
-            << " is " << istrm.timesystem.asString();
+                      << " is " << gpstk::StringUtils::asString(istrm.timesystem);
       }
 
       // does header include C1C (for DCB correction)?
@@ -1660,8 +1660,8 @@ void Configuration::SetDefaults(void) throw()
 void Configuration::SolDescHelp(void)
 {
    // build the table
-   string systs(ObsID::validRinexSystems);
-   string freqs(ObsID::validRinexFrequencies);
+   string systs(RinexObsID::validRinexSystems);
+   string freqs(RinexObsID::validRinexFrequencies);
    string codes;
    string space("   ");
    size_t i,j, k;
@@ -1670,7 +1670,7 @@ void Configuration::SolDescHelp(void)
    map<char,int> syslen;
    for(i=0; i<systs.size(); i++) {
       for(k=0, j=0; j<freqs.size(); j++) {
-         codes = ObsID::validRinexTrackingCodes[systs[i]][freqs[j]];
+         codes = RinexObsID::validRinexTrackingCodes[systs[i]][freqs[j]];
          strip(codes,' '); strip(codes,'*');
          // GPS C1N and C2N are not allowed
          if(systs[i] == 'G' && (freqs[j] == '1' || freqs[j] == '2')) strip(codes,'N');
@@ -1683,7 +1683,7 @@ void Configuration::SolDescHelp(void)
    string head;
    for(i=0; i<systs.size(); i++) {
       head += (i==0 ? space+string("freq| ") : string(" | "));
-      codes = ObsID::map1to3sys[string(1,systs[i])];
+      codes = RinexObsID::map1to3sys[string(1,systs[i])];
       head += center(codes,syslen[systs[i]]);
    }
    //head += string("\n") + space + string(head.size()-space.size()+1,'-');
@@ -1691,7 +1691,7 @@ void Configuration::SolDescHelp(void)
    for(i=0; i<freqs.size(); i++) {
       table += space + string("  ") + string(1,freqs[i]);
       for(j=0; j<systs.size(); j++) {
-         codes = ObsID::validRinexTrackingCodes[systs[j]][freqs[i]];
+         codes = RinexObsID::validRinexTrackingCodes[systs[j]][freqs[i]];
          strip(codes,' '); strip(codes,'*');
          // GPS C1N and C2N are not allowed
          if(systs[i] == 'G' && (freqs[j] == '1' || freqs[j] == '2')) strip(codes,'N');
@@ -1708,7 +1708,7 @@ void Configuration::SolDescHelp(void)
       << " Solution descriptors are of the form S:F:C where\n"
       << "   S is a system, one of:";
    for(i=0; i<systs.size(); i++)
-      os << " " << ObsID::map1to3sys[string(1,systs[i])];
+      os << " " << RinexObsID::map1to3sys[string(1,systs[i])];
    os << endl;
    os << "   F is a frequency, one or two of:";
    for(i=0; i<freqs.size(); i++)
@@ -2203,8 +2203,8 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
 
    // test system
    string sys(fields[0]);
-   string sys1(ObsID::map3to1sys[sys]);
-   if(!sys1.size() || ObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
+   string sys1(RinexObsID::map3to1sys[sys]);
+   if(!sys1.size() || RinexObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
       msg = desc + " : invalid system /" + sys + "/";
       return false;
    }
@@ -2217,13 +2217,13 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    }
 
    for(i=0; i<fields[1].size(); i++) {
-      if(ObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
-         ObsID::validRinexTrackingCodes[csys].end())
+      if(RinexObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
+         RinexObsID::validRinexTrackingCodes[csys].end())
       {
          msg = desc + string(" : invalid frequency /") + fields[1][i] + string("/");
          return false;
       }
-      string codes = ObsID::validRinexTrackingCodes[csys][fields[1][i]];
+      string codes = RinexObsID::validRinexTrackingCodes[csys][fields[1][i]];
       // GPS C1N and C2N are not allowed
       if(csys == 'G' && (fields[1][i] == '1'||fields[1][i] == '2')) strip(codes,'N');
       for(j=0; j<fields[2].size(); j++) {
@@ -2256,7 +2256,7 @@ void SolutionObject::ParseDescriptor(void) throw()
       SolutionData sd(descs[i]);
       LOG(DEBUG) << "Parser(" << i << "): " << sd.asString();
 
-      string sys1(sd.getSys()), sys3(ObsID::map3to1sys[sys1]), frs(sd.getFreq());
+      string sys1(sd.getSys()), sys3(RinexObsID::map3to1sys[sys1]), frs(sd.getFreq());
 
       // systems allowed in the PRSolution estimation
       if(find(sysChars.begin(),sysChars.end(),sys1) == sysChars.end()) {
@@ -2575,7 +2575,7 @@ int SolutionObject::WriteORDs(const CommonTime& time, const int iret)
          if(Satellites[i].id < 0) continue;
 
          // get the system, then clock solution for this system
-         vector<SatID::SatelliteSystem>::const_iterator jt;
+         vector<SatelliteSystem>::const_iterator jt;
          jt = find(prs.dataGNSS.begin(),prs.dataGNSS.end(),Satellites[i].system);
          if(jt == prs.dataGNSS.end()) continue;      // should never happen
          j = jt - prs.dataGNSS.begin();              // index

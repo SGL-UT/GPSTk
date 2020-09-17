@@ -19,7 +19,7 @@ class TestSystemTime(unittest.TestCase):
 
 class TestTimeTags(unittest.TestCase):
     def test_CivilTime(self):
-        t0 = CivilTime(1980, 1, 6, 0, 0, 0, TimeSystem(TimeSystem.GPS))
+        t0 = CivilTime(1980, 1, 6, 0, 0, 0, TimeSystem.GPS)
         self.assertEqual(str(t0), '01/06/1980 00:00:00 GPS')
         ct = t0.toCommonTime()
         self.assertEqual(str(ct), '2444245 00000000 0.000000000000000 GPS')
@@ -97,8 +97,8 @@ class CommonTime_Tests(unittest.TestCase):
 
     def test_exception(self):
         # subtracting 2 CommonTimes throws an InvalidRequest
-        a = gpstk.CommonTime(gpstk.TimeSystem('GPS'))
-        b = gpstk.CommonTime(gpstk.TimeSystem('GLO'))
+        a = gpstk.CommonTime(gpstk.TimeSystem.GPS)
+        b = gpstk.CommonTime(gpstk.TimeSystem.GLO)
         self.assertRaises(gpstk.InvalidRequest, a.__sub__, b)
 
     def test_times_gen(self):

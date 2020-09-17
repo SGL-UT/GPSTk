@@ -90,7 +90,7 @@ namespace gpstk
             convertJDtoCalendar(jday,yy,mm,dd);
             double dt, days = dd + dSOD/SEC_PER_DAY;
             // correct time
-            dt = TimeSystem::Correction(system, ts, yy, mm, days);
+            dt = gpstk::getTimeSystemCorrection(system, ts, yy, mm, days);
             *this += dt;
             // set new system
             this->setTimeSystem(ts);
@@ -175,7 +175,7 @@ namespace gpstk
          {
             CivilTime civt;
             civt.convertFromCommonTime(ct);
-            double dt = TimeSystem::Correction(sys, TimeSystem::UTC,
+            double dt = gpstk::getTimeSystemCorrection(sys, TimeSystem::UTC,
                                     civt.year, civt.month, civt.day);
             ct += dt;
          }

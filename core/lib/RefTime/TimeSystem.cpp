@@ -34,8 +34,6 @@
 //
 //==============================================================================
 
-/// TimeSystem.cpp
-
 #include <cmath>
 #include "TimeSystem.hpp"
 #include "TimeConverters.hpp"
@@ -45,64 +43,22 @@ using namespace std;
 
 namespace gpstk
 {
-   // Static initialization of const std::strings for asString().
-   // Must parallel enum Systems in TimeSystem.hpp.
-   // NB: DO NOT use std::map here; on some systems initialization fails.
-   const string TimeSystem::Strings[count] =
-     {
-       string("UNK"),
-       string("Any"),
-       string("GPS"),
-       string("GLO"),
-       string("GAL"),
-       string("QZS"),
-       string("BDT"),
-       string("IRN"),
-       string("UTC"),
-       string("TAI"),
-       string("TT"),
-       string("TDB"),
-     };
-
-   void TimeSystem::setTimeSystem(const Systems& sys)
+   ostream& operator<<(ostream& os, const TimeSystem ts)
    {
-      if(sys < 0 || sys >= count)
-         system = Unknown;
-      else
-         system = sys;
+      return os << StringUtils::asString(ts);
    }
 
-   void TimeSystem::fromString(const string& str)
+   double getLeapSeconds(const int year,
+                         const int month,
+                         const double day)
    {
-      system = Unknown;
-      for(int i=0; i<count; i++) {
-         if(Strings[i] == str) {
-            system = static_cast<Systems>(i);
-            break;
-         }
-      }
-   }
-
-   ostream& operator<<(ostream& os, const TimeSystem& ts)
-   {
-      return os << ts.asString();
-   }
-
-   // NB. The table 'leaps' must be modified when a new leap second is announced.
-   // Return the number of leap seconds between UTC and TAI, that is the
-   // difference in time scales UTC-TAI at an epoch defined by (year, month, day).
-   // NB. Input day in a floating quantity and thus any epoch may be represented;
-   // this is relevant the period 1960 to 1972, when UTC-TAI was not integral.
-   // NB. GPS = TAI - 19sec and so GPS-UTC = getLeapSeconds()-19.
-   double TimeSystem::getLeapSeconds(const int year,
-                                     const int month,
-                                     const double day)
-   {
-      // Leap second data --------------------------------------------------------
-      // number of changes before leap seconds (1960-1971) - this should never change.
+         // Leap second data
+         // number of changes before leap seconds (1960-1971) - this
+         // should never change.
       static const int NPRE=14;
 
-      // epoch year, epoch month(1-12), delta t(sec), rate (sec/day) for [1960,1972).
+         // epoch year, epoch month(1-12), delta t(sec), rate
+         // (sec/day) for [1960,1972).
       static const struct {
          int year, month;
          double delt, rate;
@@ -123,8 +79,8 @@ namespace gpstk
          { 1968,  2,  4.2131700, 0.0025920 }
       };
 
-      // Leap seconds history
-      // ***** This table must be updated for new leap seconds **************
+         // Leap seconds history
+         // ***** This table must be updated for new leap seconds **************
       static const struct {
          int year, month, nleap;
       } leaps[] = {
@@ -156,42 +112,62 @@ namespace gpstk
          { 2012,  7, 35 },
          { 2015,  7, 36 }, 
          { 2017,  1, 37 }, // leave the last comma!
-         // add new entry here, of the form:
-         // { year, month(1-12), leap_sec }, // leave the last comma!
+            // add new entry here, of the form:
+            // { year, month(1-12), leap_sec }, // leave the last comma!
       };
 
-      // the number of leaps (do not change this)
+         // the number of leaps (do not change this)
       static const int NLEAPS = sizeof(leaps)/sizeof(leaps[0]);
 
-      // last year in leaps
-      //static const int MAXYEAR = leaps[NLEAPS-1].year;
+         // last year in leaps
+         //static const int MAXYEAR = leaps[NLEAPS-1].year;
 
-      // END static data -----------------------------------------------------
+         // END static data
 
-      // search for the input year, month
-      if(year < 1960)                        // pre-1960 no deltas
-         ;
-      else if(month < 1 || month > 12)       // blunder, should never happen - throw?
-         ;
-      else if(year < 1972) {                 // [1960-1972) pre-leap
-         for(int i=NPRE-1; i>=0; i--) {
-            if(preleap[i].year > year ||
-               (preleap[i].year == year && preleap[i].month > month)) continue;
+         // search for the input year, month
+      if (year < 1960)
+      {
+            // pre-1960 no deltas
+      }
+      else if (month < 1 || month > 12)
+      {
+            // blunder, should never happen - throw?
+      }
+      else if (year < 1972)
+      {
+            // [1960-1972) pre-leap
+         for (int i=NPRE-1; i>=0; i--)
+         {
+            if (preleap[i].year > year ||
+                (preleap[i].year == year && preleap[i].month > month))
+            {
+               continue;
+            }
 
-            // found last record with < rec.year >= year and rec.month >= month
-            // watch out - cannot use CommonTime here
+               // found last record with < rec.year >= year and
+               // rec.month >= month
+               // watch out - cannot use CommonTime here
             int iday(static_cast<int>(day));
             double dday(static_cast<double>(iday-int(day)));
-            if(iday == 0) { iday = 1; dday = 1.0-dday; }
+            if (iday == 0)
+            {
+               iday = 1;
+               dday = 1.0-dday;
+            }
             long JD0 = convertCalendarToJD(year,month,iday);
             long JD = convertCalendarToJD(preleap[i].year,preleap[i].month,1);
             return (preleap[i].delt + (double(JD0-JD)+dday)*preleap[i].rate);
          }
       }
-      else {                                    // [1972- leap seconds
-         for(int i=NLEAPS-1; i>=0; i--) {
-            if(leaps[i].year > year ||
-               (leaps[i].year == year && leaps[i].month > month)) continue;
+      else
+      {                                    // [1972- leap seconds
+         for (int i=NLEAPS-1; i>=0; i--)
+         {
+            if (leaps[i].year > year ||
+                (leaps[i].year == year && leaps[i].month > month))
+            {
+               continue;
+            }
             return double(leaps[i].nleap);
          }
       }
@@ -199,106 +175,164 @@ namespace gpstk
       return 0.0;
    }
 
-   // Compute the conversion (in seconds) from one time system (inTS) to another
-   // (outTS), given the year and month of the time to be converted.
-   // Result is to be added to the first time (inTS) to yield the converted (outTS),
-   // that is t(outTS) = t(inTS) + correction(inTS,outTS).
-   // NB. the caller must not forget to change to outTS after adding this correction.
-   // @param TimeSystem inTS, input system
-   // @param TimeSystem outTS, output system
-   // @param int year, year of the time to be converted.
-   // @param int month, month (1-12) of the time to be converted.
-   // @return double dt, correction (sec) to be added to t(in) to yield t(out).
-   // @throw if input system(s) are invalid or Unknown.
-   double TimeSystem::Correction(const TimeSystem& inTS,
-                                 const TimeSystem& outTS,
-                                 const int year,
-                                 const int month,
-                                 const double day)
+
+   double getTimeSystemCorrection(const TimeSystem inTS,
+                                  const TimeSystem outTS,
+                                  const int year,
+                                  const int month,
+                                  const double day)
    {
       double dt(0.0);
 
-      // identity
-      if(inTS == outTS)
+         // identity
+      if (inTS == outTS)
          return dt;
 
-      // cannot convert unknowns
-      if(inTS == Unknown || outTS == Unknown) {
+         // cannot convert unknowns
+      if (inTS == TimeSystem::Unknown || outTS == TimeSystem::Unknown)
+      {
          Exception e("Cannot compute correction for TimeSystem::Unknown");
          GPSTK_THROW(e);
       }
 
-      // compute TT-TDB here; ref Astronomical Almanac B7
+         // compute TT-TDB here; ref Astronomical Almanac B7
       double TDBmTT(0.0);
-      if(inTS == TDB || outTS == TDB) {
+      if (inTS == TimeSystem::TDB || outTS == TimeSystem::TDB)
+      {
          int iday = int(day);
          long jday = convertCalendarToJD(year, month, iday) ;
          double frac(day-iday);
          double TJ2000(jday-2451545.5+frac);     // t-J2000
-         //       0.0001657 sec * sin(357.53 + 0.98560028 * TJ2000 deg)
+            //       0.0001657 sec * sin(357.53 + 0.98560028 * TJ2000 deg)
          frac = ::fmod(0.017201969994578 * TJ2000, 6.2831853071796);
          TDBmTT = 0.0001657 * ::sin(6.240075674 + frac);
-         //        0.000022 sec * sin(246.11 + 0.90251792 * TJ2000 deg)
+            //        0.000022 sec * sin(246.11 + 0.90251792 * TJ2000 deg)
          frac = ::fmod(0.015751909262251 * TJ2000, 6.2831853071796);
          TDBmTT += 0.000022  * ::sin(4.295429822 + frac);
       }
 
-      // Time system conversions constants
+         // Time system conversions constants
       static const double TAI_minus_GPSGAL_EPOCH = 19.;
       static const double TAI_minus_BDT_EPOCH = 33.;
       static const double TAI_minus_TT_EPOCH = -32.184;
       
-      // -----------------------------------------------------------
-      // conversions: first convert inTS->TAI ...
-      // TAI = GPS + 19s
-      // TAI = UTC + getLeapSeconds()
-      // TAI = TT - 32.184s
-      if(inTS == GPS ||       // GPS -> TAI
-         inTS == GAL ||       // GAL -> TAI
-         inTS == IRN )        // IRN -> TAI 
+         // -----------------------------------------------------------
+         // conversions: first convert inTS->TAI ...
+         // TAI = GPS + 19s
+         // TAI = UTC + getLeapSeconds()
+         // TAI = TT - 32.184s
+      if (inTS == TimeSystem::GPS ||       // GPS -> TAI
+          inTS == TimeSystem::GAL ||       // GAL -> TAI
+          inTS == TimeSystem::IRN )        // IRN -> TAI
+      {
          dt = TAI_minus_GPSGAL_EPOCH;
-      else if(inTS == UTC ||  // UTC -> TAI
-              inTS == GLO)    // GLO -> TAI
+      }
+      else if (inTS == TimeSystem::UTC ||  // UTC -> TAI
+               inTS == TimeSystem::GLO)    // GLO -> TAI
+      {
          dt = getLeapSeconds(year, month, day);
-      else if(inTS == BDT)    // BDT -> TAI
+      }
+      else if (inTS == TimeSystem::BDT)    // BDT -> TAI
+      {
          dt = TAI_minus_BDT_EPOCH;
-      else if(inTS == TAI)    // TAI
-         ;
-      else if(inTS == TT)     // TT -> TAI
+      }
+      else if (inTS == TimeSystem::TAI)    // TAI
+      {
+      }
+      else if (inTS == TimeSystem::TT)     // TT -> TAI
+      {
          dt = TAI_minus_TT_EPOCH;
-      else if(inTS == TDB)    // TDB -> TAI
+      }
+      else if (inTS == TimeSystem::TDB)    // TDB -> TAI
+      {
          dt = TAI_minus_TT_EPOCH + TDBmTT;
-      else {                              // other
-         Exception e("Invalid input TimeSystem " + inTS.asString());
+      }
+      else
+      {                              // other
+         Exception e("Invalid input TimeSystem " + StringUtils::asString(inTS));
          GPSTK_THROW(e);
       }
 
-      // -----------------------------------------------------------
-      // ... then convert TAI->outTS
-      // GPS = TAI - 19s
-      // UTC = TAI - getLeapSeconds()
-      // TT = TAI + 32.184s
-      if(outTS == GPS ||      // TAI -> GPS
-         outTS == GAL ||      // TAI -> GAL
-         outTS == IRN )       // TAI -> IRN
+         // -----------------------------------------------------------
+         // ... then convert TAI->outTS
+         // GPS = TAI - 19s
+         // UTC = TAI - getLeapSeconds()
+         // TT = TAI + 32.184s
+      if (outTS == TimeSystem::GPS ||      // TAI -> GPS
+          outTS == TimeSystem::GAL ||      // TAI -> GAL
+          outTS == TimeSystem::IRN )       // TAI -> IRN
+      {
          dt -= TAI_minus_GPSGAL_EPOCH;
-      else if(outTS == UTC || // TAI -> UTC
-              outTS == GLO)   // TAI -> GLO
+      }
+      else if (outTS == TimeSystem::UTC || // TAI -> UTC
+               outTS == TimeSystem::GLO)   // TAI -> GLO
+      {
          dt -= getLeapSeconds(year, month, day);
-      else if(outTS == BDT)   // TAI -> BDT
+      }
+      else if (outTS == TimeSystem::BDT)   // TAI -> BDT
+      {
          dt -= TAI_minus_BDT_EPOCH;
-      else if(outTS == TAI)   // TAI
-         ;
-      else if(outTS == TT)    // TAI -> TT
+      }
+      else if (outTS == TimeSystem::TAI)   // TAI
+      {
+      }
+      else if (outTS == TimeSystem::TT)    // TAI -> TT
+      {
          dt -= TAI_minus_TT_EPOCH;
-      else if(outTS == TDB)   // TAI -> TDB
+      }
+      else if (outTS == TimeSystem::TDB)   // TAI -> TDB
+      {
          dt -= TAI_minus_TT_EPOCH + TDBmTT;
-      else {                              // other
-         Exception e("Invalid output TimeSystem " + outTS.asString());
+      }
+      else
+      {                              // other
+         Exception e("Invalid output TimeSystem "+StringUtils::asString(outTS));
          GPSTK_THROW(e);
       }
 
       return dt;
+   }
+
+
+   namespace StringUtils
+   {
+      std::string asString(TimeSystem ts)
+      {
+         switch (ts)
+         {
+            case TimeSystem::Unknown: return "UNK";
+            case TimeSystem::Any: return "Any";
+            case TimeSystem::GPS: return "GPS";
+            case TimeSystem::GLO: return "GLO";
+            case TimeSystem::GAL: return "GAL";
+            case TimeSystem::QZS: return "QZS";
+            case TimeSystem::BDT: return "BDT";
+            case TimeSystem::IRN: return "IRN";
+            case TimeSystem::UTC: return "UTC";
+            case TimeSystem::TAI: return "TAI";
+            case TimeSystem::TT:  return "TT";
+            case TimeSystem::TDB: return "TDB";
+            default:              return "???";
+         }
+      }
+
+
+      TimeSystem asTimeSystem(const std::string& s)
+      {
+         if (s == "UNK") return TimeSystem::Unknown;
+         if (s == "Any") return TimeSystem::Any;
+         if (s == "GPS") return TimeSystem::GPS;
+         if (s == "GLO") return TimeSystem::GLO;
+         if (s == "GAL") return TimeSystem::GAL;
+         if (s == "QZS") return TimeSystem::QZS;
+         if (s == "BDT") return TimeSystem::BDT;
+         if (s == "IRN") return TimeSystem::IRN;
+         if (s == "UTC") return TimeSystem::UTC;
+         if (s == "TAI") return TimeSystem::TAI;
+         if (s == "TT")  return TimeSystem::TT;
+         if (s == "TDB") return TimeSystem::TDB;
+         return TimeSystem::Unknown;
+      }
    }
 
 }   // end namespace

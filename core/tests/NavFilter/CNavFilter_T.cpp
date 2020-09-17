@@ -139,7 +139,7 @@ loadData()
       "365,12/31/2015,04:00:36,1877,360036,5,50,33, 0x8B161753, 0x4205E5F9, 0x85D6149A, 0x801FA801, 0xFFCE0000, 0x022979C7, 0x5539D988, 0x80000000, 0x000001DC, 0x8CA00000"
    };
 
-   ObsID oidCNAV(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM); 
+   ObsID oidCNAV(ObservationType::NavMsg, CarrierBand::L2, TrackingCode::L2CML); 
    for (int i1=0; i1<MSG_COUNT_CNAV; i1++)
    {
       vector<string> words;
@@ -156,7 +156,7 @@ loadData()
       CommonTime ct = GPSWeekSecond(gpsWeek, sow, TimeSystem::GPS);
       
       int prn = StringUtils::asInt(words[5]);
-      SatID sid(prn, SatID::systemGPS);
+      SatID sid(prn, SatelliteSystem::GPS);
 
       string rxString = "unk";
 
@@ -662,9 +662,9 @@ testCNavCrossSource()
          {
             fd.stationID = "unk2";
             fd.rxID = "unk2";
-            fd.code = ObsID::tcC2M;
+            fd.code = TrackingCode::L2CM;
             fd.pnb->setRxID("unk2");
-            ObsID oid2(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2M); 
+            ObsID oid2(ObservationType::NavMsg, CarrierBand::L2, TrackingCode::L2CM); 
             fd.pnb->setObsID(oid2);
          }
 

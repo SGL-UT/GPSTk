@@ -158,7 +158,7 @@ namespace gpstk
       unsigned prnStart = 8;
       if (almType==matCNAV2) { prnStart=0; prnLen=8; }
       unsigned long prnId = pnb.asUnsignedLong(prnStart, prnLen, 1);
-      xmitSv = SatID(prnId,SatID::systemGPS); 
+      xmitSv = SatID(prnId,SatelliteSystem::GPS); 
 
       unsigned long wn = pnb.asUnsignedLong(14+offsetBits,13,1);
       unsigned long toaSOW = pnb.asUnsignedLong(27+offsetBits,8,4096);
@@ -166,7 +166,7 @@ namespace gpstk
       ctAlmEpoch.setTimeSystem(TimeSystem::GPS);
 
       prnId = pnb.asUnsignedLong(35+offsetBits,8,1);
-      subjSv = SatID(prnId, SatID::systemGPS);
+      subjSv = SatID(prnId, SatelliteSystem::GPS);
 
       unsigned nextStart = 43 + offsetBits;
       L1HEALTH = (unsigned short) pnb.asUnsignedLong(nextStart,1,1);

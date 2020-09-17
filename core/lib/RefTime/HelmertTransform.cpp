@@ -105,8 +105,8 @@ namespace gpstk {
    {
       ostringstream oss;
       oss << "Helmert Transformation"
-          << " from " << fromFrame.asString()
-          << " to " << toFrame.asString() + ":\n"
+          << " from " << fromFrame
+          << " to " << toFrame << ":\n"
           << scientific << setprecision(4)
           << "  Scale factor : " << Scale
           << fixed << " = " << Scale/PPB << " ppb" << endl
@@ -164,8 +164,8 @@ namespace gpstk {
          result.setReferenceFrame(fromFrame);
       }
       else {
-         InvalidRequest e("Helmert tranformation cannot act on frame "
-                           + pos.getReferenceFrame().asString());
+         InvalidRequest e("Helmert tranformation cannot act on frame " +
+                          gpstk::StringUtils::asString(pos.getReferenceFrame()));
          GPSTK_THROW(e);
       }
    }

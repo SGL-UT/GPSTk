@@ -605,12 +605,12 @@ try {
 
    // how many do we have?
    int Neph(C.NavStore.size());
-   int NGPS(C.NavStore.size(SatID::systemGPS));
-   int NGLO(C.NavStore.size(SatID::systemGlonass));
-   int NGAL(C.NavStore.size(SatID::systemGalileo));
-   int NGEO(C.NavStore.size(SatID::systemGeosync));
-   int NBDS(C.NavStore.size(SatID::systemBeiDou));
-   int NQZS(C.NavStore.size(SatID::systemQZSS));
+   int NGPS(C.NavStore.size(SatelliteSystem::GPS));
+   int NGLO(C.NavStore.size(SatelliteSystem::Glonass));
+   int NGAL(C.NavStore.size(SatelliteSystem::Galileo));
+   int NGEO(C.NavStore.size(SatelliteSystem::Geosync));
+   int NBDS(C.NavStore.size(SatelliteSystem::BeiDou));
+   int NQZS(C.NavStore.size(SatelliteSystem::QZSS));
    LOG(VERBOSE) << "\nRinNav has stored " << Neph << " navigation records.";
    if(NGPS) LOG(VERBOSE) <<"RinNav has stored " << NGPS << " GPS navigation records.";
    if(NGLO) LOG(VERBOSE) <<"RinNav has stored " << NGLO << " GLO navigation records.";
@@ -651,12 +651,12 @@ try {
          // count it
          neph++;
          switch(listit->sat.system) {
-            case SatID::systemGPS: nGPS++; break;
-            case SatID::systemGlonass: nGLO++; break;
-            case SatID::systemGalileo: nGAL++; break;
-            case SatID::systemGeosync: nGEO++; break;
-            case SatID::systemBeiDou:  nBDS++; break;
-            case SatID::systemQZSS:    nQZS++; break;
+            case SatelliteSystem::GPS: nGPS++; break;
+            case SatelliteSystem::Glonass: nGLO++; break;
+            case SatelliteSystem::Galileo: nGAL++; break;
+            case SatelliteSystem::Geosync: nGEO++; break;
+            case SatelliteSystem::BeiDou:  nBDS++; break;
+            case SatelliteSystem::QZSS:    nQZS++; break;
             default: break;
          }
       }

@@ -9,13 +9,13 @@ namespace gpstk
 {
    SatMetaDataStore::SVNID ::
    SVNID()
-         : system(SatID::SatelliteSystem::systemUnknown)
+         : system(SatelliteSystem::Unknown)
    {
    }
 
 
    SatMetaDataStore::SVNID ::
-   SVNID(SatID::SatelliteSystem sys, const std::string& svn)
+   SVNID(SatelliteSystem sys, const std::string& svn)
          : system(sys), id(svn)
    {
    }
@@ -150,7 +150,7 @@ namespace gpstk
          return false;
       }
       SatMetaData sat;
-      sat.sys = SatID::convertStringToSatelliteSystem(vals[i++]);
+      sat.sys = convertStringToSatelliteSystem(vals[i++]);
       sat.svn = vals[i++];
       if (StringUtils::isDigitString(vals[i]))
       {
@@ -291,13 +291,13 @@ namespace gpstk
          return false;
       }
       SystemBlock key;
-      key.sys = SatID::convertStringToSatelliteSystem(vals[i++]);
+      key.sys = convertStringToSatelliteSystem(vals[i++]);
       key.blk = vals[i++];
       if (clkMap.find(key) != clkMap.end())
       {
             // enforce no duplicates
-         cerr << "Duplicate CLOCK " << key.sys << " " << key.blk << " on line "
-              << lineNo << endl;
+         cerr << "Duplicate CLOCK " << StringUtils::asString(key.sys) << " "
+              << key.blk << " on line " << lineNo << endl;
          return false;
       }
          // currently support up to four clocks.
@@ -323,7 +323,7 @@ namespace gpstk
          return false;
       }
       SVNID svn;
-      svn.system = SatID::convertStringToSatelliteSystem(vals[i++]);
+      svn.system = convertStringToSatelliteSystem(vals[i++]);
       svn.id = vals[i++];
       if (launchMap.find(svn) != launchMap.end())
       {
@@ -363,7 +363,7 @@ namespace gpstk
          return false;
       }
       SVNID svn;
-      svn.system = SatID::convertStringToSatelliteSystem(vals[i++]);
+      svn.system = convertStringToSatelliteSystem(vals[i++]);
       svn.id = vals[i++];
       if (noradMap.find(svn) != noradMap.end())
       {
@@ -378,7 +378,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   findSat(SatID::SatelliteSystem sys, uint32_t prn,
+   findSat(SatelliteSystem sys, uint32_t prn,
            const gpstk::CommonTime& when,
            SatMetaData& sat)
       const
@@ -427,7 +427,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   findSatBySVN(SatID::SatelliteSystem sys, const std::string& svn,
+   findSatBySVN(SatelliteSystem sys, const std::string& svn,
                 const gpstk::CommonTime& when,
                 SatMetaData& sat)
       const
@@ -460,6 +460,7 @@ namespace gpstk
       return false;
    } // findSat()
 
+
    bool SatMetaDataStore::
    findSatBySlotFdma(uint32_t slotID,
                      int32_t channel,
@@ -467,7 +468,7 @@ namespace gpstk
                      SatMetaData& sat)
          const
    {
-      SatID::SatelliteSystem sys = SatID::systemGlonass;
+      SatelliteSystem sys = SatelliteSystem::Glonass;
       SatMetaMap::const_iterator sysIt = satMap.find(sys);
       if (sysIt == satMap.end())
       {
@@ -497,8 +498,9 @@ namespace gpstk
       return false;
    } // findSatByFdmaSlot()
 
+
    bool SatMetaDataStore ::
-   getSVN(SatID::SatelliteSystem sys, uint32_t prn,
+   getSVN(SatelliteSystem sys, uint32_t prn,
           const gpstk::CommonTime& when,
           std::string& svn)
       const
@@ -514,7 +516,7 @@ namespace gpstk
 
 
    bool SatMetaDataStore ::
-   getPRN(SatID::SatelliteSystem sys, const std::string& svn,
+   getPRN(SatelliteSystem sys, const std::string& svn,
           const gpstk::CommonTime& when,
           uint32_t& prn)
       const

@@ -50,9 +50,9 @@ namespace gpstk
       // define some stream operators so that test failures involving
       // enums are a bit more readable.
 
-   std::ostream& operator<<(std::ostream& s, NavID::NavType e)
+   std::ostream& operator<<(std::ostream& s, gpstk::NavType e)
    {
-      s << (long)e << " (" << NavID::asString(e) << ")";
+      s << (long)e << " (" << gpstk::StringUtils::asString(e) << ")";
       return s;
    }
 }
@@ -85,34 +85,48 @@ public:
 
 NavID_T ::
 NavID_T()
-      : testIDLNAV(SatID(1, SatID::systemGPS),
-                   ObsID(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcCA)),
-        testIDCNAVL2(SatID(1, SatID::systemGPS),
-                     ObsID(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM)),
-        testIDCNAVL5(SatID(1, SatID::systemGPS),
-                     ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcI5)),
-        testIDCNAV2(SatID(1, SatID::systemGPS),
-                    ObsID(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcG1X)),
-        testIDMNAV(SatID(1, SatID::systemGPS),
-                   ObsID(ObsID::otNavMsg, ObsID::cbL2, ObsID::tcM)),
-        testIDBD1(SatID(6, SatID::systemBeiDou),
-                  ObsID(ObsID::otNavMsg, ObsID::cbB1, ObsID::tcCI1)),
-        testIDBD2(SatID(5, SatID::systemBeiDou),
-                  ObsID(ObsID::otNavMsg, ObsID::cbB2, ObsID::tcCI1)),
-        testIDGloF(SatID(2, SatID::systemGlonass),
-                   ObsID(ObsID::otNavMsg, ObsID::cbG1, ObsID::tcGCA)),
-        testIDGloC(SatID(2, SatID::systemGlonass),
-                   ObsID(ObsID::otNavMsg, ObsID::cbG3, ObsID::tcIQR3)),
-        testIDGalOS(SatID(2, SatID::systemGalileo),
-                    ObsID(ObsID::otNavMsg, ObsID::cbL1, ObsID::tcB)),
-        testIDGalOS_2(SatID(2, SatID::systemGalileo),
-                      ObsID(ObsID::otNavMsg, ObsID::cbE5b, ObsID::tcIE5b)),
-        testIDGalOS_F(SatID(2, SatID::systemGalileo),
-                      ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIE5a)),
-        testID_IRNSS_SPS(SatID(2, SatID::systemIRNSS),
-                         ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcIA5)),
-        testIDUnkwn(SatID(1, SatID::systemGPS),
-                    ObsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcM))
+      : testIDLNAV(SatID(1, SatelliteSystem::GPS),
+                   ObsID(ObservationType::NavMsg, CarrierBand::L1,
+                         TrackingCode::CA)),
+        testIDCNAVL2(SatID(1, SatelliteSystem::GPS),
+                     ObsID(ObservationType::NavMsg, CarrierBand::L2,
+                           TrackingCode::L2CML)),
+        testIDCNAVL5(SatID(1, SatelliteSystem::GPS),
+                     ObsID(ObservationType::NavMsg, CarrierBand::L5,
+                           TrackingCode::L5I)),
+        testIDCNAV2(SatID(1, SatelliteSystem::GPS),
+                    ObsID(ObservationType::NavMsg, CarrierBand::L1,
+                          TrackingCode::L1CDP)),
+        testIDMNAV(SatID(1, SatelliteSystem::GPS),
+                   ObsID(ObservationType::NavMsg, CarrierBand::L2,
+                         TrackingCode::MDP)),
+        testIDBD1(SatID(6, SatelliteSystem::BeiDou),
+                  ObsID(ObservationType::NavMsg, CarrierBand::B1,
+                        TrackingCode::B1I)),
+        testIDBD2(SatID(5, SatelliteSystem::BeiDou),
+                  ObsID(ObservationType::NavMsg, CarrierBand::B2,
+                        TrackingCode::B1I)),
+        testIDGloF(SatID(2, SatelliteSystem::Glonass),
+                   ObsID(ObservationType::NavMsg, CarrierBand::G1,
+                         TrackingCode::Standard)),
+        testIDGloC(SatID(2, SatelliteSystem::Glonass),
+                   ObsID(ObservationType::NavMsg, CarrierBand::G3,
+                         TrackingCode::L3OCDP)),
+        testIDGalOS(SatID(2, SatelliteSystem::Galileo),
+                    ObsID(ObservationType::NavMsg, CarrierBand::L1,
+                          TrackingCode::E1B)),
+        testIDGalOS_2(SatID(2, SatelliteSystem::Galileo),
+                      ObsID(ObservationType::NavMsg, CarrierBand::E5b,
+                            TrackingCode::E5bI)),
+        testIDGalOS_F(SatID(2, SatelliteSystem::Galileo),
+                      ObsID(ObservationType::NavMsg, CarrierBand::L5,
+                            TrackingCode::E5aI)),
+        testID_IRNSS_SPS(SatID(2, SatelliteSystem::IRNSS),
+                         ObsID(ObservationType::NavMsg, CarrierBand::L5,
+                               TrackingCode::SPSL5)),
+        testIDUnkwn(SatID(1, SatelliteSystem::GPS),
+                    ObsID(ObservationType::NavMsg, CarrierBand::L5,
+                          TrackingCode::MDP))
 {
 }
 
@@ -123,48 +137,48 @@ constructorTest()
    TUDEF("NavID", "NavID()");
 
    NavID dfltTest;
-   TUASSERTE(NavID::NavType, NavID::ntUnknown, dfltTest.navType);
+   TUASSERTE(gpstk::NavType, NavType::Unknown, dfltTest.navType);
 
       //GPS LNAV
    TUCSM("NavID(SatID,ObsID)");
-   TUASSERTE(NavID::NavType, NavID::ntGPSLNAV, testIDLNAV.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSLNAV, testIDLNAV.navType);
 
       //GPS CNAV L2
-   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL2, testIDCNAVL2.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSCNAVL2, testIDCNAVL2.navType);
 
       //GPS CNAV L5
-   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL5, testIDCNAVL5.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSCNAVL5, testIDCNAVL5.navType);
 
       //GPS CNAV2
-   TUASSERTE(NavID::NavType, NavID::ntGPSCNAV2, testIDCNAV2.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSCNAV2, testIDCNAV2.navType);
 
       //GPS MNAV
-   TUASSERTE(NavID::NavType, NavID::ntGPSMNAV, testIDMNAV.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSMNAV, testIDMNAV.navType);
 
       //Beidou D1
-   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D1, testIDBD1.navType);
+   TUASSERTE(gpstk::NavType, NavType::BeiDou_D1, testIDBD1.navType);
 
       //Beidou D2
-   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D2, testIDBD2.navType);
+   TUASSERTE(gpstk::NavType, NavType::BeiDou_D2, testIDBD2.navType);
    
       //Glonass Civil F
-   TUASSERTE(NavID::NavType, NavID::ntGloCivilF, testIDGloF.navType);
+   TUASSERTE(gpstk::NavType, NavType::GloCivilF, testIDGloF.navType);
    
       //Glonass Civil C
-   TUASSERTE(NavID::NavType, NavID::ntGloCivilC, testIDGloC.navType);
+   TUASSERTE(gpstk::NavType, NavType::GloCivilC, testIDGloC.navType);
    
       //Galileo Open Sys
-   TUASSERTE(NavID::NavType, NavID::ntGalINAV, testIDGalOS.navType);
+   TUASSERTE(gpstk::NavType, NavType::GalINAV, testIDGalOS.navType);
 
-   TUASSERTE(NavID::NavType, NavID::ntGalINAV, testIDGalOS_2.navType);
+   TUASSERTE(gpstk::NavType, NavType::GalINAV, testIDGalOS_2.navType);
 
-   TUASSERTE(NavID::NavType, NavID::ntGalFNAV, testIDGalOS_F.navType);
+   TUASSERTE(gpstk::NavType, NavType::GalFNAV, testIDGalOS_F.navType);
 
       //IRNSS L5 SPS
-   TUASSERTE(NavID::NavType, NavID::ntIRNSS_SPS, testID_IRNSS_SPS.navType);
+   TUASSERTE(gpstk::NavType, NavType::IRNSS_SPS, testID_IRNSS_SPS.navType);
    
       //Unknown
-   TUASSERTE(NavID::NavType, NavID::ntUnknown, testIDUnkwn.navType);
+   TUASSERTE(gpstk::NavType, NavType::Unknown, testIDUnkwn.navType);
 
    TURETURN();
 }
@@ -227,43 +241,43 @@ stringConstructorTest()
    TUDEF("NavID", "NavID(string)");
 
    NavID testIDLNAVString(ln.str());
-   TUASSERTE(NavID::NavType, NavID::ntGPSLNAV, testIDLNAVString.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSLNAV, testIDLNAVString.navType);
    
    NavID testIDCNAVL2String(l2.str());
-   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL2, testIDCNAVL2String.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSCNAVL2, testIDCNAVL2String.navType);
    
    NavID testIDCNAVL5String(l5.str());
-   TUASSERTE(NavID::NavType, NavID::ntGPSCNAVL5, testIDCNAVL5String.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSCNAVL5, testIDCNAVL5String.navType);
    
    NavID testIDCNAV2String(cnav2.str());
-   TUASSERTE(NavID::NavType, NavID::ntGPSCNAV2, testIDCNAV2String.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSCNAV2, testIDCNAV2String.navType);
    
    NavID testIDMNAVString(mn.str());
-   TUASSERTE(NavID::NavType, NavID::ntGPSMNAV, testIDMNAVString.navType);
+   TUASSERTE(gpstk::NavType, NavType::GPSMNAV, testIDMNAVString.navType);
    
    NavID testIDBD1String(d1.str());
-   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D1, testIDBD1String.navType);
+   TUASSERTE(gpstk::NavType, NavType::BeiDou_D1, testIDBD1String.navType);
    
    NavID testIDBD2String(d2.str());
-   TUASSERTE(NavID::NavType, NavID::ntBeiDou_D2, testIDBD2String.navType);
+   TUASSERTE(gpstk::NavType, NavType::BeiDou_D2, testIDBD2String.navType);
    
    NavID testIDGloFString(gf.str());
-   TUASSERTE(NavID::NavType, NavID::ntGloCivilF, testIDGloFString.navType);
+   TUASSERTE(gpstk::NavType, NavType::GloCivilF, testIDGloFString.navType);
    
    NavID testIDGloCString(gc.str());
-   TUASSERTE(NavID::NavType, NavID::ntGloCivilC, testIDGloCString.navType);
+   TUASSERTE(gpstk::NavType, NavType::GloCivilC, testIDGloCString.navType);
    
    NavID testIDGalOSStringI(ginv.str());
-   TUASSERTE(NavID::NavType, NavID::ntGalINAV, testIDGalOSStringI.navType);
+   TUASSERTE(gpstk::NavType, NavType::GalINAV, testIDGalOSStringI.navType);
    
    NavID testIDGalOSStringF(gfnv.str());
-   TUASSERTE(NavID::NavType, NavID::ntGalFNAV, testIDGalOSStringF.navType);
+   TUASSERTE(gpstk::NavType, NavType::GalFNAV, testIDGalOSStringF.navType);
    
    NavID testID_IRNSS_SPS_String(is.str());
-   TUASSERTE(NavID::NavType,NavID::ntIRNSS_SPS,testID_IRNSS_SPS_String.navType);
+   TUASSERTE(gpstk::NavType,NavType::IRNSS_SPS,testID_IRNSS_SPS_String.navType);
    
    NavID testIDUnkwnString(un.str());
-   TUASSERTE(NavID::NavType, NavID::ntUnknown, testIDUnkwnString.navType);
+   TUASSERTE(gpstk::NavType, NavType::Unknown, testIDUnkwnString.navType);
 
    TURETURN();
 }
@@ -294,7 +308,7 @@ inequalityTest()
       //Instantiate currTest as GPS_LNAV by 
       //instantiating navType as ntGPSLNAV.
    NavID currTest;
-   currTest.navType = NavID::ntGPSLNAV;
+   currTest.navType = NavType::GPSLNAV;
 
       //Set nid equal to dereferenced NavID set iterator; should
       //initially correspond to first location in set (@ value GPS_LNAV).
@@ -303,7 +317,7 @@ inequalityTest()
    for (const auto& nid :  testSet)
    {
       TUASSERTE(gpstk::NavID, currTest, nid);
-      currTest.navType = static_cast<NavID::NavType>((int)currTest.navType + 1);
+      currTest.navType = static_cast<gpstk::NavType>((int)currTest.navType + 1);
    }
 
    TURETURN();
@@ -320,17 +334,16 @@ asStringEnumTest()
       // representations aren't duplicated, since if two enums
       // translated to string "XXX", the attempt to reverse the
       // translation would fail.
-   for (unsigned i = 0; i < gpstk::NavID::ntLast; i++)
+   for (gpstk::NavType nt : NavTypeIterator())
    {
-      gpstk::NavID::NavType nt = (gpstk::NavID::NavType)i;
       std::string s;
-      TUCATCH(s = gpstk::NavID::asString(nt));
+      TUCATCH(s = gpstk::StringUtils::asString(nt));
       TUASSERT(!s.empty());
-      if (nt != gpstk::NavID::ntUnknown)
+      if (nt != gpstk::NavType::Unknown)
          TUASSERT(s != "Unknown");
-      gpstk::NavID::NavType nt2;
-      TUCATCH(nt2 = gpstk::NavID::asNavType(s));
-      TUASSERTE(gpstk::NavID::NavType, nt, nt2);
+      gpstk::NavType nt2;
+      TUCATCH(nt2 = gpstk::StringUtils::asNavType(s));
+      TUASSERTE(gpstk::NavType, nt, nt2);
    }
    TURETURN();
 }
