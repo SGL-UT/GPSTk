@@ -855,12 +855,6 @@ namespace gpstk
 
       gale.health = GalEphemeris::deriveHealth(HS,DVS,SISA);
 
-      std::cout << "PRN, datasources, health, SISA, DVS, HS: "
-                << setw(2) << PRNID << ", (" << datasources << ", 0x" << std::hex << datasources << "), (" << std::dec 
-                << health << ", 0x" << std::hex << health << "), " << std::dec 
-                << SISA << ", " << DVS << ", " << HS << std::endl;
-
-//      gale.HOWtime = xmitTime;
       week = static_cast<GALWeekSecond>(gale.ctToe).getWeek();
       gale.transmitTime = GALWeekSecond(week, static_cast<double>(xmitTime),
                                        TimeSystem::GAL);
