@@ -837,7 +837,7 @@ namespace gpstk
       // Based on the data source,  
       // derive DVS and HS bit values for this message.
       //
-      // Default to the values for E5a
+      // Default to the values for F/NAV (E5a) 
       unsigned shiftDVS = 3; 
       unsigned shiftHS  = 4;
       if ( (datasources & 0x01) !=0 )  // I/NAV (E1B)
