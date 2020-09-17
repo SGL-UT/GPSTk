@@ -248,7 +248,7 @@ namespace std { class fstream {}; }
 %include "YumaAlmanacStore.hpp"
 
 %include "SVNumXRef.hpp"
-%include "RinexSatID.hpp"
+//%include "RinexSatID.hpp"
 
 %ignore gpstk::SV_ACCURACY_GPS_MIN_INDEX;
 %ignore gpstk::SV_ACCURACY_GPS_NOMINAL_INDEX;
