@@ -61,7 +61,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Sep 14 2020 Andrew Kuck <kuck@arlut.utexas.edu>
+* Fri Sep 18 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Updated for v7.0.0 release
 * Thu Jul 30 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Updated for v6.0.0 release

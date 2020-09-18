@@ -32,8 +32,10 @@ gpstk (7.0.0-1) stable; urgency=low
     python bindings
   * Refactor gpstk pipeline downstream jobs
   * Update OceanLoadTides.hpp Add reference to SPOTL in doxygen comments
+  * Update SWIG Bindings to wrap enumerations more correctly.
+  * Fix GalEphemeris Corrected behavior of isHealthy()
 
- -- Andrew Kuck <kuck@arlut.utexas.edu>  Mon, 14 Sep 2020 15:20:07 -0500
+ -- Andrew Kuck <kuck@arlut.utexas.edu>  Fri, 18 Sep 2020 12:38:33 -0500
 
 gpstk (6.0.0-1) stable; urgency=low
 

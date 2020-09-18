@@ -53,6 +53,28 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 18 2020 Andrew Kuck <kuck@arlut.utexas.edu>
+- Updated for v7.0.0 release
+- Fix GalEphemeris Corrected behavior of isHealthy()
+- Update SWIG Bindings to wrap enumerations more correctly.
+- Update OceanLoadTides.hpp Add reference to SPOTL in doxygen comments
+- Refactor gpstk pipeline downstream jobs
+- Refactor debian dpkg-buildpackage Update control files to remove python bindings
+- Refactor debian8 remove python bindings
+- Dropping Python Swig binding support for RHEL7/DEB7
+- Refactor ObsID and RinexObsID initialization of containers (tcDesc, etc.) to use C++11 syntax and eliminate the use of a singleton initializer.
+- Move RINEX-isms (such as the string constructor for decoding RINEX obs IDs) in ObsID into RinexObsID where they belong.
+- Refactor swig bindings for enums to use similar naming conventions between C++ and python (e.g. gpstk::TrackingCode::CA in C++ and gpstk.TrackingCode.CA in python)
+- Add EnumIterator class to provide the ability to iterate over the above enum classes.
+- Rename TrackingCode enumerations to better support codes that RINEX does not by using names based on the ICDs rather than what RINEX uses.
+- Refactor enumerations in TimeSystem, ReferenceFrame, IERSConvention, SatID, NavID and ObsID (SatelliteSystem, NavType, ObservationType, CarrierBand, TrackingCode) to use strongly typed enumerations and move them outside the scope of those classes.
+- Add SatMetaDataStore findSatByFdmaSlot
+- Add Documentation Artifact to CI Pipeline
+- Refactor Yuma/SEM file support back into ext
+- Fix core/lib include statements to search GPSTk include directory.
+- Fix OrbSysGpsL_55 Restore output of text message
+- Fix various pieces of code to resolve warning messages on various platforms.
+- Add CODEOWNERS file.
 * Mon Sep 14 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Updated for v7.0.0 release
 - Update OceanLoadTides.hpp Add reference to SPOTL in doxygen comments

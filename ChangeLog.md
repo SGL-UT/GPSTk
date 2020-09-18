@@ -1,18 +1,23 @@
-# Version 7.0.0   Monday September 14, 2020
+# Version 7.0.0   Friday September 18, 2020
 
 Modifications by Author
 -----------------------
-     Andrew Kuck <kuck@arlut.utexas.edu> (5):
+     Andrew Kuck <kuck@arlut.utexas.edu> (10):
            Enable warnings in output.
            Add Stage for Documentation Generation.
            Modify job name and target directory name.
            Push all changes into the Doxygen config file.
            Allows downstream jobs to fail in case of breaking change.
+           Move Enumeration inclusion after std_*.i inclusions.
+           Add additional SatID(int,int) constructor.
+           Fixed up accidental enum pass by reference.
+           Removed duplicate/non-functional code.
+           Fixup enums.
 
      Benjamin Glass <bglass@arlut.utexas.edu> (1):
            Use double quotes rather than angle brackets for GPSTK includes
 
-     Brent Renfro <renfrob@arlut.utexas.edu> (7):
+     Brent Renfro <renfrob@arlut.utexas.edu> (13):
            Restoring text output.  Fixing bug that removed :
            Updating test with new DataID55 info
            Improving error print
@@ -20,12 +25,30 @@ Modifications by Author
            Continuing to tweak output to meet desire
            Adding method to support finding GLONASS by orbit slot and FDMA channel
            Tweaking method name, adding tests.
+           Added decoding of Galileo health
+           Add test for GalEphemeris::deriveHealth()
+           Test data for GalEphemeris_T
+           Removing debug
+           Changing to SatelliteSystem
+           Improving the comment.
 
      Brian Tolman <btolman@.arlut.utexas.edu> (1):
            update ocean loading doxygen doc to include SPOTL
 
      Dave Rainwater <rain@arlut.utexas.edu> (1):
            Initial implementation of code owners definition file.
+
+     David Barber <dbarber@arlut.utexas.edu> (15):
+           Removed python bindings for rhel7/debian 7 for gitlab pipeline configuration files
+           Updated spec file for Removing python bindings for rhel7/debian 7 for gitlab pipeline configuration files
+           Remove python bindings for debian8
+           Removing python binding for deb8 package
+           Updating debian package files
+           fixed logic in control file
+           fixed parameters
+           fixed gpstk-bin dependency on deb8 packaging
+           remove allow_failure on sgltk_debian downstream job
+           Release v7.0.0
 
      John Knutson <johnk@arlut.utexas.edu> (42):
            First cut at moving SatelliteSystem to strongly typed enum
@@ -34,11 +57,8 @@ Modifications by Author
            Remove debug value
            Migrate CarrierBand enum to independent strongly-typed enum
            Allow failures in redhat for now
-           Allow failures in redhat for now
-           See what happens when we treat SWIG 2 differently
            See what happens when we treat SWIG 2 differently
            Experiment failed, reverting
-           Another experiment, upgrading swig as part of the redhat build process
            Another experiment, upgrading swig as part of the redhat build process
            Are we missing python-enum on redhat?
            Try to make sure the python enum module is installed
@@ -53,7 +73,6 @@ Modifications by Author
            ObservationType source
            Change EnumIterator to use Last value so as to avoid having to change it when adding new enums
            Migrate NavType to strongly typed enum
-           Move SatID/ObsID files out of GNSSEph into GNSSCore
            Move SatID/ObsID files out of GNSSEph into GNSSCore
            Move RINEX-specific code from ObsID to RinexObsID
            Migrate TimeSystem to strongly-typed enum class
@@ -70,21 +89,6 @@ Modifications by Author
            change CI sgltk branch to master in preparation for merge
            Move Yuma/SEM file support back into ext, as it depends on stuff in ext
            Fix merged code for enum changes
-
-     David Barber <dbarber@arlut.utexas.edu> (13):
-           Removed python bindings for rhel7/debian 7 for gitlab pipeline configuration files
-           Updated spec file for Removing python bindings for rhel7/debian 7 for gitlab pipeline configuration files
-           Remove python bindings for debian8
-           Removing python binding for deb8 package
-           Removing python binding for deb8 package
-           Updating debian package files
-           Updating debian package files
-           fixed logic in control file
-           fixed parameters
-           fixed parameters
-           fixed gpstk-bin dependency on deb8 packaging
-           fixed gpstk-bin dependency on deb8 packaging
-           remove allow_failure on sgltk_debian downstream job
 
 
 
