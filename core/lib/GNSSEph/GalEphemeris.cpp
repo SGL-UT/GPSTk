@@ -66,26 +66,9 @@ namespace gpstk
    // This function returns the health status of the SV.
    bool GalEphemeris::isHealthy(void) const
    {
-      try {
-         OrbitEph::isHealthy();     // ignore the return value; for dataLoaded check
-
-         // from RINEX 3.02 spec, A8:
-         if(health & 0x5)           // E1b, E5b and both Tgds are valid
-            return true;
-         if(health & 0x2)           // E5a and Tgba are valid
-            return true;
-
-         // but there seems to be contradictory information:
-         //if(health & 0x1)   // b1)         // E1b DVS is good
-         //if(health & 0x6)   // b110)       // E1b HS is good
-         //if(health & 0x8)   // b1000)      // E5a DVS is good
-         //if(health & 0x30)  // b110000)    // E5a HS is good
-         //if(health & 0x40)  // b1000000)   // E5b DVS is good
-         //if(health & 0x180) // b110000000) // E5b HS is good
-
-         return false;
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
+      if (health==Xvt::Healthy)
+         return true;
+      return false;
    }
 
    // adjustBeginningValidity determines the beginValid and endValid times.
@@ -172,6 +155,32 @@ namespace gpstk
       }
       catch(Exception& e) { GPSTK_RETHROW(e);
       }
+   }
+
+   Xvt::HealthStatus GalEphemeris::deriveHealth(const unsigned short SHS, 
+                                  const unsigned short DVS, 
+                                  const unsigned short SISA )
+   {
+      if (SHS==1 || SHS==3)
+         return Xvt::Unhealthy;
+
+      if (SHS==2)
+         return Xvt::Degraded;
+
+      if (SHS==0)
+      {
+         if (DVS==1)
+            return Xvt::Degraded;
+
+         if (DVS==0)
+         {
+            if (SISA==255)
+               return Xvt::Degraded; 
+            if (SISA<255)
+               return Xvt::Healthy;
+         }
+      }
+      return Xvt::Unknown;
    }
 
 } // end namespace
