@@ -7,12 +7,34 @@
 using namespace gpstk;
 %}
 
-   
-// Put these enum definitions first so that SWIG knows that they're
+
+// =============================================================
+//  Section 1: C++ template containers & typedefs
+// =============================================================
+%feature("autodoc", "1");
+%include "doc/doc.i"
+%include "std_string.i"
+%include "std_vector.i"
+%include "std_pair.i"
+%include "std_map.i"
+%include "std_list.i"
+%include "std_set.i"
+%include "std_multimap.i"
+%include "stdint.i"
+
+// =============================================================
+//  Section 1b: Enumerations
+// =============================================================
+// Put these enum definitions near the top so that SWIG knows that they're
 // enums, otherwise it will generate code treating them as objects.
-// =============================================================
-//  Section 0: C++ enum definitions
-// =============================================================
+
+// The gpstk::StringUtils generate a bunch of shadowing warnings, since SWIG can't tell them apart.
+// This may be fixed in SWIG 4.0.
+%ignore gpstk::StringUtils::asString;
+
+%include "gpstk_enum_typemaps.i"
+
+// Some enumerations don't have non-colliding string-conversion method names.  Can't use StringUtils::asString()
 %include "SatelliteSystem.hpp"
 %include "CarrierBand.hpp"
 %include "TrackingCode.hpp"
@@ -33,7 +55,9 @@ using namespace gpstk;
  * before generating code to use it, thus resulting in the enumeration
  * being handled like an object.  To resolve this issue, we have
  * inline forward declarations for the enums at the top of this
- * file. */
+ * file.
+ * However, this must occur _after_ the std*.i files are included, or it won't
+ * be able to handle things like python string conversions. */
 %pythoncode %{
 from enum import IntEnum
 def renameEnums(prefix):
@@ -55,19 +79,7 @@ del renameEnums
 del IntEnum
 %}
 
-// =============================================================
-//  Section 1: C++ template containers & typedefs
-// =============================================================
-%feature("autodoc", "1");
-%include "doc/doc.i"
-%include "std_string.i"
-%include "std_vector.i"
-%include "std_pair.i"
-%include "std_map.i"
-%include "std_list.i"
-%include "std_set.i"
-%include "std_multimap.i"
-%include "stdint.i"
+
 
  // Several clases have specifc .i files that
  // may override this
@@ -245,7 +257,7 @@ namespace std { class fstream {}; }
 %include "YumaAlmanacStore.hpp"
 
 %include "SVNumXRef.hpp"
-%include "RinexSatID.hpp"
+//%include "RinexSatID.hpp"
 
 %ignore gpstk::SV_ACCURACY_GPS_MIN_INDEX;
 %ignore gpstk::SV_ACCURACY_GPS_NOMINAL_INDEX;

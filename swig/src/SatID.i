@@ -11,8 +11,6 @@
    {return "<" + gpstk::StringUtils::asString(*$self) +">";}
 };
 
-%rename(__str__) gpstk::StringUitls::asString();
-
 %pythoncode %{
 # Define a hash to allow SatID objects to be used in sets/dicts   
 def __SatID_hash(self):

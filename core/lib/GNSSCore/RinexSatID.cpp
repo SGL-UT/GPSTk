@@ -47,7 +47,7 @@ namespace gpstk
    char RinexSatID::fillchar = '0';
 
    RinexSatID ::
-   RinexSatID(int p, const SatelliteSystem& s)
+   RinexSatID(int p, SatelliteSystem s)
       throw()
          : SatID(p, s)
    {
