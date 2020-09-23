@@ -595,9 +595,15 @@ package_conda:
   script:
     - conda activate conda_builder
     - export GIT_COMMIT=$CI_COMMIT_REF_NAME
+    # Build Conda Py36 package
     - conda-build conda_recipe_py36
+    # Build Conda Py27 package
+    - conda-build conda_recipe
+    # Copy files to local directory for archiving.
     - mkdir -p conda-bld
     - cp -r $CONDA_PREFIX/conda-bld/* conda-bld/
+    # Don't archive the cache files.
+    - rm -r conda-bld/linux-64/.cache
   artifacts:
     paths:
       - conda-bld/linux-64/
