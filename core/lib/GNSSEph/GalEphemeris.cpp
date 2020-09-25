@@ -73,12 +73,25 @@ namespace gpstk
 
    // adjustBeginningValidity determines the beginValid and endValid times.
    // @throw Invalid Request if the required data has not been stored.
+   // 
+   // NOTE: The Galileo ICD does not make the same sort of promises about 
+   // the relationship of t-sub-oe and beginning time of transmission as
+   // GPS.  Therefore, we should NOT adjust the beginValid time to be
+   // anything other than the earliest tranmit time we recorded.
+   //
+   // The end of validity presents a problem also.  There is no guidance in
+   // the ICD.  The only guidance in the SDD is "do not use beyond four hours
+   // from initial time of transmission".   We don't KNOW that the transmission
+   // time we have in hand is the earliest transmission.  Typically, the toe is 
+   // about ten minutes prior to the first time of transmission.   Therefore, 
+   // we will go with that. 
+   //
    void GalEphemeris::adjustValidity(void)
    {
       try {
          OrbitEph::adjustValidity();   // for dataLoaded check
-         beginValid = ctToe - fitDuration*1800.0;     // hours*3600/2
-         endValid = ctToe + fitDuration*1800.0;
+         beginValid = transmitTime;     
+         endValid = ctToe + (3600*4);  // Four hours
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }

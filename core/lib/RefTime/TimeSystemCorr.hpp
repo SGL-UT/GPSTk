@@ -67,6 +67,7 @@ namespace gpstk
          SBUT,    ///< SBAS to UTC using A0, A1, incl. provider and UTC ID
          GLUT,    ///< GLO  to UTC using A0 = -TauC , A1 = 0
          GPGA,    ///< GPS  to GAL using A0 = A0G   , A1 = A1G
+         GAGP,    ///< GPS  to GAL using A0 = A0G   , A1 = A1G
          GLGP,    ///< GLO  to GPS using A0 = -TauGPS, A1 = 0
          QZGP,    ///< QZS  to GPS using A0, A1
          QZUT,    ///< QZS  to UTC using A0, A1

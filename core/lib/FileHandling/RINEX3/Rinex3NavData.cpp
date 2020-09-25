@@ -63,7 +63,7 @@ namespace gpstk
       sat = RinexSatID(PRNID,SatelliteSystem::GPS);
       xmitTime = rnd.getXmitWS().sow;
       weeknum = rnd.getXmitWS().week;
-      accuracy = rnd.accuracy;    
+      accuracy = rnd.accuracy;
       health = rnd.health;
 
       // flags
@@ -443,7 +443,7 @@ namespace gpstk
       s << " Toc " << Toc << scientific << setprecision(12)
          << " af0 " << af0 << " af1 " << af1 << " af2 " << af2
          << " Tgd " << Tgd << " Tgd2 " << Tgd2 << endl;
-                                                  
+
       s << " M0 " << M0 << " Ecc " << ecc << " sqrtA " << Ahalf << " OM "
         << OMEGA0 << endl;
       s << " i0 " << i0 << " om " << w << " dOMdt " << OMEGAdot << " didt "
@@ -814,6 +814,9 @@ namespace gpstk
       gale.ctToc.setTimeSystem(TimeSystem::GAL);
 
       // now load the Galileo-specific parts
+      // NOTE: The Galileo fit interval is not defined in the message;
+      // However, the SDD states that the data shall not be used bryond
+      // four hours from initial time of transmission.
       gale.IODnav = IODnav;
       //gale.health = health;
       gale.accuracy = accuracy;
@@ -822,23 +825,23 @@ namespace gpstk
       gale.datasources = datasources;
       gale.fitDuration = 4;
 
-      // In RINEX, the SISA value has already been translated 
-      // to accuracy.  A SISA value of 255 is given tha 
+      // In RINEX, the SISA value has already been translated
+      // to accuracy.  A SISA value of 255 is given tha
       // accuracy value of -1.   For purposes of the deriveHealth()
-      // method, we need a value from 0-255.  deriveHealth() only 
-      // cares about 255 or "not 255".  
+      // method, we need a value from 0-255.  deriveHealth() only
+      // cares about 255 or "not 255".
       unsigned short SISA = 255;
       if (accuracy!=-1)
-         SISA = 1; 
+         SISA = 1;
 
       // The RINEX "health" field contains a variety
       // of bit-encoded information, including the DVS
-      // HS values (RINEX 3.04, Table A8). 
-      // Based on the data source,  
+      // HS values (RINEX 3.04, Table A8).
+      // Based on the data source,
       // derive DVS and HS bit values for this message.
       //
-      // Default to the values for F/NAV (E5a) 
-      unsigned shiftDVS = 3; 
+      // Default to the values for F/NAV (E5a)
+      unsigned shiftDVS = 3;
       unsigned shiftHS  = 4;
       if ( (datasources & 0x01) !=0 )  // I/NAV (E1B)
       {
@@ -850,8 +853,8 @@ namespace gpstk
          shiftDVS = 6;
          shiftHS  = 7;
       }
-      unsigned short DVS = (health >> shiftDVS) & 0x01; 
-      unsigned short HS  = (health >> shiftHS)  & 0x03; 
+      unsigned short DVS = (health >> shiftDVS) & 0x01;
+      unsigned short HS  = (health >> shiftHS)  & 0x03;
 
       gale.health = GalEphemeris::deriveHealth(HS,DVS,SISA);
 

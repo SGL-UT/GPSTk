@@ -389,6 +389,7 @@ namespace gpstk
                tc.type == TimeSystemCorrection::BDUT ||        // TD ?
                tc.type == TimeSystemCorrection::GPUT ||
                tc.type == TimeSystemCorrection::GPGA ||
+               tc.type == TimeSystemCorrection::GAGP ||
                tc.type == TimeSystemCorrection::QZGP ||
                tc.type == TimeSystemCorrection::QZUT)
 
