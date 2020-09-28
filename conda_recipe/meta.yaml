@@ -19,11 +19,11 @@ requirements:
     - python=2.7
     - setuptools
     - numpy {{ numpy }}
-    - enum34  # [py<=35]
+    - enum34
   run:
     - python=2.7
     - {{ pin_compatible('numpy') }}
-    - enum34  # [py<=35]
+    - enum34
 
 test:
   imports:
