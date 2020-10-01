@@ -403,7 +403,7 @@ namespace gpstk
                         goNext = true;
                      }
                   }
-                  else if(data.RecType == 'P' && !data.correlationFlag)
+                  else if(data.RecType == 'P')
                   {
                         // P
                         //cout << "P record: "; data.dump(cout); cout << endl;
@@ -433,8 +433,27 @@ namespace gpstk
 
                         haveP = true;
                      }
+                     if (data.correlationFlag)
+                     {
+                           // EP
+                           //cout << "EP record: "; data.dump(cout); cout << endl;
+                        if(haveEP)
+                           goNext = false;
+                        else
+                        {
+                           for(i=0; i<3; i++)
+                              prec.sigPos[i] = data.sdev[i];
+                           if(fillClockStore)
+                              crec.sig_bias = data.sdev[3] * 1.e-6;// picosec -> microsec
+
+                           if(data.orbitPredFlag) predP = true;
+                           if(data.clockPredFlag) predC = true;
+
+                           haveEP = true;
+                        }
+                     }
                   }
-                  else if(data.RecType == 'V' && !data.correlationFlag)
+                  else if(data.RecType == 'V')
                   {
                         // V
                         //cout << "V record: "; data.dump(cout); cout << endl;
@@ -466,46 +485,27 @@ namespace gpstk
 
                         haveV = true;
                      }
-                  }
-                  else if(data.RecType == 'P' && data.correlationFlag)
-                  {
-                        // EP
-                        //cout << "EP record: "; data.dump(cout); cout << endl;
-                     if(haveEP)
-                        goNext = false;
-                     else
+                     if (data.correlationFlag)
                      {
-                        for(i=0; i<3; i++)
-                           prec.sigPos[i] = data.sdev[i];
-                        if(fillClockStore)
-                           crec.sig_bias = data.sdev[3] * 1.e-6;// picosec -> microsec
+                           // EV
+                           //cout << "EV record: "; data.dump(cout); cout << endl;
+                        if(haveEV)
+                           goNext = false;
+                        else
+                        {
+                           for(i=0; i<3; i++)
+                              prec.sigVel[i] = data.sdev[i]; // 10-4mm/s
 
-                        if(data.orbitPredFlag) predP = true;
-                        if(data.clockPredFlag) predC = true;
+                           if(fillClockStore)
+                              crec.sig_drift = data.sdev[3]*1.0e-10;// 10-4ps/s->micros/s
 
-                        haveEP = true;
-                     }
-                  }
-                  else if(data.RecType == 'V' && data.correlationFlag)
-                  {
-                        // EV
-                        //cout << "EV record: "; data.dump(cout); cout << endl;
-                     if(haveEV)
-                        goNext = false;
-                     else
-                     {
-                        for(i=0; i<3; i++)
-                           prec.sigVel[i] = data.sdev[i]; // 10-4mm/s
+                           if(data.orbitPredFlag)
+                              predP = true;
+                           if(data.clockPredFlag)
+                              predC = true;
 
-                        if(fillClockStore)
-                           crec.sig_drift = data.sdev[3]*1.0e-10;// 10-4ps/s->micros/s
-
-                        if(data.orbitPredFlag)
-                           predP = true;
-                        if(data.clockPredFlag)
-                           predC = true;
-
-                        haveEV = true;
+                           haveEV = true;
+                        }
                      }
                   }
                   else
