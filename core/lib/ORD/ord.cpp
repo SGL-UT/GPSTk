@@ -274,5 +274,51 @@ double TroposphereCorrection(const gpstk::TropModel& tropModel,
     return trop;
 }
 
+double calculate_ord(const std::vector<double>& frequencies,
+                     const std::vector<double>& pseudoranges, const gpstk::Position& rx_loc,
+                     const gpstk::SatID& sat_id, const gpstk::CommonTime& transmit_time,
+                     const gpstk::CommonTime& receive_time,
+                     const gpstk::IonoModelStore& iono_model,
+                     const gpstk::TropModel& trop_model,
+                     const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method) {
+    double ps_range = IonosphereFreeRange(frequencies, pseudoranges);
+
+    gpstk::Xvt sv_xvt;
+    // find raw_range
+    double range = 0;
+    switch (range_method) {
+        case 1:
+            range = RawRange1(rx_loc, sat_id, receive_time, ephemeris, sv_xvt);
+            break;
+        case 2:
+            range = RawRange2(ps_range, rx_loc, sat_id, receive_time, ephemeris,
+                              sv_xvt);
+            break;
+        case 3:
+            range = RawRange3(ps_range, rx_loc, sat_id, transmit_time, ephemeris,
+                              sv_xvt);
+            break;
+        case 4:
+            range = RawRange4(rx_loc, sat_id, receive_time, ephemeris, sv_xvt);
+            break;
+    }
+
+    // apply sv relativity correction
+    range += SvRelativityCorrection(sv_xvt);
+
+    // apply sv clock bias correction
+    range += SvClockBiasCorrection(sv_xvt);
+
+    // apply troposphere model correction
+    range += TroposphereCorrection(trop_model, rx_loc, sv_xvt);
+
+    // apply ionosphere model correction
+    range += IonosphereModelCorrection(iono_model, receive_time,
+                                       frequencies[0],
+                                       rx_loc, sv_xvt);
+
+    return ps_range - range;
+}
+
 }  // namespace ord
 }  // namespace gpstk
