@@ -128,6 +128,7 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 74,III ));
    NtoBMap.insert( make_pair( 75,III ));
    NtoBMap.insert( make_pair( 76,III ));
+   NtoBMap.insert( make_pair( 77,III ));
 
       // Note: This table start with Block I values
       // Set up NAVSTAR -> PRN ID relationship
@@ -357,9 +358,10 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 40, XRefNode( 10, 
                                        CivilTime( 1996,  7, 16,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2015,  8, 3,  23,  59,  59.9, TimeSystem::GPS))));
+   // NANU 2020034 DECOM on 07/09/2020.  Last Transmission observed shortly before 1600 on 7/27/20
    NtoPMap.insert( std::pair<const int, XRefNode>( 41, XRefNode( 14, 
                                        CivilTime( 2000, 11, 10,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2020,  7, 27, 16,  0,  0.0, TimeSystem::GPS))));
       // no NAVSTAR 42, IIR-1 was a launch failure
    NtoPMap.insert( std::pair<const int, XRefNode>( 43, XRefNode( 13, 
                                        CivilTime( 1997,  7, 23,  0,  0,  0.0, TimeSystem::GPS),
@@ -534,6 +536,11 @@ SVNumXRef::SVNumXRef( )
    // First transmission observed on 7/14
    NtoPMap.insert( std::pair<const int, XRefNode>( 76, XRefNode(  23,
                                        CivilTime( 2020,  7, 14,  0,  0, 0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
+   //NANU 20200xx LAUNCH
+   // First transmission observed on xx/xx
+   NtoPMap.insert( std::pair<const int, XRefNode>( 77, XRefNode(  14,
+                                       CivilTime( 2020, 10,  3,  0,  0, 0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
                                        
       //Iterate through the data to produce the PtoNMap
@@ -767,14 +774,15 @@ bool SVNumXRef::isConsistent() const
 	     if (tr1.overlaps(tr2))
 	       {
 		 retVal = false;
-		 std::cout << "Overlap between SV"
+       string tform("%02m/%02d/%04Y %02H:%02M:%02S");
+		 std::cout << "Overlap between SVN"
 			   << setw(2) << key1 << "/PRN"
-			   << setw(2) << val1 << "at"
-			   << tr1.printf() << endl;
-		 std::cout << "            and"
+			   << setw(2) << val1 << " at "
+			   << tr1.printf(tform) << endl;
+		 std::cout << "            and SVN"
 			   << setw(2) << key2 << "/PRN"
-			   << setw(2) << val2 << "at"
-			   << tr2.printf() << endl;
+			   << setw(2) << val2 << " at "
+			   << tr2.printf(tform) << endl;
 	       }
 	   }
     
