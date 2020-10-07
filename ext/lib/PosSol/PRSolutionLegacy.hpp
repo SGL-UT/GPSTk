@@ -35,7 +35,7 @@
 //=============================================================================
 
 /**
- * @file PRSolution2.hpp
+ * @file PRSolutionLegacy.hpp
  * Autonomous pseudorange navigation solution, including RAIM algorithm
  */
  
