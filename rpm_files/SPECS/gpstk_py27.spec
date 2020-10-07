@@ -1,16 +1,16 @@
 %define name python-gpstk
 %define version 7.0.0
-%define release 1
+%define release 2
 
 Summary:        GPS Toolkit
 Name:           %{name}
 Version:        %{version}
-Release:        %{release}
+Release:        %{release}%{?dist}
 License:        LGPL
 Source:         %{name}-master.tar.gz
 URL:            https://github.com/SGL-UT/GPSTk
 Group:          Development/Libraries
-Requires:       gpstk >= 3.1.0-2
+Requires:       gpstk >= %{version}
 Requires:       python-pip
 BuildRequires:  cmake
 BuildRequires:  swig
@@ -33,13 +33,13 @@ The primary goals of the GPSTk project are to:
 %build
 mkdir build
 cd build
-cmake -DPYTHON_INSTALL_PREFIX=$RPM_BUILD_ROOT/ -DCMAKE_INSTALL_PREFIX=/ -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DBUILD_FOR_PACKAGE_SWITCH=ON ../
+cmake -DPYTHON_INSTALL_PREFIX=$RPM_BUILD_ROOT/ -DCMAKE_INSTALL_PREFIX=$RPM_BUILD_ROOT/usr -DBUILD_EXT=ON -DBUILD_PYTHON=ON -DBUILD_FOR_PACKAGE_SWITCH=ON ../
 make all -j 4
 
 # Install bin/lib/include folders in RPM BUILDROOT for packaging
 %install
 cd build
-make install -j 4 DESTDIR=$RPM_BUILD_ROOT/usr
+make install -j 4
 # Currently the CMAKE installer cannot install python only, so we need to delete the non-python files.
 rm -rf $RPM_BUILD_ROOT/usr/README.md
 find $RPM_BUILD_ROOT/usr/include/gpstk ! -name "*.i" ! -name "gpstk_swig.hpp" -type f -exec rm {} +
