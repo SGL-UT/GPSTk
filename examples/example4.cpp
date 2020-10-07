@@ -65,7 +65,7 @@
 #include "GPSEphemerisStore.hpp"
 
    // Class for handling RAIM
-#include "PRSolution2.hpp"
+#include "PRSolutionLegacy.hpp"
 
    // Class defining GPS system constants
 #include "GNSSconstants.hpp"
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
       // Declaration of objects for storing ephemerides and handling RAIM
    GPSEphemerisStore bcestore;
-   PRSolution2 raimSolver;
+   PRSolutionLegacy raimSolver;
 
       // Object for void-type tropospheric model (in case no meteorological
       // RINEX is available)
@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
 
             }  // End of 'for( it = rod.obs.begin(); it!= rod.obs.end(); ...'
 
-               // The default constructor for PRSolution2 objects (like
+               // The default constructor for PRSolutionLegacy objects (like
                // "raimSolver") is to set a RMSLimit of 6.5. We change that
                // here. With this value of 3e6 the solution will have a lot
                // more dispersion.
