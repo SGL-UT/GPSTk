@@ -2,7 +2,7 @@
 
 """
 An example reading a RINEX obs, nav and met file and using
-PRSolution2 to computer a receiver position and compare
+PRSolutionLegacy to computer a receiver position and compare
 this to the position in the obs header.
 """
 import gpstk
@@ -24,7 +24,7 @@ obsHeader, obsData = gpstk.readRinex3Obs(obsfn)
 
 indexP1 = obsHeader.getObsIndex('C1W')
 indexP2 = obsHeader.getObsIndex('C2W')
-raimSolver = gpstk.PRSolution2()
+raimSolver = gpstk.PRSolutionLegacy()
 
 for obsObj in obsData:
     for metObj in metData:
@@ -88,7 +88,7 @@ for obsObj in obsData:
             # is done on data: Relativistic effects, tropospheric
             # correction, instrumental delays, etc
 
-        # The default constructor for PRSolution2 objects (like
+        # The default constructor for PRSolutionLegacy objects (like
         # "raimSolver") is to set a RMSLimit of 6.5. We change that
         # here. With this value of 3e6 the solution will have a lot
         # more dispersion.
@@ -102,7 +102,7 @@ for obsObj in obsData:
 
         time = obsObj.time
 
-        # the RAIMComputer method of PRSolution2 accepts a vector<SatID> as its
+        # the RAIMComputer method of PRSolutionLegacy accepts a vector<SatID> as its
         # 2nd argument, but the list is of RinexSatID, which is a subclass of SatID.
         # Since C++ containers are NOT covariant, it is neccessary to change the
         # output to a vector or SatID's rather thta a vector of RinexSatID's.

@@ -368,7 +368,7 @@ namespace std { class fstream {}; }
 %include "NeillTropModel.hpp"
 %include "SaasTropModel.hpp"
 %include "SimpleTropModel.hpp"
-%include "PRSolution2.hpp"
+%include "PRSolutionLegacy.hpp"
 %ignore gpstk::Expression::print(std::ostream& ostr) const;
 %include "Expression.hpp"
 
