@@ -756,37 +756,36 @@ bool SVNumXRef::isConsistent() const
    // loops through the multimap
    for (cit1 = NtoPMap.begin(); cit1 != NtoPMap.end(); cit1++)
    {
-     cit2 = cit1;
-     cit2++;  // cit2 always starts the nested loop one higher than cit1
-     for (; cit2 != NtoPMap.end(); cit2++)
-       {
-	 int key1 = cit1->first;		// keys represent the SVN numbers
-	 int key2 = cit2->first;
-	 const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
-	 const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
-	 int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
-	 int val2 = xr2.getPRNNum();
+      cit2 = cit1;
+      cit2++;  // cit2 always starts the nested loop one higher than cit1
+      for (; cit2 != NtoPMap.end(); cit2++)
+      {
+	      int key1 = cit1->first;		// keys represent the SVN numbers
+	      int key2 = cit2->first;
+	      const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
+	      const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
+	      int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
+	      int val2 = xr2.getPRNNum();
 	 
-	 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
-	   {
-	     const TimeRange& tr1 = xr1.getTimeRange();
-	     const TimeRange& tr2 = xr2.getTimeRange();
-	     if (tr1.overlaps(tr2))
-	       {
-		 retVal = false;
-       string tform("%02m/%02d/%04Y %02H:%02M:%02S");
-		 std::cout << "Overlap between SVN"
-			   << setw(2) << key1 << "/PRN"
-			   << setw(2) << val1 << " at "
-			   << tr1.printf(tform) << endl;
-		 std::cout << "            and SVN"
-			   << setw(2) << key2 << "/PRN"
-			   << setw(2) << val2 << " at "
-			   << tr2.printf(tform) << endl;
-	       }
-	   }
-    
-       }
+	      if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
+	      {
+	         const TimeRange& tr1 = xr1.getTimeRange();
+	         const TimeRange& tr2 = xr2.getTimeRange();
+	         if (tr1.overlaps(tr2))
+	         {
+ 		         retVal = false;
+               string tform("%02m/%02d/%04Y %02H:%02M:%02S");
+		         std::cout << "Overlap between SVN"
+			                << setw(2) << key1 << "/PRN"
+			                << setw(2) << val1 << " at "
+			                << tr1.printf(tform) << endl;
+   		      std::cout << "            and SVN"
+			                << setw(2) << key2 << "/PRN"
+			                << setw(2) << val2 << " at "
+			                << tr2.printf(tform) << endl;
+	         }
+	      }
+      }
    }
    return retVal;					// if we reach this point, we know there are no overlaps
 }      
