@@ -667,7 +667,7 @@ package_redhat_8:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix gpstk-master/ -o rpm_files/SOURCES/gpstk-master.tar.gz HEAD
     - pushd rpm_files
-    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk.spec
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" --define "_build_id_links none" -ba SPECS/gpstk.spec
   artifacts:
     paths:
       - rpm_files/RPMS/x86_64/gpstk-*
@@ -685,7 +685,7 @@ package_redhat_8_py36:
     - bash rpm_files/setup_dirs.sh
     - git archive --prefix python3-gpstk-master/ -o rpm_files/SOURCES/python3-gpstk-master.tar.gz HEAD
     - pushd rpm_files
-    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" -ba SPECS/gpstk_py36.spec
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" --define "_build_id_links none" -ba SPECS/gpstk_py36.spec
   artifacts:
     paths:
       - rpm_files/RPMS/x86_64/python3-gpstk-*
