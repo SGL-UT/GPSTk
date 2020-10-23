@@ -59,6 +59,24 @@ static_analysis:
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
 
+# sgl_lint will verify that source files have proper copyright.
+sgllint_lint:
+  stage: check
+  needs: []
+  extends: .normal_job
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos7_conda_py27:latest
+  script:
+    - '######'
+    - '# This job checks all files for required lines, like copyright statements and __future__ import statements.'
+    - '######'
+    - conda activate py27
+    # Obtain the latest version of ./sgl_lint.py
+    - git clone --depth 1 https://${CI_USER}:${CI_TOKEN}@${REPO_HOST}/sgl/repo_utils.git
+    - python repo_utils/sgl_lint.py -v -R core
+  dependencies: []
+
 # Runs the documentation generation
 generate_documentation:
   stage: check
