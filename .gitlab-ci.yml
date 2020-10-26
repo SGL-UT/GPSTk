@@ -19,6 +19,7 @@ variables:
   #  GIT_CLEAN_FLAGS: none
   # This can be set to True by Gitlab UI to only build/test packages.
   RELEASE_ONLY: "False"
+  REPO_HOST: "repositories.arlut.utexas.edu"
 
 # Template for all normal jobs.
 .normal_job:
@@ -806,7 +807,7 @@ sgltk_debian:
   image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd build
-    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://${CI_USER}:${CI_TOKEN}@${REPO_HOST}/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
@@ -826,7 +827,7 @@ sgltk_redhat:
   image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - cd build
-    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://${CI_USER}:${CI_TOKEN}@${REPO_HOST}/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
