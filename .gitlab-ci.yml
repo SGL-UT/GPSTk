@@ -1,5 +1,9 @@
 #.yml file for Gitlab-CI support
 
+# Note that the following tokens must be supplied via the Gitlab Repository Settings:
+# - CI_USER: username to pull from gitlab repository
+# - CI_TOKEN: password to pull from gitlab repository
+
 stages:
 - check
 - build
@@ -11,6 +15,7 @@ stages:
 
 # Default cmake arguments
 variables:
+  REPO_HOST: "repositories.arlut.utexas.edu"
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
   # this is usually set to master, unless there are downstream dependencies
   SGLTK_BRANCH: master
