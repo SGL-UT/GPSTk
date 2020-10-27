@@ -1,5 +1,9 @@
 #.yml file for Gitlab-CI support
 
+# Note that the following tokens must be supplied via the Gitlab Repository Settings:
+# - CI_USER: username to pull from gitlab repository
+# - CI_TOKEN: password to pull from gitlab repository
+
 stages:
 - check
 - build
