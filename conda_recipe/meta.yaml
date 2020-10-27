@@ -1,10 +1,13 @@
+{% set build_user = environ.get('CI_USER', '') %}
+{% set build_token = environ.get('CI_TOKEN', '') %}
+
 package:
   name: gpstk
   version: {{ environ.get('GIT_DESCRIBE_TAG', 'v0.0')[1:] }}
 
 source:
   git_rev: {{ environ.get('GIT_COMMIT', 'master') }}
-  git_url: https://repositories.arlut.utexas.edu/sgl/gpstk.git
+  git_url: https://{{build_user}}:{{build_token}}@repositories.arlut.utexas.edu/sgl/gpstk.git
 
 build:
   number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
