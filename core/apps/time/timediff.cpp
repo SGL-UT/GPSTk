@@ -16,7 +16,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  This software developed by Applied Research Laboratories at the University of Texas at Austin.
+//  This software was developed by Applied Research Laboratories at the University of Texas at Austin.
 //  Copyright 2004-2020, The Board of Regents of The University of Texas System
 //
 //============================================================================
