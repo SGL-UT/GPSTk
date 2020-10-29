@@ -15,6 +15,7 @@ stages:
 
 # Default cmake arguments
 variables:
+  REPO_HOST: "repositories.arlut.utexas.edu"
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
   # this is usually set to master, unless there are downstream dependencies
   SGLTK_BRANCH: master
@@ -63,6 +64,27 @@ static_analysis:
     - ./lint_test.sh
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
+
+# sgl_lint will verify that source files have proper copyright.
+sgllint_lint:
+  stage: check
+  needs: []
+  extends: .normal_job
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos7_conda_py27:latest
+  script:
+    - '######'
+    - '# This job checks all files for required lines like copyright/license statements.'
+    - '######'
+    - conda activate py27
+    # Obtain the latest version of ./sgl_lint.py
+    - git clone --depth 1 https://${CI_USER}:${CI_TOKEN}@${REPO_HOST}/sgl/repo_utils.git
+    - python repo_utils/sgl_lint.py -v -R core
+    - python repo_utils/sgl_lint.py -v -R ext
+    - python repo_utils/sgl_lint.py -v -R swig/apps
+    - python repo_utils/sgl_lint.py -v -R swig/gpstk
+  dependencies: []
 
 # Runs the documentation generation
 generate_documentation:
