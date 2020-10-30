@@ -88,8 +88,10 @@ namespace gpstk
    const double L2_MULT_GPS   = 120.0;
       /// GPS L5 frequency in units of oscillator frequency.
    const double L5_MULT_GPS   = 115.0;
-      /// GPS Gamma constant
-   const double GAMMA_GPS = 1.646944444;
+      /// GPS Gamma constants
+   const double GAMMA_GPS_12 = (L1_MULT_GPS/L2_MULT_GPS) * (L1_MULT_GPS/L2_MULT_GPS);
+   const double GAMMA_GPS_15 = (L1_MULT_GPS/L5_MULT_GPS) * (L1_MULT_GPS/L5_MULT_GPS);
+   const double GAMMA_GPS = 1.646944444;  // legacy notation and hard-coded value; wherefore the extra "44"??
       /// Reference Semi-major axis. From IS-GPS-800 Table 3.5-2 in meters.
    const double A_REF_GPS = 26559710.0;
       /// Omega reference value from Table 30-I converted to radians

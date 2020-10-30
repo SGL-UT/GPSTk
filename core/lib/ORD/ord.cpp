@@ -99,14 +99,14 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
     const double gamma = (frequencies[0]/frequencies[1]) *
                          (frequencies[0]/frequencies[1]);
 
-    // for dual frequency see IS-GPS-200, section 20.3.3.3.3.3
+    // for dual-frequency see IS-GPS-200, section 20.3.3.3.3.3
     double icpr = (pseudoranges[1] - gamma * pseudoranges[0])/(1-gamma);
 
     return icpr;
 }
 
 double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
-        const gpstk::CommonTime& time, double freq,
+        const gpstk::CommonTime& time, CarrierBand band,
         const gpstk::Position& rxLoc, const gpstk::Xvt& svXvt) {
     Position trx(rxLoc);
     Position svPos(svXvt);
@@ -114,11 +114,9 @@ double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
     double elevation = trx.elevation(svPos);
     double azimuth = trx.azimuth(svPos);
 
-    // TODO(someone): IonoModel assumes only L1 and L2 frequencies, this
-    // should be updated to work with an arbitrary frequency.
     double iono = ionoModel.getCorrection(time, trx,
                                           elevation, azimuth,
-                                          IonoModel::L1);
+                                          band);
     return -iono;
 }
 

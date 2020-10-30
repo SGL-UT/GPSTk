@@ -141,7 +141,7 @@ public:
       TUDEF("ObsRngDev", "IonosphericConstructor");
 
       gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
-      gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;
+      gpstk::CarrierBand L1 = gpstk::CarrierBand::L1;
 
       try
       {
@@ -229,7 +229,7 @@ public:
 
       gpstk::SimpleTropModel stm(18.8889, 1021.2176, 77.7777);
       gpstk::IonoModelStore ims = ionoModelStoreGen(cTimeVec);
-      gpstk::IonoModel::Frequency L1 = gpstk::IonoModel::L1;		
+      gpstk::CarrierBand L1 = gpstk::CarrierBand::L1;
 
       try
       {

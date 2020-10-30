@@ -72,9 +72,6 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
 
 /// Given an ionosphere model, and locations of receiver and satellite,
 /// range correction due to ionospheric effects.
-/// TODO(someone): IonoModel assumes only L1 and L2 frequencies, this
-/// should be updated to work with an arbitrary frequency.  Currently
-/// This call assumes frequency is L1.
 /// @param ionoModel Class that encapsulates ionospheric models
 /// @params time The time of interest.
 /// @params frequency Frequency of interest - see note above.
@@ -82,7 +79,7 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
 /// @param sv_loc The location of the satellite at time of interest.
 /// @return Range correction (delta) in meters
 double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
-        const gpstk::CommonTime& time, double frequency,
+        const gpstk::CommonTime& time, CarrierBand band,
         const gpstk::Position& rxLoc, const gpstk::Xvt& svXvt);
 
 /// Given a satellite id, a time, and an ephemeris store, retrieves the
@@ -185,7 +182,56 @@ double calculate_ord(const std::vector<double>& frequencies,
         const gpstk::CommonTime& receive_time,
         const gpstk::IonoModelStore& iono_model,
         const gpstk::TropModel& trop_model,
-        const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method);
+        const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method) {
+    double ps_range = IonosphereFreeRange(frequencies, pseudoranges);
+
+    gpstk::Xvt sv_xvt;
+    // find raw_range
+    double range = 0;
+    switch (range_method) {
+    case 1:
+        range = RawRange1(rx_loc, sat_id, receive_time, ephemeris, sv_xvt);
+        break;
+    case 2:
+        range = RawRange2(ps_range, rx_loc, sat_id, receive_time, ephemeris,
+                sv_xvt);
+        break;
+    case 3:
+        range = RawRange3(ps_range, rx_loc, sat_id, transmit_time, ephemeris,
+                sv_xvt);
+        break;
+    case 4:
+        range = RawRange4(rx_loc, sat_id, receive_time, ephemeris, sv_xvt);
+        break;
+    }
+
+    // apply sv relativity correction
+    range += SvRelativityCorrection(sv_xvt);
+
+    // apply sv clock bias correction
+    range += SvClockBiasCorrection(sv_xvt);
+
+    // apply troposphere model correction
+    range += TroposphereCorrection(trop_model, rx_loc, sv_xvt);
+
+    // apply ionosphere model correction
+    CarrierBand band = CarrierBand::L1;
+    if (frequencies[0] == OSC_FREQ_GPS*L1_MULT_GPS)
+    {
+        band = CarrierBand::L1;
+    }
+    else if (frequencies[0] == OSC_FREQ_GPS*L2_MULT_GPS)
+    {
+        band = CarrierBand::L2;
+    }
+    else if (frequencies[0] == OSC_FREQ_GPS*L5_MULT_GPS)
+    {
+        band = CarrierBand::L5;
+    }
+    range += IonosphereModelCorrection(iono_model, receive_time, band, rx_loc, sv_xvt);
+
+    return ps_range - range;
+}
 
 }  // namespace ord
 }  // namespace gpstk

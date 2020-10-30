@@ -47,6 +47,7 @@
 
 #include <map>
 #include "CommonTime.hpp"
+#include "CarrierBand.hpp"
 #include "IonoModel.hpp"
 
 namespace gpstk
@@ -85,7 +86,7 @@ namespace gpstk
           * @param rxgeo the WGS84 geodetic position of the receiver
           * @param svel the elevation angle between the rx and SV (degrees)
           * @param svaz the azimuth angle between the rx and SV (degrees)
-          * @param freq the GPS frequency the observation was made from
+          * @param freq the GPS band the observation was made from
           * @return the ionospheric correction (meters)
           * @throw NoIonoModelFound
           */
@@ -93,7 +94,7 @@ namespace gpstk
                                    const Position& rxgeo,
                                    double svel,
                                    double svaz,
-                                   IonoModel::Frequency freq = IonoModel::L1)
+                                   CarrierBand band = CarrierBand::L1)
          const;
 
 

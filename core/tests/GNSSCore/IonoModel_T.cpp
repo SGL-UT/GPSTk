@@ -211,7 +211,7 @@ int IonoModel_T :: exceptionTest( void )
 
 
     // //----------------------------------------
-    // // What the hell is this? Commenting it out until someone else figures it out.
+    // // What is this? Commenting it out until someone else figures it out.
     // //----------------------------------------
     //
     // try
@@ -227,7 +227,7 @@ int IonoModel_T :: exceptionTest( void )
     //---------------------------------------- 
     try
     {
-        Model.getCorrection( commonTime, rxgeo,svel, svaz, Model.L1 );
+        Model.getCorrection( commonTime, rxgeo,svel, svaz, CarrierBand::L1 );
         assert_message = "getCorrection(), This test should have thrown an InvalidIonoModel exception";
         test4.assert( false, assert_message, __LINE__ );
     }
@@ -245,7 +245,7 @@ int IonoModel_T :: exceptionTest( void )
     //---------------------------------------- 
     try
     {
-        goodModel.getCorrection( commonTime, rxgeo, svel, svaz, Model.L1 );
+        goodModel.getCorrection( commonTime, rxgeo, svel, svaz, CarrierBand::L1 );
         assert_message = "getCorrection( L1 ), This test should NOT throw an exception";
         test4.assert( true, assert_message, __LINE__ );
     }
@@ -265,7 +265,7 @@ int IonoModel_T :: exceptionTest( void )
     //---------------------------------------- 
     try
     {
-        goodModel.getCorrection( commonTime, rxgeo, svel, svaz, Model.L2 );
+        goodModel.getCorrection( commonTime, rxgeo, svel, svaz, CarrierBand::L2 );
         assert_message = "getCorrection( L2 ), This test should NOT throw an exception";
         test4.assert( true, assert_message, __LINE__ );
     }
@@ -285,7 +285,7 @@ int IonoModel_T :: exceptionTest( void )
     //---------------------------------------- 
     try
     {
-        goodModel.getCorrection(commonTime,rxgeo,72.,45.,Model.L1);
+        goodModel.getCorrection( commonTime, rxgeo, 72., 45., CarrierBand::L1 );
         assert_message = "getCorrection( commonTime,rxgeo,72.,45.,Model.L1 ), This test should NOT throw an exception";
         test4.assert( true, assert_message, __LINE__ );
     }
