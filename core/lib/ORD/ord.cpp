@@ -114,9 +114,7 @@ double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
     double elevation = trx.elevation(svPos);
     double azimuth = trx.azimuth(svPos);
 
-    double iono = ionoModel.getCorrection(time, trx,
-                                          elevation, azimuth,
-                                          band);
+    double iono = ionoModel.getCorrection(time, trx, elevation, azimuth, band);
     return -iono;
 }
 

@@ -215,7 +215,7 @@ double calculate_ord(const std::vector<double>& frequencies,
     range += TroposphereCorrection(trop_model, rx_loc, sv_xvt);
 
     // apply ionosphere model correction
-    CarrierBand band = CarrierBand::L1;
+    CarrierBand band;
     if (frequencies[0] == OSC_FREQ_GPS*L1_MULT_GPS)
     {
         band = CarrierBand::L1;
@@ -227,6 +227,10 @@ double calculate_ord(const std::vector<double>& frequencies,
     else if (frequencies[0] == OSC_FREQ_GPS*L5_MULT_GPS)
     {
         band = CarrierBand::L5;
+    }
+    else
+    {
+        throw CarrierBand::InvalidIonoModel("Invalid CarrierBand, not one of L1,L2,L5.");
     }
     range += IonosphereModelCorrection(iono_model, receive_time, band, rx_loc, sv_xvt);
 

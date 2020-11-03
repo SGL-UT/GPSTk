@@ -150,6 +150,10 @@ namespace gpstk
       {
          t_iono *= GAMMA_GPS_15;  //  GAMMA_GPS = (fL1 / fL5)^2
       }
+      else if (band != CarrierBand::L1)
+      {
+         throw InvalidIonoModel("Invalid CarrierBand, not one of L1,L2,L5.");
+      }
 
       double correction = t_iono * C_MPS;  // return correction in [m]
 
