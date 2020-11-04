@@ -230,7 +230,7 @@ double calculate_ord(const std::vector<double>& frequencies,
     }
     else
     {
-        throw CarrierBand::InvalidIonoModel("Invalid CarrierBand, not one of L1,L2,L5.");
+        throw IonoModel::InvalidIonoModel("Invalid CarrierBand, not one of L1,L2,L5.");
     }
     range += IonosphereModelCorrection(iono_model, receive_time, band, rx_loc, sv_xvt);
 
