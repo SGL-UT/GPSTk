@@ -2,6 +2,8 @@
 //              Python stuff
 ///////////////////////////////////////////////
 %pythoncode %{
+
+
 def now(timeSystem=TimeSystem.UTC):
     """
     Returns the current time (defined by what SystemTime() returns)
@@ -45,6 +47,13 @@ def times(starttime, endtime, seconds=0.0, days=0):
         t.addDays(days)
 
 
+def klobuchar_correction(iono, com_time, rx_pos, elev, azim, band=CarrierBand.L1):
+    """
+    Returns the Klobuchar model ionospheric correction for a time, position, SV elev/azim, and GPS band (L1,L2,L5).
+    """
+    return iono.getCorrection(com_time, rx_pos, float(elev), float(azim), band)
+
+
 def moonPosition(time):
     """
     Returns the current position (A gpstk.Triple) of the moon.
@@ -68,6 +77,7 @@ def poleTides(time, position, x, y):
     This is a functional wrapper on the (hidden) PoleTides class.
     """
     return PoleTides().getPoleTide(time, position, x, y)
+
 
 def solidTides(time, position):
     """
