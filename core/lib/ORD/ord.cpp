@@ -272,14 +272,19 @@ double TroposphereCorrection(const gpstk::TropModel& tropModel,
     return trop;
 }
 
-double calculate_ord(const std::vector<double>& frequencies,
+/*
+ * Example not fully fleshed-out.  If dual-band data given, for example,
+ * then the last IonosphereModelCorrection call must not be made.
+ * Users should construct an ORD algorithm based on their data and use case.
+ *
+double calculate_ord(const std::vector<CarrierBand>& bands,
                      const std::vector<double>& pseudoranges, const gpstk::Position& rx_loc,
                      const gpstk::SatID& sat_id, const gpstk::CommonTime& transmit_time,
                      const gpstk::CommonTime& receive_time,
                      const gpstk::IonoModelStore& iono_model,
                      const gpstk::TropModel& trop_model,
                      const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method) {
-    double ps_range = IonosphereFreeRange(frequencies, pseudoranges);
+    double ps_range = IonosphereFreeRange(bands, pseudoranges);
 
     gpstk::Xvt sv_xvt;
     // find raw_range
@@ -310,13 +315,14 @@ double calculate_ord(const std::vector<double>& frequencies,
     // apply troposphere model correction
     range += TroposphereCorrection(trop_model, rx_loc, sv_xvt);
 
-    // apply ionosphere model correction
+    // apply ionosphere model correction -- GPS only (this is Klobuchar)
     range += IonosphereModelCorrection(iono_model, receive_time,
-                                       frequencies[0],
+                                       bands[0],
                                        rx_loc, sv_xvt);
 
     return ps_range - range;
 }
+ */
 
 }  // namespace ord
 }  // namespace gpstk

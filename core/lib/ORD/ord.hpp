@@ -161,21 +161,24 @@ double SvRelativityCorrection(gpstk::Xvt& svXvt);
 double TroposphereCorrection(const gpstk::TropModel& trop_model,
         const gpstk::Position& rx_loc, const gpstk::Xvt& sv_xvt);
 
-/// Example method that applies _all_ corrections to generate the
-/// Observed Range Deviation.
+/// Example method that applies _all_ corrections to generate an Observed Range Deviation.
 /// This is intended to be a sample showing how the above methods will be used.
+/// The example is not fully developed, just a general sketch of a generic approach.
+/// E.g., if dual-band, there should be no additional ionosphere correction applied.
+/// Users should construct an ORD based on their data and use case.
 /// Parameters:
-/// @params frequencies Signal frequencies.
-/// @params pseudoranges Pseudorange values, corresponding to frequency array.
-/// @params trop_model Class that encapsulates ionospheric models
-/// @params rx_loc The location of the receiver.
-/// @params sat_id Identifier for the satellite
-/// @params transmit_time The transmit time reported by satellite.
-/// @params receive_time The nominal receive time.
-/// @params iono_model Class that encapsulates ionospheric models
-/// @params trop_model Class that encapsulates troposphere models
-/// @params ephemeris The ephemeris to query against.
-/// @returns Observed range deviation from 1st pseudorange
+/// @params frequencies -- Signal frequencies (one or two, for single-band/dual-band).
+/// @params pseudoranges -- Pseudorange values, corresponding to frequency array (one or two).
+/// @params trop_model -- Class that encapsulates ionospheric models.
+/// @params rx_loc -- The location of the receiver.
+/// @params sat_id -- Identifier for the satellite.
+/// @params transmit_time -- The transmit time reported by satellite.
+/// @params receive_time -- The nominal receive time.
+/// @params iono_model -- Class that encapsulates ionospheric models.
+/// @params trop_model -- Class that encapsulates troposphere models.
+/// @params ephemeris -- The ephemeris to query against.
+/// @returns Observed range deviation from 1st pseudorange.
+/*
 double calculate_ord(const std::vector<double>& frequencies,
         const std::vector<double>& pseudoranges, const gpstk::Position& rx_loc,
         const gpstk::SatID& sat_id, const gpstk::CommonTime& transmit_time,
@@ -183,6 +186,7 @@ double calculate_ord(const std::vector<double>& frequencies,
         const gpstk::IonoModelStore& iono_model,
         const gpstk::TropModel& trop_model,
         const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method);
+ */
 
 }  // namespace ord
 }  // namespace gpstk
