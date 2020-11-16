@@ -121,14 +121,23 @@ namespace gpstk
       beginValid   = msg.getTransmitTime();
 
       alpha[0] = msg.asSignedDouble(68, 8, -30);
-      alpha[1] = msg.asDoubleSemiCircles(76, 8, -27);
-      alpha[2] = msg.asDoubleSemiCircles(90, 8, -24);
-      alpha[3] = msg.asDoubleSemiCircles(98, 8, -24);
+      alpha[1] = msg.asSignedDouble(76, 8, -27);
+      alpha[2] = msg.asSignedDouble(90, 8, -24);
+      alpha[3] = msg.asSignedDouble(98, 8, -24);
 
       beta[0]  = msg.asSignedDouble(106, 8, 11);
-      beta[1]  = msg.asDoubleSemiCircles(120, 8, 14);
-      beta[2]  = msg.asDoubleSemiCircles(128, 8, 16);
-      beta[3]  = msg.asDoubleSemiCircles(136, 8, 16);
+      beta[1]  = msg.asSignedDouble(120, 8, 14);
+      beta[2]  = msg.asSignedDouble(128, 8, 16);
+      beta[3]  = msg.asSignedDouble(136, 8, 16);
+
+         // Need to convert from sec/semi-circle to sec/rad
+      double conversion = 1.0 / PI; 
+      alpha[1] *= conversion;
+      beta[1]  *= conversion;
+      alpha[2] *= conversion * conversion;
+      beta[2]  *= conversion * conversion;
+      alpha[3] *= conversion * conversion * conversion;
+      beta[3]  *= conversion * conversion * conversion;
 
       A1       = msg.asSignedDouble(150, 24, -50);
 

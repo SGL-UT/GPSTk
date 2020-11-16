@@ -105,13 +105,13 @@ Reserved bits (6 bits, right-justified): 0x00
            GPS IONO PARAMETERS
 Parameter              Value
 alpha[0]      1.21071935E-08 sec
-alpha[1]     -2.34066893E-08 sec/rad
-alpha[2]     -1.87253514E-07 sec/rad**2
-alpha[3]      3.74507028E-07 sec/rad**3
+alpha[1]     -2.37159346E-09 sec/rad
+alpha[2]     -6.03921316E-09 sec/rad**2
+alpha[3]      3.84468251E-09 sec/rad**3
 beta[0]       1.16736000E+05 sec
-beta[1]      -7.72077811E+05 sec/rad
-beta[2]      -2.05887416E+05 sec/rad**2
-beta[3]       3.50008607E+06 sec/rad**3
+beta[1]      -7.82278376E+04 sec/rad
+beta[2]      -6.64018509E+03 sec/rad**2
+beta[3]       3.59318215E+04 sec/rad**3
 
            GPS UTC PARAMETERS
 Parameter              Value
@@ -131,13 +131,13 @@ Epoch(lsf)        06/30/2015
            GPS IONO PARAMETERS
 Parameter              Value
 alpha[0]      1.21071935E-08 sec
-alpha[1]     -2.34066893E-08 sec/rad
-alpha[2]     -1.87253514E-07 sec/rad**2
-alpha[3]      3.74507028E-07 sec/rad**3
+alpha[1]     -2.37159346E-09 sec/rad
+alpha[2]     -6.03921316E-09 sec/rad**2
+alpha[3]      3.84468251E-09 sec/rad**3
 beta[0]       1.16736000E+05 sec
-beta[1]      -7.72077811E+05 sec/rad
-beta[2]      -2.05887416E+05 sec/rad**2
-beta[3]       3.50008607E+06 sec/rad**3
+beta[1]      -7.82278376E+04 sec/rad
+beta[2]      -6.64018509E+03 sec/rad**2
+beta[3]       3.59318215E+04 sec/rad**3
 
            GPS UTC PARAMETERS
 Parameter              Value
@@ -189,13 +189,13 @@ NMCT data is encrypted, not available, or reserved. No ERD output will be displa
            GPS IONO PARAMETERS
 Parameter              Value
 alpha[0]      1.21071935E-08 sec
-alpha[1]     -2.34066893E-08 sec/rad
-alpha[2]     -1.87253514E-07 sec/rad**2
-alpha[3]      3.74507028E-07 sec/rad**3
+alpha[1]     -2.37159346E-09 sec/rad
+alpha[2]     -6.03921316E-09 sec/rad**2
+alpha[3]      3.84468251E-09 sec/rad**3
 beta[0]       1.16736000E+05 sec
-beta[1]      -7.72077811E+05 sec/rad
-beta[2]      -2.05887416E+05 sec/rad**2
-beta[3]       3.50008607E+06 sec/rad**3
+beta[1]      -7.82278376E+04 sec/rad
+beta[2]      -6.64018509E+03 sec/rad**2
+beta[3]       3.59318215E+04 sec/rad**3
 
            GPS UTC PARAMETERS
 Parameter              Value
@@ -215,13 +215,13 @@ Epoch(lsf)        06/30/2015
            GPS IONO PARAMETERS
 Parameter              Value
 alpha[0]      1.21071935E-08 sec
-alpha[1]     -2.34066893E-08 sec/rad
-alpha[2]     -1.87253514E-07 sec/rad**2
-alpha[3]      3.74507028E-07 sec/rad**3
+alpha[1]     -2.37159346E-09 sec/rad
+alpha[2]     -6.03921316E-09 sec/rad**2
+alpha[3]      3.84468251E-09 sec/rad**3
 beta[0]       1.16736000E+05 sec
-beta[1]      -7.72077811E+05 sec/rad
-beta[2]      -2.05887416E+05 sec/rad**2
-beta[3]       3.50008607E+06 sec/rad**3
+beta[1]      -7.82278376E+04 sec/rad
+beta[2]      -6.64018509E+03 sec/rad**2
+beta[3]       3.59318215E+04 sec/rad**3
 
            GPS UTC PARAMETERS
 Parameter              Value
@@ -241,13 +241,13 @@ Epoch(lsf)        06/30/2015
            GPS IONO PARAMETERS
 Parameter              Value
 alpha[0]      1.21071935E-08 sec
-alpha[1]     -2.34066893E-08 sec/rad
-alpha[2]     -1.87253514E-07 sec/rad**2
-alpha[3]      3.74507028E-07 sec/rad**3
+alpha[1]     -2.37159346E-09 sec/rad
+alpha[2]     -6.03921316E-09 sec/rad**2
+alpha[3]      3.84468251E-09 sec/rad**3
 beta[0]       1.16736000E+05 sec
-beta[1]      -7.72077811E+05 sec/rad
-beta[2]      -2.05887416E+05 sec/rad**2
-beta[3]       3.50008607E+06 sec/rad**3
+beta[1]      -7.82278376E+04 sec/rad
+beta[2]      -6.64018509E+03 sec/rad**2
+beta[3]       3.59318215E+04 sec/rad**3
 
            GPS UTC PARAMETERS
 Parameter              Value
