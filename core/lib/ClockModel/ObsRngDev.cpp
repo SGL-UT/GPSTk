@@ -83,7 +83,7 @@ namespace gpstk
       const XvtStore<SatID>& eph,
       EllipsoidModel& em,
       const IonoModelStore& ion,
-      IonoModel::Frequency fq,
+      CarrierBand band,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
@@ -94,7 +94,7 @@ namespace gpstk
                      gx.getGeodeticLatitude(),
                      static_cast<YDSTime>(time).doy);
       computeTrop(nb);
-      iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
+      iono = ion.getCorrection(time, gx, elevation, azimuth, band);
       ord -= iono;
    }
 
@@ -122,7 +122,7 @@ namespace gpstk
       EllipsoidModel& em,
       const TropModel& tm,
       const IonoModelStore& ion,
-      IonoModel::Frequency fq,
+      CarrierBand band,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
@@ -130,7 +130,7 @@ namespace gpstk
       computeTrop(tm);
       Position gx(rxpos);
       gx.asGeodetic(&em);
-      iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
+      iono = ion.getCorrection(time, gx, elevation, azimuth, band);
       ord -= iono;
    }
 
@@ -147,7 +147,7 @@ namespace gpstk
       double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      // for dual frequency see IS-GPS-200, section 20.3.3.3.3.3
+      // for dual-frequency see IS-GPS-200, section 20.3.3.3.3.3
       double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 
@@ -174,7 +174,7 @@ namespace gpstk
       double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      // for dual frequency see IS-GPS-200, section 20.3.3.3.3.3
+      // for dual-frequency see IS-GPS-200, section 20.3.3.3.3.3
       double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 

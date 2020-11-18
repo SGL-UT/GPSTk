@@ -45,6 +45,7 @@
 #define GPSTK_IONOMODEL_HPP
 
 #include "CommonTime.hpp"
+#include "CarrierBand.hpp"
 #include "EngAlmanac.hpp"
 #include "Position.hpp"
 
@@ -77,13 +78,6 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(InvalidIonoModel, gpstk::Exception);
  
-
-      enum Frequency
-      {
-         L1,  ///< L1 frequency (1575.42 MHz)
-         L2   ///< L2 frequency (1227.60 MHz)
-      };
-      
          /// default constructor, creates an invalid model
       IonoModel() throw() : valid(false) {}
       
@@ -125,7 +119,7 @@ namespace gpstk
           * @param rxgeo the WGS84 geodetic position of the receiver
           * @param svel the elevation angle between the rx and SV (degrees)
           * @param svaz the azimuth angle between the rx and SV (degrees)
-          * @param freq the GPS frequency the observation was made from
+          * @param band the GPS frequency band the observation was made from
           * @return the ionospheric correction (meters)
           * @throw InvalidIonoModel
           */
@@ -133,7 +127,7 @@ namespace gpstk
                            const Position& rxgeo,
                            double svel,
                            double svaz,
-                           Frequency freq = L1) const;
+                           CarrierBand band = CarrierBand::L1) const;
 
          /// equality operator
       bool operator==(const IonoModel& right) const throw();

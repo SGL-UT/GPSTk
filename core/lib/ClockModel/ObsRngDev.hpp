@@ -47,6 +47,7 @@
 #include <ostream>
 
 #include "CommonTime.hpp"
+#include "CarrierBand.hpp"
 #include "XvtStore.hpp"
 #include "Exception.hpp"
 #include "GPSEllipsoid.hpp"
@@ -90,7 +91,7 @@ namespace gpstk
           * @param eph a store of either broadcast or precise ephemerides
           * @param em an EllipsoidModel for performing range calculations
           * @param ion a store of nav based ionospheric models
-          * @param fq the GPS frequency (L1 or L2) from which the obs was made
+          * @param fq the GPS band (L1, L2, L5) from which the obs was made
           * @param svTime true if prange is in SV time, false for RX time.
           */ 
       ObsRngDev(const double prange,
@@ -111,7 +112,7 @@ namespace gpstk
           * @param eph a store of either broadcast or precise ephemerides
           * @param em an EllipsoidModel for performing range calculations
           * @param ion a store of nav based ionospheric models
-          * @param fq the GPS frequency (L1 or L2) from which the obs was made
+          * @param fq the GPS band (L1, L2, L5) from which the obs was made
           * @param svTime true if prange is in SV time, false for RX time.
           */ 
       ObsRngDev(const double prange,
@@ -121,7 +122,7 @@ namespace gpstk
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
                 const IonoModelStore& ion,
-                IonoModel::Frequency fq,
+                CarrierBand band,
                 bool svTime = false);
          /**
           * constructor.
@@ -135,7 +136,7 @@ namespace gpstk
           * @param em an EllipsoidModel for performing range calculations
           * @param tm a TropModel for performing trop calculation
           * @param ion a store of nav based ionospheric models
-          * @param fq the GPS frequency (L1 or L2) from which the obs was made
+          * @param fq the GPS band (L1, L2, L5) from which the obs was made
           * @param svTime true if prange is in SV time, false for RX time.
           */ 
       ObsRngDev(const double prange,
@@ -159,7 +160,7 @@ namespace gpstk
           * @param em an EllipsoidModel for performing range calculations
           * @param tm a TropModel for performing trop calculation
           * @param ion a store of nav based ionospheric models
-          * @param fq the GPS frequency (L1 or L2) from which the obs was made
+          * @param fq the GPS band (L1, L2, L5) from which the obs was made
           * @param svTime true if prange is in SV time, false for RX time.
           */ 
       ObsRngDev(const double prange,
@@ -170,7 +171,7 @@ namespace gpstk
                 EllipsoidModel& em,
                 const TropModel& tm,
                 const IonoModelStore& ion,
-                IonoModel::Frequency fq,
+                CarrierBand band,
                 bool svTime = false);
    
          /**

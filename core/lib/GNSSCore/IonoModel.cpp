@@ -84,7 +84,7 @@ namespace gpstk
                                    const Position& rxgeo,
                                    double svel,
                                    double svaz,
-                                   Frequency freq) const
+                                   CarrierBand band) const
    {
 
       if (!valid)
@@ -141,13 +141,21 @@ namespace gpstk
       else
          t_iono = iF * 5.0e-9;
 
-      if (freq == L2)
+      // Correction factor for GPS band; see ICD-GPS-200 20.3.3.3.3.2.
+      if (band == CarrierBand::L2)
       {
-            // see ICD-GPS-200 20.3.3.3.3.2
-         t_iono *= GAMMA_GPS;  //  GAMMA_GPS = (fL1 / fL2)^2
+         t_iono *= GAMMA_GPS_12;  //  GAMMA_GPS = (fL1 / fL2)^2
+      }
+      else if (band == CarrierBand::L5)
+      {
+         t_iono *= GAMMA_GPS_15;  //  GAMMA_GPS = (fL1 / fL5)^2
+      }
+      else if (band != CarrierBand::L1)
+      {
+         throw InvalidIonoModel("Invalid CarrierBand, not one of L1,L2,L5.");
       }
 
-      double correction = t_iono * C_MPS;
+      double correction = t_iono * C_MPS;  // return correction in [m]
 
       return correction;
    }

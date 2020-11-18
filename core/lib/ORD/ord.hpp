@@ -72,9 +72,6 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
 
 /// Given an ionosphere model, and locations of receiver and satellite,
 /// range correction due to ionospheric effects.
-/// TODO(someone): IonoModel assumes only L1 and L2 frequencies, this
-/// should be updated to work with an arbitrary frequency.  Currently
-/// This call assumes frequency is L1.
 /// @param ionoModel Class that encapsulates ionospheric models
 /// @params time The time of interest.
 /// @params frequency Frequency of interest - see note above.
@@ -82,7 +79,7 @@ double IonosphereFreeRange(const std::vector<double>& frequencies,
 /// @param sv_loc The location of the satellite at time of interest.
 /// @return Range correction (delta) in meters
 double IonosphereModelCorrection(const gpstk::IonoModelStore& ionoModel,
-        const gpstk::CommonTime& time, double frequency,
+        const gpstk::CommonTime& time, CarrierBand band,
         const gpstk::Position& rxLoc, const gpstk::Xvt& svXvt);
 
 /// Given a satellite id, a time, and an ephemeris store, retrieves the
@@ -164,28 +161,36 @@ double SvRelativityCorrection(gpstk::Xvt& svXvt);
 double TroposphereCorrection(const gpstk::TropModel& trop_model,
         const gpstk::Position& rx_loc, const gpstk::Xvt& sv_xvt);
 
-/// Example method that applies _all_ corrections to generate the
-/// Observed Range Deviation.
+/// Example method that applies _all_ corrections to generate an Observed Range Deviation.
 /// This is intended to be a sample showing how the above methods will be used.
+/// The example is not fully developed, just a general sketch of a generic approach.
+/// E.g., if dual-band, there should be no additional ionosphere correction applied.
+/// Users should construct an ORD based on their data and use case.
 /// Parameters:
-/// @params frequencies Signal frequencies.
-/// @params pseudoranges Pseudorange values, corresponding to frequency array.
-/// @params trop_model Class that encapsulates ionospheric models
-/// @params rx_loc The location of the receiver.
-/// @params sat_id Identifier for the satellite
-/// @params transmit_time The transmit time reported by satellite.
-/// @params receive_time The nominal receive time.
-/// @params iono_model Class that encapsulates ionospheric models
-/// @params trop_model Class that encapsulates troposphere models
-/// @params ephemeris The ephemeris to query against.
-/// @returns Observed range deviation from 1st pseudorange
-double calculate_ord(const std::vector<double>& frequencies,
-        const std::vector<double>& pseudoranges, const gpstk::Position& rx_loc,
-        const gpstk::SatID& sat_id, const gpstk::CommonTime& transmit_time,
+/// @param[in] bands -- Signal bands (one or two enums, for single-band/dual-band).
+/// @param[in] pseudoranges -- Pseudorange values, corresponding to frequency array (one or two).
+/// @param[in] trop_model -- Class that encapsulates ionospheric models.
+/// @param[in] rx_loc -- The location of the receiver.
+/// @param[in] sat_id -- Identifier for the satellite.
+/// @param[in] transmit_time -- The transmit time reported by satellite.
+/// @param[in] receive_time -- The nominal receive time.
+/// @param[in] iono_model -- Class that encapsulates ionospheric models.
+/// @param[in] trop_model -- Class that encapsulates troposphere models.
+/// @param[in] ephemeris -- The ephemeris to query against.
+/// @param[in] range_method -- One of four raw range methods, depending on what data is available.
+/// @returns Observed range deviation from 1st pseudorange.
+/*
+double calculate_ord(const std::vector<CarrierBand>& bands,
+        const std::vector<double>& pseudoranges,
+        const gpstk::Position& rx_loc,
+        const gpstk::SatID& sat_id,
+        const gpstk::CommonTime& transmit_time,
         const gpstk::CommonTime& receive_time,
         const gpstk::IonoModelStore& iono_model,
         const gpstk::TropModel& trop_model,
-        const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method);
+        const gpstk::XvtStore<gpstk::SatID>& ephemeris,
+        int range_method);
+ */
 
 }  // namespace ord
 }  // namespace gpstk

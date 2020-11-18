@@ -54,21 +54,21 @@ namespace gpstk
        * \param rxgeo the WGS84 geodetic position of the receiver
        * \param svel the elevation angle between the rx and SV (degrees)
        * \param svaz the azimuth angle between the rx and SV (degrees)
-       * \param freq the GPS frequency the observation was made from
+       * \param band the GPS band the observation was made from
        * \return the ionospheric correction (meters)
        */
    double IonoModelStore::getCorrection(const CommonTime& time,
                                         const Position& rxgeo,
                                         double svel,
                                         double svaz,
-                                        IonoModel::Frequency freq) const
+                                        CarrierBand band) const
    {
 
       IonoModelMap::const_iterator i = ims.upper_bound(time);
       if (!ims.empty() && i != ims.begin())
       {
          i--;
-         return i->second.getCorrection(time, rxgeo, svel, svaz, freq);
+         return i->second.getCorrection(time, rxgeo, svel, svaz, band);
       }
       else
       {
