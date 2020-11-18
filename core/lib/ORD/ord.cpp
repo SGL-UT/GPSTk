@@ -278,12 +278,15 @@ double TroposphereCorrection(const gpstk::TropModel& tropModel,
  * Users should construct an ORD algorithm based on their data and use case.
  *
 double calculate_ord(const std::vector<CarrierBand>& bands,
-                     const std::vector<double>& pseudoranges, const gpstk::Position& rx_loc,
-                     const gpstk::SatID& sat_id, const gpstk::CommonTime& transmit_time,
+                     const std::vector<double>& pseudoranges,
+                     const gpstk::Position& rx_loc,
+                     const gpstk::SatID& sat_id,
+                     const gpstk::CommonTime& transmit_time,
                      const gpstk::CommonTime& receive_time,
                      const gpstk::IonoModelStore& iono_model,
                      const gpstk::TropModel& trop_model,
-                     const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method) {
+                     const gpstk::XvtStore<gpstk::SatID>& ephemeris,
+                     int range_method) {
     double ps_range = IonosphereFreeRange(bands, pseudoranges);
 
     gpstk::Xvt sv_xvt;
@@ -316,8 +319,8 @@ double calculate_ord(const std::vector<CarrierBand>& bands,
     range += TroposphereCorrection(trop_model, rx_loc, sv_xvt);
 
     // apply ionosphere model correction -- GPS only (this is Klobuchar)
-    range += IonosphereModelCorrection(iono_model, receive_time,
-                                       bands[0],
+    range += IonosphereModelCorrection(iono_model,
+                                       receive_time, bands[0],
                                        rx_loc, sv_xvt);
 
     return ps_range - range;

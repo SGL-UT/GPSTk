@@ -167,7 +167,7 @@ double TroposphereCorrection(const gpstk::TropModel& trop_model,
 /// E.g., if dual-band, there should be no additional ionosphere correction applied.
 /// Users should construct an ORD based on their data and use case.
 /// Parameters:
-/// @params frequencies -- Signal frequencies (one or two, for single-band/dual-band).
+/// @params bands -- Signal bands (one or two enums, for single-band/dual-band).
 /// @params pseudoranges -- Pseudorange values, corresponding to frequency array (one or two).
 /// @params trop_model -- Class that encapsulates ionospheric models.
 /// @params rx_loc -- The location of the receiver.
@@ -177,15 +177,19 @@ double TroposphereCorrection(const gpstk::TropModel& trop_model,
 /// @params iono_model -- Class that encapsulates ionospheric models.
 /// @params trop_model -- Class that encapsulates troposphere models.
 /// @params ephemeris -- The ephemeris to query against.
+/// @params range_method -- One of four raw range methods, depending on what data is available.
 /// @returns Observed range deviation from 1st pseudorange.
 /*
-double calculate_ord(const std::vector<double>& frequencies,
-        const std::vector<double>& pseudoranges, const gpstk::Position& rx_loc,
-        const gpstk::SatID& sat_id, const gpstk::CommonTime& transmit_time,
+double calculate_ord(const std::vector<CarrierBand>& bands,
+        const std::vector<double>& pseudoranges,
+        const gpstk::Position& rx_loc,
+        const gpstk::SatID& sat_id,
+        const gpstk::CommonTime& transmit_time,
         const gpstk::CommonTime& receive_time,
         const gpstk::IonoModelStore& iono_model,
         const gpstk::TropModel& trop_model,
-        const gpstk::XvtStore<gpstk::SatID>& ephemeris, int range_method);
+        const gpstk::XvtStore<gpstk::SatID>& ephemeris,
+        int range_method);
  */
 
 }  // namespace ord
