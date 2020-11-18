@@ -539,10 +539,11 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 76, XRefNode(  23,
                                        CivilTime( 2020,  7, 14,  0,  0, 0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
-   //NANU 20200xx LAUNCH
-   // First transmission observed on xx/xx
+   //NANU 2020077 LAUNCH
+   // First transmission observed on 11/17/2020 at 0551 (nav msg collection)
+   // Backed time off a little to account for possible earlier obs data.
    NtoPMap.insert( std::pair<const int, XRefNode>( 77, XRefNode(  14,
-                                       CivilTime( 2020, 10,  3,  0,  0, 0.0, TimeSystem::GPS),
+                                       CivilTime( 2020, 11, 17,  5, 30, 0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
                                        
       //Iterate through the data to produce the PtoNMap
