@@ -78,13 +78,6 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(InvalidIonoModel, gpstk::Exception);
  
-
-      //enum Frequency
-      //{
-      //   L1,  ///< L1 frequency (1575.42 MHz)
-      //   L2   ///< L2 frequency (1227.60 MHz)
-      //};
-      
          /// default constructor, creates an invalid model
       IonoModel() throw() : valid(false) {}
       
