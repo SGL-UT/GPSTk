@@ -130,6 +130,7 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 74,III ));
    NtoBMap.insert( make_pair( 75,III ));
    NtoBMap.insert( make_pair( 76,III ));
+   NtoBMap.insert( make_pair( 77,III ));
 
       // Note: This table start with Block I values
       // Set up NAVSTAR -> PRN ID relationship
@@ -359,9 +360,10 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 40, XRefNode( 10, 
                                        CivilTime( 1996,  7, 16,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2015,  8, 3,  23,  59,  59.9, TimeSystem::GPS))));
+   // NANU 2020034 DECOM on 07/09/2020.  Last Transmission observed shortly before 1600 on 7/27/20
    NtoPMap.insert( std::pair<const int, XRefNode>( 41, XRefNode( 14, 
                                        CivilTime( 2000, 11, 10,  0,  0,  0.0, TimeSystem::GPS),
-                                       CommonTime::END_OF_TIME  )));
+                                       CivilTime( 2020,  7, 27, 16,  0,  0.0, TimeSystem::GPS))));
       // no NAVSTAR 42, IIR-1 was a launch failure
    NtoPMap.insert( std::pair<const int, XRefNode>( 43, XRefNode( 13, 
                                        CivilTime( 1997,  7, 23,  0,  0,  0.0, TimeSystem::GPS),
@@ -536,6 +538,12 @@ SVNumXRef::SVNumXRef( )
    // First transmission observed on 7/14
    NtoPMap.insert( std::pair<const int, XRefNode>( 76, XRefNode(  23,
                                        CivilTime( 2020,  7, 14,  0,  0, 0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
+   //NANU 2020077 LAUNCH
+   // First transmission observed on 11/17/2020 at 0551 (nav msg collection)
+   // Backed time off a little to account for possible earlier obs data.
+   NtoPMap.insert( std::pair<const int, XRefNode>( 77, XRefNode(  14,
+                                       CivilTime( 2020, 11, 17,  5, 30, 0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
                                        
       //Iterate through the data to produce the PtoNMap
@@ -751,36 +759,36 @@ bool SVNumXRef::isConsistent() const
    // loops through the multimap
    for (cit1 = NtoPMap.begin(); cit1 != NtoPMap.end(); cit1++)
    {
-     cit2 = cit1;
-     cit2++;  // cit2 always starts the nested loop one higher than cit1
-     for (; cit2 != NtoPMap.end(); cit2++)
-       {
-	 int key1 = cit1->first;		// keys represent the SVN numbers
-	 int key2 = cit2->first;
-	 const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
-	 const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
-	 int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
-	 int val2 = xr2.getPRNNum();
+      cit2 = cit1;
+      cit2++;  // cit2 always starts the nested loop one higher than cit1
+      for (; cit2 != NtoPMap.end(); cit2++)
+      {
+	      int key1 = cit1->first;		// keys represent the SVN numbers
+	      int key2 = cit2->first;
+	      const XRefNode xr1 = cit1->second;	// these const xr variables represent the XRefNode so we can access the begin and end times
+	      const XRefNode xr2 = cit2->second;	// of each SVN/PRN pair
+	      int val1 = xr1.getPRNNum();		// vals represent the PRN numbers
+	      int val2 = xr2.getPRNNum();
 	 
-	 if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
-	   {
-	     const TimeRange& tr1 = xr1.getTimeRange();
-	     const TimeRange& tr2 = xr2.getTimeRange();
-	     if (tr1.overlaps(tr2))
-	       {
-		 retVal = false;
-		 std::cout << "Overlap between SV"
-			   << setw(2) << key1 << "/PRN"
-			   << setw(2) << val1 << "at"
-			   << tr1.printf() << endl;
-		 std::cout << "            and"
-			   << setw(2) << key2 << "/PRN"
-			   << setw(2) << val2 << "at"
-			   << tr2.printf() << endl;
-	       }
-	   }
-    
-       }
+	      if ((key1 == key2) || (val1 == val2))	// checks initial condition for an overlap; if neither are true, there is no overlap
+	      {
+	         const TimeRange& tr1 = xr1.getTimeRange();
+	         const TimeRange& tr2 = xr2.getTimeRange();
+	         if (tr1.overlaps(tr2))
+	         {
+ 		         retVal = false;
+               string tform("%02m/%02d/%04Y %02H:%02M:%02S");
+		         std::cout << "Overlap between SVN"
+			                << setw(2) << key1 << "/PRN"
+			                << setw(2) << val1 << " at "
+			                << tr1.printf(tform) << endl;
+   		      std::cout << "            and SVN"
+			                << setw(2) << key2 << "/PRN"
+			                << setw(2) << val2 << " at "
+			                << tr2.printf(tform) << endl;
+	         }
+	      }
+      }
    }
    return retVal;					// if we reach this point, we know there are no overlaps
 }      
