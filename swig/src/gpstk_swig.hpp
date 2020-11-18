@@ -161,7 +161,7 @@
 #include "NeillTropModel.hpp"
 #include "SaasTropModel.hpp"
 #include "SimpleTropModel.hpp"
-#include "PRSolution2.hpp"
+#include "PRSolutionLegacy.hpp"
 #include "Expression.hpp"
 
 // Ashtech serial data

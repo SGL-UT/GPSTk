@@ -8,67 +8,69 @@ CODEOWNERS @kuck @rain
 # Conda/RPM/Distro
 # ----------------
 
-conda_recipe/ @kuck
-conda_recipe_py36/ @kuck
-debian/ @kuck
-rpm_files/ @kuck
+conda_recipe/ @dbarber @kuck
+conda_recipe_py36/ @dbarber @kuck
+debian/ @dbarber @kuck
+rpm_files/ @dbarber @kuck
 
 # -----------
 # Python/Swig
 # -----------
 
-swig/ @kuck
+swig/ @kuck @malik
 
 # -------------
 # Documentation
 # -------------
 
-docs/ @johnk
-ref/ @johnk
-ref/build/ @johnk
+docs/ @johnk @rain
 ref/papers/ @renfrob @rain @kuck
-ref/usersguide/ @johnk @rain @renfrob
+ref/usersguide/ @johnk @renfrob @rain
 
 # ---------------------
 # Major module sections
 # ---------------------
 
 # Core apps
-core/apps/ @johnk
-core/apps/positioning/ @btolman
-core/apps/Rinextools/ @btolman
+core/apps/ @johnk @btolman
+core/apps/positioning/ @btolman @renfrob
+core/apps/Rinextools/ @btolman @renfrob
 
 # Core lib
 core/lib/ @johnk
-core/lib/AppFrame/ @johnk
-core/lib/CommandLine/CommandLine.cpp @btolman
-core/lib/CommandLine/CommandLine.hpp @btolman
-core/lib/CommandLine/ @johnk
-core/lib/FileDirProc/ @johnk
-core/lib/Geomatics/ @btolman
-core/lib/GNSSEph/ @renfrob
-core/lib/NavFilter/ @johnk
-core/lib/ORD/ @kuck
-core/lib/PosSol/ @btolman
-core/lib/RefTime/ @btolman
-core/lib/Utilities/ @johnk
+core/lib/AppFrame/ @johnk @anthony
+core/lib/CommandLine/CommandLine.cpp @anthony @btolman @johnk
+core/lib/CommandLine/CommandLine.hpp @anthony @btolman @johnk
+core/lib/CommandLine/ @johnk @anthony
+core/lib/FileDirProc/ @johnk @anthony
+core/lib/FileHandling/ @anthony @johnk
+core/lib/Geomatics/ @btolman @johnk
+core/lib/GNSSCore/ @anthony @johnk
+core/lib/GNSSEph/ @renfrob @johnk @anthony
+core/lib/Math/ @anthony @btolman
+core/lib/NavFilter/ @johnk @anthony @renfrob
+core/lib/ORD/ @kuck @rcathriner
+core/lib/PosSol/ @btolman @renfrob
+core/lib/RefTime/ @btolman @renfrob
+core/lib/TestFramework/ @anthony @johnk
+core/lib/TimeHandling/ @anthony @renfrob @johnk
+core/lib/Utilities/ @johnk @anthony
 
 # Core tests
-core/tests/ @johnk
+core/tests/ @johnk @anthony @renfrob
 
 # Ext
-ext/ @johnk
-ext/apps/filetools/ @btolman
+ext/ @johnk @dbarber
+ext/apps/filetools/ @btolman @renfrob
 ext/apps/geomatics/ @btolman
-ext/apps/misc/ @renfrob
-ext/apps/rfw/ @littlej
-ext/apps/Rinextools/ @btolman
-ext/lib/Geomatics/ @btolman
-ext/lib/GNSSEph/ @renfrob
-ext/lib/PosSol/ @btolman
-ext/lib/Rxio/ @littlej
+ext/apps/misc/ @renfrob @johnk
+ext/apps/rfw/ @johnk @renfrob
+ext/apps/Rinextools/ @btolman @renfrob
+ext/lib/Geomatics/ @btolman @renfrob
+ext/lib/GNSSEph/ @renfrob @rcathriner
+ext/lib/PosSol/ @btolman @johnk
 
 # Other
-data/ @kuck
-deprecated/ @kuck
+data/ @dbarber @kuck
+deprecated/ @dbarber @kuck
 examples/ @johnk @btolman @renfrob

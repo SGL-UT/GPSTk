@@ -1,5 +1,9 @@
 #.yml file for Gitlab-CI support
 
+# Note that the following tokens must be supplied via the Gitlab Repository Settings:
+# - CI_USER: username to pull from gitlab repository
+# - CI_TOKEN: password to pull from gitlab repository
+
 stages:
 - check
 - build
@@ -11,14 +15,16 @@ stages:
 
 # Default cmake arguments
 variables:
+  REPO_HOST: "repositories.arlut.utexas.edu"
   CMAKE_ARG_DEFAULT: "-DBUILD_EXT=ON -DBUILD_PYTHON=ON -DTEST_SWITCH=ON -DPIP_WHEEL_SWITCH=ON ../"
   # this is usually set to master, unless there are downstream dependencies
   SGLTK_BRANCH: master
   DOCKER_REGISTRY: "modisdev:5000/sgl_ci"
-# this can be used for incremental builds
-#  GIT_CLEAN_FLAGS: none
+  # this can be used for incremental builds
+  #  GIT_CLEAN_FLAGS: none
   # This can be set to True by Gitlab UI to only build/test packages.
   RELEASE_ONLY: "False"
+  REPO_HOST: "repositories.arlut.utexas.edu"
 
 # Template for all normal jobs.
 .normal_job:
@@ -50,6 +56,7 @@ variables:
 # Runs static analysis on code.
 static_analysis:
   stage: check
+  needs: []
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -58,9 +65,31 @@ static_analysis:
   # Allow failures here to prevent blocking the rest of the pipeline.
   allow_failure: true
 
+# sgl_lint will verify that source files have proper copyright.
+sgllint_lint:
+  stage: check
+  needs: []
+  extends: .normal_job
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos7_conda_py27:latest
+  script:
+    - '######'
+    - '# This job checks all files for required lines like copyright/license statements.'
+    - '######'
+    - conda activate py27
+    # Obtain the latest version of ./sgl_lint.py
+    - git clone --depth 1 https://${CI_USER}:${CI_TOKEN}@${REPO_HOST}/sgl/repo_utils.git
+    - python repo_utils/sgl_lint.py -v -R core
+    - python repo_utils/sgl_lint.py -v -R ext
+    - python repo_utils/sgl_lint.py -v -R swig/apps
+    - python repo_utils/sgl_lint.py -v -R swig/gpstk
+  dependencies: []
+
 # Runs the documentation generation
 generate_documentation:
   stage: check
+  needs: []
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -77,6 +106,7 @@ generate_documentation:
 
 build_debian_7:
   stage: build
+  needs: []
   extends: .normal_job
   tags:
     - docker-executor
@@ -96,6 +126,7 @@ build_debian_7:
 
 build_debian_8:
   stage: build
+  needs: []
   extends: .big_build
   tags:
     - docker-executor
@@ -112,6 +143,7 @@ build_debian_8:
 
 build_debian_9:
   stage: build
+  needs: []
   extends: .normal_job
   tags:
     - docker-executor
@@ -128,6 +160,7 @@ build_debian_9:
 
 build_debian_10:
   stage: build
+  needs: []
   extends: .big_build
   tags:
     - docker-executor
@@ -144,6 +177,7 @@ build_debian_10:
 
 build_conda_py27:
   stage: build
+  needs: []
   extends: .normal_job
   tags:
     - docker-executor
@@ -161,6 +195,7 @@ build_conda_py27:
 
 build_conda_py36:
   stage: build
+  needs: []
   extends: .normal_job
   tags:
     - docker-executor
@@ -178,6 +213,7 @@ build_conda_py36:
 
 build_redhat:
   stage: build
+  needs: []
   extends: .normal_job
   tags:
     - docker-executor
@@ -192,8 +228,25 @@ build_redhat:
     paths:
     - build/
 
+build_redhat_8:
+  stage: build
+  needs: []
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - mkdir build
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DPYTHON_INSTALL_PREFIX=$gpstk -DCMAKE_INSTALL_PREFIX=install $CMAKE_ARG_DEFAULT
+    - make all -j 4
+  artifacts:
+    paths:
+      - build/
+
 build_windows:
   stage: build
+  needs: []
   extends: .normal_job
   tags:
     - win10
@@ -221,6 +274,7 @@ build_windows:
 # Runs all tests of GPSTK for each platform
 test_debian_7:
   stage: test
+  needs: [build_debian_7]
   extends: .normal_job
   tags:
     - docker-executor
@@ -237,20 +291,12 @@ test_debian_7:
     - build/Testing/Temporary/
   dependencies:
     - build_debian_7
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
-  # Allowing failure until this can be traced down.
+  # Allowing failure since this is unlikely to be fixed before we deprecate debian-7
   allow_failure: true
 
 test_debian_8:
   stage: test
+  needs: [build_debian_8]
   extends: .big_build
   tags:
     - docker-executor
@@ -265,18 +311,10 @@ test_debian_8:
     - build/Testing/Temporary/
   dependencies:
     - build_debian_8
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
 
 test_debian_9:
   stage: test
+  needs: [build_debian_9]
   extends: .normal_job
   tags:
     - docker-executor
@@ -292,18 +330,10 @@ test_debian_9:
     - build/swig/
   dependencies:
     - build_debian_9
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
 
 test_debian_10:
   stage: test
+  needs: [build_debian_10]
   extends: .big_build
   tags:
     - docker-executor
@@ -319,18 +349,10 @@ test_debian_10:
     - build/swig/
   dependencies:
     - build_debian_10
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
 
 test_conda_py27:
   stage: test
+  needs: [build_conda_py27]
   extends: .normal_job
   tags:
     - docker-executor
@@ -347,18 +369,10 @@ test_conda_py27:
     - build/swig/
   dependencies:
     - build_conda_py27
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
 
 test_conda_py36:
   stage: test
+  needs: [build_conda_py36]
   extends: .normal_job
   tags:
     - docker-executor
@@ -375,18 +389,10 @@ test_conda_py36:
     - build/swig/
   dependencies:
     - build_conda_py36
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
 
 test_redhat:
   stage: test
+  needs: [build_redhat]
   extends: .normal_job
   tags:
     - docker-executor
@@ -394,25 +400,33 @@ test_redhat:
   script:
     - cd build
     - ctest -j 4
-    - touch $CI_PROJECT_DIR/success
   artifacts:
     when: on_failure
     paths:
     - build/Testing/Temporary/
   dependencies:
     - build_redhat
-  after_script:
-    # Only show the failure log, if there were failures.
-    # Also, the whole log is too long, so grep for lines of interest.
-    - |
-      if [ -e success ]; then
-         echo "Good. Gooooood."
-      else
-         grep "Total Failures for" $CI_PROJECT_DIR/build/Testing/Temporary/LastTest.log
-      fi
+
+test_redhat_8:
+  stage: test
+  needs: [build_redhat_8]
+  extends: .normal_job
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - cd build
+    - ctest -j 4
+  artifacts:
+    when: on_failure
+    paths:
+      - build/Testing/Temporary/
+  dependencies:
+    - build_redhat_8
 
 test_windows:
   stage: test
+  needs: [build_windows]
   extends: .normal_job
   tags:
     - win10
@@ -429,11 +443,11 @@ test_windows:
   allow_failure: true
   timeout: 5m
 
-
 # User_Install Stage
 # Tests user install of GPSTk on each platform, saves artifacts for downstream builds.
 user_install_debian_9:
   stage: install
+  needs: [build_debian_9]
   extends: .normal_job
   tags:
     - docker-executor
@@ -453,6 +467,7 @@ user_install_debian_9:
 
 user_install_redhat:
   stage: install
+  needs: [build_redhat]
   extends: .normal_job
   tags:
     - docker-executor
@@ -468,8 +483,27 @@ user_install_redhat:
   dependencies:
     - build_redhat
 
+user_install_redhat_8:
+  stage: install
+  needs: [build_redhat_8]
+  extends: .normal_job
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - cd build
+    - export gpstk=`pwd`/install
+    - cmake -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - make install -j 4
+  artifacts:
+    paths:
+      - build/install
+  dependencies:
+    - build_redhat_8
+
 user_install_windows:
   stage: install
+  needs: [build_windows]
   extends: .normal_job
   tags:
     - win10
@@ -486,6 +520,7 @@ user_install_windows:
 # Tests install of GPSTk on each platform, saves artifacts for downstream builds.
 system_install_debian_9:
   stage: install
+  needs: [build_debian_9]
   extends: .normal_job
   tags:
     - docker-executor
@@ -502,6 +537,7 @@ system_install_debian_9:
 
 system_install_redhat:
   stage: install
+  needs: [build_redhat]
   extends: .normal_job
   tags:
     - docker-executor
@@ -514,10 +550,27 @@ system_install_redhat:
   dependencies:
     - build_redhat
 
+system_install_redhat_8:
+  stage: install
+  needs: [build_redhat_8]
+  extends: .normal_job
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - cd build
+    - export gpstk=/usr/local
+    - cmake -DCMAKE_INSTALL_PREFIX=$gpstk ../
+    - sudo make install -j 4
+  dependencies:
+    - build_redhat_8
+
+
 # Package Stage
 # Tests packaging of GPSTk on all platforms
 package_debian_8:
   stage: package
+  needs: []
   extends: .package_build
   tags:
     - docker-executor
@@ -542,6 +595,7 @@ package_debian_8:
 
 package_debian_9:
   stage: package
+  needs: []
   extends: .package_build
   tags:
     - docker-executor
@@ -563,6 +617,7 @@ package_debian_9:
 
 package_debian_10:
   stage: package
+  needs: []
   extends: .package_build
   tags:
     - docker-executor
@@ -588,6 +643,7 @@ package_debian_10:
 
 package_conda:
   stage: package
+  needs: []
   extends: .package_build
   tags:
     - docker-executor
@@ -611,6 +667,7 @@ package_conda:
 
 package_redhat:
   stage: package
+  needs: []
   extends: .package_build
   tags:
     - docker-executor
@@ -626,10 +683,47 @@ package_redhat:
       - rpm_files/SRPMS/gpstk-*
   dependencies: []
 
+package_redhat_8:
+  stage: package
+  needs: []
+  extends: .package_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - bash rpm_files/setup_dirs.sh
+    - git archive --prefix gpstk-master/ -o rpm_files/SOURCES/gpstk-master.tar.gz HEAD
+    - pushd rpm_files
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" --define "_build_id_links none" -ba SPECS/gpstk.spec
+  artifacts:
+    paths:
+      - rpm_files/RPMS/x86_64/gpstk-*
+      - rpm_files/SRPMS/gpstk-*
+  dependencies: []
+
+package_redhat_8_py36:
+  stage: package
+  needs: []
+  extends: .package_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - bash rpm_files/setup_dirs.sh
+    - git archive --prefix python3-gpstk-master/ -o rpm_files/SOURCES/python3-gpstk-master.tar.gz HEAD
+    - pushd rpm_files
+    - rpmbuild --define "_topdir ${PWD}" --define "debug_package %{nil}" --define "_build_id_links none" -ba SPECS/gpstk_py36.spec
+  artifacts:
+    paths:
+      - rpm_files/RPMS/x86_64/python3-gpstk-*
+      - rpm_files/SRPMS/python3-gpstk-*
+  dependencies: []
+
 # Deploy Stage
 # Tests install of GPSTk package on each platform, saves artifacts for downstream builds.
 deploy_debian_8:
   stage: deploy
+  needs: [package_debian_8]
   extends: .package_build
   tags:
     - docker-executor
@@ -643,7 +737,8 @@ deploy_debian_8:
 
 deploy_debian_9:
   stage: deploy
-  extends: .package_build
+  needs: [package_debian_9]
+  extends: .big_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
@@ -657,7 +752,8 @@ deploy_debian_9:
 
 deploy_debian_10:
   stage: deploy
-  extends: .package_build
+  needs: [package_debian_10]
+  extends: .big_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian10_fai_ish
@@ -671,7 +767,8 @@ deploy_debian_10:
 
 deploy_redhat:
   stage: deploy
-  extends: .package_build
+  needs: [package_redhat]
+  extends: .big_build
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
@@ -681,6 +778,38 @@ deploy_redhat:
     - timeconvert
   dependencies:
     - package_redhat
+
+deploy_redhat_8:
+  stage: deploy
+  needs: [package_redhat_8]
+  extends: .big_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - cd rpm_files/RPMS/x86_64/
+    - sudo yum install gpstk-*.rpm -y
+    - timeconvert
+  dependencies:
+    - package_redhat_8
+
+deploy_redhat_py36:
+  stage: deploy
+  needs: [package_redhat_8, package_redhat_8_py36]
+  extends: .package_build
+  tags:
+    - docker-executor
+  image: $DOCKER_REGISTRY/centos8_sgl
+  script:
+    - cd rpm_files/RPMS/x86_64/
+    - sudo yum install gpstk-*.rpm -y
+    - sudo yum install python3-gpstk-*.rpm -y
+    - python3 -c "import gpstk"
+    - timeconvert
+  dependencies:
+    - package_redhat_8_py36
+    - package_redhat_8
+
 
 # package_windows:
 #   stage: package
@@ -697,13 +826,14 @@ deploy_redhat:
 
 sgltk_debian:
   stage: downstream
+  needs: [user_install_debian_9]
   extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/debian9_fai_ish
   script:
     - cd build
-    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://${CI_USER}:${CI_TOKEN}@${REPO_HOST}/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk
@@ -716,13 +846,14 @@ sgltk_debian:
 
 sgltk_redhat:
   stage: downstream
+  needs: [user_install_redhat]
   extends: .normal_job
   tags:
     - docker-executor
   image: $DOCKER_REGISTRY/centos7_sgl
   script:
     - cd build
-    - git clone -b $SGLTK_BRANCH https://repositories.arlut.utexas.edu/sgl/sgltk.git
+    - git clone -b $SGLTK_BRANCH https://${CI_USER}:${CI_TOKEN}@${REPO_HOST}/sgl/sgltk.git
     - export gpstk=`pwd`/install
     - export LD_LIBRARY_PATH=$gpstk/lib:$LD_LIBRARY_PATH
     - cd sgltk

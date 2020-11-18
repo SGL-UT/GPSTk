@@ -16,16 +16,18 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004-2019, The University of Texas at Austin
+//  This software was developed by Applied Research Laboratories at the
+//  University of Texas at Austin.
+//  Copyright 2004-2020, The Board of Regents of The University of Texas System
 //
 //==============================================================================
 
 //==============================================================================
 //
-//  This software developed by Applied Research Laboratories at the University of
-//  Texas at Austin, under contract to an agency or agencies within the U.S. 
-//  Department of Defense. The U.S. Government retains all rights to use,
-//  duplicate, distribute, disclose, or release this software. 
+//  This software was developed by Applied Research Laboratories at the
+//  University of Texas at Austin, under contract to an agency or agencies
+//  within the U.S. Department of Defense. The U.S. Government retains all
+//  rights to use, duplicate, distribute, disclose, or release this software.
 //
 //  Pursuant to DoD Directive 523024 
 //
@@ -70,6 +72,8 @@ public:
 
       inputSP3Data = dataFilePath + fileSep +
          "test_input_sp3_nav_ephemerisData.sp3";
+      inputSP3cData = dataFilePath + fileSep +
+         "test_input_SP3c.sp3";
       inputAPCData = dataFilePath + fileSep +
          "test_input_sp3_nav_apcData.sp3";
       inputSixNinesData = dataFilePath + fileSep +
@@ -149,6 +153,17 @@ public:
       store.dump(dumpData,1);
       dumpData.close();
 
+      TURETURN();
+   }
+
+
+      /// test loading of SP3c data
+   unsigned sp3cTest()
+   {
+      TUDEF("SP3EphemerisStore", "whatever");
+      SP3EphemerisStore store;
+      TUCATCH(store.loadFile(inputSP3cData));
+      TUASSERTE(size_t, 750, store.size());
       TURETURN();
    }
 
@@ -607,7 +622,6 @@ public:
       TURETURN();
    }
 
-
 //=============================================================================
 // Test for getVelocity
 // Tests getPosition method in SP3EphemerisStore by comparing the outputs
@@ -687,6 +701,7 @@ private:
    std::string dataFilePath;
 
    std::string inputSP3Data;
+   std::string inputSP3cData;
    std::string inputAPCData;
    std::string inputSixNinesData;
 
@@ -707,6 +722,7 @@ int main() // Main function to initialize and run all tests above
    testClass.init();
 
    errorTotal += testClass.SP3ESTest();
+   errorTotal += testClass.sp3cTest();
    errorTotal += testClass.getXvtTest();
    errorTotal += testClass.computeXvtTest();
    errorTotal += testClass.getSVHealthTest();

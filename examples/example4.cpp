@@ -16,16 +16,18 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2004-2019, The University of Texas at Austin
+//  This software was developed by Applied Research Laboratories at the
+//  University of Texas at Austin.
+//  Copyright 2004-2020, The Board of Regents of The University of Texas System
 //
 //==============================================================================
 
 //==============================================================================
 //
-//  This software developed by Applied Research Laboratories at the University of
-//  Texas at Austin, under contract to an agency or agencies within the U.S. 
-//  Department of Defense. The U.S. Government retains all rights to use,
-//  duplicate, distribute, disclose, or release this software. 
+//  This software was developed by Applied Research Laboratories at the
+//  University of Texas at Austin, under contract to an agency or agencies
+//  within the U.S. Department of Defense. The U.S. Government retains all
+//  rights to use, duplicate, distribute, disclose, or release this software.
 //
 //  Pursuant to DoD Directive 523024 
 //
@@ -65,7 +67,7 @@
 #include "GPSEphemerisStore.hpp"
 
    // Class for handling RAIM
-#include "PRSolution2.hpp"
+#include "PRSolutionLegacy.hpp"
 
    // Class defining GPS system constants
 #include "GNSSconstants.hpp"
@@ -80,7 +82,7 @@ int main(int argc, char *argv[])
 
       // Declaration of objects for storing ephemerides and handling RAIM
    GPSEphemerisStore bcestore;
-   PRSolution2 raimSolver;
+   PRSolutionLegacy raimSolver;
 
       // Object for void-type tropospheric model (in case no meteorological
       // RINEX is available)
@@ -293,7 +295,7 @@ int main(int argc, char *argv[])
 
             }  // End of 'for( it = rod.obs.begin(); it!= rod.obs.end(); ...'
 
-               // The default constructor for PRSolution2 objects (like
+               // The default constructor for PRSolutionLegacy objects (like
                // "raimSolver") is to set a RMSLimit of 6.5. We change that
                // here. With this value of 3e6 the solution will have a lot
                // more dispersion.
