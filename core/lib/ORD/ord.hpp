@@ -167,17 +167,17 @@ double TroposphereCorrection(const gpstk::TropModel& trop_model,
 /// E.g., if dual-band, there should be no additional ionosphere correction applied.
 /// Users should construct an ORD based on their data and use case.
 /// Parameters:
-/// @params bands -- Signal bands (one or two enums, for single-band/dual-band).
-/// @params pseudoranges -- Pseudorange values, corresponding to frequency array (one or two).
-/// @params trop_model -- Class that encapsulates ionospheric models.
-/// @params rx_loc -- The location of the receiver.
-/// @params sat_id -- Identifier for the satellite.
-/// @params transmit_time -- The transmit time reported by satellite.
-/// @params receive_time -- The nominal receive time.
-/// @params iono_model -- Class that encapsulates ionospheric models.
-/// @params trop_model -- Class that encapsulates troposphere models.
-/// @params ephemeris -- The ephemeris to query against.
-/// @params range_method -- One of four raw range methods, depending on what data is available.
+/// @param[in] bands -- Signal bands (one or two enums, for single-band/dual-band).
+/// @param[in] pseudoranges -- Pseudorange values, corresponding to frequency array (one or two).
+/// @param[in] trop_model -- Class that encapsulates ionospheric models.
+/// @param[in] rx_loc -- The location of the receiver.
+/// @param[in] sat_id -- Identifier for the satellite.
+/// @param[in] transmit_time -- The transmit time reported by satellite.
+/// @param[in] receive_time -- The nominal receive time.
+/// @param[in] iono_model -- Class that encapsulates ionospheric models.
+/// @param[in] trop_model -- Class that encapsulates troposphere models.
+/// @param[in] ephemeris -- The ephemeris to query against.
+/// @param[in] range_method -- One of four raw range methods, depending on what data is available.
 /// @returns Observed range deviation from 1st pseudorange.
 /*
 double calculate_ord(const std::vector<CarrierBand>& bands,
