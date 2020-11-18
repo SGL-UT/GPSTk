@@ -55,10 +55,9 @@ namespace gpstk
       //@{
 
       /**
-       * Model of the ionosphere.
-       * It is used to compute the delay of the satellite signal
-       * as seen at the receiver caused by the ionosphere for a
-       * "one frequency" user.
+       * Simple model of the ionosphere ("Klobuchar"), specified in the GPS IS.
+       * It is used to compute the satellite signal ionospheric delay seen at
+       * the receiver by a single-band user.
        *
        * See ICD-GPS-200, section 20.3.3.5.2.5 and  Figure 20-4.
        *
@@ -78,20 +77,26 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(InvalidIonoModel, gpstk::Exception);
  
-         /// default constructor, creates an invalid model
+         /// Default constructor, creates an invalid model for lack of parameters.
       IonoModel() throw() : valid(false) {}
       
          /// destructor
       virtual ~IonoModel() throw() {}
       
          /**
-          * constructor.
-          * Creates a valid model with satellite transmitted alpha
-          * and beta parameters provided from almanac.
+          * Klobuchar parameter constructor.
+          * Creates a valid model with satellite transmitted alpha and beta
+          * parameters provided by the user.
           * \param a an array containing the four alpha terms
           * \param b an array containing the four beta terms
+          * \param semicircle_units a boolean indicating params are in
+          *                         semicircles (T, default) or radians (F)
+          * Note that the IS-GPS-200 defines the algorithm and parameters
+          * in terms of semi-circles, not radians, but that the GPSTk for
+          * historical reasons extracts parameters from a GPS Nav message
+          * in power of inverse radians.  Hence the need for the boolean flag.
           */
-      IonoModel(const double a[4], const double b[4]) throw();
+      IonoModel(const double a[4], const double b[4], const bool semicircle_units = true) throw();
       
          /**
           * EngAlmanac constructor.
@@ -100,12 +105,13 @@ namespace gpstk
           */
       IonoModel(const EngAlmanac& engalm) throw();
       
-         /** Method to feed the model with satellite transmitted alpha
-          * and beta parameters provided from almanac.
+         /**
+          * Method to feed the model with satellite-transmitted alpha
+          * and beta parameters provided by the passed almanac.
           * \param a an array containing the four alpha terms
           * \param b an array containing the four beta terms
           */
-      void setModel(const double a[4], const double b[4]) throw();
+      void setModel(const double a[4], const double b[4], const bool semicircle_units = true) throw();
       
          /**
           * returns the validity of the model.
@@ -139,6 +145,7 @@ namespace gpstk
 
       double alpha[4];
       double beta[4];
+      bool semicircle_units;
 
       bool valid;
    };
