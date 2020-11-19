@@ -67,7 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 - Update CODEOWNERS file.
 - Fix SP3EphemerisStore to properly handle correlation data from SP3c files.
 - Refactor calculate_ord method definition out of header file.
-- Update python 2.7 conda recipe to avoid using preprocessig-selector for enum43.
+- Update python 2.7 conda recipe to avoid using preprocessig-selector for enum34.
 - Update Nav reader code to properly assign being/end validity values for non-GPS GNSS data.
 * Fri Sep 18 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Updated for v7.0.0 release

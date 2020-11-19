@@ -4,7 +4,7 @@ gpstk (8.0.0-1) stable; urgency=low
   * Update Nav reader code to properly assign being/end validity values
     for non-GPS GNSS data.
   * Update python 2.7 conda recipe to avoid using preprocessig-selector
-    for enum43.
+    for enum34.
   * Refactor calculate_ord method definition out of header file.
   * Fix SP3EphemerisStore to properly handle correlation data from SP3c
     files.

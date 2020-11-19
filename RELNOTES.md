@@ -9,7 +9,7 @@ Updates since v7.0.0
 ---------------------
 **Build System and Test Suite**
   * Update CI to verify proper copyright and license header.
-  * Update python 2.7 conda recipe to avoid using preprocessig-selector for enum43.
+  * Update python 2.7 conda recipe to avoid using preprocessig-selector for enum34.
   
 **Gitlab CI**
   * Add Centos8 build/test/package/deploy jobs to the CI pieline.
