@@ -1,6 +1,6 @@
 %define name gpstk
-%define version 7.0.0
-%define release 2
+%define version 8.0.0
+%define release 1
 
 Summary:        GPS Toolkit
 Name:           %{name}
@@ -53,6 +53,22 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Nov 19 2020 David Barber <dbarber@arlut.utexas.edu>
+- Updated for v8.0.0 release
+- Update IonoModel to include all modernized GPS bands.
+- Update SVNumXRef Add SVN77/PRN14
+- Fix OrbSysGpsL_56 Correct iono parameter units
+- Update CI to verify proper copyright and license header.
+- Refactor pipeline to use git https protocol instead of ssh
+- Update copyright language to reflect year 2020
+- Fix EL8 RPM Generation to avoid including build-id files.
+- Add Centos8 build/test/package/deploy jobs to the CI pieline.
+- Refactor `PRSolution2` to `PRSolutionLegacy`.
+- Update CODEOWNERS file.
+- Fix SP3EphemerisStore to properly handle correlation data from SP3c files.
+- Refactor calculate_ord method definition out of header file.
+- Update python 2.7 conda recipe to avoid using preprocessig-selector for enum43.
+- Update Nav reader code to properly assign being/end validity values for non-GPS GNSS data.
 * Fri Sep 18 2020 Andrew Kuck <kuck@arlut.utexas.edu>
 - Updated for v7.0.0 release
 - Fix GalEphemeris Corrected behavior of isHealthy()

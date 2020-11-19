@@ -1,3 +1,63 @@
+# Version 8.0.0   Thursday November 19, 2020
+
+Modifications by Author
+-----------------------
+     Andrew Kuck <kuck@arlut.utexas.edu> (15):
+           removed badly handled conda selector
+           Move function definition to cpp file.
+           Add Centos 8 to CI pipeline
+           Dont include build id links
+           Update all copyright language to 2020
+           Add verb
+           Align to 80 characters.
+           Add copyright check
+           Update Copyright headers.
+           Add multiline copywright declaration.
+           Include all required variables.
+           Add C/L checks for ext and swig
+           Update language to be verbed w 80 characters.
+           Update language to be verbed w 80 characters.
+           Update language to be verbed w 80 characters.
+
+     Brent Renfro <renfrob@arlut.utexas.edu> (9):
+           Ancillary mods that BWT probably already made in another branch to get Rinex3 multi-GNSS to read
+           Changes actually relevant to topic
+           Simplfying GPGA and GAGP
+           Correct two transmit time tags
+           Updating for SVN77/PRN14
+           Updating SVN-PRN relationships
+           Fixing iono parameter scale factors
+           Updating test case result
+           Adding SVN 77/PRN 14 relationship
+
+     Dave Rainwater <rain@arlut.utexas.edu> (15):
+           Remove image file no longer used in documentation.
+           Update CODEOWNERS: minimum two owners per module.
+           Rename PRSolution2 (actually, the older app) to PRSolutionLegacy.
+           Fix incomplete renaming.
+           Rename additional instances of PRSolution2.
+           Rename PRSolution2 references in swig/ folder.
+           Enhance IonoModel (Klobuchar) to accommodate all GPS bands.
+           Add Klobuchar model failout for CB not L1,L2,L5.
+           Fix exception class name.
+           Fix SWIG wrapper for Klobuchar iono model call.
+           Fix file from incorrect pick during rebase.
+           Comment out example ORD calc call, improve docstrings.
+           Remove commented-out deprecated code.
+           [ci-skip] Clean up commented-out example code.
+           [ci-skip] Fix param docstring syntax.
+
+     David Barber <dbarber@arlut.utexas.edu> (4):
+           Refactor to use https with token so it will work with target repository once it becomes private.
+           updating conda yaml files to use token for git repo access
+           adding token comments to header sections
+           Revert "updating conda yaml files to use token for git repo access"
+
+     John Knutson <johnk@arlut.utexas.edu> (1):
+           Fix a bug in SP3EphemerisStore when loading SP3c files
+
+
+
 # Version 7.0.0   Friday September 18, 2020
 
 Modifications by Author

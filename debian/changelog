@@ -1,3 +1,26 @@
+gpstk (8.0.0-1) stable; urgency=low
+
+  * Updated to version 8.0.0
+  * Update Nav reader code to properly assign being/end validity values
+    for non-GPS GNSS data.
+  * Update python 2.7 conda recipe to avoid using preprocessig-selector
+    for enum43.
+  * Refactor calculate_ord method definition out of header file.
+  * Fix SP3EphemerisStore to properly handle correlation data from SP3c
+    files.
+  * Update CODEOWNERS file.
+  * Refactor `PRSolution2` to `PRSolutionLegacy`.
+  * Add Centos8 build/test/package/deploy jobs to the CI pieline.
+  * Fix EL8 RPM Generation to avoid including build-id files.
+  * Update copyright language to reflect year 2020
+  * Refactor pipeline to use git https protocol instead of ssh
+  * Update CI to verify proper copyright and license header.
+  * Fix OrbSysGpsL_56 Correct iono parameter units
+  * Update SVNumXRef Add SVN77/PRN14
+  * Update IonoModel to include all modernized GPS bands.
+
+ -- David Barber <dbarber@arlut.utexas.edu>  Thu, 19 Nov 2020 05:00:35 -0600
+
 gpstk (7.0.0-1) stable; urgency=low
 
   * Updated to version 7.0.0

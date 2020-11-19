@@ -1,39 +1,31 @@
-GPSTk 7.0.0 Release Notes
+GPSTk 8.0.0 Release Notes
 ========================
 
- * This version addresses enumeration changes used by downstream dependencies in sgltk, mdhtk, mdhtk-python, pysgltk
- * It contains deprecation of python bindings (swig support) for rhel7 and deb7/8.
+ * This version addresses api change of 'PRSolution2' to 'PRSolutionLegacy' used by downstream dependency in sgltk.
+ * It contains copyright updates to reflect year 2020.
  * Additionally, bug fixes and library changes were implemented.
 
-Updates since v6.0.0
+Updates since v7.0.0
 ---------------------
-  * Update OceanLoadTides.hpp Add reference to SPOTL in doxygen comments
-  * Refactor ObsID and RinexObsID initialization of containers (tcDesc, etc.) to use C++11 syntax and eliminate the use of a singleton initializer.
- 
 **Build System and Test Suite**
-  * Dropping Python Swig binding support for RHEL7/DEB7
-  * Refactor debian8 remove python bindings
-  * Refactor debian dpkg-buildpackage Update control files to remove python bindings
-
+  * Update CI to verify proper copyright and license header.
+  * Update python 2.7 conda recipe to avoid using preprocessig-selector for enum43.
+  
 **Gitlab CI**
-  * Add CODEOWNERS file.
-  * Refactor gpstk pipeline downstream jobs
-  * Add Documentation Artifact to CI Pipeline
-
+  * Add Centos8 build/test/package/deploy jobs to the CI pieline.
+  * Update CODEOWNERS file.
+  * Refactor pipeline to use git https protocol instead of ssh  
+  
 **Library Changes**
-  * Add SatMetaDataStore findSatByFdmaSlot
-  * Add EnumIterator class to provide the ability to iterate over the above enum classes.
-  * Refactor Yuma/SEM file support back into ext
-  * Refactor enumerations in TimeSystem, ReferenceFrame, IERSConvention, SatID, NavID and ObsID (SatelliteSystem, NavType, ObservationType, CarrierBand, TrackingCode) to use strongly typed enumerations and move them outside the scope of those classes.
-  * Rename TrackingCode enumerations to better support codes that RINEX does not by using names based on the ICDs rather than what RINEX uses.
-  * Refactor swig bindings for enums to use similar naming conventions between C++ and python (e.g. gpstk::TrackingCode::CA in C++ and gpstk.TrackingCode.CA in python)
-  * Move RINEX-isms (such as the string constructor for decoding RINEX obs IDs) in ObsID into RinexObsID where they belong.
-  * Refactor ObsID and RinexObsID initialization of containers (tcDesc, etc.) to use C++11 syntax and eliminate the use of a singleton initializer.
-  * Update SWIG Bindings to wrap enumerations more correctly.
+  * Update Nav reader code to properly assign being/end validity values for non-GPS GNSS data.
+  * Refactor `PRSolution2` to `PRSolutionLegacy`.
+  * Refactor calculate_ord method definition out of header file.
+  * Update SVNumXRef Add SVN77/PRN14  
+  * Update copyright language to reflect year 2020
+  * Update IonoModel to include all modernized GPS bands. 
 
-Fixes since v6.0.0
---------------------!
-  * Fix various pieces of code to resolve warning messages on various platforms.
-  * Fix OrbSysGpsL_55 Restore output of text message
-  * Fix core/lib include statements to search GPSTk include directory.
-  * Fix GalEphemeris Corrected behavior of isHealthy()
+Fixes since v7.0.0
+--------------------
+  * Fix SP3EphemerisStore to properly handle correlation data from SP3c files.
+  * Fix EL8 RPM Generation to avoid including build-id files.
+  * Fix OrbSysGpsL_56 Correct iono parameter units
