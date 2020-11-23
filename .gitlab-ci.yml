@@ -36,7 +36,7 @@ variables:
 .big_build:
   only:
     refs:
-      - master
+      - main
       - /^ci_.*$/
       - /^version_.*_prep$/
     variables:
@@ -46,7 +46,7 @@ variables:
 .package_build:
   only:
     refs:
-      - master
+      - main
       - /^ci_.*$/
       - /^version_.*_prep$/
       - tags
