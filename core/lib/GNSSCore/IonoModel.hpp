@@ -38,7 +38,7 @@
 
 /**
  * @file IonoModel.cpp
- * Implementation of the ICD-GPS-200 Ionosphere model.
+ * Implementation of the IS-GPS-200 Ionosphere model (20.3.3.5.2.5).
  */
 
 #ifndef GPSTK_IONOMODEL_HPP
@@ -72,27 +72,27 @@ namespace gpstk
    {
    public:
         
-         /// Thrown when attempting to use a model for which all necessary
-         /// parameters have not been specified.
+         /// Exception, thrown when attempting to use a model for which not all
+         /// the necessary parameters have been specified.
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(InvalidIonoModel, gpstk::Exception);
  
          /// Default constructor, creates an invalid model for lack of parameters.
       IonoModel() throw() : valid(false) {}
       
-         /// destructor
+         /// Destructor.
       virtual ~IonoModel() throw() {}
       
          /**
-          * Klobuchar parameter constructor.
+          * Ionosphere model constructor.
           * Creates a valid model with satellite transmitted alpha and beta
-          * parameters provided by the user.
-          * \param a an array containing the four alpha terms
-          * \param b an array containing the four beta terms
-          * \param semicircle_units a boolean indicating params are in
-          *                         semicircles (T, default) or radians (F)
+          * (Klobuchar) parameters provided by the user.
+          * @param a An array containing the four alpha terms.
+          * @param b An array containing the four beta terms.
+          * @param semicircle_units A boolean indicating params are in
+          *                         semicircles (T, default) or radians (F).
           * Note that the IS-GPS-200 defines the algorithm and parameters
-          * in terms of semi-circles, not radians, but that the GPSTk for
+          * in terms of semi-circles, not radians; but that the GPSTk for
           * historical reasons extracts parameters from a GPS Nav message
           * in power of inverse radians.  Hence the need for the boolean flag.
           */
@@ -100,33 +100,34 @@ namespace gpstk
       
          /**
           * EngAlmanac constructor.
-          * Creates a valid model from and EngAlmanac object
-          * \param engalm an EngAlmanac object
+          * Creates a valid model from and EngAlmanac object.
+          * @param engalm An EngAlmanac object.
           */
       IonoModel(const EngAlmanac& engalm) throw();
       
          /**
-          * Method to feed the model with satellite-transmitted alpha
-          * and beta parameters provided by the passed almanac.
-          * \param a an array containing the four alpha terms
-          * \param b an array containing the four beta terms
+          * Method to feed the model with satellite-transmitted alpha and beta
+          * parameters from the passed almanac.
+          * See the IS-GPS-200, 20.3.3.3.3.2.
+          * @param a An array containing the four alpha terms.
+          * @param b An array containing the four beta terms.
           */
       void setModel(const double a[4], const double b[4], const bool semicircle_units = true) throw();
       
          /**
           * returns the validity of the model.
-          * \return model validity
+          * @return model validity
           */
       bool isValid() const throw() { return valid; }
       
          /**
-          * get the ionospheric correction value.
-          * @param time the time of the observation
-          * @param rxgeo the WGS84 geodetic position of the receiver
-          * @param svel the elevation angle between the rx and SV (degrees)
-          * @param svaz the azimuth angle between the rx and SV (degrees)
-          * @param band the GPS frequency band the observation was made from
-          * @return the ionospheric correction (meters)
+          * Get the ionospheric correction value.
+          * @param time The time of the observation.
+          * @param rxgeo The WGS84 geodetic position of the receiver.
+          * @param svel The elevation angle between the rx and SV (degrees).
+          * @param svaz The azimuth angle between the rx and SV (degrees).
+          * @param band The GPS frequency band the observation was made from.
+          * @return The ionospheric correction (meters).
           * @throw InvalidIonoModel
           */
       double getCorrection(const CommonTime& time,
@@ -135,10 +136,10 @@ namespace gpstk
                            double svaz,
                            CarrierBand band = CarrierBand::L1) const;
 
-         /// equality operator
+         /// Equality operator
       bool operator==(const IonoModel& right) const throw();
 
-         /// inequality operator
+         /// Inequality operator
       bool operator!=(const IonoModel& right) const throw();     
 
    private:

@@ -38,7 +38,7 @@
 
 /**
  * @file IonoModel.cpp
- * Implementation of the ICD-GPS-200 Ionosphere model.
+ * Implementation of the ICD-GPS-200 Ionosphere model (20.3.3.5.2.5).
  */
 
 #include <math.h>
