@@ -38,7 +38,7 @@
 
 /**
  * @file IonoModel.cpp
- * Implementation of the ICD-GPS-200 Ionosphere model.
+ * Implementation of the ICD-GPS-200 Ionosphere model (20.3.3.5.2.5).
  */
 
 #include <math.h>
@@ -49,10 +49,11 @@
 
 namespace gpstk
 {
-   IonoModel::IonoModel(const double a[4], const double b[4]) throw()
+   IonoModel::IonoModel(const double a[4], const double b[4], const bool semicircle_units) throw()
    {
-        setModel(a, b);
+        setModel(a, b, semicircle_units);
    }
+
 
    IonoModel::IonoModel(const EngAlmanac& engalm)
       throw()
@@ -69,12 +70,23 @@ namespace gpstk
    }
 
 
-   void IonoModel::setModel(const double a[4], const double b[4]) throw()
+   void IonoModel::setModel(const double a[4], const double b[4], const bool semicircle_units) throw()
    {
       for (int n = 0; n < 4; n++)
       {
          alpha[n] = a[n];
          beta[n] = b[n];
+      }
+         // Convert powers of inverse radians to inverse semi-circles, as needed by getCorrection.
+         // This is a necessary optional flag for historical GPSTk code reasons.
+      if (!semicircle_units)
+      {
+         alpha[1] *= PI;
+         alpha[2] *= PI * PI;
+         alpha[3] *= PI * PI * PI;
+         beta[1] *= PI;
+         beta[2] *= PI * PI;
+         beta[3] *= PI * PI * PI;
       }
       valid = true;
    }
@@ -93,9 +105,9 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-         // all angle units are in semi-circles (radians / TWO_PI)
-         // Note: math functions (cos, sin, etc.) require arguments in
-         // radians so all semi-circles must be multiplied by TWO_PI
+         // All angle units are in semi-circles (radians/PI), per IS-GPS-200.
+         // Note: Math functions (cos, sin, etc.) require arguments in radians,
+         //       so all semi-circles must be multiplied by PI.
 
       double azRad = svaz * DEG_TO_RAD;
       double svE = svel / 180.0;
