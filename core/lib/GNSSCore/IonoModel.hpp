@@ -146,7 +146,6 @@ namespace gpstk
 
       double alpha[4];
       double beta[4];
-      bool semicircle_units;
 
       bool valid;
    };
