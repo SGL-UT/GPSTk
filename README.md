@@ -1,12 +1,26 @@
 README
 ------
 
-Gitlab -
-[![build status](https://repositories.arlut.utexas.edu/sgl/gpstk/badges/master/build.svg)](https://repositories.arlut.utexas.edu/sgl/gpstk/commits/master)
-[![coverage report](https://repositories.arlut.utexas.edu/sgl/gpstk/badges/master/coverage.svg)](https://repositories.arlut.utexas.edu/sgl/gpstk/commits/master)
-
 Github - 
 [![Build Status](https://travis-ci.org/SGL-UT/GPSTk.svg?branch=master)](https://travis-ci.org/SGL-UT/GPSTk)
+
+NOTICE:
+-------
+
+On November 30, 2020 there was a push of many pending changes to the GPSTk 
+repository.  We apologize for the long period without updates, the year 2020
+has been a trying time in many respects.
+
+The most obvious change has been a transition to a semantic versioning scheme
+(semver.org).  This is intended to be an informal contract regarding the API
+that is presented by our tools.  It should always be safe to update to the next 
+version, so long as the major version number doesn't change.  
+ 
+Releases containing API changes, however small, will result in a major version 
+number increment. Releases containing new features will result in a minor 
+version number increment. Releases containing only bug fixes will have a patch
+number increment. 
+
 
 Contents:
 ---------
