@@ -81,7 +81,11 @@ protected:
    /// string stream to which output is written; destructor will dump to log stream.
    std::ostringstream os;
 
-#ifdef WIN32                  // see kludge note below
+#if !defined(USEKLUDGE) && defined(WIN32) && !(defined(__MINGW32__) || defined(__MINGW64__))
+#define USEKLUDGE
+#endif
+
+#ifdef USEKLUDGE                  // see kludge note below
    static LogLevel reportingLevel;  ///< static data for ReportingLevel()
    static bool dumpTimeTags;        ///< static data for ReportTimeTags()
    static bool dumpLevels;          ///< static data for ReportLevels()
@@ -112,7 +116,7 @@ template <class T> Log<T>::~Log()
 
 template <class T> bool& Log<T>::ReportLevels()
 {
-#ifndef WIN32                 // see kludge note below
+#ifndef USEKLUDGE                 // see kludge note below
    static bool dumpLevels = false;
 #endif
    return dumpLevels;
@@ -120,7 +124,7 @@ template <class T> bool& Log<T>::ReportLevels()
 
 template <class T> bool& Log<T>::ReportTimeTags()
 {
-#ifndef WIN32                 // see kludge note below
+#ifndef USEKLUDGE                 // see kludge note below
    static bool dumpTimeTags = false;
 #endif
    return dumpTimeTags;
@@ -128,7 +132,7 @@ template <class T> bool& Log<T>::ReportTimeTags()
 
 template <class T> LogLevel& Log<T>::ReportingLevel()
 {
-#ifndef WIN32                 // see kludge note below
+#ifndef USEKLUDGE                 // see kludge note below
    static LogLevel reportingLevel = INFO; // FILELOG_MAX_LEVEL;
 #endif
    return reportingLevel;
@@ -317,7 +321,7 @@ public:
 // include file means that it occurs more than once - in every module in which it
 // appears. However Windows allows this; hence I have commented out the inner macro
 // here. Ah, the joys of developing under MS....
-#ifdef WIN32
+#ifdef USEKLUDGE
 //#ifndef LOGSTREAM_INITIALIZE_REPORTING_LEVEL
 //#define LOGSTREAM_INITIALIZE_REPORTING_LEVEL
 template<> LogLevel Log<ConfigureLOGstream>::reportingLevel = INFO;
