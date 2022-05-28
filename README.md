@@ -7,6 +7,18 @@ Github -
 NOTICE:
 -------
 
+THIS PROJECT HAS BEEN MOVED AND IS FOR ARCHIVAL PURPOSES ONLY.
+
+On September 2021, GPSTk was renamed to GNSSTK and split into two new repositories GNSSTK and GNSSTK-APPS starting with version v12.0.0.  GNSSTK only contains linkable libraries while GNSSTK-APPS contains application binaries.
+
+### New Repositories Workflow
+```mermaid
+graph TD
+    A["GPSTk (deprecated)"] --> B["GNSSTK (libraries)"] & C["GNSSTK-APPS (applications)"]
+```
+GNSSTK location:  https://github.com/sgl-ut/gnsstk  
+GNSSTK-APPS location: https://github.com/sgl-ut/gnsstk-apps
+
 On November 30, 2020 there was a push of many pending changes to the GPSTk 
 repository.  We apologize for the long period without updates, the year 2020
 has been a trying time in many respects.
